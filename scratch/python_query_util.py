@@ -409,6 +409,19 @@ class QueryUtil:
     def get_stat(self, has_levels, row, statistic, stat_line_type):
         try:
             # get all of the sub-values for each time
+            sub_total = np.array([float(i) for i in (str(row['sub_total']).split(','))])
+            sub_secs = np.array([float(i) for i in (str(row['sub_secs']).split(','))])
+            sub_values = np.empty(len(sub_secs))
+            stat = 'null'
+            if has_levels:
+                sub_levs_raw = str(row['sub_levs']).split(',')
+                if self.is_number(sub_levs_raw[0]):
+                    sub_levs = np.array([int(i) for i in sub_levs_raw])
+                else:
+                    sub_levs = np.array(sub_levs_raw)
+            else:
+                sub_levs = np.empty(len(sub_secs))
+
             if stat_line_type == 'scalar':
                 sub_fbar = np.array([float(i) for i in (str(row['sub_fbar']).split(','))])
                 sub_obar = np.array([float(i) for i in (str(row['sub_obar']).split(','))])
@@ -419,31 +432,23 @@ class QueryUtil:
                     sub_mae = np.array([float(i) for i in (str(row['sub_mae']).split(','))])
                 else:
                     sub_mae = np.empty(len(sub_fbar))
+                # calculate the scalar statistic
+                sub_values, stat = self.calculate_scalar_stat(statistic, sub_fbar, sub_obar, sub_ffbar, sub_oobar, sub_fobar, sub_total, sub_mae)
             elif stat_line_type == 'ctc':
                 sub_fy_oy = np.array([float(i) for i in (str(row['sub_fy_oy']).split(','))])
                 sub_fy_on = np.array([float(i) for i in (str(row['sub_fy_on']).split(','))])
                 sub_fn_oy = np.array([float(i) for i in (str(row['sub_fn_oy']).split(','))])
                 sub_fn_on = np.array([float(i) for i in (str(row['sub_fn_on']).split(','))])
-            sub_total = np.array([float(i) for i in (str(row['sub_total']).split(','))])
-            sub_secs = np.array([float(i) for i in (str(row['sub_secs']).split(','))])
-            if has_levels:
-                sub_levs_raw = str(row['sub_levs']).split(',')
-                if self.is_number(sub_levs_raw[0]):
-                    sub_levs = np.array([int(i) for i in sub_levs_raw])
-                else:
-                    sub_levs = np.array(sub_levs_raw)
-            else:
-                sub_levs = np.empty(len(sub_secs))
+                # calculate the ctc statistic
+                sub_values, stat = self.calculate_ctc_stat(statistic, sub_fy_oy, sub_fy_on, sub_fn_oy, sub_fn_on, sub_total)
+
         except KeyError as e:
             self.error = "Error parsing query data. The expected fields don't seem to be present " \
                          "in the results cache: " + str(e)
             # if we don't have the data we expect just stop now and return empty data objects
             return np.nan, np.empty(0), np.empty(0), np.empty(0)
-        # if we do have the data we expect, calculate the requested statistic
-        if stat_line_type == 'scalar':
-            sub_values, stat = self.calculate_scalar_stat(statistic, sub_fbar, sub_obar, sub_ffbar, sub_oobar, sub_fobar, sub_total, sub_mae)
-        elif stat_line_type == 'ctc':
-            sub_values, stat = self.calculate_ctc_stat(statistic, sub_fy_oy, sub_fy_on, sub_fn_oy, sub_fn_on, sub_total)
+
+        # if we do have the data we expect, return the requested statistic
         return stat, sub_levs, sub_secs, sub_values
 
     #  function for calculating the interval between the current time and the next time for models with irregular vts
