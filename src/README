@@ -1,0 +1,6 @@
+This directory contains the directories of modules that make up the
+METcalcpy package. 
+
+For each new module, create a new sub-directory under the METcalcpy/src directory.
+
+The METcalcpy/src/util directory contains modules that provide common functionality across multiple modules.
