@@ -1,29 +1,5 @@
 """
 Program Name: event_equalize.py
-Contact(s): Tatiana Burek
-Abstract:
-History Log:  Initial version
-Usage: event_equalize assumes that the input series_data contains data indexed by fcst_valid_beg,
-    series values and the independent variable values.  It builds a new dataframe which
-    contains the same data except for records that don't have corresponding fcst_valid_beg
-    values in each other series record with the same independent variable value.
-    For example, if the series_a has data valid at 20111010_000000 for F12 and series_b does not,
-    the series_a record is removed.
-Parameters:
-    series_data: data frame containing the records to equalize, including fcst_valid_beg, series
-            values and independent variable values
-    indy_var: name of the independent variable
-    indy_vals: independent variable values to equalize over
-            - not used. Keep for now for the consistency with R function
-    series_var_vals: series variable names and values
-    fix_vars: name of the fixed variable
-    fix_vals_permuted:  fixed variable values to equalize over
-    equalize_by_indep:  include or not the independent variable to EE
-    multi: FALSE for normal event equalization, TRUE for equalization of mulitple events
-            at each combination of fcst_valid_beg, series values and independent value
-            - for example with MODE objects
-Input Files: N/A
-Output Files: N/A
 """
 
 import itertools
@@ -31,11 +7,38 @@ import itertools
 import numpy as np
 import pandas as pd
 
+__author__ = 'Tatiana Burek'
+__version__ = '0.1.0'
+__email__ = 'met_help@ucar.edu'
+
 
 def event_equalize(series_data, indy_var, indy_vals, series_var_vals, fix_vars,
                    fix_vals_permuted, equalize_by_indep, multi):
-    """Performs event equalisation"""
+    """Performs event equalisation.
 
+    event_equalize assumes that the input series_data contains data indexed by fcst_valid_beg,
+    series values and the independent variable values.  It builds a new dataframe which
+    contains the same data except for records that don't have corresponding fcst_valid_beg
+    values in each other series record with the same independent variable value.
+    For example, if the series_a has data valid at 20111010_000000 for F12 and series_b does not,
+    the series_a record is removed.
+
+    Args:
+        series_data: data frame containing the records to equalize, including fcst_valid_beg, series
+                values and independent variable values
+        indy_var: name of the independent variable
+        indy_vals: independent variable values to equalize over
+                - not used. Keep for now for the consistency with R function
+        series_var_vals: series variable names and values
+        fix_vars: name of the fixed variable
+        fix_vals_permuted:  fixed variable values to equalize over
+        equalize_by_indep:  include or not the independent variable to EE
+        multi: FALSE for normal event equalization, TRUE for equalization of mulitple events
+                at each combination of fcst_valid_beg, series values and independent value
+                - for example with MODE objects
+    Returns:
+        A data frame that contains equalized records
+    """
     warning_detected = "WARNING: eventEqualize() detected non-unique events for {}" \
                        " using [fcst_valid_beg,fcst_lead)]"
     warning_discarding = "WARNING: discarding series member with case {} for {}"
@@ -72,7 +75,7 @@ def event_equalize(series_data, indy_var, indy_vals, series_var_vals, fix_vars,
             vars_for_ee[series_var] = series_vals_no_groups
 
     # add fixed variables if present
-    if lfix_vars:
+    if fix_vars:
         for var_for_ee_ind, fix_var in enumerate(fix_vars):
             if fix_var not in exception_columns:
                 vals = fix_vals_permuted[var_for_ee_ind]
@@ -142,9 +145,13 @@ def event_equalize(series_data, indy_var, indy_vals, series_var_vals, fix_vars,
 
 
 def represents_int(possible_int):
-    """Checks if the value is integer."""
-    try:
-        int(possible_int)
-        return True
-    except ValueError:
-        return False
+    """Checks if the value is integer.
+
+     Args:
+         possible_int: value to check
+
+    Returns:
+        True - if the input value is an integer
+        False - if the input value is not an integer
+    """
+    return isinstance(possible_int, int)
