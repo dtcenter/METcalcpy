@@ -33,6 +33,11 @@ class QueryUtil:
         "nTextOutput": [],
         "minDateTextOutput": [],
         "maxDateTextOutput": [],
+        "threshold_all": [],
+        "oy_all": [],
+        "on_all": [],
+        "sample_climo": 0,
+        "auc": 0,
         "glob_stats": {
             "mean": 0,
             "minDate": 0,
@@ -909,7 +914,9 @@ class QueryUtil:
                     continue
                 # JSON can't deal with numpy nans in subarrays for some reason, so we remove them
                 if np.isnan(sub_values).any() or np.isinf(sub_values).any():
-                    bad_value_indices = np.argwhere(np.isnan(sub_values) or np.isinf(sub_values))
+                    nan_value_indices = np.argwhere(np.isnan(sub_values))
+                    inf_value_indices = np.argwhere(np.isinf(sub_values))
+                    bad_value_indices = np.union1d(nan_value_indices, inf_value_indices)
                     sub_values = np.delete(sub_values, bad_value_indices)
                     sub_secs = np.delete(sub_secs, bad_value_indices)
                     if has_levels:
