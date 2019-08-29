@@ -6,10 +6,12 @@ import pandas as pd
 import pytest
 
 from metcalcpy.event_equalize import event_equalize
+from metcalcpy.event_equalize import represents_int
 
 
-@pytest.fixture
 def test_event_equalize():
+    """Tests event equalization."""
+
     indy_var = "fcst_lead"
     indy_vals = ["30000", "60000", "90000"]
     series_val = dict({'model': ["GFSDCF", "GFSRAW"]})
@@ -67,7 +69,7 @@ def test_event_equalize():
                 print("one EE:" + str(end - start))
 
                 # append EE data to result
-                if not output_data:
+                if output_data.empty:
                     output_data = series_data
                 else:
                     output_data.append(series_data)
@@ -76,6 +78,34 @@ def test_event_equalize():
     output_data.to_csv(index=False, sep='\t', path_or_buf=output_data_file)
     end_all = time.time()
     print("total :" + str(end_all - start_all))
+
+
+@pytest.fixture
+def settings():
+    """Initialise values for testing.
+
+    Returns:
+        dictionary with values of different type
+    """
+    settings_dict = dict()
+    settings_dict['int'] = 8
+    settings_dict['str'] = 'str'
+    settings_dict['date'] = '2019-09-05 03:00:00'
+    settings_dict['double'] = 34.9
+    settings_dict['int_n'] = -700
+    return settings_dict
+
+
+def test_represents_int_not_int(settings):
+    """Tests that this fails to cast a type that cannot be cast into an int
+        Args:
+            settings: dictionary with values of different type
+    """
+    assert not represents_int(settings['str'])
+    assert represents_int(settings['int'])
+    assert represents_int(settings['int_n'])
+    assert not represents_int(settings['double'])
+    assert not represents_int(settings['date'])
 
 
 if __name__ == "__main__":
