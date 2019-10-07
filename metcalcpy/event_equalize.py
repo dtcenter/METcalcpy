@@ -64,15 +64,16 @@ def event_equalize(series_data, indy_var, indy_vals, series_var_vals, fix_vars,
     vars_for_ee = dict()
 
     # add series variables
-    for series_var, series_vals in series_var_vals.items():
-        if series_var not in exception_columns:
-            series_vals_no_groups = []
-            if isinstance(series_vals, str):
-                series_vals = [series_vals]
-            for series_val in series_vals:
-                actual_vals = series_val.split(',')
-                series_vals_no_groups.extend(actual_vals)
-            vars_for_ee[series_var] = series_vals_no_groups
+    if len(series_var_vals) > 1:
+        for series_var, series_vals in series_var_vals.items():
+            if series_var not in exception_columns:
+                series_vals_no_groups = []
+                if isinstance(series_vals, str):
+                    series_vals = [series_vals]
+                for series_val in series_vals:
+                    actual_vals = series_val.split(',')
+                    series_vals_no_groups.extend(actual_vals)
+                vars_for_ee[series_var] = series_vals_no_groups
 
     # add fixed variables if present
     if fix_vars:
@@ -84,13 +85,15 @@ def event_equalize(series_data, indy_var, indy_vals, series_var_vals, fix_vars,
                 else:
                     vars_for_ee[fix_var] = vals
 
-    # create a list of permutations representing the all variables for EE
+    # create a list of permutations representing the all variables for
     vars_for_ee_permuted = list(itertools.product(*vars_for_ee.values()))
 
     equalization_cases = []
 
     # for each permutation
+
     for permutation_index, permutation in enumerate(vars_for_ee_permuted):
+
         permutation_data = series_data.copy()
         for var_for_ee_ind, var_for_ee in enumerate(list(vars_for_ee)):
             if represents_int(permutation[var_for_ee_ind]):
