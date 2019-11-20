@@ -64,7 +64,7 @@ def event_equalize(series_data, indy_var, indy_vals, series_var_vals, fix_vars,
     vars_for_ee = dict()
 
     # add series variables
-    if len(series_var_vals) > 1:
+    if len(series_var_vals) > 0:
         for series_var, series_vals in series_var_vals.items():
             if series_var not in exception_columns:
                 series_vals_no_groups = []
@@ -110,7 +110,7 @@ def event_equalize(series_data, indy_var, indy_vals, series_var_vals, fix_vars,
 
         if permutation_index == 0:
             # init the equalization list
-            equalization_cases = permutation_data['equalize']
+            equalization_cases = permutation_data['equalize'].reset_index(drop=True)
         else:
             # if there is an equalization list, equalize the current series data
 
@@ -128,13 +128,14 @@ def event_equalize(series_data, indy_var, indy_vals, series_var_vals, fix_vars,
             permutation_cases_not_in_common_cases = \
                 permutation_data['equalize'][~permutation_cases_not_in_common_cases_ind]
 
-            discarded_cases.append(permutation_cases_not_in_common_cases)
+            discarded_cases = discarded_cases.append(permutation_cases_not_in_common_cases)
             # report the discarded records
             for discarded_case in discarded_cases:
                 print(warning_discarding.format(discarded_case, permutation))
 
             # update the equalization list by removing records
             equalization_cases = equalization_cases[common_cases_ind]
+            equalization_cases.reset_index(drop=True)
 
     # remove data with discarded cases from the main frame
     equalization_cases_ind = \
