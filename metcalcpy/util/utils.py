@@ -1,69 +1,165 @@
+"""
+Program Name: statistics.py
+"""
+
+__author__ = 'Tatiana Burek'
+__version__ = '0.1.0'
+__email__ = 'met_help@ucar.edu'
+
 OPERATION_TO_SIGN = {
     'DIFF': '-',
     'RATIO': '/',
     'SS': 'and'
 }
+STR_TO_BOOL = {'True': True, 'False': False}
 
 
 def represents_int(possible_int):
     """Checks if the value is integer.
 
-     Args:
-         possible_int: value to check
+        Args:
+            possible_int: value to check
 
-    Returns:
-        True - if the input value is an integer
-        False - if the input value is not an integer
+        Returns:
+            True - if the input value is an integer
+            False - if the input value is not an integer
     """
     return isinstance(possible_int, int)
 
 
-def is_string_integer(str):
+def is_string_integer(str_int):
+    """Checks if the input string is integer.
+
+         Args:
+             str_int: string value to check
+
+        Returns:
+            True - if the input value is an integer
+            False - if the input value is not an integer
+    """
     try:
-        int(str)
+        int(str_int)
         return True
-    except ValueError:
+    except (ValueError, TypeError):
         return False
 
 
 def get_derived_curve_name(list_of_names):
+    """Creates the derived series name from the list of series name components
+
+         Args:
+             list_of_names: list of series name components
+                1st element - name of 1st series
+                2st element - name of 2st series
+                3st element - operation. Can be 'DIFF','RATIO', 'SS', 'SINGLE'
+
+        Returns:
+            derived series name
+    """
+    size = len(list_of_names)
     operation = 'DIFF'
-    if len(list_of_names) == 3:
+    if size < 2:
+        return ""
+    if size == 3:
         operation = list_of_names[2]
-    global OPERATION_TO_SIGN
-    return "{}({}{}{})".format(operation, list_of_names[0], OPERATION_TO_SIGN[operation], list_of_names[1])
+    return "{}({}{}{})" \
+        .format(operation, list_of_names[0], OPERATION_TO_SIGN[operation], list_of_names[1])
 
 
 def calc_derived_curve_value(val1, val2, operation):
+    """Performs the operation with two numpy arrays.
+        Operations can be
+            'DIFF' - difference between elements of array 1 and 2
+            'RATIO' - ratio between elements of array 1 and 2
+            'SS' - skill score between elements of array 1 and 2
+            'SINGLE' - unchanged elements of array 1
+
+        Args:
+            val1: numpy array of floats
+            val2: numpy array of floats
+            operation: operation to perform
+
+        Returns:
+            numpy array
+            or None if one of arrays is None or one of the elements
+            is None or arrays have different size
+       """
+
+    if val1 is None or val2 is None or None in val1 \
+            or None in val2 or val1.size != val2.size:
+        return None
+
     result_val = None
-    if 'DIFF' == operation:
+    if operation == 'DIFF':
         result_val = val1 - val2
-    elif 'RATIO' == operation:
-        result_val = val1 / val2
-    elif 'SS' == operation:
-        result_val = (val1 - val2) / val1
-    elif 'SINGLE' == operation:
+    elif operation == 'RATIO':
+        if 0 not in val2:
+            result_val = val1 / val2
+    elif operation == 'SS':
+        if 0 not in val1:
+            result_val = (val1 - val2) / val1
+    elif operation == 'SINGLE':
         result_val = val1
     return result_val
 
 
-def unique(list1):
+def unique(in_list):
+    """Extracts unique values from the list.
+        Args:
+            in_list: list of values
+
+        Returns:
+            list of unique elements from the input list
+    """
+    if not in_list:
+        return None
     # insert the list to the set
-    list_set = set(list1)
+    list_set = set(in_list)
     # convert the set to the list
-    return (list(list_set))
+    return list(list_set)
 
 
-def intersection(lst1, lst2):
-    lst3 = [value for value in lst1 if value in lst2]
-    return lst3
+def intersection(l_1, l_2):
+    """Finds intersection between two lists
+            Args:
+                l_1: 1st list
+                l_2: 2nd list
+
+            Returns:
+                list of intersection
+    """
+    if l_1 is None or l_2 is None:
+        return None
+    l_3 = [value for value in l_1 if value in l_2]
+    return l_3
 
 
 def is_derived_series(series):
+    """Determines if this series is a derived series
+            Args:
+                series: a list or tuple with series component values
+
+            Returns:
+                True - if this series is derived
+                False - if this series is not derived
+    """
     is_derived = False
-    for operation in OPERATION_TO_SIGN.keys():
-        for series_component in series:
-            if series_component.startswith(operation):
-                is_derived = True
-                break
+    if series is not None:
+        for operation in OPERATION_TO_SIGN:
+            for series_component in series:
+                if series_component.startswith(operation):
+                    is_derived = True
+                    break
     return is_derived
+
+
+def parse_bool(in_str):
+    """Converts string to a boolean
+            Args:
+                in_str: a string that represents a boolean
+
+            Returns:
+                boolean representation of the input string
+                ot string itself
+    """
+    return STR_TO_BOOL.get(in_str, in_str)
