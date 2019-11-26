@@ -75,29 +75,29 @@ def calc_derived_curve_value(val1, val2, operation):
             'SINGLE' - unchanged elements of array 1
 
         Args:
-            val1: numpy array of floats
-            val2: numpy array of floats
+            val1:  array of floats
+            val2:  array of floats
             operation: operation to perform
 
         Returns:
-            numpy array
+             array
             or None if one of arrays is None or one of the elements
             is None or arrays have different size
        """
 
     if val1 is None or val2 is None or None in val1 \
-            or None in val2 or val1.size != val2.size:
+            or None in val2 or len(val1) != len(val2):
         return None
 
     result_val = None
     if operation == 'DIFF':
-        result_val = val1 - val2
+        result_val = [a - b for a, b in zip(val1, val2)]
     elif operation == 'RATIO':
         if 0 not in val2:
-            result_val = val1 / val2
+            result_val = [a / b for a, b in zip(val1, val2)]
     elif operation == 'SS':
         if 0 not in val1:
-            result_val = (val1 - val2) / val1
+            result_val = [ (a - b) / a for a, b in zip(val1, val2)]
     elif operation == 'SINGLE':
         result_val = val1
     return result_val
