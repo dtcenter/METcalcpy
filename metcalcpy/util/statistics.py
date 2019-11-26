@@ -32,7 +32,7 @@ def calculate_baser(input_data, columns_names):
         result = (sum(input_data[:, np.where(columns_names == 'fy_oy')[0][0]])
                   + sum(input_data[:, np.where(columns_names == 'fn_oy')[0][0]])) \
                  / sum(input_data[:, np.where(columns_names == 'total')[0][0]])
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -56,7 +56,7 @@ def calculate_acc(input_data, columns_names):
         result = (sum_column_data_by_name(input_data, columns_names, 'fy_oy')
                   + sum_column_data_by_name(input_data, columns_names, 'fn_on')) \
                  / sum_column_data_by_name(input_data, columns_names, 'total')
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -84,7 +84,7 @@ def calculate_fbias(input_data, columns_names):
         oyn = sum_column_data_by_name(input_data, columns_names, 'fy_oy') \
               + sum_column_data_by_name(input_data, columns_names, 'fy_on')
         result = oyn / oy
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -111,7 +111,7 @@ def calculate_fmean(input_data, columns_names):
         oyn = sum_column_data_by_name(input_data, columns_names, 'fy_oy') \
               + sum_column_data_by_name(input_data, columns_names, 'fy_on')
         result = oyn / total
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -135,7 +135,7 @@ def calculate_pody(input_data, columns_names):
         fy_oy = sum_column_data_by_name(input_data, columns_names, 'fy_oy')
         oy = fy_oy + sum_column_data_by_name(input_data, columns_names, 'fn_oy')
         result = fy_oy / oy
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -159,7 +159,7 @@ def calculate_pofd(input_data, columns_names):
         fy_on = sum_column_data_by_name(input_data, columns_names, 'fy_on')
         oy = fy_on + sum_column_data_by_name(input_data, columns_names, 'fn_on')
         result = fy_on / oy
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -183,7 +183,7 @@ def calculate_podn(input_data, columns_names):
         fn_on = sum_column_data_by_name(input_data, columns_names, 'fn_on')
         oy = sum_column_data_by_name(input_data, columns_names, 'fy_on') + fn_on
         result = fn_on / oy
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -207,7 +207,7 @@ def calculate_far(input_data, columns_names):
         fy_on = sum_column_data_by_name(input_data, columns_names, 'fy_on')
         oy = sum_column_data_by_name(input_data, columns_names, 'fy_oy') + fy_on
         result = fy_on / oy
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError,  Warning):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -233,7 +233,7 @@ def calculate_csi(input_data, columns_names):
              + sum_column_data_by_name(input_data, columns_names, 'fy_on') \
              + sum_column_data_by_name(input_data, columns_names, 'fn_oy')
         result = fy_oy / oy
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -262,7 +262,7 @@ def calculate_gss(input_data, columns_names):
         fn_oy = sum_column_data_by_name(input_data, columns_names, 'fn_oy')
         dbl_c = ((fy_oy + fy_on) / total) * (fy_oy + fn_oy)
         gss = ((fy_oy - dbl_c) / (fy_oy + fy_on + fn_oy - dbl_c))
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning):
         gss = None
     warnings.filterwarnings('ignore')
     return gss
@@ -318,7 +318,7 @@ def calculate_hss(input_data, columns_names):
                 * (fy_oy + sum_column_data_by_name(input_data, columns_names, 'fn_oy'))
         hss = ((fy_oy + sum_column_data_by_name(input_data, columns_names, 'fn_on') - dbl_c)
                / (total - dbl_c))
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning):
         hss = None
     warnings.filterwarnings('ignore')
     return hss
@@ -345,7 +345,7 @@ def calculate_odds(input_data, columns_names):
             result = None
         else:
             result = (pody * (1 - pofd)) / (pofd * (1 - pody))
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -407,7 +407,7 @@ def calculate_bagss(input_data, columns_names):
         lambert = lambertw(dbl_o / fy_on * dbl_lf).real
         dbl_ha = dbl_o - (fy_on / dbl_lf) * lambert
         result = (dbl_ha - (dbl_o ** 2 / total)) / (2 * dbl_o - dbl_ha - (dbl_o ** 2 / total))
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -490,7 +490,7 @@ def calculate_economic_value(values, cost_lost_ratio=np.arange(start=0.05, stop=
 
         else:
             result = None
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -515,7 +515,7 @@ def calculate_fbar(input_data, columns_names):
     try:
         total = sum_column_data_by_name(input_data, columns_names, 'total')
         result = sum_column_data_by_name(input_data, columns_names, 'fbar') / total
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -538,7 +538,7 @@ def calculate_obar(input_data, columns_names):
     try:
         total = sum_column_data_by_name(input_data, columns_names, 'total')
         result = sum_column_data_by_name(input_data, columns_names, 'obar') / total
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -611,7 +611,7 @@ def calculate_fobar(input_data, columns_names):
     try:
         total = sum_column_data_by_name(input_data, columns_names, 'total')
         result = sum_column_data_by_name(input_data, columns_names, 'fobar') / total
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -634,7 +634,7 @@ def calculate_ffbar(input_data, columns_names):
     try:
         total = sum_column_data_by_name(input_data, columns_names, 'total')
         result = sum_column_data_by_name(input_data, columns_names, 'ffbar') / total
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -657,7 +657,7 @@ def calculate_oobar(input_data, columns_names):
     try:
         total = sum_column_data_by_name(input_data, columns_names, 'total')
         result = sum_column_data_by_name(input_data, columns_names, 'oobar') / total
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -680,7 +680,7 @@ def calculate_mae(input_data, columns_names):
     try:
         total = sum_column_data_by_name(input_data, columns_names, 'total')
         result = sum_column_data_by_name(input_data, columns_names, 'mae') / total
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -708,7 +708,7 @@ def calculate_mbias(input_data, columns_names):
         else:
             fbar = sum_column_data_by_name(input_data, columns_names, 'fbar') / total
             result = fbar / obar
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -741,7 +741,7 @@ def calculate_pr_corr(input_data, columns_names):
         pr_corr = (total ** 2 * fobar - total ** 2 * fbar * obar) / np.sqrt(v)
         if v <= 0 or pr_corr > 1:
             pr_corr = None
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning):
         pr_corr = None
     warnings.filterwarnings('ignore')
     return pr_corr
@@ -776,7 +776,7 @@ def calculate_anom_corr(input_data, columns_names):
         anom_corr = (total ** 2 * fobar - total ** 2 * fbar * obar) / np.sqrt(v)
         if anom_corr > 1:
             anom_corr = None
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning):
         anom_corr = None
     warnings.filterwarnings('ignore')
     return anom_corr
@@ -832,7 +832,7 @@ def calculate_rmsoa(input_data, columns_names):
             result = None
         else:
             result = np.sqrt(oobar)
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -857,7 +857,7 @@ def calculate_me(input_data, columns_names):
         fbar = sum_column_data_by_name(input_data, columns_names, 'fbar') / total
         obar = sum_column_data_by_name(input_data, columns_names, 'obar') / total
         result = fbar - obar
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -930,7 +930,7 @@ def calculate_msess(input_data, columns_names):
         ostdev = calculate_ostdev(input_data, columns_names)
         mse = calculate_mse(input_data, columns_names)
         result = 1.0 - mse / ostdev ** 2
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -1071,7 +1071,10 @@ def sum_column_data_by_name(input_data, columns, column_name):
         return None
 
     # get column's data
-    data_array = input_data[:, index_array[0]]
+    try:
+        data_array = input_data[:, index_array[0]]
+    except IndexError:
+        data_array = None
     if data_array is None or None in data_array:
         return None
 
