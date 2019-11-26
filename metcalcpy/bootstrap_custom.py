@@ -34,7 +34,8 @@ class BootstrapDistributionResults(BootstrapResults):
 
 def bootstrap_and_value(values, stat_func, alpha=0.05,
                         num_iterations=1000, iteration_batch_size=None,
-                        num_threads=1, ci_method='perc'):
+                        num_threads=1, ci_method='perc',
+                        save_data=True):
     """Returns bootstrap estimate.
         Args:
             values: numpy array (or scipy.sparse.csr_matrix) of values to bootstrap
@@ -61,6 +62,7 @@ def bootstrap_and_value(values, stat_func, alpha=0.05,
                 the bootstrap. Defaults to 1. If -1 is specified then
                 multiprocessing.cpu_count() is used instead.
             ci_method: method for bootstrapping confidence intervals.
+            save_data: Save or not the original data to the resultiong object
         Returns:
             BootstrapDistributionResults representing CI, stat value and the original distribution.
     """
@@ -80,7 +82,8 @@ def bootstrap_and_value(values, stat_func, alpha=0.05,
 
     bootstrap_dist = do_division(*distributions)
     result = _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_method)
-    result.set_original_values(values)
+    if save_data:
+        result.set_original_values(values)
     return result
 
 
