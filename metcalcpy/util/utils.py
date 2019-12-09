@@ -6,6 +6,8 @@ __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
 __email__ = 'met_help@ucar.edu'
 
+import math
+
 OPERATION_TO_SIGN = {
     'DIFF': '-',
     'RATIO': '/',
@@ -121,12 +123,12 @@ def unique(in_list):
 
 def intersection(l_1, l_2):
     """Finds intersection between two lists
-            Args:
-                l_1: 1st list
-                l_2: 2nd list
+        Args:
+            l_1: 1st list
+            l_2: 2nd list
 
-            Returns:
-                list of intersection
+        Returns:
+            list of intersection
     """
     if l_1 is None or l_2 is None:
         return None
@@ -136,12 +138,12 @@ def intersection(l_1, l_2):
 
 def is_derived_series(series):
     """Determines if this series is a derived series
-            Args:
-                series: a list or tuple with series component values
+        Args:
+            series: a list or tuple with series component values
 
-            Returns:
-                True - if this series is derived
-                False - if this series is not derived
+        Returns:
+            True - if this series is derived
+            False - if this series is not derived
     """
     is_derived = False
     if series is not None:
@@ -155,11 +157,25 @@ def is_derived_series(series):
 
 def parse_bool(in_str):
     """Converts string to a boolean
-            Args:
-                in_str: a string that represents a boolean
+        Args:
+            in_str: a string that represents a boolean
 
-            Returns:
-                boolean representation of the input string
-                ot string itself
+        Returns:
+            boolean representation of the input string
+            ot string itself
     """
     return STR_TO_BOOL.get(in_str, in_str)
+
+
+def round_half_up(n, decimals=0):
+    """The “rounding half up” strategy rounds every number to the nearest number with the specified precision,
+     and breaks ties by rounding up.
+        Args:
+            n: a number
+            decimals: decimal place
+        Returns:
+            rounded number
+
+    """
+    multiplier = 10 ** decimals
+    return math.floor(n*multiplier + 0.5) / multiplier
