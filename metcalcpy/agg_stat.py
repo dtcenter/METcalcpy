@@ -74,6 +74,7 @@ class AggStat():
             sep='\t'
         )
         self.column_names = self.input_data.columns.values
+        self.group_to_value = {}
 
     EXEMPTED_VARS = ['SSVAR_Spread', 'SSVAR_RMSE']
     STATISTIC_TO_FIELDS = {
@@ -309,9 +310,19 @@ class AggStat():
         permute_for_first_series.extend(list(series[1:]))
         permute_for_first_series = unique(permute_for_first_series)
 
+        # replace first_series components group names to values
+        for i in range(len(permute_for_first_series)):
+            if permute_for_first_series[i] in self.group_to_value:
+                permute_for_first_series[i] = self.group_to_value[permute_for_first_series[i]]
+
         permute_for_second_series = derived_curve_component.second_component.copy()
         permute_for_second_series.extend(list(series[1:]))
         permute_for_second_series = unique(permute_for_second_series)
+
+        # replace second_series components group names to values
+        for i in range(len(permute_for_second_series)):
+            if permute_for_second_series[i] in self.group_to_value:
+                permute_for_second_series[i] = self.group_to_value[permute_for_second_series[i]]
 
         ds_1 = None
         ds_2 = None
@@ -558,14 +569,16 @@ class AggStat():
                 indy_vals = np.unique(indy_vals)
 
             # TODO implement ungrouping!!!!
-            group_to_value = {}
+
             series_val = self.params['series_val']
+            group_to_value_index = 1
             if series_val:
-                for index, key in enumerate(series_val.keys()):
+                for  key in series_val.keys():
                     for val in series_val[key]:
                         if ',' in val:
-                            new_name = 'Group_y1_' + str(index + 1)
-                            group_to_value[new_name] = val
+                            new_name = 'Group_y1_' + str(group_to_value_index)
+                            self.group_to_value[new_name] = val
+                            group_to_value_index = group_to_value_index +1
 
             # perform EE if needed
             if is_event_equal:
@@ -586,7 +599,7 @@ class AggStat():
                     # identifies and add all possible derived series values
                     all_series.extend(self._get_derived_series(series_val,
                                                                indy_vals))
-                # init hte template for output frame
+                # init the template for output frame
                 out_frame = self._init_out_frame(all_fields_values.keys(), all_series)
 
                 series_ind = 0
@@ -605,9 +618,17 @@ class AggStat():
                             all_filters = []
                             for field_ind, field in enumerate(all_fields_values.keys()):
                                 filter_value = series[field_ind]
-                                if is_string_integer(filter_value):
-                                    filter_value = int(filter_value)
-                                all_filters.append((self.input_data[field] == filter_value))
+                                if "," in filter_value:
+                                    filter_list = filter_value.split(',')
+                                elif ";" in filter_value:
+                                    filter_list = filter_value.split(';')
+                                else:
+                                    filter_list= [filter_value]
+                                for i, filter_val in enumerate(filter_list):
+                                    if is_string_integer(filter_list[i]):
+                                        filter_list[i] = int(filter_list[i])
+
+                                all_filters.append((self.input_data[field].isin(filter_list)))
 
                             # use numpy to select the rows where any record evaluates to True
                             mask = np.array(all_filters).all(axis=0)
