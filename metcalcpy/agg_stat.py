@@ -116,6 +116,16 @@ class AggStat():
         'estdev': ['ffbar', 'oobar', 'fobar', 'fbar', 'obar'],
         'bcmse': ['ffbar', 'oobar', 'fobar', 'fbar', 'obar'],
         'bcrmse': ['ffbar', 'oobar', 'fobar', 'fbar', 'obar'],
+
+        'fgbar': ['fgbar'],
+        'ogbar': ['ogbar'],
+        'mgbar': ['mgbar'],
+        'egbar': ['egbar'],
+        's1': ['egbar', 'mgbar'],
+        's1_og': ['egbar', 'ogbar'],
+        'fgog_ratio': ['fgbar', 'ogbar']
+
+
     }
 
     def _calc_stats(self, values):
@@ -218,6 +228,17 @@ class AggStat():
 
     def _prepare_sl1l2_data(self, data_for_prepare):
         """Prepares sl1l2 data.
+            Multiplies needed for the statistic calculation columns to the 'total'value
+
+            Args:
+                data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
+        """
+        for column in self.STATISTIC_TO_FIELDS[self.statistic]:
+            data_for_prepare[column] \
+                = data_for_prepare[column].values * data_for_prepare['total'].values
+
+    def _prepare_grad_data(self, data_for_prepare):
+        """Prepares grad data.
             Multiplies needed for the statistic calculation columns to the 'total'value
 
             Args:
