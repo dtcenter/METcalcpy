@@ -343,9 +343,14 @@ class AggStat():
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
+
+        # rename bin_n column to total
+        data_for_prepare.rename(columns={"total": "total_orig", "bin_n": "total"}, inplace = True)
+        self.column_names = data_for_prepare.columns.values
+
         for column in self.STATISTIC_TO_FIELDS[self.statistic]:
             data_for_prepare[column] \
-                = data_for_prepare[column].values * data_for_prepare['bin_n'].values
+                = data_for_prepare[column].values * data_for_prepare['total'].values
 
 
     def _prepare_ctc_data(self, data_for_prepare):

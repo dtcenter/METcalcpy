@@ -2051,15 +2051,7 @@ def calculate_ssvar_fbar(input_data, columns_names):
             calculated SSVAR_FBAR as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
-    try:
-        total = sum_column_data_by_name(input_data, columns_names, 'bin_n')
-        result = sum_column_data_by_name(input_data, columns_names, 'fbar') / total
-        result = round_half_up(result, 5)
-    except (TypeError, ZeroDivisionError, Warning):
-        result = None
-    warnings.filterwarnings('ignore')
-    return result
+    return calculate_fbar(input_data, columns_names)
 
 
 def calculate_ssvar_fstdev(input_data, columns_names):
@@ -2075,17 +2067,7 @@ def calculate_ssvar_fstdev(input_data, columns_names):
             calculated SSVAR_FSTDEV as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
-    try:
-        total = sum_column_data_by_name(input_data, columns_names, 'bin_n')
-        fbar = sum_column_data_by_name(input_data, columns_names, 'fbar') / total
-        ffbar = sum_column_data_by_name(input_data, columns_names, 'ffbar') / total
-        result = calculate_stddev(fbar * total, ffbar * total, total)
-        result = round_half_up(result, 5)
-    except (TypeError, Warning):
-        result = None
-    warnings.filterwarnings('ignore')
-    return result
+    return calculate_fstdev(input_data, columns_names)
 
 
 def calculate_ssvar_obar(input_data, columns_names):
@@ -2101,15 +2083,7 @@ def calculate_ssvar_obar(input_data, columns_names):
             calculated SSVAR_OBAR as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
-    try:
-        total = sum_column_data_by_name(input_data, columns_names, 'bin_n')
-        result = sum_column_data_by_name(input_data, columns_names, 'obar') / total
-        result = round_half_up(result, 5)
-    except (TypeError, ZeroDivisionError, Warning):
-        result = None
-    warnings.filterwarnings('ignore')
-    return result
+    return calculate_obar(input_data, columns_names)
 
 
 def calculate_ssvar_ostdev(input_data, columns_names):
@@ -2125,17 +2099,7 @@ def calculate_ssvar_ostdev(input_data, columns_names):
             calculated SSVAR_OSTDEV as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
-    try:
-        total = sum_column_data_by_name(input_data, columns_names, 'bin_n')
-        obar = sum_column_data_by_name(input_data, columns_names, 'obar') / total
-        oobar = sum_column_data_by_name(input_data, columns_names, 'oobar') / total
-        result = calculate_stddev(obar * total, oobar * total, total)
-        result = round_half_up(result, 5)
-    except (TypeError, Warning):
-        result = None
-    warnings.filterwarnings('ignore')
-    return result
+    return calculate_ostdev(input_data, columns_names)
 
 
 def calculate_ssvar_pr_corr(input_data, columns_names):
@@ -2151,24 +2115,7 @@ def calculate_ssvar_pr_corr(input_data, columns_names):
             calculated SSVAR_PR_CORR as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
-    try:
-        bin_n = sum_column_data_by_name(input_data, columns_names, 'bin_n')
-        ffbar = sum_column_data_by_name(input_data, columns_names, 'ffbar') / bin_n
-        fbar = sum_column_data_by_name(input_data, columns_names, 'fbar') / bin_n
-        oobar = sum_column_data_by_name(input_data, columns_names, 'oobar') / bin_n
-        obar = sum_column_data_by_name(input_data, columns_names, 'obar') / bin_n
-        fobar = sum_column_data_by_name(input_data, columns_names, 'fobar') / bin_n
-        total_total = bin_n * bin_n
-        v = (total_total * ffbar - total_total * fbar * fbar) * (total_total * oobar - total_total * obar * obar)
-        pr_corr = (total_total * fobar - total_total * fbar * obar) / np.sqrt(v)
-        if 0 >= v or 1 < pr_corr:
-            return None
-        result = round_half_up(pr_corr, 5)
-    except (TypeError, Warning):
-        result = None
-    warnings.filterwarnings('ignore')
-    return result
+    return calculate_pr_corr(input_data, columns_names)
 
 
 def calculate_ssvar_me(input_data, columns_names):
@@ -2184,17 +2131,7 @@ def calculate_ssvar_me(input_data, columns_names):
             calculated SSVAR_ME as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
-    try:
-        total = sum_column_data_by_name(input_data, columns_names, 'bin_n')
-        fbar = sum_column_data_by_name(input_data, columns_names, 'fbar') / total
-        obar = sum_column_data_by_name(input_data, columns_names, 'obar') / total
-        result = fbar - obar
-        result = round_half_up(result, 5)
-    except (TypeError, ZeroDivisionError, Warning):
-        result = None
-    warnings.filterwarnings('ignore')
-    return result
+    return calculate_me(input_data, columns_names)
 
 
 def calculate_ssvar_estdev(input_data, columns_names):
@@ -2210,17 +2147,7 @@ def calculate_ssvar_estdev(input_data, columns_names):
             calculated SSVAR_ESTDEV as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
-    try:
-        total = sum_column_data_by_name(input_data, columns_names, 'bin_n')
-        result = calculate_stddev(calculate_ssvar_me(input_data, columns_names) * total,
-                                  calculate_ssvar_mse(input_data, columns_names) * total,
-                                  total)
-        result = round_half_up(result, 5)
-    except (TypeError, ZeroDivisionError, Warning):
-        result = None
-    warnings.filterwarnings('ignore')
-    return result
+    return calculate_estdev(input_data, columns_names)
 
 
 def calculate_ssvar_mse(input_data, columns_names):
@@ -2236,18 +2163,7 @@ def calculate_ssvar_mse(input_data, columns_names):
             calculated SSVAR_MSE as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
-    try:
-        total = sum_column_data_by_name(input_data, columns_names, 'bin_n')
-        ffbar = sum_column_data_by_name(input_data, columns_names, 'ffbar') / total
-        oobar = sum_column_data_by_name(input_data, columns_names, 'oobar') / total
-        fobar = sum_column_data_by_name(input_data, columns_names, 'fobar') / total
-        result = ffbar + oobar - 2 * fobar
-        result = round_half_up(result, 5)
-    except (TypeError, ZeroDivisionError, Warning):
-        result = None
-    warnings.filterwarnings('ignore')
-    return result
+    return calculate_mse(input_data, columns_names)
 
 
 def calculate_ssvar_bcmse(input_data, columns_names):
@@ -2263,17 +2179,7 @@ def calculate_ssvar_bcmse(input_data, columns_names):
             calculated SSVAR_BCMSE as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
-    try:
-        total = sum_column_data_by_name(input_data, columns_names, 'bin_n')
-        fbar = sum_column_data_by_name(input_data, columns_names, 'fbar') / total
-        obar = sum_column_data_by_name(input_data, columns_names, 'obar') / total
-        result = calculate_ssvar_mse(input_data, columns_names) - (fbar - obar) * (fbar - obar)
-        result = round_half_up(result, 5)
-    except (TypeError, ZeroDivisionError, Warning):
-        result = None
-    warnings.filterwarnings('ignore')
-    return result
+    return calculate_bcmse(input_data, columns_names)
 
 
 def calculate_ssvar_bcrmse(input_data, columns_names):
@@ -2289,17 +2195,7 @@ def calculate_ssvar_bcrmse(input_data, columns_names):
             calculated SSVAR_BCRMSE as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
-    try:
-        total = sum_column_data_by_name(input_data, columns_names, 'bin_n')
-        fbar = sum_column_data_by_name(input_data, columns_names, 'fbar') / total
-        obar = sum_column_data_by_name(input_data, columns_names, 'obar') / total
-        result = np.sqrt(calculate_ssvar_mse(input_data, columns_names) - (fbar - obar) * (fbar - obar))
-        result = round_half_up(result, 5)
-    except (TypeError, ZeroDivisionError, Warning):
-        result = None
-    warnings.filterwarnings('ignore')
-    return result
+    return calculate_bcrmse(input_data, columns_names)
 
 
 def calculate_ssvar_rmse(input_data, columns_names):
@@ -2315,14 +2211,7 @@ def calculate_ssvar_rmse(input_data, columns_names):
             calculated SSVAR_RMSE as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
-    try:
-        result = np.sqrt(calculate_ssvar_mse(input_data, columns_names))
-        result = round_half_up(result, 5)
-    except (TypeError, ZeroDivisionError, Warning):
-        result = None
-    warnings.filterwarnings('ignore')
-    return result
+    return calculate_rmse(input_data, columns_names)
 
 
 def calculate_ssvar_anom_corr(input_data, columns_names):
@@ -2338,25 +2227,7 @@ def calculate_ssvar_anom_corr(input_data, columns_names):
             calculated SSVAR_ANOM_CORR as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
-    try:
-        total = sum_column_data_by_name(input_data, columns_names, 'bin_n')
-        ffbar = sum_column_data_by_name(input_data, columns_names, 'ffbar') / total
-        fbar = sum_column_data_by_name(input_data, columns_names, 'fbar') / total
-        oobar = sum_column_data_by_name(input_data, columns_names, 'oobar') / total
-        obar = sum_column_data_by_name(input_data, columns_names, 'obar') / total
-        fobar = sum_column_data_by_name(input_data, columns_names, 'fobar') / total
-        total_total = total * total
-        v = (total_total * ffbar - total_total * fbar * fbar) * (total_total * oobar - total_total * obar * obar)
-        if v <= 0:
-            result = None
-        else:
-            result = (total_total * fobar - total_total * fbar * obar) / np.sqrt(v)
-            result = round_half_up(result, 5)
-    except (TypeError, ZeroDivisionError, Warning):
-        result = None
-    warnings.filterwarnings('ignore')
-    return result
+    return calculate_anom_corr(input_data, columns_names)
 
 
 def calculate_ssvar_me2(input_data, columns_names):
@@ -2383,7 +2254,7 @@ def calculate_ssvar_me2(input_data, columns_names):
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
-    return result
+    return calculate_me2(input_data, columns_names)
 
 
 def calculate_ssvar_msess(input_data, columns_names):
@@ -2399,16 +2270,8 @@ def calculate_ssvar_msess(input_data, columns_names):
             calculated SSVAR_MSESS as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
-    try:
-        ostdev = calculate_ssvar_ostdev(input_data, columns_names)
-        mse = calculate_ssvar_mse(input_data, columns_names)
-        result = 1.0 - mse / (ostdev * ostdev)
-        result = round_half_up(result, 5)
-    except (TypeError, ZeroDivisionError, Warning):
-        result = None
-    warnings.filterwarnings('ignore')
-    return result
+
+    return calculate_msess(input_data, columns_names)
 
 
 def calculate_ssvar_spread(input_data, columns_names):
@@ -2426,7 +2289,7 @@ def calculate_ssvar_spread(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        total = sum_column_data_by_name(input_data, columns_names, 'bin_n')
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
         var_mean = sum_column_data_by_name(input_data, columns_names, 'var_mean') / total
         result = np.sqrt(var_mean)
         result = round_half_up(result, 5)
