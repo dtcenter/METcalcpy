@@ -151,8 +151,23 @@ class AggStat():
         'vl1l2_rmsve': ['uvffbar', 'uvfobar', 'uvoobar'],
         'vl1l2_msve': ['uvffbar', 'uvfobar', 'uvoobar'],
 
-        'val1l2_anom_corr': ['ufabar', 'vfabar', 'uoabar', 'voabar', 'uvfoabar', 'uvffabar', 'uvooabar']
+        'val1l2_anom_corr': ['ufabar', 'vfabar', 'uoabar', 'voabar', 'uvfoabar', 'uvffabar', 'uvooabar'],
 
+        'ssvar_fbar': ['fbar'],
+        'ssvar_fstdev': ['fbar', 'ffbar'],
+        'ssvar_obar': ['obar'],
+        'ssvar_ostdev': ['obar', 'oobar'],
+        'ssvar_pr_corr': ['ffbar', 'fbar', 'oobar', 'obar', 'fobar'],
+        'ssvar_me': ['fbar', 'obar'],
+        'ssvar_estdev': ['obar', 'fbar', 'ffbar', 'oobar', 'fobar'],
+        'ssvar_mse': ['ffbar', 'oobar', 'fobar'],
+        'ssvar_bcmse': ['fbar', 'obar', 'ffbar', 'oobar', 'fobar'],
+        'ssvar_bcrmse': ['fbar', 'obar', 'ffbar', 'oobar', 'fobar'],
+        'ssvar_rmse': ['ffbar', 'oobar', 'fobar'],
+        'ssvar_anom_corr': ['fbar', 'obar', 'ffbar', 'oobar', 'fobar'],
+        'ssvar_me2': ['fbar', 'obar'],
+        'ssvar_msess': ['obar', 'oobar', 'ffbar', 'fobar'],
+        'ssvar_spread': ['var_mean']
     }
 
     def _calc_stats(self, values):
@@ -264,6 +279,18 @@ class AggStat():
             data_for_prepare[column] \
                 = data_for_prepare[column].values * data_for_prepare['total'].values
 
+
+    def _prepare_sal1l2_data(self, data_for_prepare):
+        """Prepares sal1l2 data.
+            Multiplies needed for the statistic calculation columns to the 'total'value
+
+            Args:
+                data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
+        """
+        for column in self.STATISTIC_TO_FIELDS[self.statistic]:
+            data_for_prepare[column] \
+                = data_for_prepare[column].values * data_for_prepare['total'].values
+
     def _prepare_grad_data(self, data_for_prepare):
         """Prepares grad data.
             Multiplies needed for the statistic calculation columns to the 'total'value
@@ -307,6 +334,19 @@ class AggStat():
         for column in self.STATISTIC_TO_FIELDS[self.statistic]:
             data_for_prepare[column] \
                 = data_for_prepare[column].values * data_for_prepare['total'].values
+
+
+    def _prepare_ssvar_data(self, data_for_prepare):
+        """Prepares ssvar data.
+            Multiplies needed for the statistic calculation columns to the 'total'value
+
+            Args:
+                data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
+        """
+        for column in self.STATISTIC_TO_FIELDS[self.statistic]:
+            data_for_prepare[column] \
+                = data_for_prepare[column].values * data_for_prepare['bin_n'].values
+
 
     def _prepare_ctc_data(self, data_for_prepare):
         """Prepares sl1l2 data.

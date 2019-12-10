@@ -149,7 +149,7 @@ def is_derived_series(series):
     if series is not None:
         for operation in OPERATION_TO_SIGN:
             for series_component in series:
-                if series_component.startswith(operation):
+                if series_component.startswith((operation+'(', operation+' (')):
                     is_derived = True
                     break
     return is_derived
