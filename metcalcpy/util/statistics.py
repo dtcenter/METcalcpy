@@ -1,7 +1,7 @@
 """
 Program Name: statistics.py
 """
-
+import math
 import warnings
 import numpy as np
 import pandas as pd
@@ -1268,6 +1268,774 @@ def calculate_fgog_ratio(input_data, columns_names):
     return result
 
 
+# VCNT stat calculations
+
+def calculate_vcnt_fbar(input_data, columns_names):
+    """Performs calculation of VCNT_FBAR - Mean value of forecast wind speed
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated VCNT_FBAR as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        result = sum_column_data_by_name(input_data, columns_names, 'f_speed_bar') / total
+        result = round_half_up(result, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_vcnt_obar(input_data, columns_names):
+    """Performs calculation of VCNT_OBAR - Mean value of observed wind speed
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated VCNT_OBAR as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        result = sum_column_data_by_name(input_data, columns_names, 'o_speed_bar') / total
+        result = round_half_up(result, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_vcnt_fs_rms(input_data, columns_names):
+    """Performs calculation of VCNT_FS_RMS - Root mean square forecast wind speed
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated VCNT_FS_RMS as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        uvffbar = sum_column_data_by_name(input_data, columns_names, 'uvffbar') / total
+        result = np.sqrt(uvffbar)
+        result = round_half_up(result, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_vcnt_os_rms(input_data, columns_names):
+    """Performs calculation of VCNT_OS_RMS - Root mean square observed wind speed
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated VCNT_OS_RMS as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        uvoobar = sum_column_data_by_name(input_data, columns_names, 'uvoobar') / total
+        result = np.sqrt(uvoobar)
+        result = round_half_up(result, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_vcnt_msve(input_data, columns_names):
+    """Performs calculation of VCNT_MSVE - Mean squared length of the vector
+    difference between the forecast and observed winds
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated VCNT_MSVE as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        uvffbar = sum_column_data_by_name(input_data, columns_names, 'uvffbar') / total
+        uvfobar = sum_column_data_by_name(input_data, columns_names, 'uvfobar') / total
+        uvoobar = sum_column_data_by_name(input_data, columns_names, 'uvoobar') / total
+        mse = uvffbar - 2 * uvfobar + uvoobar
+        if mse < 0:
+            result = None
+        else:
+            result = round_half_up(mse, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_vcnt_rmsve(input_data, columns_names):
+    """Performs calculation of VCNT_RMSVE - Square root of Mean squared length of the vector
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated VCNT_RMSVE as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        msve = calculate_vcnt_msve(input_data, columns_names)
+        result = np.sqrt(msve)
+        result = round_half_up(result, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_vcnt_fstdev(input_data, columns_names):
+    """Performs calculation of VCNT_FSTDEV - Standard deviation of the forecast wind speed
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated VCNT_FSTDEV as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        result = np.sqrt(calculate_vl1l2_fvar(input_data, columns_names))
+        result = round_half_up(result, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_vcnt_ostdev(input_data, columns_names):
+    """Performs calculation of VCNT_OSTDEV - Standard deviation of the observed wind speed
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated VCNT_OSTDEV as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        result = np.sqrt(calculate_vl1l2_ovar(input_data, columns_names))
+        result = round_half_up(result, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_vcnt_fdir(input_data, columns_names):
+    """Performs calculation of VCNT_FDIR - Direction of the average forecast wind vector
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated VCNT_FDIR as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        ufbar = sum_column_data_by_name(input_data, columns_names, 'ufbar') / total
+        vfbar = sum_column_data_by_name(input_data, columns_names, 'vfbar') / total
+        fdir = calc_direction(-ufbar, -vfbar)
+        result = round_half_up(fdir, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_vcnt_odir(input_data, columns_names):
+    """Performs calculation of VCNT_ODIR - Direction of the average observed wind vector
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated VCNT_ODIR as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        uobar = sum_column_data_by_name(input_data, columns_names, 'uobar') / total
+        vobar = sum_column_data_by_name(input_data, columns_names, 'vobar') / total
+        odir = calc_direction(-uobar, -vobar)
+        result = round_half_up(odir, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_vcnt_fbar_speed(input_data, columns_names):
+    """Performs calculation of VCNT_FBAR_SPEED - Length (speed) of the average forecast wind vector
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated VCNT_FBAR_SPEED as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        ufbar = sum_column_data_by_name(input_data, columns_names, 'ufbar') / total
+        vfbar = sum_column_data_by_name(input_data, columns_names, 'vfbar') / total
+        fspd = calc_speed(ufbar, vfbar)
+        result = round_half_up(fspd, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_vcnt_obar_speed(input_data, columns_names):
+    """Performs calculation of VCNT_OBAR_SPEED - Length (speed) of the average observed wind vector
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated VCNT_OBAR_SPEED as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        uobar = sum_column_data_by_name(input_data, columns_names, 'uobar') / total
+        vobar = sum_column_data_by_name(input_data, columns_names, 'vobar') / total
+        fspd = calc_speed(uobar, vobar)
+        result = round_half_up(fspd, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_vcnt_vdiff_speed(input_data, columns_names):
+    """Performs calculation of VCNT_VDIFF_SPEED - Length (speed)  of the vector deference between
+    the average forecast and average observed wind vectors
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated VCNT_VDIFF_SPEED as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        ufbar = sum_column_data_by_name(input_data, columns_names, 'ufbar') / total
+        uobar = sum_column_data_by_name(input_data, columns_names, 'uobar') / total
+        vfbar = sum_column_data_by_name(input_data, columns_names, 'vfbar') / total
+        vobar = sum_column_data_by_name(input_data, columns_names, 'vobar') / total
+        vdiff_spd = calc_speed(ufbar - uobar, vfbar - vobar)
+        result = round_half_up(vdiff_spd, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_vcnt_vdiff_dir(input_data, columns_names):
+    """Performs calculation of VCNT_VDIFF_DIR - Direction of the vector deference between
+    the average forecast and average wind vector
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated VCNT_VDIFF_DIR as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        ufbar = sum_column_data_by_name(input_data, columns_names, 'ufbar') / total
+        uobar = sum_column_data_by_name(input_data, columns_names, 'uobar') / total
+        vfbar = sum_column_data_by_name(input_data, columns_names, 'vfbar') / total
+        vobar = sum_column_data_by_name(input_data, columns_names, 'vobar') / total
+        vdiff_dir = calc_direction(-(ufbar - uobar), -(vfbar - vobar))
+        result = round_half_up(vdiff_dir, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_vcnt_speed_err(input_data, columns_names):
+    """Performs calculation of VCNT_SPEED_ERR - Diference between the length of the average forecast wind vector
+     and the average observed wind vector (in the sense F - O)
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated VCNT_SPEED_ERR as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        speed_bias = calculate_vcnt_fbar_speed(input_data, columns_names) \
+                     - calculate_vcnt_obar_speed(input_data, columns_names)
+        result = round_half_up(speed_bias, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_vcnt_speed_abserr(input_data, columns_names):
+    """Performs calculation of VCNT_SPEED_ABSERR - Absolute value of diference between the length
+     of the average forecast wind vector
+     and the average observed wind vector (in the sense F - O)
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated VCNT_SPEED_ABSERR as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        spd_abserr = abs(calculate_vcnt_speed_err(input_data, columns_names))
+        result = round_half_up(spd_abserr, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_vcnt_dir_err(input_data, columns_names):
+    """Performs calculation of VCNT_DIR_ERR - Signed angle between the directions of the average forecast
+    and observed wind vectors. Positive if the forecast wind vector is counter clockwise from the observed wind vector
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated VCNT_DIR_ERR as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        f_len = calculate_vcnt_fbar_speed(input_data, columns_names)
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        ufbar = sum_column_data_by_name(input_data, columns_names, 'ufbar') / total
+        vfbar = sum_column_data_by_name(input_data, columns_names, 'vfbar') / total
+        uf = ufbar / f_len
+        vf = vfbar / f_len
+
+        o_len = calculate_vcnt_obar_speed(input_data, columns_names)
+        uobar = sum_column_data_by_name(input_data, columns_names, 'uobar') / total
+        vobar = sum_column_data_by_name(input_data, columns_names, 'vobar') / total
+        uo = uobar / o_len
+        vo = vobar / o_len
+
+        a = vf * uo - uf * vo
+        b = uf * uo + vf * vo
+
+        dir_err = calc_direction(a, b)
+
+        result = round_half_up(dir_err, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_vcnt_dir_abser(input_data, columns_names):
+    """Performs calculation of VCNT_DIR_ABSERR - Absolute value of signed angle between the directions of the average forecast
+    and observed wind vectors. Positive if the forecast wind vector is counter clockwise from the observed wind vector
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated VCNT_DIR_ABSERR as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        ang_btw = abs(calculate_vcnt_dir_err(input_data, columns_names))
+        result = round_half_up(ang_btw, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+# VL1L2 stat calculations
+
+def calculate_vl1l2_bias(input_data, columns_names):
+    """Performs calculation of VL1L2_BIAS -
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated VL1L2_BIAS as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        uvffbar = sum_column_data_by_name(input_data, columns_names, 'uvffbar') / total
+        uvoobar = sum_column_data_by_name(input_data, columns_names, 'uvoobar') / total
+        bias = np.sqrt(uvffbar) - np.sqrt(uvoobar)
+        result = round_half_up(bias, 5)
+    except (TypeError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_vl1l2_fvar(input_data, columns_names):
+    """Performs calculation of VL1L2_FVAR -
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated VL1L2_FVAR as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        uvffbar = sum_column_data_by_name(input_data, columns_names, 'uvffbar') / total
+        f_speed_bar = sum_column_data_by_name(input_data, columns_names, 'f_speed_bar') / total
+        result = uvffbar - f_speed_bar * f_speed_bar
+        result = round_half_up(result, 5)
+    except (TypeError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_vl1l2_ovar(input_data, columns_names):
+    """Performs calculation of VL1L2_OVAR -
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated VL1L2_OVAR as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        uvoobar = sum_column_data_by_name(input_data, columns_names, 'uvoobar') / total
+        o_speed_bar = sum_column_data_by_name(input_data, columns_names, 'o_speed_bar') / total
+        result = uvoobar - o_speed_bar * o_speed_bar
+        result = round_half_up(result, 5)
+    except (TypeError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_vl1l2_fspd(input_data, columns_names):
+    """Performs calculation of VL1L2_FSPD -
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated VL1L2_FSPD as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        ufbar = sum_column_data_by_name(input_data, columns_names, 'ufbar') / total
+        vfbar = sum_column_data_by_name(input_data, columns_names, 'vfbar') / total
+        fspd = calc_speed(ufbar, vfbar)
+        result = round_half_up(fspd, 5)
+    except (TypeError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_vl1l2_ospd(input_data, columns_names):
+    """Performs calculation of VL1L2_OSPD -
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated VL1L2_OSPD as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        uobar = sum_column_data_by_name(input_data, columns_names, 'uobar') / total
+        vobar = sum_column_data_by_name(input_data, columns_names, 'vobar') / total
+        ospd = calc_speed(uobar, vobar)
+        result = round_half_up(ospd, 5)
+    except (TypeError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_vl1l2_speed_err(input_data, columns_names):
+    """Performs calculation of VL1L2_SPEED_ERR -
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated VL1L2_SPEED_ERR as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        speed_bias = calculate_vl1l2_fspd(input_data, columns_names) - calculate_vl1l2_ospd(input_data, columns_names)
+        result = round_half_up(speed_bias, 5)
+    except (TypeError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_vl1l2_msve(input_data, columns_names):
+    """Performs calculation of VL1L2_MSVE -
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated VL1L2_MSVE as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        uvffbar = sum_column_data_by_name(input_data, columns_names, 'uvffbar') / total
+        uvfobar = sum_column_data_by_name(input_data, columns_names, 'uvfobar') / total
+        uvoobar = sum_column_data_by_name(input_data, columns_names, 'uvoobar') / total
+        msve = uvffbar - 2.0 * uvfobar + uvoobar
+        if msve < 0:
+            result = None
+        else:
+            result = round_half_up(msve, 5)
+    except (TypeError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_vl1l2_rmsve(input_data, columns_names):
+    """Performs calculation of VL1L2_RMSVE -
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+        Returns:
+            calculated VL1L2_RMSVE as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        rmsve = np.sqrt(calculate_vl1l2_msve(input_data, columns_names))
+        result = round_half_up(rmsve, 5)
+    except (TypeError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calc_direction(u, v):
+    """ Calculated the direction of the wind from it's u and v components in degrees
+        Args:
+            u: u wind component
+            v: v wind component
+
+        Returns:
+            direction of the wind in degrees or None if one of the components is less then tolerance
+    """
+    tolerance = 1e-5
+    if abs(u) < tolerance and abs(v) < tolerance:
+        return None
+    else:
+        direction = np.arctan2(u, v)
+        # convert to [0,360]
+        direction = direction - 360 * math.floor(direction / 360)
+        return direction
+
+
+def calc_speed(u, v):
+    """ Calculated the speed of the wind from it's u and v components
+            Args:
+                u: u wind component
+                v: v wind component
+
+            Returns:
+                speed of the wind  or None
+        """
+    try:
+        result = np.sqrt(u * u + v * v)
+    except (TypeError, Warning):
+        result = None
+    return result
+
+
+# VAL1L2 stat calculations
+
+def calculate_val1l2_anom_corr(input_data, columns_names):
+    """Performs calculation of VAL1L2_ANOM_CORR -
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated VAL1L2_ANOM_CORR as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        ufabar = sum_column_data_by_name(input_data, columns_names, 'ufabar') / total
+        vfabar = sum_column_data_by_name(input_data, columns_names, 'vfabar') / total
+        uoabar = sum_column_data_by_name(input_data, columns_names, 'uoabar') / total
+        voabar = sum_column_data_by_name(input_data, columns_names, 'voabar') / total
+        uvfoabar = sum_column_data_by_name(input_data, columns_names, 'uvfoabar') / total
+        uvffabar = sum_column_data_by_name(input_data, columns_names, 'uvffabar') / total
+        uvooabar = sum_column_data_by_name(input_data, columns_names, 'uvooabar') / total
+        result = calc_wind_corr(ufabar, vfabar, uoabar, voabar, uvfoabar, uvffabar, uvooabar)
+        result = round_half_up(result, 5)
+    except (TypeError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calc_wind_corr(uf, vf, uo, vo, uvfo, uvff, uvoo):
+    """Calculates  wind correlation
+
+        Args:
+            uf - Mean(uf-uc)
+            vf - Mean(vf-vc)
+            uo - Mean(uo-uc)
+            vo - Mean(vo-vc)
+            uvfo - Mean((uf-uc)*(uo-uc)+(vf-vc)*(vo-vc))
+            uvff - Mean((uf-uc)^2+(vf-vc)^2)
+            uvoo - Mean((uo-uc)^2+(vo-vc)^2)
+
+        Returns:
+                calculated wind correlation as float
+                or None if some of the data values are None
+        """
+    try:
+        corr = (uvfo - uf * uo - vf * vo) / (np.sqrt(uvff - uf * uf - vf * vf) * np.sqrt(uvoo - uo * uo - vo * vo))
+    except (TypeError, Warning):
+        corr = None
+    return corr
+
+
 def sum_column_data_by_name(input_data, columns, column_name):
     """Calculates  SUM of all values in the specified column
 
@@ -1287,15 +2055,15 @@ def sum_column_data_by_name(input_data, columns, column_name):
     if index_array.size == 0:
         return None
 
-    # get column's data
+    # get column's data and convert it into float array
     try:
-        data_array = input_data[:, index_array[0]]
+        data_array = np.array(input_data[:, index_array[0]], dtype=np.float64)
     except IndexError:
         data_array = None
-    if data_array is None or None in data_array:
+    if data_array is None or np.isnan(data_array).any():
         return None
 
-    # return sum
+    # return sum np.isnan(np.array(data_array, dtype=np.float64)).any()
     try:
         result = sum(data_array.astype(np.float))
     except TypeError:

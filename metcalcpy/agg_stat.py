@@ -123,8 +123,35 @@ class AggStat():
         'egbar': ['egbar'],
         's1': ['egbar', 'mgbar'],
         's1_og': ['egbar', 'ogbar'],
-        'fgog_ratio': ['fgbar', 'ogbar']
+        'fgog_ratio': ['fgbar', 'ogbar'],
 
+        'vcnt_fbar': ['f_speed_bar'],
+        'vcnt_obar': ['o_speed_bar'],
+        'vcnt_fs_rms': ['uvffbar'],
+        'vcnt_os_rms': ['uvoobar'],
+        'vcnt_msve': ['uvffbar', 'uvfobar', 'uvoobar'],
+        'vcnt_rmsve': ['uvffbar', 'uvfobar', 'uvoobar'],
+        'vcnt_fstdev': ['uvffbar', 'f_speed_bar'],
+        'vcnt_ostdev': ['uvoobar', 'o_speed_bar'],
+        'vcnt_fdir': ['ufbar', 'vfbar'],
+        'vcnt_odir': ['uobar', 'vobar'],
+        'vcnt_fbar_speed': ['ufbar', 'vfbar'],
+        'vcnt_obar_speed': ['uobar', 'vobar'],
+        'vcnt_vdiff_speed': ['ufbar', 'uobar', 'vfbar', 'vobar'],
+        'vcnt_vdiff_dir': ['ufbar', 'uobar', 'vfbar', 'vobar'],
+        'vcnt_speed_err': ['ufbar', 'vfbar', 'uobar', 'vobar'],
+        'vcnt_speed_abserr': ['ufbar', 'vfbar', 'uobar', 'vobar'],
+        'vcnt_dir_err': ['ufbar', 'vfbar', 'uobar', 'vobar'],
+        'vcnt_dir_abser': ['ufbar', 'vfbar', 'uobar', 'vobar'],
+
+        'vl1l2_bias': ['uvffbar', 'uvoobar'],
+        'vl1l2_fvar': ['uvffbar', 'f_speed_bar'],
+        'vl1l2_ovar': ['uvoobar', 'o_speed_bar'],
+        'vl1l2_speed_err': ['ufbar', 'vfbar', 'uobar', 'vobar'],
+        'vl1l2_rmsve': ['uvffbar', 'uvfobar', 'uvoobar'],
+        'vl1l2_msve': ['uvffbar', 'uvfobar', 'uvoobar'],
+
+        'val1l2_anom_corr': ['ufabar', 'vfabar', 'uoabar', 'voabar', 'uvfoabar', 'uvffabar', 'uvooabar']
 
     }
 
@@ -239,6 +266,39 @@ class AggStat():
 
     def _prepare_grad_data(self, data_for_prepare):
         """Prepares grad data.
+            Multiplies needed for the statistic calculation columns to the 'total'value
+
+            Args:
+                data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
+        """
+        for column in self.STATISTIC_TO_FIELDS[self.statistic]:
+            data_for_prepare[column] \
+                = data_for_prepare[column].values * data_for_prepare['total'].values
+
+    def _prepare_vl1l2_data(self, data_for_prepare):
+        """Prepares vl1l2 data.
+            Multiplies needed for the statistic calculation columns to the 'total'value
+
+            Args:
+                data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
+        """
+        for column in self.STATISTIC_TO_FIELDS[self.statistic]:
+            data_for_prepare[column] \
+                = data_for_prepare[column].values * data_for_prepare['total'].values
+
+    def _prepare_val1l2_data(self, data_for_prepare):
+        """Prepares val1l2 data.
+            Multiplies needed for the statistic calculation columns to the 'total' value
+
+            Args:
+                data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
+        """
+        for column in self.STATISTIC_TO_FIELDS[self.statistic]:
+            data_for_prepare[column] \
+                = data_for_prepare[column].values * data_for_prepare['total'].values
+
+    def _prepare_vcnt_data(self, data_for_prepare):
+        """Prepares cnt data.
             Multiplies needed for the statistic calculation columns to the 'total'value
 
             Args:
@@ -594,12 +654,12 @@ class AggStat():
             series_val = self.params['series_val']
             group_to_value_index = 1
             if series_val:
-                for  key in series_val.keys():
+                for key in series_val.keys():
                     for val in series_val[key]:
                         if ',' in val:
                             new_name = 'Group_y1_' + str(group_to_value_index)
                             self.group_to_value[new_name] = val
-                            group_to_value_index = group_to_value_index +1
+                            group_to_value_index = group_to_value_index + 1
 
             # perform EE if needed
             if is_event_equal:
@@ -644,7 +704,7 @@ class AggStat():
                                 elif ";" in filter_value:
                                     filter_list = filter_value.split(';')
                                 else:
-                                    filter_list= [filter_value]
+                                    filter_list = [filter_value]
                                 for i, filter_val in enumerate(filter_list):
                                     if is_string_integer(filter_list[i]):
                                         filter_list[i] = int(filter_list[i])
