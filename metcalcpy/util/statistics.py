@@ -2036,6 +2036,406 @@ def calc_wind_corr(uf, vf, uo, vo, uvfo, uvff, uvoo):
     return corr
 
 
+# SSVAR stat calculations
+
+def calculate_ssvar_fbar(input_data, columns_names):
+    """Performs calculation of SSVAR_FBAR - Average forecast value
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated SSVAR_FBAR as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'bin_n')
+        result = sum_column_data_by_name(input_data, columns_names, 'fbar') / total
+        result = round_half_up(result, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_ssvar_fstdev(input_data, columns_names):
+    """Performs calculation of SSVAR_FSTDEV - Standard deviation of the error
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated SSVAR_FSTDEV as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'bin_n')
+        fbar = sum_column_data_by_name(input_data, columns_names, 'fbar') / total
+        ffbar = sum_column_data_by_name(input_data, columns_names, 'ffbar') / total
+        result = calculate_stddev(fbar * total, ffbar * total, total)
+        result = round_half_up(result, 5)
+    except (TypeError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_ssvar_obar(input_data, columns_names):
+    """Performs calculation of SSVAR_OBAR - Average observed value
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated SSVAR_OBAR as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'bin_n')
+        result = sum_column_data_by_name(input_data, columns_names, 'obar') / total
+        result = round_half_up(result, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_ssvar_ostdev(input_data, columns_names):
+    """Performs calculation of SSVAR_OSTDEV - Standard deviation of the error
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated SSVAR_OSTDEV as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'bin_n')
+        obar = sum_column_data_by_name(input_data, columns_names, 'obar') / total
+        oobar = sum_column_data_by_name(input_data, columns_names, 'oobar') / total
+        result = calculate_stddev(obar * total, oobar * total, total)
+        result = round_half_up(result, 5)
+    except (TypeError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_ssvar_pr_corr(input_data, columns_names):
+    """Performs calculation of SSVAR_PR_CORR - Pearson correlation coefficient
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated SSVAR_PR_CORR as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        bin_n = sum_column_data_by_name(input_data, columns_names, 'bin_n')
+        ffbar = sum_column_data_by_name(input_data, columns_names, 'ffbar') / bin_n
+        fbar = sum_column_data_by_name(input_data, columns_names, 'fbar') / bin_n
+        oobar = sum_column_data_by_name(input_data, columns_names, 'oobar') / bin_n
+        obar = sum_column_data_by_name(input_data, columns_names, 'obar') / bin_n
+        fobar = sum_column_data_by_name(input_data, columns_names, 'fobar') / bin_n
+        total_total = bin_n * bin_n
+        v = (total_total * ffbar - total_total * fbar * fbar) * (total_total * oobar - total_total * obar * obar)
+        pr_corr = (total_total * fobar - total_total * fbar * obar) / np.sqrt(v)
+        if 0 >= v or 1 < pr_corr:
+            return None
+        result = round_half_up(pr_corr, 5)
+    except (TypeError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_ssvar_me(input_data, columns_names):
+    """Performs calculation of SSVAR_ME - Mean error
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated SSVAR_ME as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'bin_n')
+        fbar = sum_column_data_by_name(input_data, columns_names, 'fbar') / total
+        obar = sum_column_data_by_name(input_data, columns_names, 'obar') / total
+        result = fbar - obar
+        result = round_half_up(result, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_ssvar_estdev(input_data, columns_names):
+    """Performs calculation of SSVAR_ESTDEV - Standard deviation of the error
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated SSVAR_ESTDEV as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'bin_n')
+        result = calculate_stddev(calculate_ssvar_me(input_data, columns_names) * total,
+                                  calculate_ssvar_mse(input_data, columns_names) * total,
+                                  total)
+        result = round_half_up(result, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_ssvar_mse(input_data, columns_names):
+    """Performs calculation of SSVAR_MSE - Mean squared error
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated SSVAR_MSE as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'bin_n')
+        ffbar = sum_column_data_by_name(input_data, columns_names, 'ffbar') / total
+        oobar = sum_column_data_by_name(input_data, columns_names, 'oobar') / total
+        fobar = sum_column_data_by_name(input_data, columns_names, 'fobar') / total
+        result = ffbar + oobar - 2 * fobar
+        result = round_half_up(result, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_ssvar_bcmse(input_data, columns_names):
+    """Performs calculation of SSVAR_BCMSE - Bias corrected root mean squared error
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated SSVAR_BCMSE as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'bin_n')
+        fbar = sum_column_data_by_name(input_data, columns_names, 'fbar') / total
+        obar = sum_column_data_by_name(input_data, columns_names, 'obar') / total
+        result = calculate_ssvar_mse(input_data, columns_names) - (fbar - obar) * (fbar - obar)
+        result = round_half_up(result, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_ssvar_bcrmse(input_data, columns_names):
+    """Performs calculation of SSVAR_BCRMSE - Bias corrected root mean squared error
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated SSVAR_BCRMSE as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'bin_n')
+        fbar = sum_column_data_by_name(input_data, columns_names, 'fbar') / total
+        obar = sum_column_data_by_name(input_data, columns_names, 'obar') / total
+        result = np.sqrt(calculate_ssvar_mse(input_data, columns_names) - (fbar - obar) * (fbar - obar))
+        result = round_half_up(result, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_ssvar_rmse(input_data, columns_names):
+    """Performs calculation of SSVAR_RMSE - Root mean squared error
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated SSVAR_RMSE as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        result = np.sqrt(calculate_ssvar_mse(input_data, columns_names))
+        result = round_half_up(result, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_ssvar_anom_corr(input_data, columns_names):
+    """Performs calculation of SSVAR_ANOM_CORR -
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated SSVAR_ANOM_CORR as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'bin_n')
+        ffbar = sum_column_data_by_name(input_data, columns_names, 'ffbar') / total
+        fbar = sum_column_data_by_name(input_data, columns_names, 'fbar') / total
+        oobar = sum_column_data_by_name(input_data, columns_names, 'oobar') / total
+        obar = sum_column_data_by_name(input_data, columns_names, 'obar') / total
+        fobar = sum_column_data_by_name(input_data, columns_names, 'fobar') / total
+        total_total = total * total
+        v = (total_total * ffbar - total_total * fbar * fbar) * (total_total * oobar - total_total * obar * obar)
+        if v <= 0:
+            result = None
+        else:
+            result = (total_total * fobar - total_total * fbar * obar) / np.sqrt(v)
+            result = round_half_up(result, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_ssvar_me2(input_data, columns_names):
+    """Performs calculation of SSVAR_ME2 -
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated SSVAR_ME2 as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'bin_n')
+        fbar = sum_column_data_by_name(input_data, columns_names, 'fbar') / total
+        obar = sum_column_data_by_name(input_data, columns_names, 'obar') / total
+        me = fbar - obar
+        result = me * me
+        result = round_half_up(result, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_ssvar_msess(input_data, columns_names):
+    """Performs calculation of SSVAR_MSESS -
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated SSVAR_MSESS as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        ostdev = calculate_ssvar_ostdev(input_data, columns_names)
+        mse = calculate_ssvar_mse(input_data, columns_names)
+        result = 1.0 - mse / (ostdev * ostdev)
+        result = round_half_up(result, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_ssvar_spread(input_data, columns_names):
+    """Performs calculation of SSVAR_SPREAD -
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated SSVAR_SPREAD as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'bin_n')
+        var_mean = sum_column_data_by_name(input_data, columns_names, 'var_mean') / total
+        result = np.sqrt(var_mean)
+        result = round_half_up(result, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
 def sum_column_data_by_name(input_data, columns, column_name):
     """Calculates  SUM of all values in the specified column
 
