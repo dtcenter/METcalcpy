@@ -8,6 +8,8 @@ __email__ = 'met_help@ucar.edu'
 
 import math
 
+import numpy as np
+
 OPERATION_TO_SIGN = {
     'DIFF': '-',
     'RATIO': '/',
@@ -99,7 +101,7 @@ def calc_derived_curve_value(val1, val2, operation):
             result_val = [a / b for a, b in zip(val1, val2)]
     elif operation == 'SS':
         if 0 not in val1:
-            result_val = [ (a - b) / a for a, b in zip(val1, val2)]
+            result_val = [(a - b) / a for a, b in zip(val1, val2)]
     elif operation == 'SINGLE':
         result_val = val1
     return result_val
@@ -136,20 +138,20 @@ def intersection(l_1, l_2):
     return l_3
 
 
-def is_derived_series(series):
-    """Determines if this series is a derived series
+def is_derived_point(point):
+    """Determines if this point is a derived point
         Args:
-            series: a list or tuple with series component values
+            point: a list or tuple with point component values
 
         Returns:
-            True - if this series is derived
-            False - if this series is not derived
+            True - if this point is derived
+            False - if this point is not derived
     """
     is_derived = False
-    if series is not None:
+    if point is not None:
         for operation in OPERATION_TO_SIGN:
-            for series_component in series:
-                if series_component.startswith((operation+'(', operation+' (')):
+            for point_component in point:
+                if point_component.startswith((operation + '(', operation + ' (')):
                     is_derived = True
                     break
     return is_derived
@@ -168,7 +170,8 @@ def parse_bool(in_str):
 
 
 def round_half_up(n, decimals=0):
-    """The “rounding half up” strategy rounds every number to the nearest number with the specified precision,
+    """The “rounding half up” strategy rounds every number to the nearest number
+        with the specified precision,
      and breaks ties by rounding up.
         Args:
             n: a number
@@ -178,4 +181,40 @@ def round_half_up(n, decimals=0):
 
     """
     multiplier = 10 ** decimals
-    return math.floor(n*multiplier + 0.5) / multiplier
+    return math.floor(n * multiplier + 0.5) / multiplier
+
+
+def sum_column_data_by_name(input_data, columns, column_name):
+    """Calculates  SUM of all values in the specified column
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns: names of the columns for the 2nd dimension as Numpy array
+            column_name: the name of the column for SUM
+
+        Returns:
+            calculated SUM as float
+            or None if some of the data values are None
+    """
+    # find the index of specified column
+    index_array = np.where(columns == column_name)[0]
+    if index_array.size == 0:
+        return None
+
+    # get column's data and convert it into float array
+    try:
+        data_array = np.array(input_data[:, index_array[0]], dtype=np.float64)
+    except IndexError:
+        data_array = None
+    if data_array is None or np.isnan(data_array).any():
+        return None
+
+    # return sum np.isnan(np.array(data_array, dtype=np.float64)).any()
+    try:
+        result = sum(data_array.astype(np.float))
+    except TypeError:
+        result = None
+
+    return result
