@@ -8,9 +8,17 @@ import yaml
 import bootstrapped.bootstrap
 from metcalcpy import event_equalize
 from metcalcpy.bootstrap_custom import BootstrapDistributionResults, bootstrap_and_value
-from metcalcpy.util.statistics import *
+from metcalcpy.util.ctc_statistics import *
+from metcalcpy.util.grad_statistics import *
+from metcalcpy.util.sl1l2_statistics import *
+from metcalcpy.util.ssvar_statistics import *
+from metcalcpy.util.val1l2_statistics import *
+from metcalcpy.util.vcnt_statistics import *
+from metcalcpy.util.vl1l2_statiatics import *
+from metcalcpy.util.ecnt_statistics import *
+
 from metcalcpy.util.utils import is_string_integer, get_derived_curve_name, unique, \
-    calc_derived_curve_value, intersection, is_derived_series, parse_bool
+    calc_derived_curve_value, intersection, is_derived_point, parse_bool
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
@@ -151,7 +159,8 @@ class AggStat():
         'vl1l2_rmsve': ['uvffbar', 'uvfobar', 'uvoobar'],
         'vl1l2_msve': ['uvffbar', 'uvfobar', 'uvoobar'],
 
-        'val1l2_anom_corr': ['ufabar', 'vfabar', 'uoabar', 'voabar', 'uvfoabar', 'uvffabar', 'uvooabar'],
+        'val1l2_anom_corr':
+            ['ufabar', 'vfabar', 'uoabar', 'voabar', 'uvfoabar', 'uvffabar', 'uvooabar'],
 
         'ssvar_fbar': ['fbar'],
         'ssvar_fstdev': ['fbar', 'ffbar'],
@@ -167,7 +176,18 @@ class AggStat():
         'ssvar_anom_corr': ['fbar', 'obar', 'ffbar', 'oobar', 'fobar'],
         'ssvar_me2': ['fbar', 'obar'],
         'ssvar_msess': ['obar', 'oobar', 'ffbar', 'fobar'],
-        'ssvar_spread': ['var_mean']
+        'ssvar_spread': ['var_mean'],
+
+        'ecnt_crps': ['crps'],
+        'ecnt_crpss': ['crps'],
+        'ecnt_ign': ['ign'],
+        'ecnt_me': ['me'],
+        'ecnt_rmse': [],
+        'ecnt_spread': ['spread'],
+        'ecnt_me_oerr': ['me_oerr'],
+        'ecnt_rmse_oerr': [],
+        'ecnt_spread_oerr': ['spread_oerr'],
+        'ecnt_spread_plus_oerr': ['spread_plus_oerr']
     }
 
     def _calc_stats(self, values):
@@ -279,7 +299,6 @@ class AggStat():
             data_for_prepare[column] \
                 = data_for_prepare[column].values * data_for_prepare['total'].values
 
-
     def _prepare_sal1l2_data(self, data_for_prepare):
         """Prepares sal1l2 data.
             Multiplies needed for the statistic calculation columns to the 'total'value
@@ -325,8 +344,8 @@ class AggStat():
                 = data_for_prepare[column].values * data_for_prepare['total'].values
 
     def _prepare_vcnt_data(self, data_for_prepare):
-        """Prepares cnt data.
-            Multiplies needed for the statistic calculation columns to the 'total'value
+        """Prepares vcnt data.
+            Multiplies needed for the statistic calculation columns to the 'total' value
 
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
@@ -335,6 +354,24 @@ class AggStat():
             data_for_prepare[column] \
                 = data_for_prepare[column].values * data_for_prepare['total'].values
 
+    def _prepare_ecnt_data(self, data_for_prepare):
+        """Prepares ecnt data.
+            Multiplies needed for the statistic calculation columns to the 'total' value
+
+            Args:
+                data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
+        """
+        mse = data_for_prepare['rmse'].values * data_for_prepare['rmse'].values
+        mse_oerr = data_for_prepare['rmse_oerr'].values * data_for_prepare['rmse_oerr'].values
+        crps_climo = data_for_prepare['crps'].values * data_for_prepare['crps'].values
+
+        data_for_prepare['mse'] = mse * data_for_prepare['total'].values
+        data_for_prepare['mse_oerr'] = mse_oerr * data_for_prepare['total'].values
+        data_for_prepare['crps_climo'] = crps_climo * data_for_prepare['total'].values
+
+        for column in self.STATISTIC_TO_FIELDS[self.statistic]:
+            data_for_prepare[column] \
+                = data_for_prepare[column].values * data_for_prepare['total'].values
 
     def _prepare_ssvar_data(self, data_for_prepare):
         """Prepares ssvar data.
@@ -345,13 +382,12 @@ class AggStat():
         """
 
         # rename bin_n column to total
-        data_for_prepare.rename(columns={"total": "total_orig", "bin_n": "total"}, inplace = True)
+        data_for_prepare.rename(columns={"total": "total_orig", "bin_n": "total"}, inplace=True)
         self.column_names = data_for_prepare.columns.values
 
         for column in self.STATISTIC_TO_FIELDS[self.statistic]:
             data_for_prepare[column] \
                 = data_for_prepare[column].values * data_for_prepare['total'].values
-
 
     def _prepare_ctc_data(self, data_for_prepare):
         """Prepares sl1l2 data.
@@ -372,11 +408,6 @@ class AggStat():
         fix_vals = []
         # data frame for the equalised data
         output_ee_data = pd.DataFrame()
-
-        is_multi = False
-        # for SSVAR use equalization of multiple events
-        if self.params['line_type'] == "ssvar":
-            is_multi = True
 
         # list all fixed variables
         if self.params['fixed_vars_vals_input']:
@@ -402,11 +433,12 @@ class AggStat():
                         & (self.input_data[series_var].isin(series_var_vals_no_group))
                         ]
                     # perform EE on filtered data
+                    # for SSVAR use equalization of multiple events
                     series_data_after_ee = \
                         event_equalize(series_data_for_ee, self.params['indy_var'], indy_vals,
                                        self.params['series_val'],
                                        list(self.params['fixed_vars_vals_input'].keys()),
-                                       fix_vals_permuted, True, is_multi)
+                                       fix_vals_permuted, True, self.params['line_type'] == "ssvar")
 
                     # append EE data to result
                     if output_ee_data.empty:
@@ -635,13 +667,13 @@ class AggStat():
         result['nstats'] = [None] * row_number
         return result
 
-    def _get_derived_series(self, series_val, indy_vals):
-        """identifies and returns as an list all possible derived series values
+    def _get_derived_points(self, series_val, indy_vals):
+        """identifies and returns as an list all possible derived points values
 
             Args:
                 series_val: dictionary of series variable to values
                 indy_vals: list of independent values
-            Returns: a list of all possible values for the each derived series
+            Returns: a list of all possible values for the each derived points
 
         """
         series_var = list(series_val.keys())[-1]
@@ -694,8 +726,7 @@ class AggStat():
                 indy_vals = self.input_data['thresh_i'].sort()
                 indy_vals = np.unique(indy_vals)
 
-            # TODO implement ungrouping!!!!
-
+            # perform groupping
             series_val = self.params['series_val']
             group_to_value_index = 1
             if series_val:
@@ -714,36 +745,36 @@ class AggStat():
 
                 # TODO contourDiff adjustments
 
-                # identify all possible series values by adding series values, indy values
+                # identify all possible points values by adding series values, indy values
                 # and statistics and then permute them
                 all_fields_values = series_val.copy()
                 all_fields_values[self.params['indy_var']] = indy_vals
                 all_fields_values['stat_name'] = self.params['list_stat']
-                all_series = list(itertools.product(*all_fields_values.values()))
+                all_points = list(itertools.product(*all_fields_values.values()))
 
                 if self.params['derived_series']:
-                    # identifies and add all possible derived series values
-                    all_series.extend(self._get_derived_series(series_val,
-                                                               indy_vals))
-                # init the template for output frame
-                out_frame = self._init_out_frame(all_fields_values.keys(), all_series)
+                    # identifies and add all possible derived points values
+                    all_points.extend(self._get_derived_points(series_val, indy_vals))
 
-                series_ind = 0
+                # init the template for output frame
+                out_frame = self._init_out_frame(all_fields_values.keys(), all_points)
+
+                point_ind = 0
 
                 # for the each statistic
                 for stat_upper in self.params['list_stat']:
                     # save the value to the class variable
                     self.statistic = stat_upper.lower()
-                    series_to_distrib = {}
-                    # for each series
-                    for series in all_series:
-                        is_derived = is_derived_series(series)
+                    point_to_distrib = {}
+                    # for each point
+                    for point in all_points:
+                        is_derived = is_derived_point(point)
                         if not is_derived:
 
-                            # filter series data
+                            # filter point data
                             all_filters = []
                             for field_ind, field in enumerate(all_fields_values.keys()):
-                                filter_value = series[field_ind]
+                                filter_value = point[field_ind]
                                 if "," in filter_value:
                                     filter_list = filter_value.split(',')
                                 elif ";" in filter_value:
@@ -758,28 +789,28 @@ class AggStat():
 
                             # use numpy to select the rows where any record evaluates to True
                             mask = np.array(all_filters).all(axis=0)
-                            series_data = self.input_data.loc[mask]
+                            point_data = self.input_data.loc[mask]
 
                             # calculate bootstrap results
-                            bootstrap_results = self._get_bootstrapped_stats(series_data)
+                            bootstrap_results = self._get_bootstrapped_stats(point_data)
                             # save bootstrap results
-                            series_to_distrib[series] = bootstrap_results
-                            n_stats = len(series_data)
+                            point_to_distrib[point] = bootstrap_results
+                            n_stats = len(point_data)
 
                         else:
-                            # calculate bootstrap results
+                            # calculate bootstrap results for the derived point
                             bootstrap_results = self._get_bootstrapped_stats_for_derived(
-                                series,
-                                series_to_distrib)
+                                point,
+                                point_to_distrib)
                             n_stats = 0
 
                         # save results to the output data frame
-                        out_frame['stat_value'][series_ind] = bootstrap_results.value
-                        out_frame['stat_bcl'][series_ind] = bootstrap_results.lower_bound
-                        out_frame['stat_bcu'][series_ind] = bootstrap_results.upper_bound
-                        out_frame['nstats'][series_ind] = n_stats
+                        out_frame['stat_value'][point_ind] = bootstrap_results.value
+                        out_frame['stat_bcl'][point_ind] = bootstrap_results.lower_bound
+                        out_frame['stat_bcu'][point_ind] = bootstrap_results.upper_bound
+                        out_frame['nstats'][point_ind] = n_stats
 
-                        series_ind = series_ind + 1
+                        point_ind = point_ind + 1
             else:
                 out_frame = pd.DataFrame()
 
@@ -799,5 +830,5 @@ if __name__ == "__main__":
     ARGS = PARSER.parse_args()
     PARAMS = yaml.load(ARGS.parameters_file, Loader=yaml.FullLoader)
 
-    ADD_STAT = AggStat(PARAMS)
-    ADD_STAT.calculate_value_and_ci()
+    AGG_STAT = AggStat(PARAMS)
+    AGG_STAT.calculate_value_and_ci()
