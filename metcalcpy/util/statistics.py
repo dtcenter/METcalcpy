@@ -10,7 +10,7 @@ __email__ = 'met_help@ucar.edu'
 
 
 def get_column_index_by_name(columns, column_name):
-    """Finds teh index of the specified column in the array
+    """Finds the index of the specified column in the array
 
             Args:
                 columns: names of the columns as Numpy array
