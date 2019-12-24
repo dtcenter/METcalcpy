@@ -1,7 +1,25 @@
 """Tests the operation of METcalcpy's utils code."""
 import numpy as np
+import pytest
+
 from metcalcpy.util.utils import represents_int, is_string_integer, get_derived_curve_name, calc_derived_curve_value, \
-    unique, intersection, is_derived_point, parse_bool, round_half_up
+    unique, intersection, is_derived_point, parse_bool, round_half_up, sum_column_data_by_name
+
+
+@pytest.fixture
+def settings():
+    """Initialise values for testing.
+
+    Returns:
+        dictionary with values of different type
+    """
+    settings_dict = dict()
+    columns = np.array(['model', 'fcst_init_beg', 'fcst_valid_beg', 'fcst_lead', 'vx_mask', 'fcst_var',
+                        'stat_name', 'stat_value', 'total', 'fbar', 'obar', 'fobar', 'ffbar', 'oobar',
+                        'mae'])
+    settings_dict['columns'] = columns
+
+    return settings_dict
 
 
 def test_represents_int():
@@ -72,6 +90,27 @@ def test_round_half_up():
     assert 0.12346 == round_half_up(0.1234567875, 5)
 
 
+def test_sum_column_data_by_name(settings):
+    data_values = np.array([
+        ['dicast15', '2019-07-03 12:00:00', '2019-07-04 09:00:00', 210000, 'SWS01', 'GHI', 'MAE', 0, 1, 1073.4, 1085.7,
+         1165390.38, 1152187.56, 1178744.49, 12.3],
+        ['dicast15', '2019-07-03 12:00:00', '2019-07-05 13:15:00', 491500, 'SWS01', 'GHI', 'MAE', 0, 1, 518.43, 501.36,
+         259920.0648, 268769.6649, 251361.8496, 17.07]
+    ])
+    column_name = 'fobar'
+    assert 1425310.4448 == sum_column_data_by_name(data_values, settings['columns'], column_name)
+
+    column_name = 'not_in_array'
+    assert not sum_column_data_by_name(data_values, settings['columns'], column_name)
+
+    data_values = np.append(data_values,
+                            [['dicast15', '2019-07-03 12:00:00', '2019-07-04 09:00:00', 210000, 'SWS01', 'GHI', 'MAE',
+                              0, 1, 1073.4, 1085.7, None, 1152187.56, 1178744.49, 12.3]], axis=0)
+    column_name = 'fobar'
+    assert not sum_column_data_by_name(data_values, settings['columns'], column_name, rm_none=False)
+    assert 1425310.4448 == sum_column_data_by_name(data_values, settings['columns'], column_name, rm_none=True)
+
+
 if __name__ == "__main__":
     test_represents_int()
     test_is_string_integer()
@@ -82,3 +121,4 @@ if __name__ == "__main__":
     test_is_derived_series()
     test_parse_bool()
     test_round_half_up()
+    test_sum_column_data_by_name()
