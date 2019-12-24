@@ -94,7 +94,7 @@ def test_get_derived_series(settings):
     agg_stat = settings['agg_stat']
     series_val = agg_stat.params['series_val']
     indy_vals = agg_stat.params['indy_vals']
-    result = agg_stat._get_derived_series(series_val, indy_vals)
+    result = agg_stat._get_derived_points(series_val, indy_vals)
     expected = [('DIFF(ENS001v3.6.1_d01 DPT FBAR-ENS001v3.6.1_d02 DPT FBAR)', '0', 'FBAR'),
                 ('DIFF(ENS001v3.6.1_d01 DPT FBAR-ENS001v3.6.1_d02 DPT FBAR)', '30000', 'FBAR'),
                 ('DIFF(ENS001v3.6.1_d01 DPT FBAR-ENS001v3.6.1_d02 DPT FBAR)', '60000', 'FBAR'),
