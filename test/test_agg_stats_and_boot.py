@@ -1,6 +1,7 @@
 import numpy as np
 import bootstrapped.stats_functions as bs_stats
 import pytest
+import math
 
 from metcalcpy.agg_stat import AggStat, pd
 from metcalcpy.bootstrap_custom import bootstrap_and_value
@@ -87,7 +88,7 @@ def test_calc_stats_derived(settings):
     values_both_arrays = np.concatenate((values_both_arrays, operation), axis=1)
     stat_val = agg_stat._calc_stats_derived(values_both_arrays)
 
-    assert np.allclose(np.array([0.0036222619046952786]), stat_val)
+    assert np.allclose(np.array([0.00362]), stat_val)
 
 
 def test_get_derived_series(settings):
@@ -117,10 +118,10 @@ def test_calculate_value_and_ci(settings):
     )
     assert result_frame.size == 216
     assert result_frame.shape == (27, 8)
-    assert result_frame['stat_value'][2] == 192.1304275
-    assert result_frame['stat_value'][20] == 0.003622261904695279
-    assert result_frame['stat_bcl'][9] == 192.12478000000002
-    assert result_frame['stat_bcu'][24] == 0.010786756756743898
+    assert math.isclose(result_frame['stat_value'][2], 192.13043)
+    assert math.isclose(result_frame['stat_value'][20], 0.00362)
+    assert math.isclose(result_frame['stat_bcl'][9], 192.12478)
+    assert math.isclose(result_frame['stat_bcu'][24], 0.01079)
 
 
 @pytest.fixture
