@@ -513,6 +513,7 @@ class AggStat():
                         output_ee_data = series_data_after_ee
                     else:
                         output_ee_data.append(series_data_after_ee)
+        output_ee_data = output_ee_data.drop('equalize', axis=1)
         self.input_data = output_ee_data
 
     def _get_bootstrapped_stats_for_derived(self, series, distributions):
@@ -582,7 +583,7 @@ class AggStat():
                 [ds_2.value],
                 derived_curve_component.derived_operation)
             results = BootstrapDistributionResults(lower_bound=None,
-                                                   value=stat_val[0],
+                                                   value=round_half_up(stat_val[0], 5),
                                                    upper_bound=None)
         else:
             # need bootstrapping and CI calculation in addition to the derived statistic
@@ -796,15 +797,6 @@ class AggStat():
                 indy_vals = np.unique(indy_vals)
 
             if self.params['line_type'] == 'pct':
-                n_i = [row.oy_i + row.on_i for index, row in self.input_data.iterrows()]
-                sum_n_i_orig = sum(n_i)
-                oy_total = sum(self.input_data['oy_i'].to_numpy())
-                o_bar = oy_total / sum_n_i_orig
-
-                self.input_data['T'] = sum_n_i_orig
-                self.input_data['oy_total'] = oy_total
-                self.input_data['o_bar'] = o_bar
-
                 self.column_names = np.append(self.column_names, 'T')
                 self.column_names = np.append(self.column_names, 'oy_total')
                 self.column_names = np.append(self.column_names, 'o_bar')
@@ -856,7 +848,9 @@ class AggStat():
 
                             # filter point data
                             all_filters = []
+                            filters_wihtout_indy = []
                             for field_ind, field in enumerate(all_fields_values.keys()):
+
                                 filter_value = point[field_ind]
                                 if "," in filter_value:
                                     filter_list = filter_value.split(',')
@@ -867,12 +861,26 @@ class AggStat():
                                 for i, filter_val in enumerate(filter_list):
                                     if is_string_integer(filter_list[i]):
                                         filter_list[i] = int(filter_list[i])
+                                if field != self.params['indy_var']:
+                                    filters_wihtout_indy.append((self.input_data[field].isin(filter_list)))
 
                                 all_filters.append((self.input_data[field].isin(filter_list)))
 
                             # use numpy to select the rows where any record evaluates to True
                             mask = np.array(all_filters).all(axis=0)
                             point_data = self.input_data.loc[mask]
+
+                            if self.params['line_type'] == 'pct':
+                                mask_wihtout_indy = np.array(filters_wihtout_indy).all(axis=0)
+                                point_data_wihtout_indy = self.input_data.loc[mask_wihtout_indy]
+                                n_i = [row.oy_i + row.on_i for index, row in point_data_wihtout_indy.iterrows()]
+                                sum_n_i_orig = sum(n_i)
+                                oy_total = sum(point_data_wihtout_indy['oy_i'].to_numpy())
+                                o_bar = oy_total / sum_n_i_orig
+
+                                point_data.insert(len(point_data.columns), 'T', sum_n_i_orig)
+                                point_data.insert(len(point_data.columns), 'oy_total', oy_total)
+                                point_data.insert(len(point_data.columns), 'o_bar', o_bar)
 
                             # calculate bootstrap results
                             bootstrap_results = self._get_bootstrapped_stats(point_data)
