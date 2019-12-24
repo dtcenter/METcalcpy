@@ -1,0 +1,161 @@
+"""
+Program Name: nbrcnt_statistics.py
+"""
+import warnings
+
+from metcalcpy.util.utils import round_half_up, sum_column_data_by_name
+
+__author__ = 'Tatiana Burek'
+__version__ = '0.1.0'
+__email__ = 'met_help@ucar.edu'
+
+
+def calculate_nbr_fbs(input_data, columns_names):
+    """Performs calculation of NBR_FBS - Fractions Brier Score
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated NBR_FBS as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        fbs = sum_column_data_by_name(input_data, columns_names, 'fbs') / total
+        result = round_half_up(fbs, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_nbr_fss(input_data, columns_names):
+    """Performs calculation of NBR_FSS - Fractions Skill Score
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated NBR_FSS as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        fss_den = sum_column_data_by_name(input_data, columns_names, 'fss') / total
+        fbs = sum_column_data_by_name(input_data, columns_names, 'fbs') / total
+        fss = 1.0 - fbs / fss_den
+        result = round_half_up(fss, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_nbr_afss(input_data, columns_names):
+    """Performs calculation of NBR_AFSS - Asymptotic Fractions Skill Score
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated NBR_AFSS as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        f_rate = sum_column_data_by_name(input_data, columns_names, 'f_rate') / total
+        o_rate = sum_column_data_by_name(input_data, columns_names, 'o_rate') / total
+
+        afss_num = 2.0 * f_rate * o_rate
+        afss_den = f_rate * f_rate + o_rate * o_rate
+        afss = afss_num / afss_den
+        result = round_half_up(afss, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+def calculate_nbr_ufss(input_data, columns_names):
+    """Performs calculation of NBR_UFSS - Uniform Fractions Skill Score
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated NBR_UFSS as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        o_rate = sum_column_data_by_name(input_data, columns_names, 'o_rate') / total
+        ufss = 0.5 + o_rate/2.0
+        result = round_half_up(ufss, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_nbr_f_rate(input_data, columns_names):
+    """Performs calculation of NBR_F_RATE - Forecast event frequency
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated NBR_F_RATE as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        f_rate = sum_column_data_by_name(input_data, columns_names, 'f_rate') / total
+        result = round_half_up(f_rate, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_nbr_o_rate(input_data, columns_names):
+    """Performs calculation of NBR_O_RATE - Observed event frequency
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated NBR_O_RATE as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        o_rate = sum_column_data_by_name(input_data, columns_names, 'o_rate') / total
+        result = round_half_up(o_rate, 5)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
