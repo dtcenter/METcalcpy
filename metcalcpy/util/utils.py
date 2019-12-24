@@ -66,8 +66,7 @@ def get_derived_curve_name(list_of_names):
         return ""
     if size == 3:
         operation = list_of_names[2]
-    return "{}({}{}{})" \
-        .format(operation, list_of_names[0], OPERATION_TO_SIGN[operation], list_of_names[1])
+    return f"{operation}({list_of_names[0]}{OPERATION_TO_SIGN[operation]}{list_of_names[1]})"
 
 
 def calc_derived_curve_value(val1, val2, operation):
@@ -169,7 +168,7 @@ def parse_bool(in_str):
     return STR_TO_BOOL.get(in_str, in_str)
 
 
-def round_half_up(n, decimals=0):
+def round_half_up(num, decimals=0):
     """The “rounding half up” strategy rounds every number to the nearest number
         with the specified precision,
      and breaks ties by rounding up.
@@ -181,10 +180,10 @@ def round_half_up(n, decimals=0):
 
     """
     multiplier = 10 ** decimals
-    return math.floor(n * multiplier + 0.5) / multiplier
+    return math.floor(num * multiplier + 0.5) / multiplier
 
 
-def sum_column_data_by_name(input_data, columns, column_name):
+def sum_column_data_by_name(input_data, columns, column_name, rm_none=True):
     """Calculates  SUM of all values in the specified column
 
         Args:
@@ -193,10 +192,11 @@ def sum_column_data_by_name(input_data, columns, column_name):
                 2nd dimension - the column of data frame
             columns: names of the columns for the 2nd dimension as Numpy array
             column_name: the name of the column for SUM
+            rm_none: Should missing values (including non) be removed? Default - True
 
         Returns:
             calculated SUM as float
-            or None if some of the data values are None
+            or None if all of the data values are non
     """
     # find the index of specified column
     index_array = np.where(columns == column_name)[0]
@@ -208,12 +208,18 @@ def sum_column_data_by_name(input_data, columns, column_name):
         data_array = np.array(input_data[:, index_array[0]], dtype=np.float64)
     except IndexError:
         data_array = None
-    if data_array is None or np.isnan(data_array).any():
+
+    if data_array is None or np.isnan(data_array).all():
         return None
 
-    # return sum np.isnan(np.array(data_array, dtype=np.float64)).any()
     try:
-        result = sum(data_array.astype(np.float))
+        if rm_none:
+            result = np.nansum(data_array.astype(np.float))
+        else:
+            if np.isnan(data_array).any():
+                result = None
+            else:
+                result = sum(data_array.astype(np.float))
     except TypeError:
         result = None
 
