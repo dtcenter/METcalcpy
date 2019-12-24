@@ -1,5 +1,25 @@
 """
 Program Name: agg_stat.py
+
+How to use:
+ - Call from other Python function
+        AGG_STAT = AggStat(PARAMS)
+        AGG_STAT.calculate_value_and_ci()
+        where PARAMS – a dictionary with data description parameters including
+        location of input and output data.
+        The structure is similar to Rscript template
+
+ - Run as a stand-alone script
+        python agg_stat.py <parameters_file>
+        where - <parameters_file> is YAML file with parameters
+        and environment variable should be set to PYTHONPATH=<path_to_METcalcpy>
+
+ - Run from Java
+        proc = Runtime.getRuntime().exec(
+                “python agg_stat.py <parameters_file>”,
+                new String[]{”PYTHONPATH=<path_to_METcalcpy>”},
+                new File(System.getProperty("user.home")));
+
 """
 import sys
 import itertools
@@ -16,6 +36,9 @@ from metcalcpy.util.val1l2_statistics import *
 from metcalcpy.util.vcnt_statistics import *
 from metcalcpy.util.vl1l2_statiatics import *
 from metcalcpy.util.ecnt_statistics import *
+from metcalcpy.util.nbrcnt_statistics import *
+from metcalcpy.util.nbrctc_statistics import *
+from metcalcpy.util.pstd_statistics import *
 
 from metcalcpy.util.utils import is_string_integer, get_derived_curve_name, unique, \
     calc_derived_curve_value, intersection, is_derived_point, parse_bool
@@ -187,7 +210,14 @@ class AggStat():
         'ecnt_me_oerr': ['me_oerr'],
         'ecnt_rmse_oerr': [],
         'ecnt_spread_oerr': ['spread_oerr'],
-        'ecnt_spread_plus_oerr': ['spread_plus_oerr']
+        'ecnt_spread_plus_oerr': ['spread_plus_oerr'],
+
+        'nbr_fbs': ['fbs'],
+        'nbr_fss': ['fss'],
+        'nbr_afss': ['afss'],
+        'nbr_f_rare': ['f_rate'],
+        'nbr_o_rare': ['o_rate'],
+
     }
 
     def _calc_stats(self, values):
@@ -200,7 +230,7 @@ class AggStat():
                 a list of calculated statistics
 
         """
-        func_name = 'calculate_{}'.format(self.statistic)
+        func_name = f'calculate_{self.statistic}'
         if values is not None and values.ndim == 2:
             # The single value case
             stat_values = [globals()[func_name](values, self.column_names)]
@@ -242,7 +272,7 @@ class AggStat():
             # get values for the 2nd array
             values_2 = values_both_arrays[:, int(num_of_columns / 2):num_of_columns]
 
-            func_name = 'calculate_{}'.format(self.statistic)
+            func_name = f'calculate_{self.statistic}'
 
             # calculate stat for the 1st array
             stat_values_1 = [globals()[func_name](values_1, self.column_names)]
@@ -264,7 +294,7 @@ class AggStat():
                 # get values for the 2nd array
                 values_2 = row[:, int(num_of_columns / 2):num_of_columns]
 
-                func_name = 'calculate_{}'.format(self.statistic)
+                func_name = f'calculate_{self.statistic}'
 
                 # calculate stat for the 1st array
                 stat_values_1 = [globals()[func_name](values_1, self.column_names)]
@@ -389,7 +419,45 @@ class AggStat():
             data_for_prepare[column] \
                 = data_for_prepare[column].values * data_for_prepare['total'].values
 
+    def _prepare_nbr_cnt_data(self, data_for_prepare):
+        """Prepares nbrcnt data.
+            Multiplies needed for the statistic calculation columns to the 'total'value
+
+            Args:
+                data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
+        """
+
+        total = data_for_prepare['total'].values
+        fbs = total * data_for_prepare['fbs'].values
+        fss_den = (data_for_prepare['fbs'].values / (1.0 - data_for_prepare['fss'].values)) \
+                  * total
+
+        f_rate = total * data_for_prepare['f_rate'].values
+        data_for_prepare['fbs'] = fbs
+        data_for_prepare['fss'] = fss_den
+        data_for_prepare['f_rate'] = f_rate
+
+    def _prepare_pct_data(self, data_for_prepare):
+        """Prepares pct data.
+            Multiplies needed for the statistic calculation columns to the 'total'value
+
+            Args:
+                data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
+        """
+
+        pass
+
     def _prepare_ctc_data(self, data_for_prepare):
+        """Prepares sl1l2 data.
+            Nothing needs to be done
+
+            Args:
+                data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
+        """
+
+    pass
+
+    def _prepare_nbr_ctc_data(self, data_for_prepare):
         """Prepares sl1l2 data.
             Nothing needs to be done
 
@@ -562,7 +630,8 @@ class AggStat():
         series_data = _sort_data(series_data)
 
         # find the function that prepares data and execute it
-        func = getattr(self, '_prepare_{}_data'.format(self.params['line_type']))
+
+        func = getattr(self, f"_prepare_{self.params['line_type']}_data")
         func(series_data)
 
         # input data has to be in numpy format for bootstrapping
@@ -725,6 +794,20 @@ class AggStat():
             if self.params['indy_var'] == 'thresh_i' and self.params['line_type'] == 'pct':
                 indy_vals = self.input_data['thresh_i'].sort()
                 indy_vals = np.unique(indy_vals)
+
+            if self.params['line_type'] == 'pct':
+                n_i = [row.oy_i + row.on_i for index, row in self.input_data.iterrows()]
+                sum_n_i_orig = sum(n_i)
+                oy_total = sum(self.input_data['oy_i'].to_numpy())
+                o_bar = oy_total / sum_n_i_orig
+
+                self.input_data['T'] = sum_n_i_orig
+                self.input_data['oy_total'] = oy_total
+                self.input_data['o_bar'] = o_bar
+
+                self.column_names = np.append(self.column_names, 'T')
+                self.column_names = np.append(self.column_names, 'oy_total')
+                self.column_names = np.append(self.column_names, 'o_bar')
 
             # perform groupping
             series_val = self.params['series_val']
