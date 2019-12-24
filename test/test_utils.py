@@ -70,11 +70,11 @@ def test_intersection():
     assert not intersection(None, l_2)
 
 
-def test_is_derived_series():
-    series = ['analog_e', '3000', 'FBAR']
-    assert not is_derived_point(series)
-    series.append('DIFF')
-    assert is_derived_point(series)
+def test_is_derived_point():
+    point = ('stochmp1', '20000', 'PSTD_BRIER')
+    assert not is_derived_point(point)
+    point = ('DIFF(stochmp1 TMP_ENS_FREQ_ge283 PSTD_BRIER-stochmp2 TMP_ENS_FREQ_ge283 PSTD_BRIER)', '20000', 'PSTD_BRIER')
+    assert is_derived_point(point)
 
 
 def test_parse_bool():
@@ -118,7 +118,7 @@ if __name__ == "__main__":
     test_calc_derived_curve_value()
     test_unique()
     test_intersection()
-    test_is_derived_series()
+    test_is_derived_point()
     test_parse_bool()
     test_round_half_up()
     test_sum_column_data_by_name()
