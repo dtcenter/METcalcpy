@@ -9,9 +9,6 @@ __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
 __email__ = 'met_help@ucar.edu'
 
-WARNING_MESSAGE = 'All values of t are equal to {}. Cannot calculate confidence intervals'
-
-
 class BootstrapDistributionResults(BootstrapResults):
     """A class that extends BootstrapResults.
         Adds the original numpy array with the data for stat calculation
@@ -98,6 +95,9 @@ def _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_metho
             ci_method: if true, use the pivotal method. if false, use the
                 percentile method.
     """
+
+    # TODO Only percentile method for the confident intervals is implemented
+
     if ci_method == 'pivotal':
         low = 2 * stat_val - _np.percentile(bootstrap_dist, 100 * (1 - alpha / 2.))
         val = stat_val
@@ -106,7 +106,7 @@ def _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_metho
         # check if All values of bootstrap_dist are equal and if YES -
         # display a warning and do not calculate CIs - like boot.ci in R
         if _all_the_same(bootstrap_dist):
-            print(WARNING_MESSAGE.format(bootstrap_dist[0]))
+            print(f'All values of t are equal to {bootstrap_dist[0]}. Cannot calculate confidence intervals')
             low = None
             high = None
         else:
