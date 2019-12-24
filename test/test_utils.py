@@ -1,7 +1,7 @@
 """Tests the operation of METcalcpy's utils code."""
 import numpy as np
 from metcalcpy.util.utils import represents_int, is_string_integer, get_derived_curve_name, calc_derived_curve_value, \
-    unique, intersection, is_derived_series, parse_bool, round_half_up
+    unique, intersection, is_derived_point, parse_bool, round_half_up
 
 
 def test_represents_int():
@@ -54,9 +54,9 @@ def test_intersection():
 
 def test_is_derived_series():
     series = ['analog_e', '3000', 'FBAR']
-    assert not is_derived_series(series)
+    assert not is_derived_point(series)
     series.append('DIFF')
-    assert is_derived_series(series)
+    assert is_derived_point(series)
 
 
 def test_parse_bool():
