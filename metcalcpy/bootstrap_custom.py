@@ -28,11 +28,17 @@ class BootstrapDistributionResults(BootstrapResults):
         """
         self.values = values
 
+    def set_distributions(self, distributions):
+        """Sets distributions y
+            Args: distributions - numpy array
+        """
+        self.distributions = distributions
+
 
 def bootstrap_and_value(values, stat_func, alpha=0.05,
                         num_iterations=1000, iteration_batch_size=None,
                         num_threads=1, ci_method='perc',
-                        save_data=True):
+                        save_data=True, save_distributions=False):
     """Returns bootstrap estimate.
         Args:
             values: numpy array (or scipy.sparse.csr_matrix) of values to bootstrap
@@ -81,6 +87,8 @@ def bootstrap_and_value(values, stat_func, alpha=0.05,
     result = _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_method)
     if save_data:
         result.set_original_values(values)
+    if save_distributions:
+        result.set_distributions(bootstrap_dist.flatten('F'))
     return result
 
 

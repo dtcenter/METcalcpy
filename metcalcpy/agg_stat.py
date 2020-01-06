@@ -41,7 +41,8 @@ from metcalcpy.util.nbrctc_statistics import *
 from metcalcpy.util.pstd_statistics import *
 
 from metcalcpy.util.utils import is_string_integer, get_derived_curve_name, unique, \
-    calc_derived_curve_value, intersection, is_derived_point, parse_bool
+    calc_derived_curve_value, intersection, is_derived_point, parse_bool, \
+    OPERATION_TO_SIGN, perfect_score_adjustment
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
@@ -445,8 +446,6 @@ class AggStat():
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
 
-        pass
-
     def _prepare_ctc_data(self, data_for_prepare):
         """Prepares sl1l2 data.
             Nothing needs to be done
@@ -455,8 +454,6 @@ class AggStat():
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
 
-    pass
-
     def _prepare_nbr_ctc_data(self, data_for_prepare):
         """Prepares sl1l2 data.
             Nothing needs to be done
@@ -464,8 +461,6 @@ class AggStat():
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
-
-    pass
 
     def _perform_event_equalization(self, indy_vals):
         """ Performs event equalisation on input data
@@ -484,10 +479,10 @@ class AggStat():
         # permute fix vals
         fix_vals_permuted = list(itertools.chain.from_iterable(fix_vals))
 
-        # perform EE for each forecast variable
-        for fcst_var, fcst_var_stats in self.params['fcst_var_val'].items():
+        # perform EE for each forecast variable on y1 axis
+        for fcst_var, fcst_var_stats in self.params['fcst_var_val_1'].items():
             for fcst_var_stat in fcst_var_stats:
-                for series_var, series_var_vals in self.params['series_val'].items():
+                for series_var, series_var_vals in self.params['series_val_1'].items():
                     # ungroup series value
                     series_var_vals_no_group = []
                     for val in series_var_vals:
@@ -502,24 +497,75 @@ class AggStat():
                         ]
                     # perform EE on filtered data
                     # for SSVAR use equalization of multiple events
-                    series_data_after_ee = \
-                        event_equalize(series_data_for_ee, self.params['indy_var'], indy_vals,
-                                       self.params['series_val'],
-                                       list(self.params['fixed_vars_vals_input'].keys()),
-                                       fix_vals_permuted, True, self.params['line_type'] == "ssvar")
+                series_data_after_ee = \
+                    event_equalize(series_data_for_ee, self.params['indy_var'], indy_vals,
+                                   self.params['series_val_1'],
+                                   list(self.params['fixed_vars_vals_input'].keys()),
+                                   fix_vals_permuted, True, self.params['line_type'] == "ssvar")
 
-                    # append EE data to result
-                    if output_ee_data.empty:
-                        output_ee_data = series_data_after_ee
-                    else:
-                        output_ee_data.append(series_data_after_ee)
+                # append EE data to result
+                if output_ee_data.empty:
+                    output_ee_data = series_data_after_ee
+                else:
+                    output_ee_data = output_ee_data.append(series_data_after_ee)
+
+        # if the second Y axis is present - run event equalizer on Y1
+        # and then run event equalizer on Y1 and Y2 equalized data
+
+        if self.params['series_val_2']:
+            output_ee_data_2 = pd.DataFrame()
+            # perform EE for each forecast variable from Y2
+            for fcst_var, fcst_var_stats in self.params['fcst_var_val_2'].items():
+                for fcst_var_stat in fcst_var_stats:
+                    for series_var, series_var_vals in self.params['series_val_2'].items():
+                        # ungroup series value
+                        series_var_vals_no_group = []
+                        for val in series_var_vals:
+                            split_val = val.split(',')
+                            series_var_vals_no_group.extend(split_val)
+
+                        # filter input data based on fcst_var, statistic
+                        # and all series variables values
+                        series_data_for_ee = self.input_data[
+                            (self.input_data['fcst_var'] == fcst_var)
+                            & (self.input_data["stat_name"] == fcst_var_stat)
+                            & (self.input_data[series_var].isin(series_var_vals_no_group))
+                            ]
+                        # perform EE on filtered data
+                        # for SSVAR use equalization of multiple events
+                        series_data_after_ee = \
+                            event_equalize(series_data_for_ee, self.params['indy_var'], indy_vals,
+                                           self.params['series_val_2'],
+                                           list(self.params['fixed_vars_vals_input'].keys()),
+                                           fix_vals_permuted, True,
+                                           self.params['line_type'] == "ssvar")
+
+                        # append EE data to result
+                        if output_ee_data_2.empty:
+                            output_ee_data_2 = series_data_after_ee
+                        else:
+                            output_ee_data = output_ee_data_2.append(series_data_after_ee)
+            output_ee_data = output_ee_data.drop('equalize', axis=1)
+            output_ee_data_2 = output_ee_data_2.drop('equalize', axis=1)
+            all_ee_records = output_ee_data.append(output_ee_data_2).reindex()
+            all_series_vars = {}
+            for key in self.params['series_val_2']:
+                all_series_vars[key] = np.unique(self.params['series_val_2'][key]
+                                                 + self.params['series_val_2'][key])
+
+            output_ee_data = event_equalize(all_ee_records, self.params['indy_var'], indy_vals,
+                                            all_series_vars,
+                                            list(self.params['fixed_vars_vals_input'].keys()),
+                                            fix_vals_permuted, True,
+                                            self.params['line_type'] == "ssvar")
+
         output_ee_data = output_ee_data.drop('equalize', axis=1)
         self.input_data = output_ee_data
 
-    def _get_bootstrapped_stats_for_derived(self, series, distributions):
+    def _get_bootstrapped_stats_for_derived(self, series, distributions, axis="1"):
         """ Calculates aggregation derived statistic value and CI intervals if needed for input data
             Args:
-                series: array of lenght =3 where
+                series: array of length = 3 where
                 1st element - derived series title,
                     ex. 'DIFF(ENS001v3.6.1_d01 DPT FBAR-ENS001v3.6.1_d02 DPT FBAR)'
                 others  - additional values like indy val and statistic
@@ -531,25 +577,32 @@ class AggStat():
 
         """
 
+        # get derived name
+        derived_name = ''
+        for operation in OPERATION_TO_SIGN:
+            for point_component in series:
+                if point_component.startswith((operation + '(', operation + ' (')):
+                    derived_name = point_component
+                    break
         # find all components for the 1st and 2nd series
-        derived_curve_component = self.derived_name_to_values[series[0]]
+        derived_curve_component = self.derived_name_to_values[derived_name]
         permute_for_first_series = derived_curve_component.first_component.copy()
         permute_for_first_series.extend(list(series[1:]))
         permute_for_first_series = unique(permute_for_first_series)
 
         # replace first_series components group names to values
-        for i in range(len(permute_for_first_series)):
-            if permute_for_first_series[i] in self.group_to_value:
-                permute_for_first_series[i] = self.group_to_value[permute_for_first_series[i]]
+        for i, perm in enumerate(permute_for_first_series):
+            if perm in self.group_to_value:
+                permute_for_first_series[i] = self.group_to_value[perm]
 
         permute_for_second_series = derived_curve_component.second_component.copy()
         permute_for_second_series.extend(list(series[1:]))
         permute_for_second_series = unique(permute_for_second_series)
 
         # replace second_series components group names to values
-        for i in range(len(permute_for_second_series)):
-            if permute_for_second_series[i] in self.group_to_value:
-                permute_for_second_series[i] = self.group_to_value[permute_for_second_series[i]]
+        for i, perm in enumerate(permute_for_second_series):
+            if perm in self.group_to_value:
+                permute_for_second_series[i] = self.group_to_value[perm]
 
         ds_1 = None
         ds_2 = None
@@ -572,8 +625,8 @@ class AggStat():
                                                 upper_bound=None)
 
         # validate data
-        self._validate_series_cases_for_derived_operation(ds_1.values)
-        self._validate_series_cases_for_derived_operation(ds_2.values)
+        self._validate_series_cases_for_derived_operation(ds_1.values, axis)
+        self._validate_series_cases_for_derived_operation(ds_2.values, axis)
 
         if self.params['num_iterations'] == 1:
             # don't need bootstrapping and CI calculation -
@@ -585,6 +638,7 @@ class AggStat():
             results = BootstrapDistributionResults(lower_bound=None,
                                                    value=round_half_up(stat_val[0], 5),
                                                    upper_bound=None)
+            results.set_distributions([results.value])
         else:
             # need bootstrapping and CI calculation in addition to the derived statistic
 
@@ -601,14 +655,22 @@ class AggStat():
                     num_threads=self.params['num_threads'],
                     ci_method=self.params['method'],
                     alpha=self.params['alpha'],
-                    save_data=False)
-
+                    save_data=False,
+                    save_distributions=derived_curve_component.derived_operation == 'DIFF_SIG')
             except KeyError as err:
                 results = bootstrapped.bootstrap.BootstrapResults(None, None, None)
                 print(err)
+
+        if derived_curve_component.derived_operation == 'DIFF_SIG':
+            distribution_mean = np.mean(results.distributions)
+            distribution_under_h0 = results.distributions - distribution_mean
+            pval = np.mean(np.absolute(distribution_under_h0) <= np.absolute(results.distributions))
+            diff_sig = perfect_score_adjustment(ds_1.value, ds_2.value, self.statistic, pval)
+            results.value = diff_sig
+
         return results
 
-    def _get_bootstrapped_stats(self, series_data):
+    def _get_bootstrapped_stats(self, series_data, axis="1"):
         """ Calculates aggregation statistic value and CI intervals if needed for input data
             Args:
                 series_data: pandas data frame
@@ -624,7 +686,7 @@ class AggStat():
                                                 upper_bound=None)
         # check if derived series are present
         has_derived_series = False
-        if self.params['derived_series']:
+        if self.params['derived_series_' + axis]:
             has_derived_series = True
 
         # sort data by dates
@@ -665,7 +727,7 @@ class AggStat():
                 print(err)
         return results
 
-    def _validate_series_cases_for_derived_operation(self, series_data):
+    def _validate_series_cases_for_derived_operation(self, series_data, axis="1"):
         """ Checks if the derived curve can be calculated.
             The criteria - input array must have only unique
             (fcst_valid, fcst_lead, stat_name) cases.
@@ -708,7 +770,7 @@ class AggStat():
         # the length of the frame with unique combinations should be the same
         # as the number of unique combinations calculated before
         if len(series_data) != unique_date_size \
-                and self.params['list_stat'] not in self.EXEMPTED_VARS:
+                and self.params['list_stat_' + axis] not in self.EXEMPTED_VARS:
             raise NameError("Derived curve can't be calculated."
                             " Multiple values for one valid date/fcst_lead")
 
@@ -737,7 +799,7 @@ class AggStat():
         result['nstats'] = [None] * row_number
         return result
 
-    def _get_derived_points(self, series_val, indy_vals):
+    def _get_derived_points(self, series_val, indy_vals, axis="1"):
         """identifies and returns as an list all possible derived points values
 
             Args:
@@ -748,7 +810,7 @@ class AggStat():
         """
         series_var = list(series_val.keys())[-1]
         # for each derived series
-        for derived_serie in self.params['derived_series']:
+        for derived_serie in self.params['derived_series_' + axis]:
             derived_val = series_val.copy()
             derived_val[series_var] = None
             # series 1 components
@@ -776,6 +838,98 @@ class AggStat():
 
             return list(itertools.product(*derived_val.values()))
 
+    def _proceed_with_axis(self, indy_vals, axis="1"):
+        if not self.input_data.empty:
+            # identify all possible points values by adding series values, indy values
+            # and statistics and then permute them
+            series_val = self.params['series_val_' + axis]
+            all_fields_values = series_val.copy()
+            all_fields_values[self.params['indy_var']] = indy_vals
+            all_fields_values['stat_name'] = self.params['list_stat_' + axis]
+            all_points = list(itertools.product(*all_fields_values.values()))
+
+            if self.params['derived_series_' + axis]:
+                # identifies and add all possible derived points values
+                all_points.extend(self._get_derived_points(series_val, indy_vals, axis))
+
+            # init the template for output frame
+            out_frame = self._init_out_frame(all_fields_values.keys(), all_points)
+
+            point_ind = 0
+
+            # for the each statistic
+            for stat_upper in self.params['list_stat_' + axis]:
+                # save the value to the class variable
+                self.statistic = stat_upper.lower()
+                point_to_distrib = {}
+                # for each point
+                for point in all_points:
+                    is_derived = is_derived_point(point)
+                    if not is_derived:
+
+                        # filter point data
+                        all_filters = []
+                        filters_wihtout_indy = []
+                        for field_ind, field in enumerate(all_fields_values.keys()):
+
+                            filter_value = point[field_ind]
+                            if "," in filter_value:
+                                filter_list = filter_value.split(',')
+                            elif ";" in filter_value:
+                                filter_list = filter_value.split(';')
+                            else:
+                                filter_list = [filter_value]
+                            for i, filter_val in enumerate(filter_list):
+                                if is_string_integer(filter_val):
+                                    filter_list[i] = int(filter_val)
+                            if field != self.params['indy_var']:
+                                filters_wihtout_indy. \
+                                    append((self.input_data[field].isin(filter_list)))
+
+                            all_filters.append((self.input_data[field].isin(filter_list)))
+
+                        # use numpy to select the rows where any record evaluates to True
+                        mask = np.array(all_filters).all(axis=0)
+                        point_data = self.input_data.loc[mask]
+
+                        if self.params['line_type'] == 'pct':
+                            mask_wihtout_indy = np.array(filters_wihtout_indy).all(axis=0)
+                            point_data_wihtout_indy = self.input_data.loc[mask_wihtout_indy]
+                            n_i = [row.oy_i + row.on_i for index, row
+                                   in point_data_wihtout_indy.iterrows()]
+                            sum_n_i_orig = sum(n_i)
+                            oy_total = sum(point_data_wihtout_indy['oy_i'].to_numpy())
+                            o_bar = oy_total / sum_n_i_orig
+
+                            point_data.insert(len(point_data.columns), 'T', sum_n_i_orig)
+                            point_data.insert(len(point_data.columns), 'oy_total', oy_total)
+                            point_data.insert(len(point_data.columns), 'o_bar', o_bar)
+
+                        # calculate bootstrap results
+                        bootstrap_results = self._get_bootstrapped_stats(point_data, axis)
+                        # save bootstrap results
+                        point_to_distrib[point] = bootstrap_results
+                        n_stats = len(point_data)
+
+                    else:
+                        # calculate bootstrap results for the derived point
+                        bootstrap_results = self._get_bootstrapped_stats_for_derived(
+                            point,
+                            point_to_distrib,
+                            axis)
+                        n_stats = 0
+
+                    # save results to the output data frame
+                    out_frame['stat_value'][point_ind] = bootstrap_results.value
+                    out_frame['stat_bcl'][point_ind] = bootstrap_results.lower_bound
+                    out_frame['stat_bcu'][point_ind] = bootstrap_results.upper_bound
+                    out_frame['nstats'][point_ind] = n_stats
+
+                    point_ind = point_ind + 1
+        else:
+            out_frame = pd.DataFrame()
+        return out_frame
+
     def calculate_value_and_ci(self):
         """ Calculates aggregated statistics and confidants intervals
             ( if parameter num_iterations > 1) for each series point
@@ -785,7 +939,7 @@ class AggStat():
         if not self.input_data.empty:
 
             # set random seed if present
-            if self.params['random_seed'] is not None:
+            if self.params['random_seed'] is not None and self.params['random_seed'] != 'None':
                 np.random.seed(self.params['random_seed'])
 
             is_event_equal = parse_bool(self.params['event_equal'])
@@ -801,8 +955,8 @@ class AggStat():
                 self.column_names = np.append(self.column_names, 'oy_total')
                 self.column_names = np.append(self.column_names, 'o_bar')
 
-            # perform groupping
-            series_val = self.params['series_val']
+            # perform grouping
+            series_val = self.params['series_val_1']
             group_to_value_index = 1
             if series_val:
                 for key in series_val.keys():
@@ -812,104 +966,39 @@ class AggStat():
                             self.group_to_value[new_name] = val
                             group_to_value_index = group_to_value_index + 1
 
+            series_val = self.params['series_val_2']
+            if series_val:
+                group_to_value_index = 1
+                if series_val:
+                    for key in series_val.keys():
+                        for val in series_val[key]:
+                            if ',' in val:
+                                new_name = 'Group_y2_' + str(group_to_value_index)
+                                self.group_to_value[new_name] = val
+                                group_to_value_index = group_to_value_index + 1
+
             # perform EE if needed
             if is_event_equal:
                 self._perform_event_equalization(indy_vals)
 
-            if not self.input_data.empty:
+            # get results for axis1
+            out_frame = self._proceed_with_axis(indy_vals, "1")
 
-                # TODO contourDiff adjustments
-
-                # identify all possible points values by adding series values, indy values
-                # and statistics and then permute them
-                all_fields_values = series_val.copy()
-                all_fields_values[self.params['indy_var']] = indy_vals
-                all_fields_values['stat_name'] = self.params['list_stat']
-                all_points = list(itertools.product(*all_fields_values.values()))
-
-                if self.params['derived_series']:
-                    # identifies and add all possible derived points values
-                    all_points.extend(self._get_derived_points(series_val, indy_vals))
-
-                # init the template for output frame
-                out_frame = self._init_out_frame(all_fields_values.keys(), all_points)
-
-                point_ind = 0
-
-                # for the each statistic
-                for stat_upper in self.params['list_stat']:
-                    # save the value to the class variable
-                    self.statistic = stat_upper.lower()
-                    point_to_distrib = {}
-                    # for each point
-                    for point in all_points:
-                        is_derived = is_derived_point(point)
-                        if not is_derived:
-
-                            # filter point data
-                            all_filters = []
-                            filters_wihtout_indy = []
-                            for field_ind, field in enumerate(all_fields_values.keys()):
-
-                                filter_value = point[field_ind]
-                                if "," in filter_value:
-                                    filter_list = filter_value.split(',')
-                                elif ";" in filter_value:
-                                    filter_list = filter_value.split(';')
-                                else:
-                                    filter_list = [filter_value]
-                                for i, filter_val in enumerate(filter_list):
-                                    if is_string_integer(filter_list[i]):
-                                        filter_list[i] = int(filter_list[i])
-                                if field != self.params['indy_var']:
-                                    filters_wihtout_indy.append((self.input_data[field].isin(filter_list)))
-
-                                all_filters.append((self.input_data[field].isin(filter_list)))
-
-                            # use numpy to select the rows where any record evaluates to True
-                            mask = np.array(all_filters).all(axis=0)
-                            point_data = self.input_data.loc[mask]
-
-                            if self.params['line_type'] == 'pct':
-                                mask_wihtout_indy = np.array(filters_wihtout_indy).all(axis=0)
-                                point_data_wihtout_indy = self.input_data.loc[mask_wihtout_indy]
-                                n_i = [row.oy_i + row.on_i for index, row in point_data_wihtout_indy.iterrows()]
-                                sum_n_i_orig = sum(n_i)
-                                oy_total = sum(point_data_wihtout_indy['oy_i'].to_numpy())
-                                o_bar = oy_total / sum_n_i_orig
-
-                                point_data.insert(len(point_data.columns), 'T', sum_n_i_orig)
-                                point_data.insert(len(point_data.columns), 'oy_total', oy_total)
-                                point_data.insert(len(point_data.columns), 'o_bar', o_bar)
-
-                            # calculate bootstrap results
-                            bootstrap_results = self._get_bootstrapped_stats(point_data)
-                            # save bootstrap results
-                            point_to_distrib[point] = bootstrap_results
-                            n_stats = len(point_data)
-
-                        else:
-                            # calculate bootstrap results for the derived point
-                            bootstrap_results = self._get_bootstrapped_stats_for_derived(
-                                point,
-                                point_to_distrib)
-                            n_stats = 0
-
-                        # save results to the output data frame
-                        out_frame['stat_value'][point_ind] = bootstrap_results.value
-                        out_frame['stat_bcl'][point_ind] = bootstrap_results.lower_bound
-                        out_frame['stat_bcu'][point_ind] = bootstrap_results.upper_bound
-                        out_frame['nstats'][point_ind] = n_stats
-
-                        point_ind = point_ind + 1
-            else:
-                out_frame = pd.DataFrame()
-
+            # get results for axis2 if needed
+            if self.params['series_val_2']:
+                out_frame = out_frame.append(self._proceed_with_axis(indy_vals, "2"))
         else:
             out_frame = pd.DataFrame()
 
+        header = True
+        mode = 'w'
+
+        if 'append_to_file' in self.params.keys() and self.params['append_to_file'] == 'True':
+            header = False
+            mode = 'a'
+
         export_csv = out_frame.to_csv(self.params['agg_stat_output'],
-                                      index=None, header=True,
+                                      index=None, header=header, mode=mode,
                                       sep="\t", na_rep="NA")
 
 

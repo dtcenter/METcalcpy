@@ -39,28 +39,27 @@ def event_equalize(series_data, indy_var, indy_vals, series_var_vals, fix_vars,
     Returns:
         A data frame that contains equalized records
     """
-
+    pd.options.mode.chained_assignment = None
     column_names = list(series_data)
     exception_columns = ["fcst_valid_beg", 'fcst_lead', 'fcst_valid', 'fcst_init', 'fcst_init_beg']
     if isinstance(fix_vars, str):
         fix_vars = [fix_vars]
-
     if 'fcst_valid_beg' in column_names:
-        series_data['equalize'] = series_data["fcst_valid_beg"].astype(str) \
-                                  + ' ' + series_data["fcst_lead"].astype(str)
+        series_data['equalize'] = series_data.loc[:, 'fcst_valid_beg'].astype(str) \
+                                  + ' ' + series_data.loc[:, 'fcst_lead'].astype(str)
     elif 'fcst_valid' in column_names:
-        series_data['equalize'] = series_data["fcst_valid"].astype(str) + ' ' \
-                                  + series_data["fcst_lead"].astype(str)
+        series_data['equalize'] = series_data.loc[:, 'fcst_valid'].astype(str) + ' ' \
+                                  + series_data.loc[:, 'fcst_lead'].astype(str)
 
     # add independent variable if needed
     if equalize_by_indep and not indy_var and indy_var not in exception_columns:
-        series_data['equalize'] = series_data['equalize'].astype(str) + " " \
-                                  + series_data[indy_var].astype(str)
+        series_data['equalize'] = series_data.loc[:, 'equalize'].astype(str) + " " \
+                                    + series_data.loc[:, indy_var].astype(str)
 
     vars_for_ee = dict()
 
     # add series variables
-    if len(series_var_vals) > 0:
+    if series_var_vals:
         for series_var, series_vals in series_var_vals.items():
             if series_var not in exception_columns:
                 series_vals_no_groups = []

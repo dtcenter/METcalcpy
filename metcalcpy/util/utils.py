@@ -13,7 +13,8 @@ import numpy as np
 OPERATION_TO_SIGN = {
     'DIFF': '-',
     'RATIO': '/',
-    'SS': 'and'
+    'SS': 'and',
+    'DIFF_SIG': '-'
 }
 STR_TO_BOOL = {'True': True, 'False': False}
 
@@ -93,7 +94,7 @@ def calc_derived_curve_value(val1, val2, operation):
         return None
 
     result_val = None
-    if operation == 'DIFF':
+    if operation in ('DIFF', 'DIFF_SIG'):
         result_val = [a - b for a, b in zip(val1, val2)]
     elif operation == 'RATIO':
         if 0 not in val2:
@@ -222,5 +223,59 @@ def sum_column_data_by_name(input_data, columns, column_name, rm_none=True):
                 result = sum(data_array.astype(np.float))
     except TypeError:
         result = None
+
+    return result
+
+
+def perfect_score_adjustment(mean_stats_1, mean_stats_2, statistic, pval):
+    """ Adjusts the perfect score depending on the statistic
+
+        Args:
+            mean_stats_1: statistic value for the 1st point
+            mean_stats_2: statistic value for the 2nd point
+            statistic: name of the statistic
+            pval: perfect score
+
+
+        Returns:
+            Adjusted perfect score or None if statistic is unknown
+    """
+    na_perf_score_stats = ('BASER', 'FMEAN', 'FBAR', 'FSTDEV', 'OBAR', 'OSTDEV',
+                           'FRANK_TIES', 'ORANK_TIES',
+                           'FBAR', 'FSTDEV', 'OBAR', 'OSTDEV', 'RANKS', 'FRANK_TIES',
+                           'ORANK_TIES', 'VL1L2_FBAR', 'VL1L2_OBAR',
+                           'VL1L2_FSTDEV', 'VL1L2_OSTDEV', 'VL1L2_FOSTDEV', 'PSTD_BASER',
+                           'PSTD_RESOLUTION', 'PSTD_UNCERTAINTY',
+                           'PSTD_ROC_AUC', 'NBR_UFSS', 'NBR_F_RATE', 'NBR_O_RATE',
+                           'NBR_BASER', 'NBR_FMEAN')
+
+    zero_perf_score_stats = ('POFD', 'FAR', 'ESTDEV', 'MAE', 'MSE', 'BCMSE',
+                             'RMSE', 'E10', 'E25', 'E50', 'E75',
+                             'E90', 'EIQR', 'MAD', 'ME2', 'ME', 'ESTDEV', 'ODDS',
+                             'LODDS', 'VL1L2_MSE', 'VL1L2_RMSE',
+                             'VL1L2_RMSVE', 'PSTD_BRIER', 'PSTD_RELIABILITY',
+                             'NBR_FBS', 'VL1L2_SPEED_ERR',
+                             'NBR_POFD', 'NBR_FAR', 'NBR_ODDS')
+
+    one_perf_score_stats = ('ACC', 'FBIAS', 'PODY', 'PODN', 'CSI', 'GSS',
+                            'HK', 'HSS', 'ORSS', 'EDS', 'SEDS',
+                            'EDI', 'SEDI', 'BAGSS', 'PR_CORR', 'SP_CORR',
+                            'KT_CORR', 'MBIAS', 'ANOM_CORR',
+                            'VL1L2_BIAS', 'VL1L2_CORR',
+                            'PSTD_BSS', 'PSTD_BSS_SMPL', 'NBR_FSS', 'NBR_AFSS',
+                            'VAL1L2_ANOM_CORR', 'NBR_ACC',
+                            'NBR_FBIAS', 'NBR_PODY',
+                            'NBR_PODN', 'NBR_CSI', 'NBR_GSS', 'NBR_HK', 'NBR_HSS')
+
+    if statistic.upper() in na_perf_score_stats:
+        result = None
+    elif statistic.upper() in zero_perf_score_stats \
+            and abs(mean_stats_1) > abs(mean_stats_2):
+        result = pval * -1
+    elif statistic.upper() in one_perf_score_stats \
+            and abs(mean_stats_1 - 1) > abs(mean_stats_2 - 1):
+        result = pval * -1
+    else:
+        result = pval
 
     return result
