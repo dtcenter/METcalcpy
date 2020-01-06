@@ -80,7 +80,7 @@ def _sort_data(series_data):
 
 class AggStat():
     """A class that performs aggregation statistic logic on input data frame.
-           All parameters including data description ann location is in the parameters dictionary
+           All parameters including data description and location is in the parameters dictionary
            Usage:
                 initialise this call with the parameters dictionary and than
                 call calculate_value_and_ci method
@@ -92,8 +92,8 @@ class AggStat():
     def __init__(self, in_params):
         """Initialises the class by saving input parameters and reading data from file
 
-             Args:
-                 in_params - input parameters as a dictionary
+            Args:
+                in_params - input parameters as a dictionary
         """
 
         self.statistic = None
@@ -229,6 +229,8 @@ class AggStat():
                     a bootstrap resample simulation that we wish to aggregate across.
              Returns:
                 a list of calculated statistics
+            Raises:
+                an error
 
         """
         func_name = f'calculate_{self.statistic}'

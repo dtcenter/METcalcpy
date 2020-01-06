@@ -53,7 +53,7 @@ def test_prepare_sl1l2_data(settings):
     series_data = agg_stat.input_data[
         (agg_stat.input_data['model'] == 'ENS001v3.6.1_d01')
         & (agg_stat.input_data["fcst_lead"] == 60000)]
-    agg_stat.statistic = agg_stat.params['list_stat'][0].lower()
+    agg_stat.statistic = agg_stat.params['list_stat_1'][0].lower()
     agg_stat._prepare_sl1l2_data(series_data)
     result = np.array([6532.28230, 4034.79153, 7108.67791, 5379.89956])
     assert np.allclose(result, series_data['fbar'])
@@ -64,7 +64,7 @@ def test_calc_stats(settings):
     series_data = agg_stat.input_data[
         (agg_stat.input_data['model'] == 'ENS001v3.6.1_d01')
         & (agg_stat.input_data["fcst_lead"] == 60000)]
-    agg_stat.statistic = agg_stat.params['list_stat'][0].lower()
+    agg_stat.statistic = agg_stat.params['list_stat_1'][0].lower()
     agg_stat._prepare_sl1l2_data(series_data)
     stat_val = agg_stat._calc_stats(series_data.values)
     assert np.allclose(np.array([192.13042749999997]), stat_val)
@@ -75,7 +75,7 @@ def test_calc_stats_derived(settings):
     series_data_1 = agg_stat.input_data[
         (agg_stat.input_data['model'] == 'ENS001v3.6.1_d01')
         & (agg_stat.input_data["fcst_lead"] == 60000)]
-    agg_stat.statistic = agg_stat.params['list_stat'][0].lower()
+    agg_stat.statistic = agg_stat.params['list_stat_1'][0].lower()
     agg_stat._prepare_sl1l2_data(series_data_1)
 
     series_data_2 = agg_stat.input_data[
@@ -93,7 +93,7 @@ def test_calc_stats_derived(settings):
 
 def test_get_derived_series(settings):
     agg_stat = settings['agg_stat']
-    series_val = agg_stat.params['series_val']
+    series_val = agg_stat.params['series_val_1']
     indy_vals = agg_stat.params['indy_vals']
     result = agg_stat._get_derived_points(series_val, indy_vals)
     expected = [('DIFF(ENS001v3.6.1_d01 DPT FBAR-ENS001v3.6.1_d02 DPT FBAR)', '0', 'FBAR'),
@@ -133,15 +133,20 @@ def settings():
     """
     params = {'random_seed': 1, 'indy_var': 'fcst_lead', 'list_static_val': {'fcst_var': 'DPT'}, 'method': 'perc',
               'num_iterations': 100, 'event_equal': 'True',
-              'derived_series': [['ENS001v3.6.1_d01 DPT FBAR', 'ENS001v3.6.1_d02 DPT FBAR', 'DIFF']],
+              'derived_series_1': [['ENS001v3.6.1_d01 DPT FBAR', 'ENS001v3.6.1_d02 DPT FBAR', 'DIFF']],
+              'derived_series_2': [],
               'agg_stat_input': 'data/agg_stat_and_boot_data.data',
-              'fcst_var_val': {'DPT': ['FBAR']},
+              'fcst_var_val_1': {'DPT': ['FBAR']},
+              'fcst_var_val_2': {},
               'agg_stat_output': 'data/agg_stat_and_boot_output.data',
               'fixed_vars_vals_input': {'fcst_lev': {'fcst_lev_0': ['P100']}},
-              'series_val': {'model': ['ENS001v3.6.1_d01', 'ENS001v3.6.1_d02']}, 'alpha': 0.05, 'line_type': 'sl1l2',
+              'series_val_1': {'model': ['ENS001v3.6.1_d01', 'ENS001v3.6.1_d02']},
+              'series_val_2': {},
+              'alpha': 0.05, 'line_type': 'sl1l2',
               'num_threads': -1,
               'indy_vals': ['0', '30000', '60000', '90000', '120000', '150000', '180000', '210000', '240000'],
-              'list_stat': ['FBAR']}
+              'list_stat_1': ['FBAR'],
+              'list_stat_2': []}
     agg_stat = AggStat(params)
     settings_dict = dict()
     settings_dict['agg_stat'] = agg_stat
