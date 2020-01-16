@@ -14,8 +14,8 @@ def settings():
 
 
 def test_get_ssim(settings):
-    assert settings['compare_diff'].get_ssim() != 1.0
-    assert settings['compare_same'].get_ssim() == 1.0
+    assert settings['compare_diff'].get_mssim() != 1.0
+    assert settings['compare_same'].get_mssim() == 1.0
 
 
 def test_save_difference_image(settings):

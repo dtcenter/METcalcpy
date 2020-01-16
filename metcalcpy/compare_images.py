@@ -1,10 +1,16 @@
 """
 Program Name: compare_images.py
+Required packages:
+ - pip install scikit-image
+ - pip install opencv-python
+ - pip install imutils
 
 How to use:
- - initialise the class
+   #initialise the class
    compare = CompareImages('/path/to/image1', '/path/to/image2')
-   ssim = compare.get_ssim()
+   # get the  mssim value. If vmssim == 1 - images are identical
+   mssim = compare.get_ssim()
+
    compare.save_difference_image(self, '/path/to/image')
    compare.save_difference_image(self, '/path/to/image')
    compare.show_thresh_image(True)
@@ -12,12 +18,12 @@ How to use:
 import argparse
 import imutils
 import cv2
-from skimage.measure import compare_ssim
+from skimage.metrics import structural_similarity
 
 
 class CompareImages:
-    """A class that performs images comparison using Structural Similarity Index (SSIM).
-        The images are considered equal if SSIM = 1
+    """A class that performs images comparison using mean structural similarity index over the image (mssim).
+        The images are considered equal if mssim = 1
         This class has methods to save or display found differences as an image.
         Currently, the following file formats are supported:
        -   Windows bitmaps - *.bmp, *.dib
@@ -33,7 +39,7 @@ class CompareImages:
      """
 
     def __init__(self, image_path_1, image_path_2):
-        """Initialises the class by creating images matrix, SSIM
+        """Initialises the class by creating images matrix, mssim
             and the difference image
 
             Args:
@@ -44,10 +50,10 @@ class CompareImages:
                 (because of missing file, improper permissions, unsupported or invalid format)
         """
         self.image_1 = cv2.imread(image_path_1)
-        if not self.image_1.any():
+        if self.image_1 is None:
             raise KeyError(f'Problems reading the image: {image_path_1}')
         self.image_2 = cv2.imread(image_path_2)
-        if not self.image_2.any():
+        if self.image_2 is None:
             raise KeyError(f'Problems reading the image: {image_path_2}')
 
         # convert the images to grayscale
@@ -56,17 +62,17 @@ class CompareImages:
 
         # compute the Structural Similarity Index (SSIM) between the two
         # images, ensuring that the difference image is returned
-        (self.score, self.diff) = compare_ssim(gray_image_1, gray_image_2, full=True)
-        self.diff = (self.diff * 255).astype("uint8")
+        (self.mssim, self.grad) = structural_similarity(gray_image_1, gray_image_2, full=True)
+        self.grad = (self.grad * 255).astype("uint8")
         self.thresh = None
         self.diff_in_image_1 = None
         self.diff_in_image_2 = None
 
-    def get_ssim(self):
-        """Returns Structural Similarity Index (SSIM) as a float
-            The images are equal if SSIM = 1
+    def get_mssim(self):
+        """Returns mean structural similarity index over the image (mssim) as a float
+            The images are equal if mssim = 1
         """
-        return self.score
+        return self.mssim
 
     def save_difference_image(self, path_to_file):
         """Saves the difference image to the specified file. The image format is chosen based on the
@@ -74,14 +80,14 @@ class CompareImages:
             Args:
                 path_to_file - Name of the file
         """
-        cv2.imwrite(path_to_file, self.diff)
+        cv2.imwrite(path_to_file, self.grad)
 
     def show_difference_image(self, wait_for_key_event=False):
         """ Displays the difference image in the popup window
             Args:
                 wait_for_key_event : If True, The function waitKey waits for a key event infinitely
         """
-        cv2.imshow("Difference", self.diff)
+        cv2.imshow("Difference", self.grad)
         if wait_for_key_event:
             cv2.waitKey(0)
 
@@ -92,7 +98,7 @@ class CompareImages:
 
         # threshold the difference image, followed by finding contours to
         # obtain the regions of the two input images that differ
-        self.thresh = cv2.threshold(self.diff, 0, 255,
+        self.thresh = cv2.threshold(self.grad, 0, 255,
                                     cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
 
     def save_thresh_image(self, path_to_file):
@@ -120,7 +126,7 @@ class CompareImages:
         """This function initialises an image with the computed the bounding box
             on the first input images to represent where the two images differ
         """
-        if not self.thresh:
+        if self.thresh is None:
             self._init_thresh()
         contours = cv2.findContours(self.thresh.copy(), cv2.RETR_EXTERNAL,
                                     cv2.CHAIN_APPROX_SIMPLE)
@@ -138,7 +144,7 @@ class CompareImages:
         """This function initialises an image with the computed the bounding box
             on the second input images to represent where the two images differ
         """
-        if not self.thresh:
+        if self.thresh is None:
             self._init_thresh()
         contours = cv2.findContours(self.thresh.copy(), cv2.RETR_EXTERNAL,
                                     cv2.CHAIN_APPROX_SIMPLE)
@@ -158,7 +164,7 @@ class CompareImages:
             Args:
                 path_to_file - Name of the file
         """
-        if not self.diff_in_image_1:
+        if self.diff_in_image_1 is None:
             self._init_diff_in_image_1()
         cv2.imwrite(path_to_file, self.diff_in_image_1)
 
@@ -167,7 +173,7 @@ class CompareImages:
             Args:
                 wait_for_key_event : If True, The function waitKey waits for a key event infinitely
         """
-        if not self.diff_in_image_1:
+        if self.diff_in_image_1 is None:
             self._init_diff_in_image_1()
         cv2.imshow('Difference in image 1', self.diff_in_image_1)
         if wait_for_key_event:
@@ -204,8 +210,12 @@ if __name__ == "__main__":
                             help="second")
     ARGS = vars(ARG_PARSER.parse_args())
     COMPARE = CompareImages(ARGS["first"], ARGS["second"])
-    SSIM = COMPARE.get_ssim()
-    if SSIM == 1.0:
+    MSSIM = COMPARE.get_mssim()
+    if MSSIM == 1.0:
         print("Images are identical")
     else:
         print("Images are different")
+        COMPARE.show_difference_image()
+        COMPARE.show_thresh_image()
+        COMPARE.show_difference_in_image_1()
+        COMPARE.show_difference_in_image_2(True)
