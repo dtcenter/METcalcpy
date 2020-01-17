@@ -5,7 +5,7 @@ import warnings
 import numpy as np
 import pandas as pd
 from scipy.special import lambertw
-from metcalcpy.util.utils import round_half_up, sum_column_data_by_name
+from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
@@ -31,7 +31,7 @@ def calculate_baser(input_data, columns_names):
         result = (sum(input_data[:, np.where(columns_names == 'fy_oy')[0][0]])
                   + sum(input_data[:, np.where(columns_names == 'fn_oy')[0][0]])) \
                  / sum(input_data[:, np.where(columns_names == 'total')[0][0]])
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -56,7 +56,7 @@ def calculate_acc(input_data, columns_names):
         result = (sum_column_data_by_name(input_data, columns_names, 'fy_oy')
                   + sum_column_data_by_name(input_data, columns_names, 'fn_on')) \
                  / sum_column_data_by_name(input_data, columns_names, 'total')
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -85,7 +85,7 @@ def calculate_fbias(input_data, columns_names):
         oyn = sum_column_data_by_name(input_data, columns_names, 'fy_oy') \
               + sum_column_data_by_name(input_data, columns_names, 'fy_on')
         result = oyn / oy
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -113,7 +113,7 @@ def calculate_fmean(input_data, columns_names):
         oyn = sum_column_data_by_name(input_data, columns_names, 'fy_oy') \
               + sum_column_data_by_name(input_data, columns_names, 'fy_on')
         result = oyn / total
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -138,7 +138,7 @@ def calculate_pody(input_data, columns_names):
         fy_oy = sum_column_data_by_name(input_data, columns_names, 'fy_oy')
         oy = fy_oy + sum_column_data_by_name(input_data, columns_names, 'fn_oy')
         result = fy_oy / oy
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -163,7 +163,7 @@ def calculate_pofd(input_data, columns_names):
         fy_on = sum_column_data_by_name(input_data, columns_names, 'fy_on')
         oy = fy_on + sum_column_data_by_name(input_data, columns_names, 'fn_on')
         result = fy_on / oy
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -188,7 +188,7 @@ def calculate_podn(input_data, columns_names):
         fn_on = sum_column_data_by_name(input_data, columns_names, 'fn_on')
         oy = sum_column_data_by_name(input_data, columns_names, 'fy_on') + fn_on
         result = fn_on / oy
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -213,7 +213,7 @@ def calculate_far(input_data, columns_names):
         fy_on = sum_column_data_by_name(input_data, columns_names, 'fy_on')
         oy = sum_column_data_by_name(input_data, columns_names, 'fy_oy') + fy_on
         result = fy_on / oy
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -240,7 +240,7 @@ def calculate_csi(input_data, columns_names):
              + sum_column_data_by_name(input_data, columns_names, 'fy_on') \
              + sum_column_data_by_name(input_data, columns_names, 'fn_oy')
         result = fy_oy / oy
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -270,7 +270,7 @@ def calculate_gss(input_data, columns_names):
         fn_oy = sum_column_data_by_name(input_data, columns_names, 'fn_oy')
         dbl_c = ((fy_oy + fy_on) / total) * (fy_oy + fn_oy)
         gss = ((fy_oy - dbl_c) / (fy_oy + fy_on + fn_oy - dbl_c))
-        gss = round_half_up(gss, 5)
+        gss = round_half_up(gss, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         gss = None
     warnings.filterwarnings('ignore')
@@ -298,7 +298,7 @@ def calculate_hk(input_data, columns_names):
             result = None
         else:
             result = pody - pofd
-            result = round_half_up(result, 5)
+            result = round_half_up(result, PRECISION)
     except (TypeError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -328,7 +328,7 @@ def calculate_hss(input_data, columns_names):
                 * (fy_oy + sum_column_data_by_name(input_data, columns_names, 'fn_oy'))
         hss = ((fy_oy + sum_column_data_by_name(input_data, columns_names, 'fn_on') - dbl_c)
                / (total - dbl_c))
-        hss = round_half_up(hss, 5)
+        hss = round_half_up(hss, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         hss = None
     warnings.filterwarnings('ignore')
@@ -356,7 +356,7 @@ def calculate_odds(input_data, columns_names):
             result = None
         else:
             result = (pody * (1 - pofd)) / (pofd * (1 - pody))
-            result = round_half_up(result, 5)
+            result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -385,7 +385,7 @@ def calculate_lodds(input_data, columns_names):
         if fy_oy is None or fy_on is None or fn_oy is None or fn_on is None:
             return None
         v = np.log(fy_oy) + np.log(fn_on) - np.log(fy_on) - np.log(fn_oy)
-        v = round_half_up(v, 5)
+        v = round_half_up(v, PRECISION)
     except (TypeError, Warning):
         v = None
     warnings.filterwarnings('ignore')
@@ -420,7 +420,7 @@ def calculate_bagss(input_data, columns_names):
         lambert = lambertw(dbl_o / fy_on * dbl_lf).real
         dbl_ha = dbl_o - (fy_on / dbl_lf) * lambert
         result = (dbl_ha - (dbl_o ** 2 / total)) / (2 * dbl_o - dbl_ha - (dbl_o ** 2 / total))
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -454,7 +454,7 @@ def calculate_eclv(input_data, columns_names):
         eclv = calculate_economic_value(np.array([fy_oy, fy_on, fn_oy, fn_on]), cl_pts)
         common_cases_ind = pd.Series(eclv['cl']).isin(cl_pts)
         v = eclv['V'][common_cases_ind]
-        v = round_half_up(v, 5)
+        v = round_half_up(v, PRECISION)
     except (TypeError, Warning):
         v = None
     warnings.filterwarnings('ignore')
@@ -498,7 +498,7 @@ def calculate_economic_value(values, cost_lost_ratio=np.arange(start=0.05, stop=
 
             v_max = h - f
             result = {'vmax': v_max, 'V': v, 'F': f, 'H': h, 'cl': cl_local, 's': s, 'n': n}
-            result = round_half_up(result, 5)
+            result = round_half_up(result, PRECISION)
         else:
             result = None
     except (TypeError, ZeroDivisionError, Warning):

@@ -2,7 +2,7 @@
 Program Name: grad_statistics.py
 """
 import warnings
-from metcalcpy.util.utils import round_half_up, sum_column_data_by_name
+from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
@@ -26,7 +26,7 @@ def calculate_fgbar(input_data, columns_names):
     try:
         total = sum_column_data_by_name(input_data, columns_names, 'total')
         result = sum_column_data_by_name(input_data, columns_names, 'fgbar') / total
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -50,7 +50,7 @@ def calculate_ogbar(input_data, columns_names):
     try:
         total = sum_column_data_by_name(input_data, columns_names, 'total')
         result = sum_column_data_by_name(input_data, columns_names, 'ogbar') / total
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -75,7 +75,7 @@ def calculate_mgbar(input_data, columns_names):
     try:
         total = sum_column_data_by_name(input_data, columns_names, 'total')
         result = sum_column_data_by_name(input_data, columns_names, 'mgbar') / total
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -99,7 +99,7 @@ def calculate_egbar(input_data, columns_names):
     try:
         total = sum_column_data_by_name(input_data, columns_names, 'total')
         result = sum_column_data_by_name(input_data, columns_names, 'egbar') / total
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -125,7 +125,7 @@ def calculate_s1(input_data, columns_names):
         egbar = sum_column_data_by_name(input_data, columns_names, 'egbar') / total
         mgbar = sum_column_data_by_name(input_data, columns_names, 'mgbar') / total
         result = 100 * egbar / mgbar
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -151,7 +151,7 @@ def calculate_s1_og(input_data, columns_names):
         egbar = sum_column_data_by_name(input_data, columns_names, 'egbar') / total
         ogbar = sum_column_data_by_name(input_data, columns_names, 'ogbar') / total
         result = 100 * egbar / ogbar
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -177,7 +177,7 @@ def calculate_fgog_ratio(input_data, columns_names):
         fgbar = sum_column_data_by_name(input_data, columns_names, 'fgbar') / total
         ogbar = sum_column_data_by_name(input_data, columns_names, 'ogbar') / total
         result = 100 * fgbar / ogbar
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')

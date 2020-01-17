@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 
 from metcalcpy.util.statistics import get_column_index_by_name
-from metcalcpy.util.utils import round_half_up, sum_column_data_by_name
+from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
@@ -37,7 +37,7 @@ def calculate_pstd_brier(input_data, columns_names):
         uncertainty = calc_uncertainty(o_bar)
 
         brier = reliability - resolution + uncertainty
-        result = round_half_up(brier, 5)
+        result = round_half_up(brier, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -68,7 +68,7 @@ def calculate_pstd_bss_smpl(input_data, columns_names):
         uncertainty = calc_uncertainty(o_bar)
 
         bss_smpl = (resolution - reliability) / uncertainty
-        result = round_half_up(bss_smpl, 5)
+        result = round_half_up(bss_smpl, PRECISION)
 
     except (TypeError, ZeroDivisionError, Warning):
         result = None
@@ -91,7 +91,7 @@ def calculate_pstd_baser(input_data, columns_names):
     warnings.filterwarnings('error')
     try:
         baser = input_data[0, get_column_index_by_name(columns_names, 'o_bar')]
-        result = round_half_up(baser, 5)
+        result = round_half_up(baser, PRECISION)
 
     except (TypeError, ZeroDivisionError, Warning):
         result = None
@@ -118,7 +118,7 @@ def calculate_pstd_reliability(input_data, columns_names):
         T = input_data[0, get_column_index_by_name(columns_names, 'T')]
 
         reliability = calc_reliability(T, df_pct_perm)
-        result = round_half_up(reliability, 5)
+        result = round_half_up(reliability, PRECISION)
 
     except (TypeError, ZeroDivisionError, Warning):
         result = None
@@ -146,7 +146,7 @@ def calculate_pstd_resolution(input_data, columns_names):
         o_bar = input_data[0, get_column_index_by_name(columns_names, 'o_bar')]
 
         resolution = calc_resolution(T, df_pct_perm, o_bar)
-        result = round_half_up(resolution, 5)
+        result = round_half_up(resolution, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -170,7 +170,7 @@ def calculate_pstd_uncertainty(input_data, columns_names):
     try:
         o_bar = input_data[0, get_column_index_by_name(columns_names, 'o_bar')]
         uncertainty = calc_uncertainty(o_bar)
-        result = round_half_up(uncertainty, 5)
+        result = round_half_up(uncertainty, PRECISION)
 
     except (TypeError, ZeroDivisionError, Warning):
         result = None
@@ -212,7 +212,7 @@ def calculate_pstd_roc_auc(input_data, columns_names):
                 roc_auc = roc_auc + 0.5 * (final_roc.iloc[index - 1]['pody'] + row.pody) \
                           * (final_roc.iloc[index - 1]['pofd'] - row.pofd)
 
-        result = round_half_up(roc_auc, 5)
+        result = round_half_up(roc_auc, PRECISION)
 
     except (TypeError, ZeroDivisionError, Warning):
         result = None

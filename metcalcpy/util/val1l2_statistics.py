@@ -4,7 +4,7 @@ Program Name: val1l2_statistics.py
 import warnings
 import numpy as np
 
-from metcalcpy.util.utils import round_half_up, sum_column_data_by_name
+from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
@@ -35,7 +35,7 @@ def calculate_val1l2_anom_corr(input_data, columns_names):
         uvffabar = sum_column_data_by_name(input_data, columns_names, 'uvffabar') / total
         uvooabar = sum_column_data_by_name(input_data, columns_names, 'uvooabar') / total
         result = calc_wind_corr(ufabar, vfabar, uoabar, voabar, uvfoabar, uvffabar, uvooabar)
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, Warning):
         result = None
     warnings.filterwarnings('ignore')

@@ -7,7 +7,6 @@ __version__ = '0.1.0'
 __email__ = 'met_help@ucar.edu'
 
 import math
-
 import numpy as np
 
 OPERATION_TO_SIGN = {
@@ -17,6 +16,9 @@ OPERATION_TO_SIGN = {
     'DIFF_SIG': '-'
 }
 STR_TO_BOOL = {'True': True, 'False': False}
+
+# precision value for statistics calculations
+PRECISION = 14
 
 
 def represents_int(possible_int):

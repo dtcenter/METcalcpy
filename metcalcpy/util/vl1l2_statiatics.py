@@ -5,7 +5,7 @@ import warnings
 import numpy as np
 
 from metcalcpy.util.statistics import calc_speed
-from metcalcpy.util.utils import round_half_up, sum_column_data_by_name
+from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
@@ -31,7 +31,7 @@ def calculate_vl1l2_bias(input_data, columns_names):
         uvffbar = sum_column_data_by_name(input_data, columns_names, 'uvffbar') / total
         uvoobar = sum_column_data_by_name(input_data, columns_names, 'uvoobar') / total
         bias = np.sqrt(uvffbar) - np.sqrt(uvoobar)
-        result = round_half_up(bias, 5)
+        result = round_half_up(bias, PRECISION)
     except (TypeError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -57,7 +57,7 @@ def calculate_vl1l2_fvar(input_data, columns_names):
         uvffbar = sum_column_data_by_name(input_data, columns_names, 'uvffbar') / total
         f_speed_bar = sum_column_data_by_name(input_data, columns_names, 'f_speed_bar') / total
         result = uvffbar - f_speed_bar * f_speed_bar
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -83,7 +83,7 @@ def calculate_vl1l2_ovar(input_data, columns_names):
         uvoobar = sum_column_data_by_name(input_data, columns_names, 'uvoobar') / total
         o_speed_bar = sum_column_data_by_name(input_data, columns_names, 'o_speed_bar') / total
         result = uvoobar - o_speed_bar * o_speed_bar
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -109,7 +109,7 @@ def calculate_vl1l2_fspd(input_data, columns_names):
         ufbar = sum_column_data_by_name(input_data, columns_names, 'ufbar') / total
         vfbar = sum_column_data_by_name(input_data, columns_names, 'vfbar') / total
         fspd = calc_speed(ufbar, vfbar)
-        result = round_half_up(fspd, 5)
+        result = round_half_up(fspd, PRECISION)
     except (TypeError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -135,7 +135,7 @@ def calculate_vl1l2_ospd(input_data, columns_names):
         uobar = sum_column_data_by_name(input_data, columns_names, 'uobar') / total
         vobar = sum_column_data_by_name(input_data, columns_names, 'vobar') / total
         ospd = calc_speed(uobar, vobar)
-        result = round_half_up(ospd, 5)
+        result = round_half_up(ospd, PRECISION)
     except (TypeError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -159,7 +159,7 @@ def calculate_vl1l2_speed_err(input_data, columns_names):
     try:
         speed_bias = calculate_vl1l2_fspd(input_data, columns_names) \
                      - calculate_vl1l2_ospd(input_data, columns_names)
-        result = round_half_up(speed_bias, 5)
+        result = round_half_up(speed_bias, PRECISION)
     except (TypeError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -189,7 +189,7 @@ def calculate_vl1l2_msve(input_data, columns_names):
         if msve < 0:
             result = None
         else:
-            result = round_half_up(msve, 5)
+            result = round_half_up(msve, PRECISION)
     except (TypeError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -210,7 +210,7 @@ def calculate_vl1l2_rmsve(input_data, columns_names):
     warnings.filterwarnings('error')
     try:
         rmsve = np.sqrt(calculate_vl1l2_msve(input_data, columns_names))
-        result = round_half_up(rmsve, 5)
+        result = round_half_up(rmsve, PRECISION)
     except (TypeError, Warning):
         result = None
     warnings.filterwarnings('ignore')

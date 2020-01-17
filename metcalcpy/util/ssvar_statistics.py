@@ -9,7 +9,7 @@ from metcalcpy.util.sl1l2_statistics import calculate_fbar, calculate_fstdev,\
     calculate_pr_corr, calculate_me, calculate_estdev, calculate_mse,\
     calculate_bcmse, calculate_bcrmse, calculate_rmse, \
     calculate_anom_corr, calculate_me2, calculate_msess
-from metcalcpy.util.utils import round_half_up, sum_column_data_by_name
+from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
@@ -259,7 +259,7 @@ def calculate_ssvar_spread(input_data, columns_names):
         total = sum_column_data_by_name(input_data, columns_names, 'total')
         var_mean = sum_column_data_by_name(input_data, columns_names, 'var_mean') / total
         result = np.sqrt(var_mean)
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')

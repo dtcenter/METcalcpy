@@ -3,7 +3,7 @@ Program Name: sl1l2_statistics.py
 """
 import warnings
 import numpy as np
-from metcalcpy.util.utils import round_half_up, sum_column_data_by_name
+from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
@@ -27,7 +27,7 @@ def calculate_fbar(input_data, columns_names):
     try:
         total = sum_column_data_by_name(input_data, columns_names, 'total')
         result = sum_column_data_by_name(input_data, columns_names, 'fbar') / total
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -51,7 +51,7 @@ def calculate_obar(input_data, columns_names):
     try:
         total = sum_column_data_by_name(input_data, columns_names, 'total')
         result = sum_column_data_by_name(input_data, columns_names, 'obar') / total
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -77,7 +77,7 @@ def calculate_fstdev(input_data, columns_names):
         fbar = sum_column_data_by_name(input_data, columns_names, 'fbar') / total
         ffbar = sum_column_data_by_name(input_data, columns_names, 'ffbar') / total
         result = calculate_stddev(fbar * total, ffbar * total, total)
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -103,7 +103,7 @@ def calculate_ostdev(input_data, columns_names):
         obar = sum_column_data_by_name(input_data, columns_names, 'obar') / total
         oobar = sum_column_data_by_name(input_data, columns_names, 'oobar') / total
         result = calculate_stddev(obar * total, oobar * total, total)
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -127,7 +127,7 @@ def calculate_fobar(input_data, columns_names):
     try:
         total = sum_column_data_by_name(input_data, columns_names, 'total')
         result = sum_column_data_by_name(input_data, columns_names, 'fobar') / total
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -151,7 +151,7 @@ def calculate_ffbar(input_data, columns_names):
     try:
         total = sum_column_data_by_name(input_data, columns_names, 'total')
         result = sum_column_data_by_name(input_data, columns_names, 'ffbar') / total
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -175,7 +175,7 @@ def calculate_oobar(input_data, columns_names):
     try:
         total = sum_column_data_by_name(input_data, columns_names, 'total')
         result = sum_column_data_by_name(input_data, columns_names, 'oobar') / total
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -199,7 +199,7 @@ def calculate_mae(input_data, columns_names):
     try:
         total = sum_column_data_by_name(input_data, columns_names, 'total')
         result = sum_column_data_by_name(input_data, columns_names, 'mae') / total
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -228,7 +228,7 @@ def calculate_mbias(input_data, columns_names):
         else:
             fbar = sum_column_data_by_name(input_data, columns_names, 'fbar') / total
             result = fbar / obar
-            result = round_half_up(result, 5)
+            result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -263,7 +263,7 @@ def calculate_pr_corr(input_data, columns_names):
         if v <= 0 or pr_corr > 1:
             pr_corr = None
         else:
-            pr_corr = round_half_up(pr_corr, 5)
+            pr_corr = round_half_up(pr_corr, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         pr_corr = None
     warnings.filterwarnings('ignore')
@@ -300,7 +300,7 @@ def calculate_anom_corr(input_data, columns_names):
         if anom_corr > 1:
             anom_corr = None
         else:
-            anom_corr = round_half_up(anom_corr, 5)
+            anom_corr = round_half_up(anom_corr, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         anom_corr = None
     warnings.filterwarnings('ignore')
@@ -329,7 +329,7 @@ def calculate_rmsfa(input_data, columns_names):
             result = None
         else:
             result = np.sqrt(ffbar)
-            result = round_half_up(result, 5)
+            result = round_half_up(result, PRECISION)
     except (TypeError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -358,7 +358,7 @@ def calculate_rmsoa(input_data, columns_names):
             result = None
         else:
             result = np.sqrt(oobar)
-            result = round_half_up(result, 5)
+            result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -384,7 +384,7 @@ def calculate_me(input_data, columns_names):
         fbar = sum_column_data_by_name(input_data, columns_names, 'fbar') / total
         obar = sum_column_data_by_name(input_data, columns_names, 'obar') / total
         result = fbar - obar
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -408,7 +408,7 @@ def calculate_me2(input_data, columns_names):
     try:
         me = calculate_me(input_data, columns_names)
         result = me ** 2
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -435,7 +435,7 @@ def calculate_mse(input_data, columns_names):
         oobar = sum_column_data_by_name(input_data, columns_names, 'oobar') / total
         fobar = sum_column_data_by_name(input_data, columns_names, 'fobar') / total
         result = ffbar + oobar - 2 * fobar
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -460,7 +460,7 @@ def calculate_msess(input_data, columns_names):
         ostdev = calculate_ostdev(input_data, columns_names)
         mse = calculate_mse(input_data, columns_names)
         result = 1.0 - mse / ostdev ** 2
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -483,7 +483,7 @@ def calculate_rmse(input_data, columns_names):
     warnings.filterwarnings('error')
     try:
         result = np.sqrt(calculate_mse(input_data, columns_names))
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -509,7 +509,7 @@ def calculate_estdev(input_data, columns_names):
         me = calculate_me(input_data, columns_names)
         mse = calculate_mse(input_data, columns_names)
         result = calculate_stddev(me * total, mse * total, total)
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -534,7 +534,7 @@ def calculate_bcmse(input_data, columns_names):
         mse = calculate_mse(input_data, columns_names)
         me = calculate_me(input_data, columns_names)
         result = mse - me ** 2
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, Warning):
         result = None
     warnings.filterwarnings('ignore')
@@ -557,7 +557,7 @@ def calculate_bcrmse(input_data, columns_names):
     warnings.filterwarnings('error')
     try:
         result = np.sqrt(calculate_bcmse(input_data, columns_names))
-        result = round_half_up(result, 5)
+        result = round_half_up(result, PRECISION)
     except (TypeError, Warning):
         result = None
     warnings.filterwarnings('ignore')
