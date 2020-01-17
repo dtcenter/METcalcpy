@@ -21,6 +21,7 @@ How to use:
 
 """
 import argparse
+import glob
 import os
 import datetime as dt
 import sys
@@ -91,7 +92,6 @@ def main(params):
             return_code = process.poll()
             if return_code is not None:
                 break
-
         new_image_path = params['output_plots_dir'] + replace_name(plot_name, 'py')
 
         # check if both images are present or not
@@ -99,6 +99,13 @@ def main(params):
                 and not os.path.exists(new_image_path):
             # if both images don't exist - success
             print(f'SUCCESS: For {plot_name} both images don\'t exist')
+            # remove new XML
+            os.remove(new_xml_file)
+            # remove new script
+            delete_similar_files(params['output_scripts_dir'], plot_name)
+            # remove new data files
+            delete_similar_files(params['output_data_dir'], plot_name)
+
         else:
             # compare images
             try:
@@ -106,10 +113,37 @@ def main(params):
                 ssim = compare.get_mssim()
                 if ssim == 1.0:
                     print(f'SUCCESS: For {plot_name} images are identical')
+                    # remove new image
+                    os.remove(new_image_path)
+                    # remove new XML
+                    os.remove(new_xml_file)
+                    # remove new script
+                    delete_similar_files(params['output_scripts_dir'], plot_name)
+                    # remove new data files
+                    delete_similar_files(params['output_data_dir'], plot_name)
+
                 else:
                     print(f'ERROR: For {plot_name} images are different')
+                    # add more diagnostic images
+                    compare.save_thresh_image(params['output_plots_dir']
+                                              + replace_name(plot_name, 'thresh'))
+
             except KeyError as err:
                 print(f'ERROR: For {plot_name} : {err}')
+
+
+def delete_similar_files(directory, file_name):
+    """ Deletes all files that have the same name but different extensions from the directory
+
+        Args:
+            directory - directory name where to look for files
+            file_name - name of the file to delete
+
+    """
+    for filename in glob.glob(directory
+                              + file_name.split('.')[0]
+                              + '*'):
+        os.remove(filename)
 
 
 def get_test_xml(params):
@@ -123,16 +157,19 @@ def get_test_xml(params):
     """
     # calculate testing period
     (start, end) = get_testing_period(params)
+    print(f'Tested period {start} - {end}')
 
     fresh_xml = []
     # for each fie in the directory check the date and extension
     # and include it to the output list if it fits the criteria
     for file in os.listdir(params['input_xml_dir']):
         file_name = params['input_xml_dir'] + file
-        filetime = dt.datetime.fromtimestamp(os.path.getctime(file_name))
+        filetime = dt.datetime.fromtimestamp(os.path.getmtime(file_name))
         extension = os.path.splitext(file)[1]
-        if end <= filetime.date() <= start and extension == '.xml':
+        if start <= filetime.date() <= end and extension == '.xml':
             fresh_xml.append(file_name)
+
+    fresh_xml.sort()
     return fresh_xml
 
 
@@ -149,13 +186,13 @@ def get_testing_period(params):
         Raises: KeyError if the date range is invalid
     """
     if 'start_date' in params.keys():
-        start = dt.datetime.strptime(params['start_date'], '%Y-%m-%d').date()
+        start = dt.datetime.strptime(str(params['start_date']), '%Y-%m-%d').date()
     else:
         # start = yesterday
         start = (dt.datetime.now() - dt.timedelta(1)).date()
 
     if 'end_date' in params.keys():
-        end = dt.datetime.strptime(params['end_date'], '%Y-%m-%d').date()
+        end = dt.datetime.strptime(str(params['end_date']), '%Y-%m-%d').date()
     else:
         # end = today
         end = dt.datetime.now().date()
