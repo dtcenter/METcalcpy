@@ -88,10 +88,11 @@ def main(params):
         process = subprocess.Popen([params['mv_home'] + '/bin/mv_batch.sh', new_xml_file],
                                    stdout=subprocess.PIPE,
                                    universal_newlines=True)
-        while True:
-            return_code = process.poll()
-            if return_code is not None:
-                break
+
+        (output, err) = process.communicate()
+        p_status = process.wait()
+        #print("Command output: " + output)
+
         new_image_path = params['output_plots_dir'] + replace_name(plot_name, 'py')
 
         # check if both images are present or not
