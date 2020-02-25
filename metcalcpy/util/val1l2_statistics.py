@@ -63,3 +63,20 @@ def calc_wind_corr(uf, vf, uo, vo, uvfo, uvff, uvoo):
     except (TypeError, Warning):
         corr = None
     return corr
+
+
+def calculate_val1l2_total(input_data, columns_names):
+    """Performs calculation of Total number of matched pairs for
+        Vector Anomaly Partial Sums
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated Total number of matched pairs as float
+            or None if some of the data values are missing or invalid
+    """
+    total = sum_column_data_by_name(input_data, columns_names, 'total')
+    return round_half_up(total, PRECISION)

@@ -505,3 +505,181 @@ def calculate_economic_value(values, cost_lost_ratio=np.arange(start=0.05, stop=
         result = None
     warnings.filterwarnings('ignore')
     return result
+
+
+def calculate_ctc_total(input_data, columns_names):
+    """Calculates the Total number of matched pairs for Contingency Table Counts
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated Total number of matched pairs as float
+            or None if some of the data values are missing or invalid
+    """
+    total = sum_column_data_by_name(input_data, columns_names, 'total')
+    return round_half_up(total, PRECISION)
+
+
+def calculate_cts_total(input_data, columns_names):
+    """Calculates the Total number of matched pairs for Contingency Table Statistics
+
+            Args:
+                input_data: 2-dimensional numpy array with data for the calculation
+                    1st dimension - the row of data frame
+                    2nd dimension - the column of data frame
+                columns_names: names of the columns for the 2nd dimension as Numpy array
+
+            Returns:
+                calculated Total number of matched pairs as float
+                or None if some of the data values are missing or invalid
+    """
+    total = sum_column_data_by_name(input_data, columns_names, 'total')
+    return round_half_up(total, PRECISION)
+
+
+def calculate_ctc_fn_on(input_data, columns_names):
+    """Calculates the Number of forecast no and observation no for Contingency Table Statistics
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated Number of forecast no and observation no as float
+            or None if some of the data values are missing or invalid
+    """
+    fn_on = sum_column_data_by_name(input_data, columns_names, 'fn_on')
+    return round_half_up(fn_on, PRECISION)
+
+
+def calculate_ctc_fn_oy(input_data, columns_names):
+    """Calculates the Number of forecast no and observation yes for Contingency Table Statistics
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated Number of forecast no and observation yes as float
+            or None if some of the data values are missing or invalid
+    """
+    fn_oy = sum_column_data_by_name(input_data, columns_names, 'fn_oy')
+    return round_half_up(fn_oy, PRECISION)
+
+
+def calculate_ctc_fy_on(input_data, columns_names):
+    """Calculates the Number of forecast yes and observation no for Contingency Table Statistics
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated Number of forecast yes and observation no as float
+            or None if some of the data values are missing or invalid
+    """
+    fy_on = sum_column_data_by_name(input_data, columns_names, 'fy_on')
+    return round_half_up(fy_on, PRECISION)
+
+
+def calculate_ctc_fy_oy(input_data, columns_names):
+    """Calculates the Number of forecast yes and observation yes for Contingency Table Statistics
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated Number of forecast yes and observation yes as float
+            or None if some of the data values are missing or invalid
+    """
+    fy_oy = sum_column_data_by_name(input_data, columns_names, 'fy_oy')
+    return round_half_up(fy_oy, PRECISION)
+
+
+def calculate_ctc_oy(input_data, columns_names):
+    """Calculates the Total Number of forecast yes and observation yes plus
+        Number of forecast no and observation yes for Contingency Table Statistics
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated OY as float
+            or None if some of the data values are missing or invalid
+    """
+    fy_oy = sum_column_data_by_name(input_data, columns_names, 'fy_oy')
+    fn_oy = sum_column_data_by_name(input_data, columns_names, 'fn_oy')
+    return round_half_up(fy_oy + fn_oy, PRECISION)
+
+
+def calculate_ctc_on(input_data, columns_names):
+    """Calculates the Total Number of forecast yes and observation no plus
+        Number of forecast no and observation no for Contingency Table Statistics
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated ON as float
+            or None if some of the data values are missing or invalid
+    """
+    fy_on = sum_column_data_by_name(input_data, columns_names, 'fy_on')
+    fn_on = sum_column_data_by_name(input_data, columns_names, 'fn_on')
+    return round_half_up(fy_on + fn_on, PRECISION)
+
+
+def calculate_ctc_fy(input_data, columns_names):
+    """Calculates the Total Number of forecast yes and observation no plus
+        Number of forecast yes and observation yes for Contingency Table Statistics
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated FY as float
+            or None if some of the data values are missing or invalid
+    """
+    fy_on = sum_column_data_by_name(input_data, columns_names, 'fy_on')
+    fy_oy = sum_column_data_by_name(input_data, columns_names, 'fy_oy')
+    return round_half_up(fy_on + fy_oy, PRECISION)
+
+
+def calculate_ctc_fn(input_data, columns_names):
+    """Calculates the Total Number of forecast no and observation no plus
+        Number of forecast no and observation yes for Contingency Table Statistics
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated FN as float
+            or None if some of the data values are missing or invalid
+    """
+    fn_on = sum_column_data_by_name(input_data, columns_names, 'fn_on')
+    fn_oy = sum_column_data_by_name(input_data, columns_names, 'fn_oy')
+    return round_half_up(fn_on + fn_oy, PRECISION)

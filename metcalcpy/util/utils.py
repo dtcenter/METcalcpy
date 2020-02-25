@@ -20,6 +20,9 @@ STR_TO_BOOL = {'True': True, 'False': False}
 # precision value for statistics calculations
 PRECISION = 14
 
+TWO_D_DATA_FILTER = {'object_type': '2d'}
+THREE_D_DATA_FILTER = {'object_type': '3d'}
+
 
 def represents_int(possible_int):
     """Checks if the value is integer.
@@ -227,6 +230,55 @@ def sum_column_data_by_name(input_data, columns, column_name, rm_none=True):
         result = None
 
     return result
+
+
+def column_data_by_name_value(input_data, columns, filters):
+    """Filters  the input array by the criteria from the filters array
+
+            Args:
+                input_data: 2-dimensional numpy array with data for the calculation
+                    1st dimension - the row of data frame
+                    2nd dimension - the column of data frame
+                columns: names of the columns for the 2nd dimension as Numpy array
+                filters: a dictionary of filters in 'column': 'value' format
+
+            Returns:
+                filtered 2-dimensional numpy array
+    """
+    input_data_filtered = np.copy(input_data)
+    try:
+        # for each filter
+        for key, value in filters.items():
+            # get an index og the column
+            index_array = np.where(columns == key)[0]
+            if index_array.size == 0:
+                return 0
+
+            filter_ind = input_data_filtered[:, index_array[0]].astype(type(value)) == value
+            input_data_filtered = input_data_filtered[filter_ind]
+
+    except IndexError:
+        input_data_filtered = []
+
+    return input_data_filtered
+
+
+def nrow_column_data_by_name_value(input_data, columns, filters):
+    """Calculates  the number of rows  that satisfy the criteria from the filters array
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns: names of the columns for the 2nd dimension as Numpy array
+            filters: a dictionary of filters in 'column': 'value' format
+
+        Returns:
+            calculated number of rows
+    """
+
+    input_data_filtered = column_data_by_name_value(input_data, columns, filters)
+    return input_data_filtered.shape[0]
 
 
 def perfect_score_adjustment(mean_stats_1, mean_stats_2, statistic, pval):

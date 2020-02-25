@@ -4,9 +4,9 @@ Program Name: ssvar_statistics.py
 import warnings
 import numpy as np
 
-from metcalcpy.util.sl1l2_statistics import calculate_fbar, calculate_fstdev,\
+from metcalcpy.util.sl1l2_statistics import calculate_fbar, calculate_fstdev, \
     calculate_obar, calculate_ostdev, \
-    calculate_pr_corr, calculate_me, calculate_estdev, calculate_mse,\
+    calculate_pr_corr, calculate_me, calculate_estdev, calculate_mse, \
     calculate_bcmse, calculate_bcrmse, calculate_rmse, \
     calculate_anom_corr, calculate_me2, calculate_msess
 from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION
@@ -264,3 +264,20 @@ def calculate_ssvar_spread(input_data, columns_names):
         result = None
     warnings.filterwarnings('ignore')
     return result
+
+
+def calculate_ssvar_total(input_data, columns_names):
+    """Performs calculation of Total number of matched pairs for
+        Spread/Skill Variance
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated Total number of matched pairs as float
+            or None if some of the data values are missing or invalid
+    """
+    total = sum_column_data_by_name(input_data, columns_names, 'total_orig')
+    return round_half_up(total, PRECISION)

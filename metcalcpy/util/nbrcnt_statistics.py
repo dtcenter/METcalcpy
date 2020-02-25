@@ -88,6 +88,7 @@ def calculate_nbr_afss(input_data, columns_names):
     warnings.filterwarnings('ignore')
     return result
 
+
 def calculate_nbr_ufss(input_data, columns_names):
     """Performs calculation of NBR_UFSS - Uniform Fractions Skill Score
 
@@ -105,7 +106,7 @@ def calculate_nbr_ufss(input_data, columns_names):
     try:
         total = sum_column_data_by_name(input_data, columns_names, 'total')
         o_rate = sum_column_data_by_name(input_data, columns_names, 'o_rate') / total
-        ufss = 0.5 + o_rate/2.0
+        ufss = 0.5 + o_rate / 2.0
         result = round_half_up(ufss, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
@@ -159,3 +160,19 @@ def calculate_nbr_o_rate(input_data, columns_names):
         result = None
     warnings.filterwarnings('ignore')
     return result
+
+
+def calculate_nbr_cnt_total(input_data, columns_names):
+    """Performs calculation of Total number of matched pairs for Neighborhood Continuous Statistics
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated Total number of matched pairs as float
+            or None if some of the data values are missing or invalid
+    """
+    total = sum_column_data_by_name(input_data, columns_names, 'total')
+    return round_half_up(total, PRECISION)

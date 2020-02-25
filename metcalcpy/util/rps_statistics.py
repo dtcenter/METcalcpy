@@ -1,0 +1,77 @@
+"""
+Program Name: rps_statistics.py
+"""
+import warnings
+
+from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION
+
+__author__ = 'Tatiana Burek'
+__version__ = '0.1.0'
+__email__ = 'met_help@ucar.edu'
+
+
+def calculate_rps(input_data, columns_names):
+    """Performs calculation of RPS -
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated RPS as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        rps = sum_column_data_by_name(input_data, columns_names, 'rps') / total
+        result = round_half_up(rps, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_rpss(input_data, columns_names):
+    """Performs calculation of RPSS -
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated RPS as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        rps = sum_column_data_by_name(input_data, columns_names, 'rps') / total
+        rps_climo = sum_column_data_by_name(input_data, columns_names, 'rps_climo') / total
+        rpss = 1 - rps / rps_climo
+        result = round_half_up(rpss, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_rps_total(input_data, columns_names):
+    """Performs calculation of Total number of matched pairs for
+        Ranked Probability Score Statistics
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated Total number of matched pairs as float
+            or None if some of the data values are missing or invalid
+    """
+    total = sum_column_data_by_name(input_data, columns_names, 'total')
+    return round_half_up(total, PRECISION)

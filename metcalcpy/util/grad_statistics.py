@@ -182,3 +182,19 @@ def calculate_fgog_ratio(input_data, columns_names):
         result = None
     warnings.filterwarnings('ignore')
     return result
+
+
+def calculate_grad_total(input_data, columns_names):
+    """Performs calculation of Total number of matched pairs for Gradient partial sums
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated Total number of matched pairs as float
+            or None if some of the data values are missing or invalid
+    """
+    total = sum_column_data_by_name(input_data, columns_names, 'total')
+    return round_half_up(total, PRECISION)

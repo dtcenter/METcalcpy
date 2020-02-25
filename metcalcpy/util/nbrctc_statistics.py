@@ -1,12 +1,11 @@
 """
 Program Name: nbrctc_statistics.py
 """
-import warnings
 
-from metcalcpy.util.ctc_statistics import calculate_baser, calculate_acc, calculate_fbias, calculate_fmean, \
-    calculate_pody, calculate_pofd, calculate_podn, calculate_far, calculate_csi, calculate_gss, calculate_hk, \
-    calculate_hss, calculate_odds
-from metcalcpy.util.utils import round_half_up, sum_column_data_by_name
+from metcalcpy.util.ctc_statistics import calculate_baser, calculate_acc, calculate_fbias, \
+    calculate_fmean, calculate_pody, calculate_pofd, calculate_podn, calculate_far, calculate_csi, \
+    calculate_gss, calculate_hk, calculate_hss, calculate_odds
+from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
@@ -232,3 +231,20 @@ def calculate_nbr_odds(input_data, columns_names):
     """
 
     return calculate_odds(input_data, columns_names)
+
+
+def calculate_nbr_ctc_total(input_data, columns_names):
+    """Performs calculation of Total number of matched pairs for
+        Neighborhood Contingency Table Statistics
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated Total number of matched pairs as float
+            or None if some of the data values are missing or invalid
+    """
+    total = sum_column_data_by_name(input_data, columns_names, 'total')
+    return round_half_up(total, PRECISION)

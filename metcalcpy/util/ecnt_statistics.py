@@ -86,7 +86,8 @@ def calculate_ecnt_ign(input_data, columns_names):
 
 
 def calculate_ecnt_me(input_data, columns_names):
-    """Performs calculation of ECNT_ME - The Mean Error of the ensemble mean (unperturbed or supplied)
+    """Performs calculation of ECNT_ME - The Mean Error of the ensemble mean
+    (unperturbed or supplied)
 
         Args:
             input_data: 2-dimensional numpy array with data for the calculation
@@ -110,7 +111,8 @@ def calculate_ecnt_me(input_data, columns_names):
 
 
 def calculate_ecnt_rmse(input_data, columns_names):
-    """Performs calculation of ECNT_RMSE - The Root Mean Square Error of the ensemble mean (unperturbed or supplied)
+    """Performs calculation of ECNT_RMSE - The Root Mean Square Error of the ensemble mean
+    (unperturbed or supplied)
 
         Args:
             input_data: 2-dimensional numpy array with data for the calculation
@@ -134,8 +136,8 @@ def calculate_ecnt_rmse(input_data, columns_names):
 
 
 def calculate_ecnt_spread(input_data, columns_names):
-    """Performs calculation of ECNT_SPREAD - The mean of the spread (standard deviation) of the unperturbed ensemble
-        member values at each observation location
+    """Performs calculation of ECNT_SPREAD - The mean of the spread (standard deviation)
+        of the unperturbed ensemble member values at each observation location
 
         Args:
             input_data: 2-dimensional numpy array with data for the calculation
@@ -183,8 +185,8 @@ def calculate_ecnt_me_oerr(input_data, columns_names):
 
 
 def calculate_ecnt_rmse_oerr(input_data, columns_names):
-    """Performs calculation of ECNT_RMSE_OERR - TheRoot Mean Square Error of the PERTURBED ensemble mean
-        (e.g.with Observation Error)
+    """Performs calculation of ECNT_RMSE_OERR - TheRoot Mean Square Error of the PERTURBED
+        ensemble mean (e.g.with Observation Error)
         Args:
             input_data: 2-dimensional numpy array with data for the calculation
                 1st dimension - the row of data frame
@@ -206,9 +208,11 @@ def calculate_ecnt_rmse_oerr(input_data, columns_names):
     warnings.filterwarnings('ignore')
     return result
 
+
 def calculate_ecnt_spread_oerr(input_data, columns_names):
-    """Performs calculation of ECNT_SPREAD_OERR - The mean of the spread (standard deviation) of the PERTURBED
-        ensemble member values (e.g. with Observation Error ) at each observation location
+    """Performs calculation of ECNT_SPREAD_OERR - The mean of the spread (standard deviation)
+        of the PERTURBED ensemble member values (e.g. with Observation Error )
+        at each observation location
 
         Args:
             input_data: 2-dimensional numpy array with data for the calculation
@@ -230,9 +234,10 @@ def calculate_ecnt_spread_oerr(input_data, columns_names):
     warnings.filterwarnings('ignore')
     return result
 
+
 def calculate_ecnt_spread_plus_oerr(input_data, columns_names):
-    """Performs calculation of ECNT_SPREAD_PLUS_OERR - The square root of the sum of unperturbed ensemble
-     variance and the observation error variance
+    """Performs calculation of ECNT_SPREAD_PLUS_OERR - The square root of the sum of
+        unperturbed ensemble variance and the observation error variance
         Args:
             input_data: 2-dimensional numpy array with data for the calculation
                 1st dimension - the row of data frame
@@ -246,10 +251,26 @@ def calculate_ecnt_spread_plus_oerr(input_data, columns_names):
     warnings.filterwarnings('error')
     try:
         total = sum_column_data_by_name(input_data, columns_names, 'total')
-        spread_plus_oerr = sum_column_data_by_name(input_data, columns_names, 'spread_plus_oerr') / total
+        spread_plus_oerr = sum_column_data_by_name(input_data, columns_names, 'spread_plus_oerr') \
+                           / total
         result = round_half_up(spread_plus_oerr, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
     return result
 
+
+def calculate_ecnt_total(input_data, columns_names):
+    """Performs calculation of Total number of matched pairs for Ensemble Continuous Statistics
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated Total number of matched pairs as float
+            or None if some of the data values are missing or invalid
+    """
+    total = sum_column_data_by_name(input_data, columns_names, 'total')
+    return round_half_up(total, PRECISION)
