@@ -18,7 +18,7 @@ OPERATION_TO_SIGN = {
 STR_TO_BOOL = {'True': True, 'False': False}
 
 # precision value for statistics calculations
-PRECISION = 14
+PRECISION = 5
 
 TWO_D_DATA_FILTER = {'object_type': '2d'}
 THREE_D_DATA_FILTER = {'object_type': '3d'}
