@@ -3,11 +3,12 @@ Program Name: bootstrap_custom.py
 """
 
 import numpy as _np
-from bootstrapped.bootstrap import _bootstrap_distribution, BootstrapResults
+from bootstrapped.bootstrap import _bootstrap_distribution, BootstrapResults, _validate_arrays
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
 __email__ = 'met_help@ucar.edu'
+
 
 class BootstrapDistributionResults(BootstrapResults):
     """A class that extends BootstrapResults.
@@ -92,6 +93,67 @@ def bootstrap_and_value(values, stat_func, alpha=0.05,
     return result
 
 
+def bootstrap_and_value_mode(values, cases, stat_func, alpha=0.05,
+                             num_iterations=1000, iteration_batch_size=None,
+                             num_threads=1, ci_method='perc',
+                             save_data=True, save_distributions=False):
+    """Returns bootstrap estimate.
+        Args:
+            values: numpy array (or scipy.sparse.csr_matrix) of values to bootstrap
+            stat_func: statistic to bootstrap. We provide several default functions:
+                    * stat_functions.mean
+                    * stat_functions.sum
+                    * stat_functions.std
+            alpha: alpha value representing the confidence interval.
+                Defaults to 0.05, i.e., 95th-CI.
+            num_iterations: number of bootstrap iterations to run. The higher this
+                number the more sure you can be about the stability your bootstrap.
+                By this - we mean the returned interval should be consistent across
+                runs for the same input. This also consumes more memory and makes
+                analysis slower. Defaults to 10000.
+            iteration_batch_size: The bootstrap sample can generate very large
+                matrices. This argument limits the memory footprint by
+                batching bootstrap rounds. If unspecified the underlying code
+                will produce a matrix of len(values) x num_iterations. If specified
+                the code will produce sets of len(values) x iteration_batch_size
+                (one at a time) until num_iterations have been simulated.
+                Defaults to no batching.
+
+            num_threads: The number of therads to use. This speeds up calculation of
+                the bootstrap. Defaults to 1. If -1 is specified then
+                multiprocessing.cpu_count() is used instead.
+            ci_method: method for bootstrapping confidence intervals.
+            save_data: Save or not the original data to the resultiong object
+        Returns:
+            BootstrapDistributionResults representing CI, stat value and the original distribution.
+    """
+
+    values_lists = [cases]
+
+    stat_func_lists = [stat_func]
+
+    def do_division(distr):
+        return distr
+
+    data_cases = _np.asarray(values['case'])
+    flat_cases = cases.flatten()
+    values_current = values[_np.in1d(data_cases, flat_cases)].to_numpy()
+    stat_val = stat_func(values_current)[0]
+    distributions = _bootstrap_distribution(values_lists,
+                                            stat_func_lists,
+                                            num_iterations,
+                                            iteration_batch_size,
+                                            num_threads)
+
+    bootstrap_dist = do_division(*distributions)
+    result = _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_method)
+    if save_data:
+        result.set_original_values(values)
+    if save_distributions:
+        result.set_distributions(bootstrap_dist.flatten('F'))
+    return result
+
+
 def _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_method):
     """Get the bootstrap confidence interval for a given distribution.
         Args:
@@ -118,8 +180,9 @@ def _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_metho
             low = None
             high = None
         else:
-            low = _np.percentile(bootstrap_dist, 100 * (alpha / 2.), interpolation='linear')
-            high = _np.percentile(bootstrap_dist, 100 * (1 - alpha / 2.), interpolation='linear')
+            bd = bootstrap_dist[bootstrap_dist != _np.array([None])]
+            low = _np.percentile(bd, 100 * (alpha / 2.), interpolation='linear')
+            high = _np.percentile(bd, 100 * (1 - alpha / 2.), interpolation='linear')
         val = stat_val
     else:
         low = None
@@ -142,4 +205,8 @@ def _all_the_same(elements):
     """
     if elements.size == 0:
         return True
-    return len(_np.unique(elements)) == 1
+    try:
+        result = len(_np.unique(elements[elements != _np.array([None])])) == 1
+    except TypeError:
+        result = False
+    return result
