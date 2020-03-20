@@ -39,6 +39,7 @@ from metcalcpy.util.ecnt_statistics import *
 from metcalcpy.util.nbrcnt_statistics import *
 from metcalcpy.util.nbrctc_statistics import *
 from metcalcpy.util.pstd_statistics import *
+from metcalcpy.util.rps_statistics import *
 
 from metcalcpy.util.utils import is_string_integer, get_derived_curve_name, unique, \
     calc_derived_curve_value, intersection, is_derived_point, parse_bool, \
@@ -67,13 +68,15 @@ def _sort_data(series_data):
     """
     fields = series_data.keys()
     if "fcst_valid_beg" in fields:
-        by_fields = ["fcst_valid_beg", "fcst_lead", "stat_name"]
+        by_fields = ["fcst_valid_beg", "fcst_lead"]
     elif "fcst_valid" in fields:
-        by_fields = ["fcst_valid", "fcst_lead", "stat_name"]
+        by_fields = ["fcst_valid", "fcst_lead"]
     elif "fcst_init_beg" in fields:
-        by_fields = ["fcst_init_beg", "fcst_lead", "stat_name"]
+        by_fields = ["fcst_init_beg", "fcst_lead"]
     else:
-        by_fields = ["fcst_init", "fcst_lead", "stat_name"]
+        by_fields = ["fcst_init", "fcst_lead"]
+    if "stat_name" in fields:
+        by_fields.append("stat_name")
     series_data = series_data.sort_values(by=by_fields)
     return series_data
 
@@ -328,9 +331,10 @@ class AggStat():
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
-        for column in self.STATISTIC_TO_FIELDS[self.statistic]:
-            data_for_prepare[column] \
-                = data_for_prepare[column].values * data_for_prepare['total'].values
+        if self.statistic in self.STATISTIC_TO_FIELDS.keys():
+            for column in self.STATISTIC_TO_FIELDS[self.statistic]:
+                data_for_prepare[column] \
+                    = data_for_prepare[column].values * data_for_prepare['total'].values
 
     def _prepare_sal1l2_data(self, data_for_prepare):
         """Prepares sal1l2 data.
@@ -339,9 +343,10 @@ class AggStat():
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
-        for column in self.STATISTIC_TO_FIELDS[self.statistic]:
-            data_for_prepare[column] \
-                = data_for_prepare[column].values * data_for_prepare['total'].values
+        if self.statistic in self.STATISTIC_TO_FIELDS.keys():
+            for column in self.STATISTIC_TO_FIELDS[self.statistic]:
+                data_for_prepare[column] \
+                    = data_for_prepare[column].values * data_for_prepare['total'].values
 
     def _prepare_grad_data(self, data_for_prepare):
         """Prepares grad data.
@@ -350,9 +355,10 @@ class AggStat():
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
-        for column in self.STATISTIC_TO_FIELDS[self.statistic]:
-            data_for_prepare[column] \
-                = data_for_prepare[column].values * data_for_prepare['total'].values
+        if self.statistic in self.STATISTIC_TO_FIELDS.keys():
+            for column in self.STATISTIC_TO_FIELDS[self.statistic]:
+                data_for_prepare[column] \
+                    = data_for_prepare[column].values * data_for_prepare['total'].values
 
     def _prepare_vl1l2_data(self, data_for_prepare):
         """Prepares vl1l2 data.
@@ -361,9 +367,10 @@ class AggStat():
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
-        for column in self.STATISTIC_TO_FIELDS[self.statistic]:
-            data_for_prepare[column] \
-                = data_for_prepare[column].values * data_for_prepare['total'].values
+        if self.statistic in self.STATISTIC_TO_FIELDS.keys():
+            for column in self.STATISTIC_TO_FIELDS[self.statistic]:
+                data_for_prepare[column] \
+                    = data_for_prepare[column].values * data_for_prepare['total'].values
 
     def _prepare_val1l2_data(self, data_for_prepare):
         """Prepares val1l2 data.
@@ -372,9 +379,10 @@ class AggStat():
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
-        for column in self.STATISTIC_TO_FIELDS[self.statistic]:
-            data_for_prepare[column] \
-                = data_for_prepare[column].values * data_for_prepare['total'].values
+        if self.statistic in self.STATISTIC_TO_FIELDS.keys():
+            for column in self.STATISTIC_TO_FIELDS[self.statistic]:
+                data_for_prepare[column] \
+                    = data_for_prepare[column].values * data_for_prepare['total'].values
 
     def _prepare_vcnt_data(self, data_for_prepare):
         """Prepares vcnt data.
@@ -383,9 +391,10 @@ class AggStat():
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
-        for column in self.STATISTIC_TO_FIELDS[self.statistic]:
-            data_for_prepare[column] \
-                = data_for_prepare[column].values * data_for_prepare['total'].values
+        if self.statistic in self.STATISTIC_TO_FIELDS.keys():
+            for column in self.STATISTIC_TO_FIELDS[self.statistic]:
+                data_for_prepare[column] \
+                    = data_for_prepare[column].values * data_for_prepare['total'].values
 
     def _prepare_ecnt_data(self, data_for_prepare):
         """Prepares ecnt data.
@@ -402,9 +411,17 @@ class AggStat():
         data_for_prepare['mse_oerr'] = mse_oerr * data_for_prepare['total'].values
         data_for_prepare['crps_climo'] = crps_climo * data_for_prepare['total'].values
 
-        for column in self.STATISTIC_TO_FIELDS[self.statistic]:
-            data_for_prepare[column] \
-                = data_for_prepare[column].values * data_for_prepare['total'].values
+        if self.statistic in self.STATISTIC_TO_FIELDS.keys():
+            for column in self.STATISTIC_TO_FIELDS[self.statistic]:
+                data_for_prepare[column] \
+                    = data_for_prepare[column].values * data_for_prepare['total'].values
+
+    def _prepare_rps_data(self, data_for_prepare):
+        total = data_for_prepare['total'].values
+        d_rps_climo = data_for_prepare['rps'].values / (1 - data_for_prepare['rpss'].values)
+        data_for_prepare['rps_climo'] = d_rps_climo * total
+        data_for_prepare['rps'] = data_for_prepare['rps'].values * total
+        self.column_names = data_for_prepare.columns.values
 
     def _prepare_ssvar_data(self, data_for_prepare):
         """Prepares ssvar data.
@@ -449,7 +466,15 @@ class AggStat():
         """
 
     def _prepare_ctc_data(self, data_for_prepare):
-        """Prepares sl1l2 data.
+        """Prepares CTC data.
+            Nothing needs to be done
+
+            Args:
+                data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
+        """
+
+    def _prepare_cts_data(self, data_for_prepare):
+        """Prepares cts data.
             Nothing needs to be done
 
             Args:
@@ -457,7 +482,7 @@ class AggStat():
         """
 
     def _prepare_nbr_ctc_data(self, data_for_prepare):
-        """Prepares sl1l2 data.
+        """Prepares MBR_CTC data.
             Nothing needs to be done
 
             Args:
@@ -857,77 +882,76 @@ class AggStat():
             # init the template for output frame
             out_frame = self._init_out_frame(all_fields_values.keys(), all_points)
 
-            point_ind = 0
+            point_to_distrib = {}
 
-            # for the each statistic
-            for stat_upper in self.params['list_stat_' + axis]:
-                # save the value to the class variable
-                self.statistic = stat_upper.lower()
-                point_to_distrib = {}
-                # for each point
-                for point in all_points:
-                    is_derived = is_derived_point(point)
-                    if not is_derived:
+            # for each point
+            for point_ind, point in enumerate(all_points):
+                # get statistic. Use reversed because it is more likely that the stat is in the end
+                for component in reversed(point):
+                    if component in set(self.params['list_stat_' + axis]):
+                        self.statistic = component.lower()
+                        break
+                is_derived = is_derived_point(point)
+                if not is_derived:
 
-                        # filter point data
-                        all_filters = []
-                        filters_wihtout_indy = []
-                        for field_ind, field in enumerate(all_fields_values.keys()):
+                    # filter point data
+                    all_filters = []
+                    filters_wihtout_indy = []
+                    for field_ind, field in enumerate(all_fields_values.keys()):
 
-                            filter_value = point[field_ind]
-                            if "," in filter_value:
-                                filter_list = filter_value.split(',')
-                            elif ";" in filter_value:
-                                filter_list = filter_value.split(';')
-                            else:
-                                filter_list = [filter_value]
-                            for i, filter_val in enumerate(filter_list):
-                                if is_string_integer(filter_val):
-                                    filter_list[i] = int(filter_val)
-                            if field != self.params['indy_var']:
-                                filters_wihtout_indy. \
-                                    append((self.input_data[field].isin(filter_list)))
+                        filter_value = point[field_ind]
+                        if "," in filter_value:
+                            filter_list = filter_value.split(',')
+                        elif ";" in filter_value:
+                            filter_list = filter_value.split(';')
+                        else:
+                            filter_list = [filter_value]
+                        for i, filter_val in enumerate(filter_list):
+                            if is_string_integer(filter_val):
+                                filter_list[i] = int(filter_val)
+                        if field != self.params['indy_var']:
+                            filters_wihtout_indy. \
+                                append((self.input_data[field].isin(filter_list)))
 
-                            all_filters.append((self.input_data[field].isin(filter_list)))
+                        all_filters.append((self.input_data[field].isin(filter_list)))
 
-                        # use numpy to select the rows where any record evaluates to True
-                        mask = np.array(all_filters).all(axis=0)
-                        point_data = self.input_data.loc[mask]
+                    # use numpy to select the rows where any record evaluates to True
+                    mask = np.array(all_filters).all(axis=0)
+                    point_data = self.input_data.loc[mask]
 
-                        if self.params['line_type'] == 'pct':
-                            mask_wihtout_indy = np.array(filters_wihtout_indy).all(axis=0)
-                            point_data_wihtout_indy = self.input_data.loc[mask_wihtout_indy]
-                            n_i = [row.oy_i + row.on_i for index, row
-                                   in point_data_wihtout_indy.iterrows()]
-                            sum_n_i_orig = sum(n_i)
-                            oy_total = sum(point_data_wihtout_indy['oy_i'].to_numpy())
-                            o_bar = oy_total / sum_n_i_orig
+                    if self.params['line_type'] == 'pct':
+                        mask_wihtout_indy = np.array(filters_wihtout_indy).all(axis=0)
+                        point_data_wihtout_indy = self.input_data.loc[mask_wihtout_indy]
+                        n_i = [row.oy_i + row.on_i for index, row
+                               in point_data_wihtout_indy.iterrows()]
+                        sum_n_i_orig = sum(n_i)
+                        oy_total = sum(point_data_wihtout_indy['oy_i'].to_numpy())
+                        o_bar = oy_total / sum_n_i_orig
 
-                            point_data.insert(len(point_data.columns), 'T', sum_n_i_orig)
-                            point_data.insert(len(point_data.columns), 'oy_total', oy_total)
-                            point_data.insert(len(point_data.columns), 'o_bar', o_bar)
+                        point_data.insert(len(point_data.columns), 'T', sum_n_i_orig)
+                        point_data.insert(len(point_data.columns), 'oy_total', oy_total)
+                        point_data.insert(len(point_data.columns), 'o_bar', o_bar)
 
-                        # calculate bootstrap results
-                        bootstrap_results = self._get_bootstrapped_stats(point_data, axis)
-                        # save bootstrap results
-                        point_to_distrib[point] = bootstrap_results
-                        n_stats = len(point_data)
+                    # calculate bootstrap results
+                    bootstrap_results = self._get_bootstrapped_stats(point_data, axis)
+                    # save bootstrap results
+                    point_to_distrib[point] = bootstrap_results
+                    n_stats = len(point_data)
 
-                    else:
-                        # calculate bootstrap results for the derived point
-                        bootstrap_results = self._get_bootstrapped_stats_for_derived(
-                            point,
-                            point_to_distrib,
-                            axis)
-                        n_stats = 0
+                else:
+                    # calculate bootstrap results for the derived point
+                    bootstrap_results = self._get_bootstrapped_stats_for_derived(
+                        point,
+                        point_to_distrib,
+                        axis)
+                    n_stats = 0
 
-                    # save results to the output data frame
-                    out_frame['stat_value'][point_ind] = bootstrap_results.value
-                    out_frame['stat_bcl'][point_ind] = bootstrap_results.lower_bound
-                    out_frame['stat_bcu'][point_ind] = bootstrap_results.upper_bound
-                    out_frame['nstats'][point_ind] = n_stats
+                # save results to the output data frame
+                out_frame['stat_value'][point_ind] = bootstrap_results.value
+                out_frame['stat_bcl'][point_ind] = bootstrap_results.lower_bound
+                out_frame['stat_bcu'][point_ind] = bootstrap_results.upper_bound
+                out_frame['nstats'][point_ind] = n_stats
 
-                    point_ind = point_ind + 1
         else:
             out_frame = pd.DataFrame()
         return out_frame
