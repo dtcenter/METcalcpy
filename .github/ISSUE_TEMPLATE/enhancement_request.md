@@ -41,8 +41,8 @@ assignees: ''
 ## Define Related Issue(s) ##
 Consider the impact to other METplus components.
 Delete items that do not apply.
-- [ ] Define new issue for MET.
 - [ ] Define new issue for METplus.
+- [ ] Define new issue for MET.
 - [ ] Define new issue for METdb.
 - [ ] Define new issue for METviewer.
 - [ ] Define new issue for METexpress.
