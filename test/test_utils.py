@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 
 from metcalcpy.util.utils import represents_int, is_string_integer, get_derived_curve_name, calc_derived_curve_value, \
-    unique, intersection, is_derived_point, parse_bool, round_half_up, sum_column_data_by_name
+    unique, intersection, is_derived_point, parse_bool, round_half_up, sum_column_data_by_name, nrow_column_data_by_name_value
 
 
 @pytest.fixture
@@ -73,7 +73,8 @@ def test_intersection():
 def test_is_derived_point():
     point = ('stochmp1', '20000', 'PSTD_BRIER')
     assert not is_derived_point(point)
-    point = ('DIFF(stochmp1 TMP_ENS_FREQ_ge283 PSTD_BRIER-stochmp2 TMP_ENS_FREQ_ge283 PSTD_BRIER)', '20000', 'PSTD_BRIER')
+    point = (
+    'DIFF(stochmp1 TMP_ENS_FREQ_ge283 PSTD_BRIER-stochmp2 TMP_ENS_FREQ_ge283 PSTD_BRIER)', '20000', 'PSTD_BRIER')
     assert is_derived_point(point)
 
 
@@ -109,6 +110,21 @@ def test_sum_column_data_by_name(settings):
     column_name = 'fobar'
     assert not sum_column_data_by_name(data_values, settings['columns'], column_name, rm_none=False)
     assert 1425310.4448 == sum_column_data_by_name(data_values, settings['columns'], column_name, rm_none=True)
+
+
+def test_nrow_column_data_by_name_value(settings):
+    data_values = np.array([
+        ['dicast15', '2019-07-03 12:00:00', '2019-07-04 09:00:00', 210000, 'SWS01', 'GHI', 'MAE', 0, 1, 1073.4, 1085.7,
+         1165390.38, 1152187.56, 1178744.49, 12.3],
+        ['dicast15', '2019-07-03 12:00:00', '2019-07-05 13:15:00', 491500, 'SWS01', 'GHI', 'MAE', 0, 1, 518.43, 501.36,
+         259920.0648, 268769.6649, 251361.8496, 17.07],
+        ['dicast15', '2019-07-03 12:00:00', '2019-07-05 13:15:00', 491500, 'SWS01', 'GHI', 'MAE', 0, 1, 518.43, 501.36,
+         259920.0648, 268769.6649, 251361.8496, 17.07],
+        ['dicast15', '2019-07-03 12:00:00', '2019-07-05 13:15:00', 491500, 'SWS01', 'GHI', 'MAE', 1, 1, 518.43, 501.36,
+         259920.0648, 268769.6649, 251361.8496, 17.07]
+    ])
+    filters = {'fcst_lead':491500, 'stat_value': 0}
+    assert 2 == nrow_column_data_by_name_value(data_values, settings['columns'], filters)
 
 
 if __name__ == "__main__":
