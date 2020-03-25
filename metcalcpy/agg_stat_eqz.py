@@ -35,14 +35,13 @@ class AggStatEventEqz:
 
     def perform_ee(self):
         is_event_equal = parse_bool(self.params['event_equal'])
-        if not self.input_data.empty & is_event_equal:
+        if not self.input_data.empty and is_event_equal:
             ee_stats = pd.read_csv(
                 self.params['agg_stat_input_ee'],
                 header=[0],
                 sep='\t'
             )
 
-            fix_vals = []
             output_ee_data = pd.DataFrame()
 
             for fcst_var, fcst_var_stats in self.params['fcst_var_val_1'].items():
@@ -106,7 +105,7 @@ class AggStatEventEqz:
                     output_ee_data = output_ee_data.append(data_axis_2)
 
         else:
-            output_ee_data = pd.DataFrame()
+            output_ee_data = self.input_data
         return output_ee_data
 
 
