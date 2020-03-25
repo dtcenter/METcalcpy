@@ -39,32 +39,27 @@ def event_equalize(series_data, indy_var, indy_vals, series_var_vals, fix_vars,
     Returns:
         A data frame that contains equalized records
     """
-    warning_detected = "WARNING: eventEqualize() detected non-unique events for {}" \
-                       " using [fcst_valid_beg,fcst_lead)]"
-    warning_discarding = "WARNING: discarding series member with case {} for {}"
-    warning_remove = "WARNING: event equalization removed {} rows"
-
+    pd.options.mode.chained_assignment = None
     column_names = list(series_data)
     exception_columns = ["fcst_valid_beg", 'fcst_lead', 'fcst_valid', 'fcst_init', 'fcst_init_beg']
     if isinstance(fix_vars, str):
         fix_vars = [fix_vars]
-
     if 'fcst_valid_beg' in column_names:
-        series_data['equalize'] = series_data["fcst_valid_beg"].astype(str) \
-                                  + ' ' + series_data["fcst_lead"].astype(str)
+        series_data['equalize'] = series_data.loc[:, 'fcst_valid_beg'].astype(str) \
+                                  + ' ' + series_data.loc[:, 'fcst_lead'].astype(str)
     elif 'fcst_valid' in column_names:
-        series_data['equalize'] = series_data["fcst_valid"].astype(str) + ' ' \
-                                  + series_data["fcst_lead"].astype(str)
+        series_data['equalize'] = series_data.loc[:, 'fcst_valid'].astype(str) + ' ' \
+                                  + series_data.loc[:, 'fcst_lead'].astype(str)
 
     # add independent variable if needed
     if equalize_by_indep and not indy_var and indy_var not in exception_columns:
-        series_data['equalize'] = series_data['equalize'].astype(str) + " " \
-                                  + series_data[indy_var].astype(str)
+        series_data['equalize'] = series_data.loc[:, 'equalize'].astype(str) + " " \
+                                    + series_data.loc[:, indy_var].astype(str)
 
     vars_for_ee = dict()
 
     # add series variables
-    if len(series_var_vals) > 1:
+    if series_var_vals:
         for series_var, series_vals in series_var_vals.items():
             if series_var not in exception_columns:
                 series_vals_no_groups = []
@@ -106,11 +101,13 @@ def event_equalize(series_data, indy_var, indy_vals, series_var_vals, fix_vars,
         # if the list contains repetitive values, show a warning
         if not multi and len(permutation_data['equalize']) \
                 != len(set(permutation_data['equalize'])):
-            print(warning_detected.format(permutation))
+            print(
+                f"WARNING: eventEqualize() detected non-unique events for {permutation}"
+                f" using [fcst_valid_beg,fcst_lead)]")
 
         if permutation_index == 0:
             # init the equalization list
-            equalization_cases = permutation_data['equalize']
+            equalization_cases = permutation_data['equalize'].reset_index(drop=True)
         else:
             # if there is an equalization list, equalize the current series data
 
@@ -128,13 +125,15 @@ def event_equalize(series_data, indy_var, indy_vals, series_var_vals, fix_vars,
             permutation_cases_not_in_common_cases = \
                 permutation_data['equalize'][~permutation_cases_not_in_common_cases_ind]
 
-            discarded_cases.append(permutation_cases_not_in_common_cases)
+            discarded_cases = discarded_cases.append(permutation_cases_not_in_common_cases)
             # report the discarded records
             for discarded_case in discarded_cases:
-                print(warning_discarding.format(discarded_case, permutation))
+                print(f"WARNING: discarding series member with case {discarded_case}"
+                      f" for {permutation}")
 
             # update the equalization list by removing records
             equalization_cases = equalization_cases[common_cases_ind]
+            equalization_cases.reset_index(drop=True)
 
     # remove data with discarded cases from the main frame
     equalization_cases_ind = \
@@ -142,7 +141,7 @@ def event_equalize(series_data, indy_var, indy_vals, series_var_vals, fix_vars,
     series_data_ee = series_data[equalization_cases_ind]
 
     if len(series_data_ee) != len(series_data):
-        print(warning_remove.format(len(series_data) - len(series_data_ee)))
+        print(f"WARNING: event equalization removed {len(series_data) - len(series_data_ee)} rows")
 
     return series_data_ee
 
