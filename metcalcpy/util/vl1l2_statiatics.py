@@ -5,14 +5,14 @@ import warnings
 import numpy as np
 
 from metcalcpy.util.statistics import calc_speed
-from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION
+from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION, get_total_values
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
 __email__ = 'met_help@ucar.edu'
 
 
-def calculate_vl1l2_bias(input_data, columns_names):
+def calculate_vl1l2_bias(input_data, columns_names, aggregation=False):
     """Performs calculation of VL1L2_BIAS -
 
         Args:
@@ -20,6 +20,7 @@ def calculate_vl1l2_bias(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated VL1L2_BIAS as float
@@ -27,7 +28,7 @@ def calculate_vl1l2_bias(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        total = get_total_values(input_data, columns_names, aggregation)
         uvffbar = sum_column_data_by_name(input_data, columns_names, 'uvffbar') / total
         uvoobar = sum_column_data_by_name(input_data, columns_names, 'uvoobar') / total
         bias = np.sqrt(uvffbar) - np.sqrt(uvoobar)
@@ -38,7 +39,7 @@ def calculate_vl1l2_bias(input_data, columns_names):
     return result
 
 
-def calculate_vl1l2_fvar(input_data, columns_names):
+def calculate_vl1l2_fvar(input_data, columns_names, aggregation=False):
     """Performs calculation of VL1L2_FVAR -
 
         Args:
@@ -46,6 +47,7 @@ def calculate_vl1l2_fvar(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated VL1L2_FVAR as float
@@ -53,7 +55,7 @@ def calculate_vl1l2_fvar(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        total = get_total_values(input_data, columns_names, aggregation)
         uvffbar = sum_column_data_by_name(input_data, columns_names, 'uvffbar') / total
         f_speed_bar = sum_column_data_by_name(input_data, columns_names, 'f_speed_bar') / total
         result = uvffbar - f_speed_bar * f_speed_bar
@@ -64,7 +66,7 @@ def calculate_vl1l2_fvar(input_data, columns_names):
     return result
 
 
-def calculate_vl1l2_ovar(input_data, columns_names):
+def calculate_vl1l2_ovar(input_data, columns_names, aggregation=False):
     """Performs calculation of VL1L2_OVAR -
 
         Args:
@@ -72,6 +74,7 @@ def calculate_vl1l2_ovar(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated VL1L2_OVAR as float
@@ -79,7 +82,7 @@ def calculate_vl1l2_ovar(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        total = get_total_values(input_data, columns_names, aggregation)
         uvoobar = sum_column_data_by_name(input_data, columns_names, 'uvoobar') / total
         o_speed_bar = sum_column_data_by_name(input_data, columns_names, 'o_speed_bar') / total
         result = uvoobar - o_speed_bar * o_speed_bar
@@ -90,7 +93,7 @@ def calculate_vl1l2_ovar(input_data, columns_names):
     return result
 
 
-def calculate_vl1l2_fspd(input_data, columns_names):
+def calculate_vl1l2_fspd(input_data, columns_names, aggregation=False):
     """Performs calculation of VL1L2_FSPD -
 
         Args:
@@ -98,6 +101,7 @@ def calculate_vl1l2_fspd(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated VL1L2_FSPD as float
@@ -105,7 +109,7 @@ def calculate_vl1l2_fspd(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        total = get_total_values(input_data, columns_names, aggregation)
         ufbar = sum_column_data_by_name(input_data, columns_names, 'ufbar') / total
         vfbar = sum_column_data_by_name(input_data, columns_names, 'vfbar') / total
         fspd = calc_speed(ufbar, vfbar)
@@ -116,7 +120,7 @@ def calculate_vl1l2_fspd(input_data, columns_names):
     return result
 
 
-def calculate_vl1l2_ospd(input_data, columns_names):
+def calculate_vl1l2_ospd(input_data, columns_names, aggregation=False):
     """Performs calculation of VL1L2_OSPD -
 
         Args:
@@ -124,6 +128,7 @@ def calculate_vl1l2_ospd(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated VL1L2_OSPD as float
@@ -131,7 +136,7 @@ def calculate_vl1l2_ospd(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        total = get_total_values(input_data, columns_names, aggregation)
         uobar = sum_column_data_by_name(input_data, columns_names, 'uobar') / total
         vobar = sum_column_data_by_name(input_data, columns_names, 'vobar') / total
         ospd = calc_speed(uobar, vobar)
@@ -142,7 +147,7 @@ def calculate_vl1l2_ospd(input_data, columns_names):
     return result
 
 
-def calculate_vl1l2_speed_err(input_data, columns_names):
+def calculate_vl1l2_speed_err(input_data, columns_names, aggregation=False):
     """Performs calculation of VL1L2_SPEED_ERR -
 
         Args:
@@ -150,6 +155,7 @@ def calculate_vl1l2_speed_err(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated VL1L2_SPEED_ERR as float
@@ -157,8 +163,8 @@ def calculate_vl1l2_speed_err(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        speed_bias = calculate_vl1l2_fspd(input_data, columns_names) \
-                     - calculate_vl1l2_ospd(input_data, columns_names)
+        speed_bias = calculate_vl1l2_fspd(input_data, columns_names, aggregation) \
+                     - calculate_vl1l2_ospd(input_data, columns_names, aggregation)
         result = round_half_up(speed_bias, PRECISION)
     except (TypeError, Warning):
         result = None
@@ -166,7 +172,7 @@ def calculate_vl1l2_speed_err(input_data, columns_names):
     return result
 
 
-def calculate_vl1l2_msve(input_data, columns_names):
+def calculate_vl1l2_msve(input_data, columns_names, aggregation=False):
     """Performs calculation of VL1L2_MSVE -
 
         Args:
@@ -174,6 +180,7 @@ def calculate_vl1l2_msve(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated VL1L2_MSVE as float
@@ -181,7 +188,7 @@ def calculate_vl1l2_msve(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        total = get_total_values(input_data, columns_names, aggregation)
         uvffbar = sum_column_data_by_name(input_data, columns_names, 'uvffbar') / total
         uvfobar = sum_column_data_by_name(input_data, columns_names, 'uvfobar') / total
         uvoobar = sum_column_data_by_name(input_data, columns_names, 'uvoobar') / total
@@ -196,20 +203,21 @@ def calculate_vl1l2_msve(input_data, columns_names):
     return result
 
 
-def calculate_vl1l2_rmsve(input_data, columns_names):
+def calculate_vl1l2_rmsve(input_data, columns_names, aggregation=False):
     """Performs calculation of VL1L2_RMSVE -
         Args:
             input_data: 2-dimensional numpy array with data for the calculation
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
         Returns:
             calculated VL1L2_RMSVE as float
             or None if some of the data values are missing or invalid
     """
     warnings.filterwarnings('error')
     try:
-        rmsve = np.sqrt(calculate_vl1l2_msve(input_data, columns_names))
+        rmsve = np.sqrt(calculate_vl1l2_msve(input_data, columns_names, aggregation))
         result = round_half_up(rmsve, PRECISION)
     except (TypeError, Warning):
         result = None

@@ -2,14 +2,14 @@
 Program Name: grad_statistics.py
 """
 import warnings
-from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION
+from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION, get_total_values
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
 __email__ = 'met_help@ucar.edu'
 
 
-def calculate_fgbar(input_data, columns_names):
+def calculate_fgbar(input_data, columns_names, aggregation=False):
     """Performs calculation of FGBAR - Mean of absolute value of forecast gradients
 
             Args:
@@ -17,6 +17,7 @@ def calculate_fgbar(input_data, columns_names):
                     1st dimension - the row of data frame
                     2nd dimension - the column of data frame
                 columns_names: names of the columns for the 2nd dimension as Numpy array
+                aggregation: if the aggregation on fields was performed
 
             Returns:
                 calculated FGBAR as float
@@ -24,7 +25,7 @@ def calculate_fgbar(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        total = get_total_values(input_data, columns_names, aggregation)
         result = sum_column_data_by_name(input_data, columns_names, 'fgbar') / total
         result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
@@ -33,7 +34,7 @@ def calculate_fgbar(input_data, columns_names):
     return result
 
 
-def calculate_ogbar(input_data, columns_names):
+def calculate_ogbar(input_data, columns_names, aggregation=False):
     """Performs calculation of OGBAR - Mean of absolute value of observed gradients
 
             Args:
@@ -41,6 +42,7 @@ def calculate_ogbar(input_data, columns_names):
                     1st dimension - the row of data frame
                     2nd dimension - the column of data frame
                 columns_names: names of the columns for the 2nd dimension as Numpy array
+                aggregation: if the aggregation on fields was performed
 
             Returns:
                 calculated OGBAR as float
@@ -48,7 +50,7 @@ def calculate_ogbar(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        total = get_total_values(input_data, columns_names, aggregation)
         result = sum_column_data_by_name(input_data, columns_names, 'ogbar') / total
         result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
@@ -57,7 +59,7 @@ def calculate_ogbar(input_data, columns_names):
     return result
 
 
-def calculate_mgbar(input_data, columns_names):
+def calculate_mgbar(input_data, columns_names, aggregation=False):
     """Performs calculation of MGBAR - Mean of maximum of absolute values
         of forecast and observed gradients
 
@@ -66,6 +68,7 @@ def calculate_mgbar(input_data, columns_names):
                     1st dimension - the row of data frame
                     2nd dimension - the column of data frame
                 columns_names: names of the columns for the 2nd dimension as Numpy array
+                aggregation: if the aggregation on fields was performed
 
             Returns:
                 calculated MGBAR as float
@@ -73,7 +76,7 @@ def calculate_mgbar(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        total = get_total_values(input_data, columns_names, aggregation)
         result = sum_column_data_by_name(input_data, columns_names, 'mgbar') / total
         result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
@@ -82,7 +85,7 @@ def calculate_mgbar(input_data, columns_names):
     return result
 
 
-def calculate_egbar(input_data, columns_names):
+def calculate_egbar(input_data, columns_names, aggregation=False):
     """Performs calculation of EGBAR - Mean of absolute value of forecast minus observed gradients
 
             Args:
@@ -90,6 +93,7 @@ def calculate_egbar(input_data, columns_names):
                     1st dimension - the row of data frame
                     2nd dimension - the column of data frame
                 columns_names: names of the columns for the 2nd dimension as Numpy array
+                aggregation: if the aggregation on fields was performed
 
             Returns:
                 calculated EGBAR as float
@@ -97,7 +101,7 @@ def calculate_egbar(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        total = get_total_values(input_data, columns_names, aggregation)
         result = sum_column_data_by_name(input_data, columns_names, 'egbar') / total
         result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
@@ -106,7 +110,7 @@ def calculate_egbar(input_data, columns_names):
     return result
 
 
-def calculate_s1(input_data, columns_names):
+def calculate_s1(input_data, columns_names, aggregation=False):
     """Performs calculation of S1 - S1 score
 
             Args:
@@ -114,6 +118,7 @@ def calculate_s1(input_data, columns_names):
                     1st dimension - the row of data frame
                     2nd dimension - the column of data frame
                 columns_names: names of the columns for the 2nd dimension as Numpy array
+                aggregation: if the aggregation on fields was performed
 
             Returns:
                 calculated S1 as float
@@ -121,7 +126,7 @@ def calculate_s1(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        total = get_total_values(input_data, columns_names, aggregation)
         egbar = sum_column_data_by_name(input_data, columns_names, 'egbar') / total
         mgbar = sum_column_data_by_name(input_data, columns_names, 'mgbar') / total
         result = 100 * egbar / mgbar
@@ -132,7 +137,7 @@ def calculate_s1(input_data, columns_names):
     return result
 
 
-def calculate_s1_og(input_data, columns_names):
+def calculate_s1_og(input_data, columns_names, aggregation=False):
     """Performs calculation of S1_OG - S1 score with respect to observed gradient
 
             Args:
@@ -140,6 +145,7 @@ def calculate_s1_og(input_data, columns_names):
                     1st dimension - the row of data frame
                     2nd dimension - the column of data frame
                 columns_names: names of the columns for the 2nd dimension as Numpy array
+                aggregation: if the aggregation on fields was performed
 
             Returns:
                 calculated S1_OG as float
@@ -147,7 +153,7 @@ def calculate_s1_og(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        total = get_total_values(input_data, columns_names, aggregation)
         egbar = sum_column_data_by_name(input_data, columns_names, 'egbar') / total
         ogbar = sum_column_data_by_name(input_data, columns_names, 'ogbar') / total
         result = 100 * egbar / ogbar
@@ -158,7 +164,7 @@ def calculate_s1_og(input_data, columns_names):
     return result
 
 
-def calculate_fgog_ratio(input_data, columns_names):
+def calculate_fgog_ratio(input_data, columns_names, aggregation=False):
     """Performs calculation of FGOG_RATIO - Ratio of forecast and observed gradients
 
             Args:
@@ -166,6 +172,7 @@ def calculate_fgog_ratio(input_data, columns_names):
                     1st dimension - the row of data frame
                     2nd dimension - the column of data frame
                 columns_names: names of the columns for the 2nd dimension as Numpy array
+                aggregation: if the aggregation on fields was performed
 
             Returns:
                 calculated FGOG_RATIO as float
@@ -173,7 +180,7 @@ def calculate_fgog_ratio(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        total = get_total_values(input_data, columns_names, aggregation)
         fgbar = sum_column_data_by_name(input_data, columns_names, 'fgbar') / total
         ogbar = sum_column_data_by_name(input_data, columns_names, 'ogbar') / total
         result = 100 * fgbar / ogbar

@@ -4,14 +4,14 @@ Program Name: val1l2_statistics.py
 import warnings
 import numpy as np
 
-from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION
+from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION, get_total_values
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
 __email__ = 'met_help@ucar.edu'
 
 
-def calculate_val1l2_anom_corr(input_data, columns_names):
+def calculate_val1l2_anom_corr(input_data, columns_names, aggregation=False):
     """Performs calculation of VAL1L2_ANOM_CORR -
 
         Args:
@@ -19,6 +19,7 @@ def calculate_val1l2_anom_corr(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated VAL1L2_ANOM_CORR as float
@@ -26,7 +27,7 @@ def calculate_val1l2_anom_corr(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        total = get_total_values(input_data, columns_names, aggregation)
         ufabar = sum_column_data_by_name(input_data, columns_names, 'ufabar') / total
         vfabar = sum_column_data_by_name(input_data, columns_names, 'vfabar') / total
         uoabar = sum_column_data_by_name(input_data, columns_names, 'uoabar') / total

@@ -9,14 +9,14 @@ from metcalcpy.util.sl1l2_statistics import calculate_fbar, calculate_fstdev, \
     calculate_pr_corr, calculate_me, calculate_estdev, calculate_mse, \
     calculate_bcmse, calculate_bcrmse, calculate_rmse, \
     calculate_anom_corr, calculate_me2, calculate_msess
-from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION
+from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION, get_total_values
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
 __email__ = 'met_help@ucar.edu'
 
 
-def calculate_ssvar_fbar(input_data, columns_names):
+def calculate_ssvar_fbar(input_data, columns_names, aggregation=False):
     """Performs calculation of SSVAR_FBAR - Average forecast value
 
         Args:
@@ -24,15 +24,16 @@ def calculate_ssvar_fbar(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated SSVAR_FBAR as float
             or None if some of the data values are missing or invalid
     """
-    return calculate_fbar(input_data, columns_names)
+    return calculate_fbar(input_data, columns_names, aggregation)
 
 
-def calculate_ssvar_fstdev(input_data, columns_names):
+def calculate_ssvar_fstdev(input_data, columns_names, aggregation=False):
     """Performs calculation of SSVAR_FSTDEV - Standard deviation of the error
 
         Args:
@@ -40,15 +41,16 @@ def calculate_ssvar_fstdev(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated SSVAR_FSTDEV as float
             or None if some of the data values are missing or invalid
     """
-    return calculate_fstdev(input_data, columns_names)
+    return calculate_fstdev(input_data, columns_names, aggregation)
 
 
-def calculate_ssvar_obar(input_data, columns_names):
+def calculate_ssvar_obar(input_data, columns_names, aggregation=False):
     """Performs calculation of SSVAR_OBAR - Average observed value
 
         Args:
@@ -56,15 +58,16 @@ def calculate_ssvar_obar(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated SSVAR_OBAR as float
             or None if some of the data values are missing or invalid
     """
-    return calculate_obar(input_data, columns_names)
+    return calculate_obar(input_data, columns_names, aggregation)
 
 
-def calculate_ssvar_ostdev(input_data, columns_names):
+def calculate_ssvar_ostdev(input_data, columns_names, aggregation=False):
     """Performs calculation of SSVAR_OSTDEV - Standard deviation of the error
 
         Args:
@@ -72,15 +75,16 @@ def calculate_ssvar_ostdev(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated SSVAR_OSTDEV as float
             or None if some of the data values are missing or invalid
     """
-    return calculate_ostdev(input_data, columns_names)
+    return calculate_ostdev(input_data, columns_names, aggregation)
 
 
-def calculate_ssvar_pr_corr(input_data, columns_names):
+def calculate_ssvar_pr_corr(input_data, columns_names, aggregation=False):
     """Performs calculation of SSVAR_PR_CORR - Pearson correlation coefficient
 
         Args:
@@ -88,15 +92,16 @@ def calculate_ssvar_pr_corr(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated SSVAR_PR_CORR as float
             or None if some of the data values are missing or invalid
     """
-    return calculate_pr_corr(input_data, columns_names)
+    return calculate_pr_corr(input_data, columns_names, aggregation)
 
 
-def calculate_ssvar_me(input_data, columns_names):
+def calculate_ssvar_me(input_data, columns_names, aggregation=False):
     """Performs calculation of SSVAR_ME - Mean error
 
         Args:
@@ -104,15 +109,16 @@ def calculate_ssvar_me(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated SSVAR_ME as float
             or None if some of the data values are missing or invalid
     """
-    return calculate_me(input_data, columns_names)
+    return calculate_me(input_data, columns_names, aggregation)
 
 
-def calculate_ssvar_estdev(input_data, columns_names):
+def calculate_ssvar_estdev(input_data, columns_names, aggregation=False):
     """Performs calculation of SSVAR_ESTDEV - Standard deviation of the error
 
         Args:
@@ -120,15 +126,16 @@ def calculate_ssvar_estdev(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated SSVAR_ESTDEV as float
             or None if some of the data values are missing or invalid
     """
-    return calculate_estdev(input_data, columns_names)
+    return calculate_estdev(input_data, columns_names, aggregation)
 
 
-def calculate_ssvar_mse(input_data, columns_names):
+def calculate_ssvar_mse(input_data, columns_names, aggregation=False):
     """Performs calculation of SSVAR_MSE - Mean squared error
 
         Args:
@@ -141,10 +148,10 @@ def calculate_ssvar_mse(input_data, columns_names):
             calculated SSVAR_MSE as float
             or None if some of the data values are missing or invalid
     """
-    return calculate_mse(input_data, columns_names)
+    return calculate_mse(input_data, columns_names, aggregation)
 
 
-def calculate_ssvar_bcmse(input_data, columns_names):
+def calculate_ssvar_bcmse(input_data, columns_names, aggregation=False):
     """Performs calculation of SSVAR_BCMSE - Bias corrected root mean squared error
 
         Args:
@@ -152,15 +159,16 @@ def calculate_ssvar_bcmse(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated SSVAR_BCMSE as float
             or None if some of the data values are missing or invalid
     """
-    return calculate_bcmse(input_data, columns_names)
+    return calculate_bcmse(input_data, columns_names, aggregation)
 
 
-def calculate_ssvar_bcrmse(input_data, columns_names):
+def calculate_ssvar_bcrmse(input_data, columns_names, aggregation=False):
     """Performs calculation of SSVAR_BCRMSE - Bias corrected root mean squared error
 
         Args:
@@ -168,15 +176,16 @@ def calculate_ssvar_bcrmse(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated SSVAR_BCRMSE as float
             or None if some of the data values are missing or invalid
     """
-    return calculate_bcrmse(input_data, columns_names)
+    return calculate_bcrmse(input_data, columns_names, aggregation)
 
 
-def calculate_ssvar_rmse(input_data, columns_names):
+def calculate_ssvar_rmse(input_data, columns_names, aggregation=False):
     """Performs calculation of SSVAR_RMSE - Root mean squared error
 
         Args:
@@ -184,15 +193,16 @@ def calculate_ssvar_rmse(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated SSVAR_RMSE as float
             or None if some of the data values are missing or invalid
     """
-    return calculate_rmse(input_data, columns_names)
+    return calculate_rmse(input_data, columns_names, aggregation)
 
 
-def calculate_ssvar_anom_corr(input_data, columns_names):
+def calculate_ssvar_anom_corr(input_data, columns_names, aggregation=False):
     """Performs calculation of SSVAR_ANOM_CORR -
 
         Args:
@@ -200,15 +210,16 @@ def calculate_ssvar_anom_corr(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated SSVAR_ANOM_CORR as float
             or None if some of the data values are missing or invalid
     """
-    return calculate_anom_corr(input_data, columns_names)
+    return calculate_anom_corr(input_data, columns_names, aggregation)
 
 
-def calculate_ssvar_me2(input_data, columns_names):
+def calculate_ssvar_me2(input_data, columns_names, aggregation=False):
     """Performs calculation of SSVAR_ME2 -
 
         Args:
@@ -216,15 +227,16 @@ def calculate_ssvar_me2(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated SSVAR_ME2 as float
             or None if some of the data values are missing or invalid
     """
-    return calculate_me2(input_data, columns_names)
+    return calculate_me2(input_data, columns_names, aggregation)
 
 
-def calculate_ssvar_msess(input_data, columns_names):
+def calculate_ssvar_msess(input_data, columns_names, aggregation=False):
     """Performs calculation of SSVAR_MSESS -
 
         Args:
@@ -232,16 +244,17 @@ def calculate_ssvar_msess(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated SSVAR_MSESS as float
             or None if some of the data values are missing or invalid
     """
 
-    return calculate_msess(input_data, columns_names)
+    return calculate_msess(input_data, columns_names, aggregation)
 
 
-def calculate_ssvar_spread(input_data, columns_names):
+def calculate_ssvar_spread(input_data, columns_names, aggregation=False):
     """Performs calculation of SSVAR_SPREAD -
 
         Args:
@@ -249,6 +262,7 @@ def calculate_ssvar_spread(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated SSVAR_SPREAD as float
@@ -256,7 +270,7 @@ def calculate_ssvar_spread(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        total = get_total_values(input_data, columns_names, aggregation)
         var_mean = sum_column_data_by_name(input_data, columns_names, 'var_mean') / total
         result = np.sqrt(var_mean)
         result = round_half_up(result, PRECISION)

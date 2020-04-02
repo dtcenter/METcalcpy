@@ -3,14 +3,14 @@ Program Name: sl1l2_statistics.py
 """
 import warnings
 import numpy as np
-from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION
+from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION, get_total_values
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
 __email__ = 'met_help@ucar.edu'
 
 
-def calculate_fbar(input_data, columns_names):
+def calculate_fbar(input_data, columns_names, aggregation=False):
     """Performs calculation of FBAR - Forecast mean
 
         Args:
@@ -18,6 +18,7 @@ def calculate_fbar(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated FBAR as float
@@ -25,7 +26,7 @@ def calculate_fbar(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        total = get_total_values(input_data, columns_names, aggregation)
         result = sum_column_data_by_name(input_data, columns_names, 'fbar') / total
         result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
@@ -34,7 +35,7 @@ def calculate_fbar(input_data, columns_names):
     return result
 
 
-def calculate_obar(input_data, columns_names):
+def calculate_obar(input_data, columns_names, aggregation=False):
     """Performs calculation of OBAR - Observation Mean
 
         Args:
@@ -42,6 +43,7 @@ def calculate_obar(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated OBAR as float
@@ -49,7 +51,7 @@ def calculate_obar(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        total = get_total_values(input_data, columns_names, aggregation)
         result = sum_column_data_by_name(input_data, columns_names, 'obar') / total
         result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
@@ -58,7 +60,7 @@ def calculate_obar(input_data, columns_names):
     return result
 
 
-def calculate_fstdev(input_data, columns_names):
+def calculate_fstdev(input_data, columns_names, aggregation=False):
     """Performs calculation of FSTDEV - Forecast standard deviation
 
         Args:
@@ -66,6 +68,7 @@ def calculate_fstdev(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated FSTDEV as float
@@ -73,9 +76,12 @@ def calculate_fstdev(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
+        total1 = 1
         total = sum_column_data_by_name(input_data, columns_names, 'total')
-        fbar = sum_column_data_by_name(input_data, columns_names, 'fbar') / total
-        ffbar = sum_column_data_by_name(input_data, columns_names, 'ffbar') / total
+        if aggregation:
+            total1 = total
+        fbar = sum_column_data_by_name(input_data, columns_names, 'fbar') / total1
+        ffbar = sum_column_data_by_name(input_data, columns_names, 'ffbar') / total1
         result = calculate_stddev(fbar * total, ffbar * total, total)
         result = round_half_up(result, PRECISION)
     except (TypeError, Warning):
@@ -84,7 +90,7 @@ def calculate_fstdev(input_data, columns_names):
     return result
 
 
-def calculate_ostdev(input_data, columns_names):
+def calculate_ostdev(input_data, columns_names, aggregation=False):
     """Performs calculation of OSTDEV - Observation Standard Deviation
 
         Args:
@@ -92,6 +98,7 @@ def calculate_ostdev(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated OSTDEV as float
@@ -99,9 +106,12 @@ def calculate_ostdev(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
+        total1 = 1
         total = sum_column_data_by_name(input_data, columns_names, 'total')
-        obar = sum_column_data_by_name(input_data, columns_names, 'obar') / total
-        oobar = sum_column_data_by_name(input_data, columns_names, 'oobar') / total
+        if aggregation:
+            total1 = total
+        obar = sum_column_data_by_name(input_data, columns_names, 'obar') / total1
+        oobar = sum_column_data_by_name(input_data, columns_names, 'oobar') / total1
         result = calculate_stddev(obar * total, oobar * total, total)
         result = round_half_up(result, PRECISION)
     except (TypeError, Warning):
@@ -110,7 +120,7 @@ def calculate_ostdev(input_data, columns_names):
     return result
 
 
-def calculate_fobar(input_data, columns_names):
+def calculate_fobar(input_data, columns_names, aggregation=False):
     """Performs calculation of FOBAR - Average product of forecast and observation
 
         Args:
@@ -118,6 +128,7 @@ def calculate_fobar(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated FOBAR as float
@@ -125,7 +136,7 @@ def calculate_fobar(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        total = get_total_values(input_data, columns_names, aggregation)
         result = sum_column_data_by_name(input_data, columns_names, 'fobar') / total
         result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
@@ -134,7 +145,7 @@ def calculate_fobar(input_data, columns_names):
     return result
 
 
-def calculate_ffbar(input_data, columns_names):
+def calculate_ffbar(input_data, columns_names, aggregation=False):
     """Performs calculation of FFBAR - Average of forecast squared
 
         Args:
@@ -142,6 +153,7 @@ def calculate_ffbar(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated FFBAR as float
@@ -149,7 +161,7 @@ def calculate_ffbar(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        total = get_total_values(input_data, columns_names, aggregation)
         result = sum_column_data_by_name(input_data, columns_names, 'ffbar') / total
         result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
@@ -158,7 +170,7 @@ def calculate_ffbar(input_data, columns_names):
     return result
 
 
-def calculate_oobar(input_data, columns_names):
+def calculate_oobar(input_data, columns_names, aggregation=False):
     """Performs calculation of OOBAR - Average of observation squared
 
         Args:
@@ -166,6 +178,7 @@ def calculate_oobar(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated OOBAR as float
@@ -173,7 +186,7 @@ def calculate_oobar(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        total = get_total_values(input_data, columns_names, aggregation)
         result = sum_column_data_by_name(input_data, columns_names, 'oobar') / total
         result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
@@ -182,7 +195,7 @@ def calculate_oobar(input_data, columns_names):
     return result
 
 
-def calculate_mae(input_data, columns_names):
+def calculate_mae(input_data, columns_names, aggregation=False):
     """Performs calculation of MAE - Mean absolute error
 
         Args:
@@ -190,6 +203,7 @@ def calculate_mae(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated MAE as float
@@ -197,7 +211,7 @@ def calculate_mae(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        total = get_total_values(input_data, columns_names, aggregation)
         result = sum_column_data_by_name(input_data, columns_names, 'mae') / total
         result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
@@ -206,7 +220,7 @@ def calculate_mae(input_data, columns_names):
     return result
 
 
-def calculate_mbias(input_data, columns_names):
+def calculate_mbias(input_data, columns_names, aggregation=False):
     """Performs calculation of MBIAS - Multiplicative Bias
 
         Args:
@@ -214,6 +228,7 @@ def calculate_mbias(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated MBIAS as float
@@ -221,7 +236,7 @@ def calculate_mbias(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        total = get_total_values(input_data, columns_names, aggregation)
         obar = sum_column_data_by_name(input_data, columns_names, 'obar') / total
         if obar == 0:
             result = None
@@ -235,7 +250,7 @@ def calculate_mbias(input_data, columns_names):
     return result
 
 
-def calculate_pr_corr(input_data, columns_names):
+def calculate_pr_corr(input_data, columns_names, aggregation=False):
     """Performs calculation of PR_CORR - Pearson correlation coefficient
         including normal confidence limits
 
@@ -244,6 +259,7 @@ def calculate_pr_corr(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated PR_CORR as float
@@ -251,12 +267,15 @@ def calculate_pr_corr(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
+        total1 = 1
         total = sum_column_data_by_name(input_data, columns_names, 'total')
-        ffbar = sum_column_data_by_name(input_data, columns_names, 'ffbar') / total
-        fbar = sum_column_data_by_name(input_data, columns_names, 'fbar') / total
-        oobar = sum_column_data_by_name(input_data, columns_names, 'oobar') / total
-        obar = sum_column_data_by_name(input_data, columns_names, 'obar') / total
-        fobar = sum_column_data_by_name(input_data, columns_names, 'fobar') / total
+        if aggregation:
+            total1 = total
+        ffbar = sum_column_data_by_name(input_data, columns_names, 'ffbar') / total1
+        fbar = sum_column_data_by_name(input_data, columns_names, 'fbar') / total1
+        oobar = sum_column_data_by_name(input_data, columns_names, 'oobar') / total1
+        obar = sum_column_data_by_name(input_data, columns_names, 'obar') / total1
+        fobar = sum_column_data_by_name(input_data, columns_names, 'fobar') / total1
         v = (total ** 2 * ffbar - total ** 2 * fbar ** 2) \
             * (total ** 2 * oobar - total ** 2 * obar ** 2)
         pr_corr = (total ** 2 * fobar - total ** 2 * fbar * obar) / np.sqrt(v)
@@ -270,8 +289,8 @@ def calculate_pr_corr(input_data, columns_names):
     return pr_corr
 
 
-def calculate_anom_corr(input_data, columns_names):
-    """Performs calculation of ANOM_CORR - The Anomoly Correlation
+def calculate_anom_corr(input_data, columns_names, aggregation=False):
+    """Performs calculation of ANOM_CORR - The Anomaly Correlation
      including normal confidence limits
 
         Args:
@@ -279,6 +298,7 @@ def calculate_anom_corr(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated PR_CORR as float
@@ -286,7 +306,7 @@ def calculate_anom_corr(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        total = get_total_values(input_data, columns_names, aggregation)
         ffbar = sum_column_data_by_name(input_data, columns_names, 'ffbar') / total
         fbar = sum_column_data_by_name(input_data, columns_names, 'fbar') / total
         oobar = sum_column_data_by_name(input_data, columns_names, 'oobar') / total
@@ -307,7 +327,7 @@ def calculate_anom_corr(input_data, columns_names):
     return anom_corr
 
 
-def calculate_rmsfa(input_data, columns_names):
+def calculate_rmsfa(input_data, columns_names, aggregation=False):
     """Performs calculation of RMSFA - Root mean squared forecast anomaly (f-c)
      including normal confidence limits
 
@@ -316,6 +336,7 @@ def calculate_rmsfa(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated RMSFA as float
@@ -323,7 +344,7 @@ def calculate_rmsfa(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        total = get_total_values(input_data, columns_names, aggregation)
         ffbar = sum_column_data_by_name(input_data, columns_names, 'ffbar') / total
         if ffbar is None or ffbar < 0:
             result = None
@@ -336,7 +357,7 @@ def calculate_rmsfa(input_data, columns_names):
     return result
 
 
-def calculate_rmsoa(input_data, columns_names):
+def calculate_rmsoa(input_data, columns_names, aggregation=False):
     """Performs calculation of RMSOA - Root mean squared observation anomaly (o-c)
      including normal confidence limits
 
@@ -345,6 +366,7 @@ def calculate_rmsoa(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated RMSOA as float
@@ -352,7 +374,7 @@ def calculate_rmsoa(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        total = get_total_values(input_data, columns_names, aggregation)
         oobar = sum_column_data_by_name(input_data, columns_names, 'oobar') / total
         if oobar is None or oobar < 0:
             result = None
@@ -365,7 +387,7 @@ def calculate_rmsoa(input_data, columns_names):
     return result
 
 
-def calculate_me(input_data, columns_names):
+def calculate_me(input_data, columns_names, aggregation=False):
     """Performs calculation of ME - Mean error, aka Additive bias
 
         Args:
@@ -373,6 +395,7 @@ def calculate_me(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated ME as float
@@ -380,7 +403,7 @@ def calculate_me(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        total = get_total_values(input_data, columns_names, aggregation)
         fbar = sum_column_data_by_name(input_data, columns_names, 'fbar') / total
         obar = sum_column_data_by_name(input_data, columns_names, 'obar') / total
         result = fbar - obar
@@ -391,7 +414,7 @@ def calculate_me(input_data, columns_names):
     return result
 
 
-def calculate_me2(input_data, columns_names):
+def calculate_me2(input_data, columns_names, aggregation=False):
     """Performs calculation of ME2 - The square of the mean error (bias)
 
         Args:
@@ -399,6 +422,7 @@ def calculate_me2(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated ME2 as float
@@ -406,7 +430,7 @@ def calculate_me2(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        me = calculate_me(input_data, columns_names)
+        me = calculate_me(input_data, columns_names, aggregation)
         result = me ** 2
         result = round_half_up(result, PRECISION)
     except (TypeError, Warning):
@@ -415,7 +439,7 @@ def calculate_me2(input_data, columns_names):
     return result
 
 
-def calculate_mse(input_data, columns_names):
+def calculate_mse(input_data, columns_names, aggregation=False):
     """Performs calculation of MSE - Mean squared error
 
         Args:
@@ -423,6 +447,7 @@ def calculate_mse(input_data, columns_names):
                 1st dimension - the row of data frame
                 2nd dimension - the column of data frame
             columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
         Returns:
             calculated MSE as float
@@ -430,7 +455,7 @@ def calculate_mse(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        total = get_total_values(input_data, columns_names, aggregation)
         ffbar = sum_column_data_by_name(input_data, columns_names, 'ffbar') / total
         oobar = sum_column_data_by_name(input_data, columns_names, 'oobar') / total
         fobar = sum_column_data_by_name(input_data, columns_names, 'fobar') / total
@@ -442,7 +467,7 @@ def calculate_mse(input_data, columns_names):
     return result
 
 
-def calculate_msess(input_data, columns_names):
+def calculate_msess(input_data, columns_names, aggregation=False):
     """Performs calculation of MSESS - The mean squared error skill score
 
             Args:
@@ -450,6 +475,7 @@ def calculate_msess(input_data, columns_names):
                     1st dimension - the row of data frame
                     2nd dimension - the column of data frame
                 columns_names: names of the columns for the 2nd dimension as Numpy array
+                aggregation: if the aggregation on fields was performed
 
             Returns:
                 calculated MSESS as float
@@ -457,8 +483,8 @@ def calculate_msess(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        ostdev = calculate_ostdev(input_data, columns_names)
-        mse = calculate_mse(input_data, columns_names)
+        ostdev = calculate_ostdev(input_data, columns_names, aggregation)
+        mse = calculate_mse(input_data, columns_names, aggregation)
         result = 1.0 - mse / ostdev ** 2
         result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
@@ -467,7 +493,7 @@ def calculate_msess(input_data, columns_names):
     return result
 
 
-def calculate_rmse(input_data, columns_names):
+def calculate_rmse(input_data, columns_names, aggregation=False):
     """Performs calculation of RMSE - Root-mean squared error
 
             Args:
@@ -475,6 +501,7 @@ def calculate_rmse(input_data, columns_names):
                     1st dimension - the row of data frame
                     2nd dimension - the column of data frame
                 columns_names: names of the columns for the 2nd dimension as Numpy array
+                aggregation: if the aggregation on fields was performed
 
             Returns:
                 calculated RMSE as float
@@ -482,7 +509,7 @@ def calculate_rmse(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        result = np.sqrt(calculate_mse(input_data, columns_names))
+        result = np.sqrt(calculate_mse(input_data, columns_names, aggregation))
         result = round_half_up(result, PRECISION)
     except (TypeError, Warning):
         result = None
@@ -490,7 +517,7 @@ def calculate_rmse(input_data, columns_names):
     return result
 
 
-def calculate_estdev(input_data, columns_names):
+def calculate_estdev(input_data, columns_names, aggregation=False):
     """Performs calculation of ESTDEV - Standard deviation of the error
 
             Args:
@@ -498,6 +525,7 @@ def calculate_estdev(input_data, columns_names):
                     1st dimension - the row of data frame
                     2nd dimension - the column of data frame
                 columns_names: names of the columns for the 2nd dimension as Numpy array
+                aggregation: if the aggregation on fields was performed
 
             Returns:
                 calculated ESTDEV as float
@@ -505,7 +533,7 @@ def calculate_estdev(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        total = get_total_values(input_data, columns_names, aggregation)
         me = calculate_me(input_data, columns_names)
         mse = calculate_mse(input_data, columns_names)
         result = calculate_stddev(me * total, mse * total, total)
@@ -516,7 +544,7 @@ def calculate_estdev(input_data, columns_names):
     return result
 
 
-def calculate_bcmse(input_data, columns_names):
+def calculate_bcmse(input_data, columns_names, aggregation=False):
     """Performs calculation of BCMSE - Bias-corrected mean squared error
 
             Args:
@@ -524,6 +552,7 @@ def calculate_bcmse(input_data, columns_names):
                     1st dimension - the row of data frame
                     2nd dimension - the column of data frame
                 columns_names: names of the columns for the 2nd dimension as Numpy array
+                aggregation: if the aggregation on fields was performed
 
             Returns:
                 calculated BCMSE as float
@@ -531,8 +560,8 @@ def calculate_bcmse(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        mse = calculate_mse(input_data, columns_names)
-        me = calculate_me(input_data, columns_names)
+        mse = calculate_mse(input_data, columns_names, aggregation)
+        me = calculate_me(input_data, columns_names, aggregation)
         result = mse - me ** 2
         result = round_half_up(result, PRECISION)
     except (TypeError, Warning):
@@ -541,7 +570,7 @@ def calculate_bcmse(input_data, columns_names):
     return result
 
 
-def calculate_bcrmse(input_data, columns_names):
+def calculate_bcrmse(input_data, columns_names, aggregation=False):
     """Performs calculation of BCRMSE - Bias-corrected root mean square error
 
             Args:
@@ -549,6 +578,7 @@ def calculate_bcrmse(input_data, columns_names):
                     1st dimension - the row of data frame
                     2nd dimension - the column of data frame
                 columns_names: names of the columns for the 2nd dimension as Numpy array
+                aggregation: if the aggregation on fields was performed
 
             Returns:
                 calculated BCRMSE as float
@@ -556,7 +586,7 @@ def calculate_bcrmse(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        result = np.sqrt(calculate_bcmse(input_data, columns_names))
+        result = np.sqrt(calculate_bcmse(input_data, columns_names, aggregation))
         result = round_half_up(result, PRECISION)
     except (TypeError, Warning):
         result = None
