@@ -151,6 +151,7 @@ class AggStat():
         'estdev': ['ffbar', 'oobar', 'fobar', 'fbar', 'obar'],
         'bcmse': ['ffbar', 'oobar', 'fobar', 'fbar', 'obar'],
         'bcrmse': ['ffbar', 'oobar', 'fobar', 'fbar', 'obar'],
+        'pr_corr': ['ffbar', 'oobar', 'fobar', 'fbar', 'obar'],
 
         'fgbar': ['fgbar'],
         'ogbar': ['ogbar'],
@@ -239,14 +240,14 @@ class AggStat():
         func_name = f'calculate_{self.statistic}'
         if values is not None and values.ndim == 2:
             # The single value case
-            stat_values = [globals()[func_name](values, self.column_names)]
+            stat_values = [globals()[func_name](values, self.column_names, True)]
         elif values is not None and values.ndim == 3:
             # bootstrapped case
             stat_values = []
             for row in values:
-                stat_values.append([globals()[func_name](row, self.column_names)])
+                stat_values.append([globals()[func_name](row, self.column_names, True)])
 
-            # pool = mp.Pool(mp.cpu_count())
+            #pool = mp.Pool(mp.cpu_count())
             # stat_values = pool.map(partial(globals()['calculate_{}'.format(stat)],
             # columns_names=columns_names), [row for row in data_for_stats])
             # pool.close()
