@@ -333,3 +333,28 @@ def perfect_score_adjustment(mean_stats_1, mean_stats_2, statistic, pval):
         result = pval
 
     return result
+
+
+def get_total_values(input_data, columns_names, aggregation):
+    """Returns the total value for the given numpy array
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
+
+        Returns:
+                1 - if the aggregation was not preformed on the array
+                sum of all values from 'total' columns - if the aggregation was preformed on the array
+        """
+    total = 1
+    if aggregation:
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
+    return total
+
+
+def aggregateFieldValues(series_val, dfStatsPerm, strPerm, line_type, column_names, ind):
+    # placeholder
+    pass
