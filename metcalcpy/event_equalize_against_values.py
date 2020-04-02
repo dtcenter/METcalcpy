@@ -34,10 +34,9 @@ def event_equalize_against_values(series_data, indy_var, input_unique_cases):
 
     if 'fcst_valid' in column_names:
         # always use fcst_valid for equalization
-
         # create a unique member to use for equalization
-        series_data['equalize'] = series_data["fcst_valid"].astype(str) \
-                                  + ' ' + series_data["fcst_lead"].astype(str)
+        series_data.insert(len(series_data.columns), 'equalize',
+                           series_data['fcst_valid'].astype(str) + ' ' + series_data['fcst_lead'].astype(str))
     else:
         print("WARNING: eventEqualize() did not run due to lack of valid time field")
         return pd.DataFrame()
