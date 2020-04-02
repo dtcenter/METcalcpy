@@ -543,5 +543,3 @@ def calculate_3d_objfar(input_data, columns_names):
     """
     filtered_data = column_data_by_name_value(input_data, columns_names, THREE_D_DATA_FILTER)
     return calculate_objfar(filtered_data, columns_names)
-
-
