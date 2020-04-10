@@ -9,7 +9,7 @@ directory name and script name
 """
 from spacetime import mjo_cross
 from spacetime import get_symmasymm
-from utils.save_netcdf import save_Spectra
+from spacetime import save_Spectra
 
 """
 Set parameters for the spectra calculation.
