@@ -4,7 +4,7 @@ Program Name: agg_stat.py
 How to use:
  - Call from other Python function
         AGG_STAT = AggStat(PARAMS)
-        AGG_STAT.calculate_value_and_ci()
+        AGG_STAT.calculate_stats_and_ci()
         where PARAMS – a dictionary with data description parameters including
         location of input and output data.
         The structure is similar to Rscript template
@@ -25,8 +25,8 @@ import sys
 import itertools
 import argparse
 import yaml
+from inspect import signature
 import bootstrapped.bootstrap
-from metcalcpy import event_equalize
 from metcalcpy.bootstrap_custom import BootstrapDistributionResults, bootstrap_and_value
 from metcalcpy.util.ctc_statistics import *
 from metcalcpy.util.grad_statistics import *
@@ -43,7 +43,7 @@ from metcalcpy.util.rps_statistics import *
 
 from metcalcpy.util.utils import is_string_integer, get_derived_curve_name, unique, \
     calc_derived_curve_value, intersection, is_derived_point, parse_bool, \
-    OPERATION_TO_SIGN, perfect_score_adjustment
+    OPERATION_TO_SIGN, perfect_score_adjustment, perform_event_equalization, aggregate_field_values
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
@@ -86,10 +86,11 @@ class AggStat():
            All parameters including data description and location is in the parameters dictionary
            Usage:
                 initialise this call with the parameters dictionary and than
-                call calculate_value_and_ci method
+                call calculate_stats_and_ci method
                 This method will crate and save to the file aggregation statistics
                     agg_stat = AggStat(params)
-                    agg_stat.calculate_value_and_ci()
+                    agg_stat.calculate_stats_and_ci()
+            Raises: EmptyDataError or ValueError when the input DataFrame is empty or doesn't have data
        """
 
     def __init__(self, in_params):
@@ -97,18 +98,25 @@ class AggStat():
 
             Args:
                 in_params - input parameters as a dictionary
+            Raises: EmptyDataError or ValueError when the input DataFrame is empty or doesn't have data
         """
 
         self.statistic = None
         self.derived_name_to_values = {}
         self.params = in_params
-
-        self.input_data = pd.read_csv(
-            self.params['agg_stat_input'],
-            header=[0],
-            sep='\t'
-        )
-        self.column_names = self.input_data.columns.values
+        import pandas
+        try:
+            self.input_data = pd.read_csv(
+                self.params['agg_stat_input'],
+                header=[0],
+                sep='\t'
+            )
+            self.column_names = self.input_data.columns.values
+        except pandas.errors.EmptyDataError:
+            raise
+        except KeyError as e:
+            print(f'ERROR: parameter with key {e} is missing')
+            raise
         self.group_to_value = {}
 
     EXEMPTED_VARS = ['SSVAR_Spread', 'SSVAR_RMSE']
@@ -238,16 +246,29 @@ class AggStat():
 
         """
         func_name = f'calculate_{self.statistic}'
+        # some functions have an extra 3rd parameter that represents
+        # if some data preliminary data aggregation was done
+        # if this parameter is present we need to add it
+        num_parameters = len(signature(globals()[func_name]).parameters)
+
         if values is not None and values.ndim == 2:
             # The single value case
-            stat_values = [globals()[func_name](values, self.column_names, True)]
+            if num_parameters == 2:
+                stat_values = [globals()[func_name](values, self.column_names)]
+            else:
+                stat_values = [globals()[func_name](values, self.column_names, True)]
         elif values is not None and values.ndim == 3:
             # bootstrapped case
             stat_values = []
             for row in values:
-                stat_values.append([globals()[func_name](row, self.column_names, True)])
+                if num_parameters == 2:
+                    stat_value = [globals()[func_name](row, self.column_names)]
+                else:
+                    stat_value = [globals()[func_name](row, self.column_names, True)]
 
-            #pool = mp.Pool(mp.cpu_count())
+                stat_values.append(stat_value)
+
+            # pool = mp.Pool(mp.cpu_count())
             # stat_values = pool.map(partial(globals()['calculate_{}'.format(stat)],
             # columns_names=columns_names), [row for row in data_for_stats])
             # pool.close()
@@ -280,11 +301,21 @@ class AggStat():
             values_2 = values_both_arrays[:, int(num_of_columns / 2):num_of_columns]
 
             func_name = f'calculate_{self.statistic}'
+            # some functions have an extra 3rd parameter that represents
+            # if some data preliminary data aggregation was done
+            # if this parameter is present we need to add it
+            num_parameters = len(signature(globals()[func_name]).parameters)
 
-            # calculate stat for the 1st array
-            stat_values_1 = [globals()[func_name](values_1, self.column_names)]
-            # calculate stat for the 2nd array
-            stat_values_2 = [globals()[func_name](values_2, self.column_names)]
+            if num_parameters == 2:
+                # calculate stat for the 1st array
+                stat_values_1 = [globals()[func_name](values_1, self.column_names)]
+                # calculate stat for the 2nd array
+                stat_values_2 = [globals()[func_name](values_2, self.column_names)]
+            else:
+                # calculate stat for the 1st array
+                stat_values_1 = [globals()[func_name](values_1, self.column_names, True)]
+                # calculate stat for the 2nd array
+                stat_values_2 = [globals()[func_name](values_2, self.column_names, True)]
 
             # calculate derived stat
             stat_values = calc_derived_curve_value(
@@ -302,11 +333,21 @@ class AggStat():
                 values_2 = row[:, int(num_of_columns / 2):num_of_columns]
 
                 func_name = f'calculate_{self.statistic}'
+                # some functions have an extra 3rd parameter that represents
+                # if some data preliminary data aggregation was done
+                # if this parameter is present we need to add it
+                num_parameters = len(signature(globals()[func_name]).parameters)
 
-                # calculate stat for the 1st array
-                stat_values_1 = [globals()[func_name](values_1, self.column_names)]
-                # calculate stat for the 2nd array
-                stat_values_2 = [globals()[func_name](values_2, self.column_names)]
+                if num_parameters == 2:
+                    # calculate stat for the 1st array
+                    stat_values_1 = [globals()[func_name](values_1, self.column_names)]
+                    # calculate stat for the 2nd array
+                    stat_values_2 = [globals()[func_name](values_2, self.column_names)]
+                else:
+                    # calculate stat for the 1st array
+                    stat_values_1 = [globals()[func_name](values_1, self.column_names, True)]
+                    # calculate stat for the 2nd array
+                    stat_values_2 = [globals()[func_name](values_2, self.column_names, True)]
 
                 # calculate derived stat
                 stat_value = calc_derived_curve_value(
@@ -489,106 +530,6 @@ class AggStat():
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
-
-    def _perform_event_equalization(self, indy_vals):
-        """ Performs event equalisation on input data
-            Args:
-             indy_vals: list of independent variable values
-
-        """
-        fix_vals = []
-        # data frame for the equalised data
-        output_ee_data = pd.DataFrame()
-
-        # list all fixed variables
-        if self.params['fixed_vars_vals_input']:
-            for value in self.params['fixed_vars_vals_input'].values():
-                fix_vals.append(list(value.values()))
-        # permute fix vals
-        fix_vals_permuted = list(itertools.chain.from_iterable(fix_vals))
-
-        # perform EE for each forecast variable on y1 axis
-        for fcst_var, fcst_var_stats in self.params['fcst_var_val_1'].items():
-            for fcst_var_stat in fcst_var_stats:
-                for series_var, series_var_vals in self.params['series_val_1'].items():
-                    # ungroup series value
-                    series_var_vals_no_group = []
-                    for val in series_var_vals:
-                        split_val = val.split(',')
-                        series_var_vals_no_group.extend(split_val)
-
-                    # filter input data based on fcst_var, statistic and all series variables values
-                    series_data_for_ee = self.input_data[
-                        (self.input_data['fcst_var'] == fcst_var)
-                        & (self.input_data["stat_name"] == fcst_var_stat)
-                        & (self.input_data[series_var].isin(series_var_vals_no_group))
-                        ]
-                    # perform EE on filtered data
-                    # for SSVAR use equalization of multiple events
-                series_data_after_ee = \
-                    event_equalize(series_data_for_ee, self.params['indy_var'], indy_vals,
-                                   self.params['series_val_1'],
-                                   list(self.params['fixed_vars_vals_input'].keys()),
-                                   fix_vals_permuted, True, self.params['line_type'] == "ssvar")
-
-                # append EE data to result
-                if output_ee_data.empty:
-                    output_ee_data = series_data_after_ee
-                else:
-                    output_ee_data = output_ee_data.append(series_data_after_ee)
-
-        # if the second Y axis is present - run event equalizer on Y1
-        # and then run event equalizer on Y1 and Y2 equalized data
-
-        if self.params['series_val_2']:
-            output_ee_data_2 = pd.DataFrame()
-            # perform EE for each forecast variable from Y2
-            for fcst_var, fcst_var_stats in self.params['fcst_var_val_2'].items():
-                for fcst_var_stat in fcst_var_stats:
-                    for series_var, series_var_vals in self.params['series_val_2'].items():
-                        # ungroup series value
-                        series_var_vals_no_group = []
-                        for val in series_var_vals:
-                            split_val = val.split(',')
-                            series_var_vals_no_group.extend(split_val)
-
-                        # filter input data based on fcst_var, statistic
-                        # and all series variables values
-                        series_data_for_ee = self.input_data[
-                            (self.input_data['fcst_var'] == fcst_var)
-                            & (self.input_data["stat_name"] == fcst_var_stat)
-                            & (self.input_data[series_var].isin(series_var_vals_no_group))
-                            ]
-                        # perform EE on filtered data
-                        # for SSVAR use equalization of multiple events
-                        series_data_after_ee = \
-                            event_equalize(series_data_for_ee, self.params['indy_var'], indy_vals,
-                                           self.params['series_val_2'],
-                                           list(self.params['fixed_vars_vals_input'].keys()),
-                                           fix_vals_permuted, True,
-                                           self.params['line_type'] == "ssvar")
-
-                        # append EE data to result
-                        if output_ee_data_2.empty:
-                            output_ee_data_2 = series_data_after_ee
-                        else:
-                            output_ee_data = output_ee_data_2.append(series_data_after_ee)
-            output_ee_data = output_ee_data.drop('equalize', axis=1)
-            output_ee_data_2 = output_ee_data_2.drop('equalize', axis=1)
-            all_ee_records = output_ee_data.append(output_ee_data_2).reindex()
-            all_series_vars = {}
-            for key in self.params['series_val_2']:
-                all_series_vars[key] = np.unique(self.params['series_val_2'][key]
-                                                 + self.params['series_val_2'][key])
-
-            output_ee_data = event_equalize(all_ee_records, self.params['indy_var'], indy_vals,
-                                            all_series_vars,
-                                            list(self.params['fixed_vars_vals_input'].keys()),
-                                            fix_vals_permuted, True,
-                                            self.params['line_type'] == "ssvar")
-
-        output_ee_data = output_ee_data.drop('equalize', axis=1)
-        self.input_data = output_ee_data
 
     def _get_bootstrapped_stats_for_derived(self, series, distributions, axis="1"):
         """ Calculates aggregation derived statistic value and CI intervals if needed for input data
@@ -838,6 +779,7 @@ class AggStat():
         """
         series_var = list(series_val.keys())[-1]
         # for each derived series
+        result = []
         for derived_serie in self.params['derived_series_' + axis]:
             derived_val = series_val.copy()
             derived_val[series_var] = None
@@ -863,11 +805,25 @@ class AggStat():
                 derived_val['stat_name'] = [ds_1[-1]]
             else:
                 derived_val['stat_name'] = [ds_1[-1] + "," + ds_2[-1]]
+            result.append(list(itertools.product(*derived_val.values())))
+        return [y for x in result for y in x]
 
-            return list(itertools.product(*derived_val.values()))
+    def _proceed_with_axis(self, axis="1"):
+        """Calculates stat values for the requested Y axis
 
-    def _proceed_with_axis(self, indy_vals, axis="1"):
+            Args:
+                axis: 1 or 2 Y axis
+             Returns:
+                pandas dataframe  with calculated stat values and CI
+
+        """
         if not self.input_data.empty:
+            # replace thresh_i values for reliability plot
+            indy_vals = self.params['indy_vals']
+            if self.params['indy_var'] == 'thresh_i' and self.params['line_type'] == 'pct':
+                indy_vals = self.input_data['thresh_i'].sort()
+                indy_vals = np.unique(indy_vals)
+
             # identify all possible points values by adding series values, indy values
             # and statistics and then permute them
             series_val = self.params['series_val_' + axis]
@@ -894,10 +850,10 @@ class AggStat():
                         break
                 is_derived = is_derived_point(point)
                 if not is_derived:
-
                     # filter point data
                     all_filters = []
                     filters_wihtout_indy = []
+                    indy_val = None
                     for field_ind, field in enumerate(all_fields_values.keys()):
 
                         filter_value = point[field_ind]
@@ -913,6 +869,8 @@ class AggStat():
                         if field != self.params['indy_var']:
                             filters_wihtout_indy. \
                                 append((self.input_data[field].isin(filter_list)))
+                        else:
+                            indy_val = filter_value
 
                         all_filters.append((self.input_data[field].isin(filter_list)))
 
@@ -933,6 +891,16 @@ class AggStat():
                         point_data.insert(len(point_data.columns), 'oy_total', oy_total)
                         point_data.insert(len(point_data.columns), 'o_bar', o_bar)
 
+                    # aggregate point data
+                    series_var_val = self.params['series_val_' + axis]
+                    if any(';' in series_val for series_val in series_var_val):
+                        point_data = aggregate_field_values(series_var_val, point_data, self.params['line_type'])
+                    elif ';' in indy_val:
+                        # if aggregated value in indy val - add it to series values add aggregate
+                        series_indy_var_val = series_var_val
+                        series_indy_var_val[self.params['indy_var']] = [indy_val]
+                        point_data = aggregate_field_values(series_indy_var_val, point_data,
+                                                            self.params['line_type'])
                     # calculate bootstrap results
                     bootstrap_results = self._get_bootstrapped_stats(point_data, axis)
                     # save bootstrap results
@@ -957,65 +925,56 @@ class AggStat():
             out_frame = pd.DataFrame()
         return out_frame
 
-    def calculate_value_and_ci(self):
+    def calculate_stats_and_ci(self):
         """ Calculates aggregated statistics and confidants intervals
             ( if parameter num_iterations > 1) for each series point
             Writes output data to the file
 
         """
-        if not self.input_data.empty:
 
-            # set random seed if present
-            if self.params['random_seed'] is not None and self.params['random_seed'] != 'None':
-                np.random.seed(self.params['random_seed'])
+        # set random seed if present
+        if self.params['random_seed'] is not None and self.params['random_seed'] != 'None':
+            np.random.seed(self.params['random_seed'])
 
-            is_event_equal = parse_bool(self.params['event_equal'])
+        is_event_equal = parse_bool(self.params['event_equal'])
 
-            # replace thresh_i values for reliability plot
-            indy_vals = self.params['indy_vals']
-            if self.params['indy_var'] == 'thresh_i' and self.params['line_type'] == 'pct':
-                indy_vals = self.input_data['thresh_i'].sort()
-                indy_vals = np.unique(indy_vals)
+        if self.params['line_type'] == 'pct':
+            self.column_names = np.append(self.column_names, 'T')
+            self.column_names = np.append(self.column_names, 'oy_total')
+            self.column_names = np.append(self.column_names, 'o_bar')
 
-            if self.params['line_type'] == 'pct':
-                self.column_names = np.append(self.column_names, 'T')
-                self.column_names = np.append(self.column_names, 'oy_total')
-                self.column_names = np.append(self.column_names, 'o_bar')
+        # perform grouping
+        series_val = self.params['series_val_1']
+        group_to_value_index = 1
+        if series_val:
+            for key in series_val.keys():
+                for val in series_val[key]:
+                    if ',' in val:
+                        new_name = 'Group_y1_' + str(group_to_value_index)
+                        self.group_to_value[new_name] = val
+                        group_to_value_index = group_to_value_index + 1
 
-            # perform grouping
-            series_val = self.params['series_val_1']
+        series_val = self.params['series_val_2']
+        if series_val:
             group_to_value_index = 1
             if series_val:
                 for key in series_val.keys():
                     for val in series_val[key]:
                         if ',' in val:
-                            new_name = 'Group_y1_' + str(group_to_value_index)
+                            new_name = 'Group_y2_' + str(group_to_value_index)
                             self.group_to_value[new_name] = val
                             group_to_value_index = group_to_value_index + 1
 
-            series_val = self.params['series_val_2']
-            if series_val:
-                group_to_value_index = 1
-                if series_val:
-                    for key in series_val.keys():
-                        for val in series_val[key]:
-                            if ',' in val:
-                                new_name = 'Group_y2_' + str(group_to_value_index)
-                                self.group_to_value[new_name] = val
-                                group_to_value_index = group_to_value_index + 1
+        # perform EE if needed
+        if is_event_equal:
+            self.input_data = perform_event_equalization(self.params, self.input_data)
 
-            # perform EE if needed
-            if is_event_equal:
-                self._perform_event_equalization(indy_vals)
+        # get results for axis1
+        out_frame = self._proceed_with_axis("1")
 
-            # get results for axis1
-            out_frame = self._proceed_with_axis(indy_vals, "1")
-
-            # get results for axis2 if needed
-            if self.params['series_val_2']:
-                out_frame = out_frame.append(self._proceed_with_axis(indy_vals, "2"))
-        else:
-            out_frame = pd.DataFrame()
+        # get results for axis2 if needed
+        if self.params['series_val_2']:
+            out_frame = out_frame.append(self._proceed_with_axis("2"))
 
         header = True
         mode = 'w'
@@ -1038,4 +997,4 @@ if __name__ == "__main__":
     PARAMS = yaml.load(ARGS.parameters_file, Loader=yaml.FullLoader)
 
     AGG_STAT = AggStat(PARAMS)
-    AGG_STAT.calculate_value_and_ci()
+    AGG_STAT.calculate_stats_and_ci()
