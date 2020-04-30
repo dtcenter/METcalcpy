@@ -28,6 +28,7 @@ import sys
 import xml.dom.minidom
 import subprocess
 import yaml
+
 from metcalcpy.compare_images import CompareImages
 
 
@@ -43,6 +44,25 @@ def replace_name(old_name, postfix):
     return old_name.replace(".", "_" + postfix + ".")
 
 
+def clean(params):
+    """Removes all files form the previous run
+
+        Args:
+            params: input parameters as a dictionary
+        """
+
+    for file in os.scandir(params['output_xml_dir']):
+        os.unlink(file.path)
+
+    for file in os.scandir(params['output_plots_dir']):
+        os.unlink(file.path)
+
+    for file in os.scandir(params['output_data_dir']):
+        os.unlink(file.path)
+    for file in os.scandir(params['output_scripts_dir']):
+        os.unlink(file.path)
+
+
 def main(params):
     """Finds METViewer generated xml files based on the values from the parameters dictionary.
         Adjust XML and reruns it using the Python version of METViewer
@@ -52,6 +72,9 @@ def main(params):
             params: input parameters as a dictionary
 
     """
+    # remove old output
+    clean(params)
+
     # find XML files
     test_xml = get_test_xml(params)
 
@@ -91,7 +114,6 @@ def main(params):
 
         (output, err) = process.communicate()
         p_status = process.wait()
-        #print("Command output: " + output)
 
         new_image_path = params['output_plots_dir'] + replace_name(plot_name, 'py')
 
