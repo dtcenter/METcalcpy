@@ -7,7 +7,11 @@ __version__ = '0.1.0'
 __email__ = 'met_help@ucar.edu'
 
 import math
+import itertools
 import numpy as np
+import pandas as pd
+
+from metcalcpy.event_equalize import event_equalize
 
 OPERATION_TO_SIGN = {
     'DIFF': '-',
@@ -235,15 +239,15 @@ def sum_column_data_by_name(input_data, columns, column_name, rm_none=True):
 def column_data_by_name_value(input_data, columns, filters):
     """Filters  the input array by the criteria from the filters array
 
-            Args:
-                input_data: 2-dimensional numpy array with data for the calculation
-                    1st dimension - the row of data frame
-                    2nd dimension - the column of data frame
-                columns: names of the columns for the 2nd dimension as Numpy array
-                filters: a dictionary of filters in 'column': 'value' format
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns: names of the columns for the 2nd dimension as Numpy array
+            filters: a dictionary of filters in 'column': 'value' format
 
-            Returns:
-                filtered 2-dimensional numpy array
+        Returns:
+            filtered 2-dimensional numpy array
     """
     input_data_filtered = np.copy(input_data)
     try:
@@ -347,7 +351,8 @@ def get_total_values(input_data, columns_names, aggregation):
 
         Returns:
                 1 - if the aggregation was not preformed on the array
-                sum of all values from 'total' columns - if the aggregation was preformed on the array
+                sum of all values from 'total' columns
+                    - if the aggregation was preformed on the array
         """
     total = 1
     if aggregation:
@@ -355,6 +360,290 @@ def get_total_values(input_data, columns_names, aggregation):
     return total
 
 
-def aggregateFieldValues(series_val, dfStatsPerm, strPerm, line_type, column_names, ind):
-    # placeholder
-    pass
+def aggregate_field_values(series_var_val, input_data_frame, line_type):
+    """Finds and aggregates statistics for fields with values containing ';'.
+      Aggregation  happens by valid and lead times
+        These fields are coming from the scorecard and looks like this: vx_mask : ['EAST;NMT'].
+        This method finds these values and calculate aggregated stats for them
+
+            Args:
+                series_var_val: dictionary describing the series
+                input_data_frame: Pandas DataFrame
+                line_type: the line type
+
+            Returns:
+                Pandas DataFrame with aggregates statistics
+            """
+    # get unique values for valid date/time and lead time
+    unique_valid = input_data_frame.fcst_valid_beg.unique()
+    unique_lead = input_data_frame.fcst_lead.unique()
+
+    for series_var, series_vals in series_var_val.items():
+        for series_val in series_vals:
+            if ';' in series_val:
+                # found the aggregated field
+                single_values = series_val.split(';')
+
+                # for each valid
+                for valid in unique_valid:
+                    if series_var != 'fcst_lead':
+                        for lead in unique_lead:
+                            # find rows for the aggregation and their indexes
+                            rows_for_agg = input_data_frame[
+                                (input_data_frame.fcst_valid_beg == valid)
+                                & (input_data_frame.fcst_lead == lead)
+                                & (input_data_frame[series_var].isin(single_values))
+                                ]
+                            rows_indexes = rows_for_agg.index.values
+                            # reset indexes
+                            rows_for_agg.reset_index(inplace=True, drop=True)
+
+                            # remove these rows from the main data_frame
+                            input_data_frame = input_data_frame.drop(index=rows_indexes)
+
+                            aggregated_result = calc_series_sums(rows_for_agg, line_type)
+
+                            # record the result as a first row in the old selection
+                            for field in input_data_frame.columns:
+                                if field in aggregated_result.columns.values:
+                                    rows_for_agg.at[0, field] = aggregated_result[field][0]
+
+                            # replace the aggregated field name
+                            rows_for_agg.at[0, series_var] = series_val
+
+                            # add it to the result
+                            input_data_frame = input_data_frame.append(rows_for_agg.iloc[:1])
+                    else:
+                        # if the aggregated field is 'fcst_lead'
+
+                        # find rows for the aggregation and their indexes
+                        rows_for_agg = input_data_frame[
+                            (input_data_frame.fcst_valid_beg == valid)
+                            & (input_data_frame[series_var].isin(single_values))
+                            ]
+                        rows_indexes = rows_for_agg.index.values
+                        # reset indexes
+                        rows_for_agg.reset_index(inplace=True, drop=True)
+
+                        # remove these rows from the main data_frame
+                        input_data_frame = input_data_frame.drop(index=rows_indexes)
+
+                        aggregated_result = calc_series_sums(rows_for_agg, line_type)
+
+                        # record the result as a first row in the old selection
+                        for field in input_data_frame.columns:
+                            if field in aggregated_result.columns.values:
+                                rows_for_agg.at[0, field] = aggregated_result[field][0]
+
+                        # replace the aggregated field name
+                        rows_for_agg.at[0, series_var] = series_val
+
+                        # add it to the result
+                        input_data_frame = input_data_frame.append(rows_for_agg.iloc[:1])
+
+    return input_data_frame
+
+
+def calc_series_sums(input_df, line_type):
+    """ Aggregates column values of the input data frame. Aggregation depends on the line type.
+        Following line types are currently supported : ctc, sl1l2, sal1l2, vl1l2,
+        val1l2, grad, nbrcnt, ecnt, rps
+
+           Args:
+               input_df: input data as Pandas DataFrame
+               line_type: one of the supported line types
+           Returns:
+               Pandas DataFrame with aggregated values
+       """
+    # create an array from the dataframe
+    sums_data_frame = pd.DataFrame()
+
+    # calculate aggregated total value and add it to the result
+    total = sum_column_data_by_name(input_df.to_numpy(), input_df.columns, 'total')
+    sums_data_frame['total'] = [total]
+
+    # proceed for the line type
+    if line_type in ('ctc', 'nbrctc'):
+        column_names = ['fy_oy', 'fy_on', 'fn_oy', 'fn_on']
+        for column in column_names:
+            sums_data_frame[column] = [sum_column_data_by_name(input_df.to_numpy(),
+                                                               column_names, column_names)]
+
+    elif line_type == 'sl1l2':
+        column_names = ['fbar', 'obar', 'fobar', 'ffbar', 'oobar']
+        for column in column_names:
+            sums_data_frame[column] = [np.nansum(input_df[column] * input_df.total.astype(np.float))
+                                       / total]
+
+    elif line_type == 'sal1l2':
+        sums_data_frame['fbar'] = [np.nansum(input_df['fabar'] * input_df.total.astype(np.float))
+                                   / total]
+        sums_data_frame['obar'] = [np.nansum(input_df['oabar'] * input_df.total.astype(np.float))
+                                   / total]
+        sums_data_frame['fobar'] = [np.nansum(input_df['foabar'] * input_df.total.astype(np.float))
+                                    / total]
+        sums_data_frame['ffbar'] = [np.nansum(input_df['ffabar'] * input_df.total.astype(np.float))
+                                    / total]
+        sums_data_frame['oobar'] = [np.nansum(input_df['ooabar'] * input_df.total.astype(np.float))
+                                    / total]
+
+    elif line_type == 'vl1l2':
+        column_names = ['ufbar', 'vfbar', 'uobar', 'vobar', 'uvfobar',
+                        'uvffbar', 'uvoobar', 'f_speed_bar', 'o_speed_bar']
+        for column in column_names:
+            sums_data_frame[column] = [np.nansum(input_df[column] * input_df.total.astype(np.float))
+                                       / total]
+
+    elif line_type == 'val1l2':
+        column_names = ['ufabar', 'vfabar', 'uoabar', 'voabar', 'uvfoabar', 'uvffabar', 'uvooabar']
+        for column in column_names:
+            sums_data_frame[column] = [np.nansum(input_df[column] * input_df.total.astype(np.float))
+                                       / total]
+
+    elif line_type == 'grad':
+        column_names = ['fgbar', 'ogbar', 'mgbar', 'egbar']
+        for column in column_names:
+            sums_data_frame[column] = [np.nansum(input_df[column] * input_df.total.astype(np.float))
+                                       / total]
+
+    elif line_type == 'nbrcnt':
+        dbl_fbs = np.nansum(input_df['fbs'] * input_df.total.astype(np.float)) / total
+        dbl_fss_den = np.nansum(
+            (input_df['fbs'] / (1.0 - input_df['fss'])) * input_df.total.astype(np.float)) \
+                      / total
+        dbl_fss = 1.0 - dbl_fbs / dbl_fss_den
+        dbl_f_rate = np.nansum(input_df['f_rate'] * input_df.total.astype(np.float)) / total
+        dbl_o_rate = np.nansum(input_df['o_rate'] * input_df.total.astype(np.float)) / total
+        dbl_a_fss_num = 2.0 * dbl_f_rate * dbl_o_rate
+        dbl_a_fss_den = dbl_f_rate * dbl_f_rate + dbl_o_rate * dbl_o_rate
+        dbl_a_fss = dbl_a_fss_num / dbl_a_fss_den
+        dbl_u_fss = 0.5 + dbl_o_rate / 2.0
+        sums_data_frame['fbs'] = [dbl_fbs]
+        sums_data_frame['fss'] = [dbl_fss]
+        sums_data_frame['afss'] = [dbl_a_fss]
+        sums_data_frame['ufss'] = [dbl_u_fss]
+        sums_data_frame['f_rate'] = [dbl_f_rate]
+        sums_data_frame['o_rate'] = [dbl_o_rate]
+
+    elif line_type == 'ecnt':
+        mse = input_df['rmse'] * input_df['rmse']
+        mse_oerr = input_df['rmse_oerr'] * input_df['rmse_oerr']
+        crps_climo = input_df['crps'] / (1 - input_df['crpss'])
+
+        sums_data_frame['mse'] = [np.nansum(input_df['total'] * mse) / total]
+        sums_data_frame['mse_oerr'] = [np.nansum(input_df['total'] * mse_oerr) / total]
+        sums_data_frame['crps_climo'] = [np.nansum(input_df['total'] * crps_climo) / total]
+        column_names = ['me', 'crps', 'ign', 'spread', 'me_oerr', 'spread_oerr', 'spread_plus_oerr']
+        for column in column_names:
+            sums_data_frame[column] = [np.nansum(input_df[column] * input_df.total.astype(np.float))
+                                       / total]
+    elif line_type == 'rps':
+        d_rps_climo = input_df['rps'] / (1 - input_df['rpss'])
+        sums_data_frame['rps'] = [np.nansum(input_df["rps"] * input_df.total.astype(np.float))
+                                  / total]
+        sums_data_frame['rps_climo'] = [np.nansum(d_rps_climo * input_df.total.astype(np.float))
+                                        / total]
+
+    return sums_data_frame
+
+
+def equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axis='1'):
+    """ Performs event equalisation on the specified axis on input data.
+        Args:
+            fix_vals_permuted - fixed values
+            params:        parameters for the statistic calculations  and data description
+            input_data:    data as DataFrame
+        Returns:
+            DataFrame with equalised data for the specified axis
+    """
+    output_ee_data = pd.DataFrame()
+
+    # for each statistic for the specified axis
+    for fcst_var, fcst_var_stats in params['fcst_var_val_' + axis].items():
+        series_data_for_ee = pd.DataFrame()
+        for fcst_var_stat in fcst_var_stats:
+            # for each series for the specified axis
+            for series_var, series_var_vals in params['series_val_' + axis].items():
+                # ungroup series value if needed
+                series_var_vals_no_group = []
+                for val in series_var_vals:
+                    split_val = val.split(',')
+                    series_var_vals_no_group.extend(split_val)
+
+                # filter input data based on fcst_var, statistic
+                # and all series variables values
+                series_data_for_ee = input_data[
+                    (input_data['fcst_var'] == fcst_var)
+                    & (input_data["stat_name"] == fcst_var_stat)
+                    & (input_data[series_var].isin(series_var_vals_no_group))
+                    ]
+            # perform EE on filtered data
+            # for SSVAR use equalization of multiple events
+            series_data_after_ee = \
+                event_equalize(series_data_for_ee, params['indy_var'],
+                               params['series_val_' + axis],
+                               fix_vals_keys,
+                               fix_vals_permuted, True,
+                               params['line_type'] == "ssvar")
+
+            # append EE data to result
+            if output_ee_data.empty:
+                output_ee_data = series_data_after_ee
+            else:
+                output_ee_data = output_ee_data.append(series_data_after_ee)
+    return output_ee_data.drop('equalize', axis=1)
+
+
+def perform_event_equalization(params, input_data):
+    """ Performs event equalisation on input data. If there ara 2 axis:
+        perform EE on each and then on both
+        Args:
+            params:        parameters for the statistic calculations  and data description
+            input_data:    data as DataFrame
+        Returns:
+            DataFrame with equalised data
+    """
+
+    # list all fixed variables
+
+    if 'fixed_vars_vals_input' in params:
+        fix_vals_permuted_list = []
+        for key in params['fixed_vars_vals_input']:
+            vals_permuted = list(itertools.product(*params['fixed_vars_vals_input'][key].values()))
+            fix_vals_permuted_list.append(vals_permuted)
+
+        fix_vals_keys = list(params['fixed_vars_vals_input'].keys())
+        fix_vals_permuted = [item for sublist in fix_vals_permuted_list for item in sublist]
+
+    else:
+        fix_vals_keys = []
+        fix_vals_permuted = []
+
+    # perform EE for each forecast variable on the axis 1
+    output_ee_data = \
+        equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axis='1')
+
+    # if the second Y axis is present - run event equalizer on Y1
+    # and then run event equalizer on Y1 and Y2 equalized data
+    if params['series_val_2']:
+        # perform EE for each forecast variable on the axis 2
+        output_ee_data_2 = \
+            equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axis='2')
+
+        # append and reindex output from both axis
+        all_ee_records = output_ee_data.append(output_ee_data_2).reindex()
+
+        # create a single unique dictionary from series for Y1 and Y2 to us in EE
+        all_series = {**params['series_val_1'], **params['series_val_2']}
+        for key in all_series:
+            all_series[key] = list(set(all_series[key]))
+
+        # run EE on run event equalizer on Y1 and Y2
+        output_ee_data = event_equalize(all_ee_records, params['indy_var'],
+                                        all_series,
+                                        fix_vals_keys,
+                                        fix_vals_permuted, True,
+                                        params['line_type'] == "ssvar")
+        output_ee_data = output_ee_data.drop('equalize', axis=1)
+
+    return output_ee_data
