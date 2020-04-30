@@ -12,7 +12,7 @@ __version__ = '0.1.0'
 __email__ = 'met_help@ucar.edu'
 
 
-def event_equalize(series_data, indy_var, indy_vals, series_var_vals, fix_vars,
+def event_equalize(series_data, indy_var, series_var_vals, fix_vars,
                    fix_vals_permuted, equalize_by_indep, multi):
     """Performs event equalisation.
 
@@ -27,8 +27,6 @@ def event_equalize(series_data, indy_var, indy_vals, series_var_vals, fix_vars,
         series_data: data frame containing the records to equalize, including fcst_valid_beg, series
                 values and independent variable values
         indy_var: name of the independent variable
-        indy_vals: independent variable values to equalize over
-                - not used. Keep for now for the consistency with R function
         series_var_vals: series variable names and values
         fix_vars: name of the fixed variable
         fix_vals_permuted:  fixed variable values to equalize over
@@ -52,9 +50,9 @@ def event_equalize(series_data, indy_var, indy_vals, series_var_vals, fix_vars,
                                   + series_data.loc[:, 'fcst_lead'].astype(str)
 
     # add independent variable if needed
-    if equalize_by_indep and not indy_var and indy_var not in exception_columns:
+    if equalize_by_indep and indy_var not in exception_columns:
         series_data['equalize'] = series_data.loc[:, 'equalize'].astype(str) + " " \
-                                    + series_data.loc[:, indy_var].astype(str)
+                                  + series_data.loc[:, indy_var].astype(str)
 
     vars_for_ee = dict()
 
@@ -77,8 +75,7 @@ def event_equalize(series_data, indy_var, indy_vals, series_var_vals, fix_vars,
                 vals = fix_vals_permuted[var_for_ee_ind]
                 if isinstance(vals, str):
                     vals = [vals]
-                else:
-                    vars_for_ee[fix_var] = vals
+                vars_for_ee[fix_var] = vals
 
     # create a list of permutations representing the all variables for
     vars_for_ee_permuted = list(itertools.product(*vars_for_ee.values()))
@@ -91,7 +88,7 @@ def event_equalize(series_data, indy_var, indy_vals, series_var_vals, fix_vars,
 
         permutation_data = series_data.copy()
         for var_for_ee_ind, var_for_ee in enumerate(list(vars_for_ee)):
-            if represents_int(permutation[var_for_ee_ind]):
+            if is_string_integer(permutation[var_for_ee_ind]):
                 permutation_data = permutation_data[permutation_data[var_for_ee]
                                                     == int(permutation[var_for_ee_ind])]
             else:
@@ -99,7 +96,7 @@ def event_equalize(series_data, indy_var, indy_vals, series_var_vals, fix_vars,
                                                     == permutation[var_for_ee_ind]]
 
         # if the list contains repetitive values, show a warning
-        if not multi and len(permutation_data['equalize']) \
+        if multi is False and len(permutation_data['equalize']) \
                 != len(set(permutation_data['equalize'])):
             print(
                 f"WARNING: eventEqualize() detected non-unique events for {permutation}"
@@ -146,14 +143,18 @@ def event_equalize(series_data, indy_var, indy_vals, series_var_vals, fix_vars,
     return series_data_ee
 
 
-def represents_int(possible_int):
-    """Checks if the value is integer.
+def is_string_integer(str_int):
+    """Checks if the input string is integer.
 
-     Args:
-         possible_int: value to check
+         Args:
+             str_int: string value to check
 
-    Returns:
-        True - if the input value is an integer
-        False - if the input value is not an integer
+        Returns:
+            True - if the input value is an integer
+            False - if the input value is not an integer
     """
-    return isinstance(possible_int, int)
+    try:
+        int(str_int)
+        return True
+    except (ValueError, TypeError):
+        return False
