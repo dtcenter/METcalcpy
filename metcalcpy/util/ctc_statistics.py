@@ -79,7 +79,7 @@ def calculate_fbias(input_data, columns_names):
     warnings.filterwarnings('error')
     try:
         oy = sum_column_data_by_name(input_data, columns_names, 'fy_oy') \
-             + sum_column_data_by_name(input_data, columns_names, 'fn_on')
+             + sum_column_data_by_name(input_data, columns_names, 'fn_oy')
         if oy == 0:
             return None
         oyn = sum_column_data_by_name(input_data, columns_names, 'fy_oy') \

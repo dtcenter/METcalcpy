@@ -1,16 +1,50 @@
-import pandas as pd
+"""
+Program Name: agg_stat_eqz.py
+
+How to use:
+ - Call from other Python function
+        AGG_STAT_EVENT_EQZ = AggStatEventEqz(PARAMS)
+        AGG_STAT_EVENT_EQZ.calculate_values()
+        where PARAMS – a dictionary with data description parameters including
+        location of input and output data.
+        The structure is similar to Rscript template
+
+ - Run as a stand-alone script
+        python agg_stat_eqz.py <parameters_file>
+        where - <parameters_file> is YAML file with parameters
+        and environment variable should be set to PYTHONPATH=<path_to_METcalcpy>
+
+ - Run from Java
+        proc = Runtime.getRuntime().exec(
+                “python agg_stat.eqz.py <parameters_file>”,
+                new String[]{”PYTHONPATH=<path_to_METcalcpy>”},
+                new File(System.getProperty("user.home")));
+
+"""
 import argparse
 import sys
+import logging
+import pandas as pd
 import yaml
-import itertools
-import numpy as np
 
-from metcalcpy import event_equalize
 from metcalcpy.event_equalize_against_values import event_equalize_against_values
 from metcalcpy.util.utils import parse_bool
 
 
 class AggStatEventEqz:
+    """A class that performs event equalisation logic on input data
+        with MODE and MTD attribute statistics
+        EE is executed against previously calculated cases
+
+        All parameters including data description and location is in the parameters dictionary
+        Usage:
+            initialise this call with the parameters dictionary and then
+            calls perform_ee method
+            This method will execute EE and save the result to the file
+                AGG_STAT_EVENT_EQZ = AggStatEventEqz(PARAMS)
+                AGG_STAT_EVENT_EQZ.calculate_values()
+        """
+
     def __init__(self, in_params):
         self.params = in_params
 
@@ -24,88 +58,74 @@ class AggStatEventEqz:
         self.series_data = None
 
     def calculate_values(self):
-        output_ee_data = self.perform_ee()
-
-        self.input_data = output_ee_data
-        header = True
-        mode = 'w'
-        export_csv = output_ee_data.to_csv(self.params['agg_stat_output'],
-                                           index=None, header=header, mode=mode,
-                                           sep="\t", na_rep="NA")
-
-    def perform_ee(self):
+        """Performs event equalisation if needed and saves equalized data to the file.
+        """
         is_event_equal = parse_bool(self.params['event_equal'])
+
+        # check if EE is needed
         if not self.input_data.empty and is_event_equal:
-            ee_stats = pd.read_csv(
+            # read previously calculated cases
+            prev_cases = pd.read_csv(
                 self.params['agg_stat_input_ee'],
                 header=[0],
                 sep='\t'
             )
 
-            output_ee_data = pd.DataFrame()
+            # perform for axis 1
+            output_ee_data = self.perform_ee_on_axis(prev_cases, '1')
 
-            for fcst_var, fcst_var_stats in self.params['fcst_var_val_1'].items():
-                for series_var, series_var_vals in self.params['series_val_1'].items():
-                    series_var_vals_no_group = []
-                    for val in series_var_vals:
-                        split_val = val.split(',')
-                        series_var_vals_no_group.extend(split_val)
-
-                    # filter input data based on fcst_var, statistic and all series variables values
-                    series_data_for_ee = self.input_data[
-                        (self.input_data['fcst_var'] == fcst_var)
-                        & (self.input_data[series_var].isin(series_var_vals_no_group))
-                        ]
-                    ee_stats_equalize = ee_stats[
-                        (ee_stats['fcst_var'] == fcst_var)
-                        & (ee_stats[series_var].isin(series_var_vals_no_group))
-                        ]
-                    ee_stats_ez_unique = ee_stats_equalize['equalize'].unique()
-                    series_data_after_ee = event_equalize_against_values(series_data_for_ee, self.params['indy_var'],
-                                                                         ee_stats_ez_unique)
-                    # append EE data to result
-                    if output_ee_data.empty:
-                        output_ee_data = series_data_after_ee
-                    else:
-                        output_ee_data = output_ee_data.append(series_data_after_ee)
-
+            # perform for axis 2
             if self.params['series_val_2']:
-                data_axis_2 = pd.DataFrame()
-                for fcst_var, fcst_var_stats in self.params['fcst_var_val_2'].items():
-                    for series_var, series_var_vals in self.params['series_val_2'].items():
-                        series_var_vals_no_group = []
-                        for val in series_var_vals:
-                            split_val = val.split(',')
-                            series_var_vals_no_group.extend(split_val)
+                output_ee_data = output_ee_data.append(self.perform_ee_on_axis(prev_cases, '2'))
+        else:
+            output_ee_data = self.input_data
+            if self.input_data.empty:
+                logging.info(
+                    'Event equalisation was not performed because the input data is empty.'
+                )
 
-                        # filter input data based on fcst_var, statistic and all series variables values
-                        series_data_for_ee = self.input_data[
-                            (self.input_data['fcst_var'] == fcst_var)
-                            & (self.input_data[series_var].isin(series_var_vals_no_group))
-                            ]
-                        ee_stats_equalize = ee_stats[
-                            (ee_stats['fcst_var'] == fcst_var)
-                            & (ee_stats[series_var].isin(series_var_vals_no_group))
-                            ]
-                        ee_stats_ez_unique = ee_stats_equalize['equalize'].unique()
+        export_csv = output_ee_data.to_csv(self.params['agg_stat_output'],
+                                           index=None, header=True, mode='w',
+                                           sep="\t", na_rep="NA")
 
-                        series_data_after_ee = event_equalize_against_values(series_data_for_ee,
-                                                                             self.params['indy_var'],
-                                                                             ee_stats_ez_unique)
-                        # append EE data to result
-                        if data_axis_2.empty:
-                            data_axis_2 = series_data_after_ee
-                        else:
-                            data_axis_2 = data_axis_2.append(series_data_after_ee)
+    def perform_ee_on_axis(self, prev_cases, axis='1'):
+        """Performs event equalisation against previously calculated cases for the selected axis
+            Returns:
+                A data frame that contains equalized records
+        """
+        output_ee_data = pd.DataFrame()
+        for fcst_var, fcst_var_stats in self.params['fcst_var_val_' + axis].items():
+            for series_var, series_var_vals in self.params['series_val_' + axis].items():
+
+                series_var_vals_no_group = []
+                for val in series_var_vals:
+                    split_val = val.split(',')
+                    series_var_vals_no_group.extend(split_val)
+
+                # filter input data based on fcst_var, statistic and all series variables values
+                series_data_for_ee = self.input_data[
+                    (self.input_data['fcst_var'] == fcst_var)
+                    & (self.input_data[series_var].isin(series_var_vals_no_group))
+                    ]
+                # filter previous cases on the same  fcst_var,
+                # statistic and all series variables values
+                series_data_for_prev_cases = prev_cases[
+                    (prev_cases['fcst_var'] == fcst_var)
+                    & (prev_cases[series_var].isin(series_var_vals_no_group))
+                    ]
+                # get unique cases from filtered previous cases
+                series_data_for_prev_cases_unique = series_data_for_prev_cases['equalize'].unique()
+
+                # perform ee
+                series_data_after_ee = event_equalize_against_values(
+                    series_data_for_ee,
+                    series_data_for_prev_cases_unique)
 
                 # append EE data to result
                 if output_ee_data.empty:
-                    output_ee_data = data_axis_2
+                    output_ee_data = series_data_after_ee
                 else:
-                    output_ee_data = output_ee_data.append(data_axis_2)
-
-        else:
-            output_ee_data = self.input_data
+                    output_ee_data = output_ee_data.append(series_data_after_ee)
         return output_ee_data
 
 

@@ -1,3 +1,26 @@
+"""
+Program Name: agg_stat_bootstrap.py
+
+How to use:
+ - Call from other Python function
+        AAGG_STAT_BOOTSTRAP = AggStatBootstrap(PARAMS)
+        AGG_STAT_BOOTSTRAP.calculate_values()
+        where PARAMS – a dictionary with data description parameters including
+        location of input and output data.
+        The structure is similar to Rscript template
+
+ - Run as a stand-alone script
+        python agg_stat_bootstrap.py <parameters_file>
+        where - <parameters_file> is YAML file with parameters
+        and environment variable should be set to PYTHONPATH=<path_to_METcalcpy>
+
+ - Run from Java
+        proc = Runtime.getRuntime().exec(
+                “python agg_stat_bootstrap.py <parameters_file>”,
+                new String[]{”PYTHONPATH=<path_to_METcalcpy>”},
+                new File(System.getProperty("user.home")));
+
+"""
 import argparse
 import itertools
 import sys
@@ -6,23 +29,20 @@ import yaml
 import pandas as pd
 import numpy as np
 
-import bootstrapped.bootstrap
-from metcalcpy import event_equalize
 from metcalcpy.agg_stat import _sort_data
 from metcalcpy.agg_stat_eqz import AggStatEventEqz
 from metcalcpy.bootstrap_custom import BootstrapDistributionResults, bootstrap_and_value_mode
-from metcalcpy.event_equalize_against_values import event_equalize_against_values
 from metcalcpy.util.mode_ratio_statistics import *
 from metcalcpy.util.mode_arearat_statistics import *
 from metcalcpy.util.mode_2d_arearat_statistics import *
 from metcalcpy.util.mode_2d_ratio_statistics import *
 from metcalcpy.util.mode_3d_volrat_statistics import *
 from metcalcpy.util.mode_3d_ratio_statistics import *
-from metcalcpy.util.utils import parse_bool, is_string_integer
+from metcalcpy.util.utils import is_string_integer
 
 
 class AggStatBootstrap():
-    """A class that performs aggregation statistic logic fot MODE on input data frame.
+    """A class that performs aggregation statistic logic fot MODE and MTD ratio statistics on input data frame.
         All parameters including data description and location is in the parameters dictionary
         Usage:
             initialise this call with the parameters dictionary and than
@@ -96,11 +116,12 @@ class AggStatBootstrap():
             for indy_val in indy_vals:
                 # extract the records for the current indy value
                 if is_string_integer(indy_val):
-                    dfStatsIndy = self.input_data[self.input_data[self.params['indy_var']] == int(indy_val)]
+                    filtered_by_indy_data = \
+                        self.input_data[self.input_data[self.params['indy_var']] == int(indy_val)]
                 else:
-                    dfStatsIndy = self.input_data[self.input_data[self.params['indy_var']] == indy_val]
+                    filtered_by_indy_data = \
+                        self.input_data[self.input_data[self.params['indy_var']] == indy_val]
                 # and statistics and then permute them
-                series_val = self.params['series_val_' + axis]
                 all_fields_values = series_val.copy()
 
                 all_points = list(itertools.product(*all_fields_values.values()))
@@ -119,14 +140,15 @@ class AggStatBootstrap():
                             if is_string_integer(filter_val):
                                 filter_list[i] = int(filter_val)
 
-                        all_filters.append((dfStatsIndy[field].isin(filter_list)))
+                        all_filters.append((filtered_by_indy_data[field].isin(filter_list)))
                     # use numpy to select the rows where any record evaluates to True
                     mask = np.array(all_filters).all(axis=0)
-                    point_data = dfStatsIndy.loc[mask]
+                    point_data = filtered_by_indy_data.loc[mask]
 
                     # build a list of cases to sample
-                    case_cur = np.unique(point_data.loc[:, 'fcst_valid'].astype(str) \
-                                         + '#' + point_data.loc[:, self.params['indy_var']].astype(str))
+                    case_cur = \
+                        np.unique(point_data.loc[:, 'fcst_valid'].astype(str) \
+                                  + '#' + point_data.loc[:, self.params['indy_var']].astype(str))
                     cases = np.sort(np.unique(np.append(cases, case_cur)))
                     cases = np.reshape(cases, (cases.shape[0], 1))
                 # calculate bootstrap for cases
@@ -147,20 +169,21 @@ class AggStatBootstrap():
                                 if is_string_integer(filter_val):
                                     filter_list[i] = int(filter_val)
 
-                            all_filters.append((dfStatsIndy[field].isin(filter_list)))
+                            all_filters.append((filtered_by_indy_data[field].isin(filter_list)))
                             out_frame_filter.append((out_frame[field].isin(filter_list)))
                         # use numpy to select the rows where any record evaluates to True
                         mask = np.array(all_filters).all(axis=0)
                         mask_out_frame = np.array(out_frame_filter).all(axis=0)
-                        point_data = dfStatsIndy.loc[mask]
-                        bootstrap_results = self._get_bootstrapped_stats(point_data, cases, axis)
+                        point_data = filtered_by_indy_data.loc[mask]
+                        bootstrap_results = self._get_bootstrapped_stats(point_data, cases)
                         # save bootstrap results
                         point_to_distrib[point] = bootstrap_results
                         n_stats = len(point_data)
 
                         # find an index of this point in the output data frame
                         rows_with_mask = out_frame.loc[mask_out_frame]
-                        rows_with_mask_indy_var = rows_with_mask[(rows_with_mask[self.params['indy_var']] == indy_val)]
+                        rows_with_mask_indy_var = \
+                            rows_with_mask[(rows_with_mask[self.params['indy_var']] == indy_val)]
                         index = rows_with_mask_indy_var.index[0]
 
                         # save results to the output data frame
@@ -172,7 +195,7 @@ class AggStatBootstrap():
             out_frame = pd.DataFrame()
         return out_frame
 
-    def _get_bootstrapped_stats(self, series_data, cases, axis="1"):
+    def _get_bootstrapped_stats(self, series_data, cases):
         self.series_data = _sort_data(series_data)
         if self.params['num_iterations'] == 1:
             stat_val = self._calc_stats(cases)[0]
@@ -228,6 +251,9 @@ class AggStatBootstrap():
         return stat_values
 
     def calculate_values(self):
+        """ Performs EE if needed followed by  aggregation statistic logic
+            Writes output data to the file
+        """
         if not self.input_data.empty:
             if self.params['random_seed'] is not None and self.params['random_seed'] != 'None':
                 np.random.seed(self.params['random_seed'])
@@ -237,13 +263,13 @@ class AggStatBootstrap():
 
             # build the case information for each record
             self.input_data['case'] = self.input_data.loc[:, 'fcst_valid'].astype(str) \
-                                      + '#' + self.input_data.loc[:, self.params['indy_var']].astype(str)
+                                      + '#' \
+                                      + self.input_data.loc[:, self.params['indy_var']].astype(str)
 
             # get results for axis1
             out_frame = self._proceed_with_axis("1")
             if self.params['series_val_2']:
                 out_frame = out_frame.append(self._proceed_with_axis("2"))
-
 
         else:
             out_frame = pd.DataFrame()
@@ -257,14 +283,14 @@ class AggStatBootstrap():
 
     def _perform_event_equalization(self):
         """ Performs event equalisation on input data
-            Args:
         """
         agg_stat_event_eqz = AggStatEventEqz(self.params)
         output_ee_data = agg_stat_event_eqz.perform_ee()
 
         self.input_data = output_ee_data
         file_name = self.params['agg_stat_input'].replace("agg_stat_bootstrap", "dataAfterEq")
-        export_csv = output_ee_data.to_csv(file_name, index=None, header=True, mode='w', sep="\t", na_rep="NA")
+        export_csv = \
+            output_ee_data.to_csv(file_name, index=None, header=True, mode='w', sep="\t", na_rep="NA")
 
 
 if __name__ == "__main__":

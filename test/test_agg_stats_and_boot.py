@@ -110,7 +110,7 @@ def test_get_derived_series(settings):
 
 def test_calculate_value_and_ci(settings):
     agg_stat = settings['agg_stat']
-    agg_stat.calculate_value_and_ci()
+    agg_stat.calculate_stats_and_ci()
     result_frame = pd.read_csv(
         agg_stat.params['agg_stat_output'],
         header=[0],

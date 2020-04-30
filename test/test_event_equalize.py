@@ -63,7 +63,7 @@ def test_event_equalize():
                                          & (input_data[series_var].isin(series_var_vals_no_group))]
                 start = time.time()
                 series_data = \
-                    event_equalize(series_data, indy_var, indy_vals, series_val, fix_vars,
+                    event_equalize(series_data, indy_var, series_val, fix_vars,
                                    fix_vals_permuted, True, bool_multi)
                 end = time.time()
                 print("one EE:" + str(end - start))

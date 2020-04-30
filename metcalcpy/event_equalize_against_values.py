@@ -9,7 +9,7 @@ __version__ = '0.1.0'
 __email__ = 'met_help@ucar.edu'
 
 
-def event_equalize_against_values(series_data, indy_var, input_unique_cases):
+def event_equalize_against_values(series_data,  input_unique_cases):
     """Performs event equalisation.
 
     event_equalize_against_values assumes that the input series_data contains data
@@ -21,8 +21,7 @@ def event_equalize_against_values(series_data, indy_var, input_unique_cases):
     Args:
         series_data: data frame containing the records to equalize, including fcst_valid_beg, series
                   values and independent variable values
-        indy_var: name of the independent variable
-                - not used. Keep for now for the consistency with R function
+
         input_unique_cases: unique cases to equalize against
     Returns:
         A data frame that contains equalized records or empty frame
@@ -36,7 +35,9 @@ def event_equalize_against_values(series_data, indy_var, input_unique_cases):
         # always use fcst_valid for equalization
         # create a unique member to use for equalization
         series_data.insert(len(series_data.columns), 'equalize',
-                           series_data['fcst_valid'].astype(str) + ' ' + series_data['fcst_lead'].astype(str))
+                           series_data['fcst_valid'].astype(str)
+                           + ' '
+                           + series_data['fcst_lead'].astype(str))
     else:
         print("WARNING: eventEqualize() did not run due to lack of valid time field")
         return pd.DataFrame()
