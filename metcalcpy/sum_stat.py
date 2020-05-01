@@ -101,7 +101,7 @@ class SumStat():
                            'nbrcnt': {'total', 'fbs', 'fss', 'afss', 'ufss', 'f_rate', 'o_rate'},
                            'ecnt': {'total', 'rmse', 'rmse_oerr', 'crps'},
                            'nbrctc': {"total", "fy_oy", "fy_on", "fn_oy", "fn_on"},
-                           'rps': {"total", "rpss", "rps"}
+                           'rps': {"total", "rpss", "rps", "rps_comp"}
                            }
 
     def calculate_stats(self):

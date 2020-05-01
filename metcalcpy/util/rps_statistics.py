@@ -11,7 +11,7 @@ __email__ = 'met_help@ucar.edu'
 
 
 def calculate_rps(input_data, columns_names, aggregation=False):
-    """Performs calculation of RPS -
+    """Performs calculation of RPS - Ranked Probability Score
 
         Args:
             input_data: 2-dimensional numpy array with data for the calculation
@@ -29,6 +29,31 @@ def calculate_rps(input_data, columns_names, aggregation=False):
         total = get_total_values(input_data, columns_names, aggregation)
         rps = sum_column_data_by_name(input_data, columns_names, 'rps') / total
         result = round_half_up(rps, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_rps_comp(input_data, columns_names, aggregation=False):
+    """Performs calculation of RPS_COMP - Complement of the Ranked Probability Score
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
+
+        Returns:
+            calculated RPS as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = get_total_values(input_data, columns_names, aggregation)
+        rps_comp = sum_column_data_by_name(input_data, columns_names, 'rps_comp') / total
+        result = round_half_up(rps_comp, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')

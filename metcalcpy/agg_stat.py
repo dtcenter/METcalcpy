@@ -463,6 +463,7 @@ class AggStat():
         d_rps_climo = data_for_prepare['rps'].values / (1 - data_for_prepare['rpss'].values)
         data_for_prepare['rps_climo'] = d_rps_climo * total
         data_for_prepare['rps'] = data_for_prepare['rps'].values * total
+        data_for_prepare['rps_comp'] = data_for_prepare['rps_comp'].values * total
         self.column_names = data_for_prepare.columns.values
 
     def _prepare_ssvar_data(self, data_for_prepare):

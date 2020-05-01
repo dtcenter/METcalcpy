@@ -541,6 +541,8 @@ def calc_series_sums(input_df, line_type):
         d_rps_climo = input_df['rps'] / (1 - input_df['rpss'])
         sums_data_frame['rps'] = [np.nansum(input_df["rps"] * input_df.total.astype(np.float))
                                   / total]
+        sums_data_frame['rps_comp'] = [np.nansum(input_df["rps_comp"] * input_df.total.astype(np.float))
+                                  / total]
         sums_data_frame['rps_climo'] = [np.nansum(d_rps_climo * input_df.total.astype(np.float))
                                         / total]
 
