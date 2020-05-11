@@ -3,6 +3,7 @@ Program Name: ecnt_statistics.py
 """
 import warnings
 import numpy as np
+import math
 
 from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION, get_total_values
 
@@ -158,7 +159,7 @@ def calculate_ecnt_spread(input_data, columns_names, aggregation=False):
     warnings.filterwarnings('error')
     try:
         total = get_total_values(input_data, columns_names, aggregation)
-        spread = sum_column_data_by_name(input_data, columns_names, 'spread') / total
+        spread = math.sqrt(sum_column_data_by_name(input_data, columns_names, 'variance') / total)
         result = round_half_up(spread, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
@@ -236,7 +237,7 @@ def calculate_ecnt_spread_oerr(input_data, columns_names, aggregation=False):
     warnings.filterwarnings('error')
     try:
         total = get_total_values(input_data, columns_names, aggregation)
-        spread_oerr = sum_column_data_by_name(input_data, columns_names, 'spread_oerr') / total
+        spread_oerr = math.sqrt(sum_column_data_by_name(input_data, columns_names, 'variance_oerr') / total)
         result = round_half_up(spread_oerr, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
@@ -261,8 +262,7 @@ def calculate_ecnt_spread_plus_oerr(input_data, columns_names, aggregation=False
     warnings.filterwarnings('error')
     try:
         total = get_total_values(input_data, columns_names, aggregation)
-        spread_plus_oerr = sum_column_data_by_name(input_data, columns_names, 'spread_plus_oerr') \
-                           / total
+        spread_plus_oerr = math.sqrt(sum_column_data_by_name(input_data, columns_names, 'variance_plus_oerr') / total)
         result = round_half_up(spread_plus_oerr, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None

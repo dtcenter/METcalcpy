@@ -449,9 +449,19 @@ class AggStat():
         mse_oerr = data_for_prepare['rmse_oerr'].values * data_for_prepare['rmse_oerr'].values
         crps_climo = data_for_prepare['crps'].values * data_for_prepare['crps'].values
 
+        variance = data_for_prepare['spread'].values * data_for_prepare['spread'].values
+        variance_oerr = data_for_prepare['spread_oerr'].values * data_for_prepare['spread_oerr'].values
+        variance_plus_oerr = data_for_prepare['spread_oerr'].values * data_for_prepare['spread_oerr'].values
+
         data_for_prepare['mse'] = mse * data_for_prepare['total'].values
         data_for_prepare['mse_oerr'] = mse_oerr * data_for_prepare['total'].values
         data_for_prepare['crps_climo'] = crps_climo * data_for_prepare['total'].values
+
+        data_for_prepare['variance'] = variance * data_for_prepare['total'].values
+        data_for_prepare['variance_oerr'] = variance_oerr * data_for_prepare['total'].values
+        data_for_prepare['variance_plus_oerr'] = variance_plus_oerr * data_for_prepare['total'].values
+
+        self.column_names = data_for_prepare.columns.values
 
         if self.statistic in self.STATISTIC_TO_FIELDS.keys():
             for column in self.STATISTIC_TO_FIELDS[self.statistic]:
