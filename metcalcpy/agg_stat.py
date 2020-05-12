@@ -839,7 +839,8 @@ class AggStat():
             # and statistics and then permute them
             series_val = self.params['series_val_' + axis]
             all_fields_values = series_val.copy()
-            all_fields_values[self.params['indy_var']] = indy_vals
+            if indy_vals:
+                all_fields_values[self.params['indy_var']] = indy_vals
             all_fields_values['stat_name'] = self.params['list_stat_' + axis]
             all_points = list(itertools.product(*all_fields_values.values()))
 
@@ -906,7 +907,7 @@ class AggStat():
                     series_var_val = self.params['series_val_' + axis]
                     if any(';' in series_val for series_val in series_var_val):
                         point_data = aggregate_field_values(series_var_val, point_data, self.params['line_type'])
-                    elif ';' in indy_val:
+                    elif indy_val and ';' in indy_val:
                         # if aggregated value in indy val - add it to series values add aggregate
                         series_indy_var_val = series_var_val
                         series_indy_var_val[self.params['indy_var']] = [indy_val]
