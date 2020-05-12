@@ -291,6 +291,9 @@ def _calc_common_stats(columns_names, input_data):
     df_pct_perm = pd.DataFrame(pct_perm)
     n_i = [row.oy_i + row.on_i for index, row in df_pct_perm.iterrows()]
     df_pct_perm['n_i'] = n_i
+
+    # use only records with n_i != 0
+    df_pct_perm = df_pct_perm[df_pct_perm['n_i'] != 0]
     o_bar_i = [row.oy_i / row.n_i for index, row in df_pct_perm.iterrows()]
     df_pct_perm['o_bar_i'] = o_bar_i
     return df_pct_perm
