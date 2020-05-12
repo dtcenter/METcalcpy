@@ -607,30 +607,26 @@ def perform_event_equalization(params, input_data):
     """
 
     # list all fixed variables
-
+    fix_vals_permuted_list = []
+    fix_vals_keys = []
     if 'fixed_vars_vals_input' in params:
-        fix_vals_permuted_list = []
         for key in params['fixed_vars_vals_input']:
             vals_permuted = list(itertools.product(*params['fixed_vars_vals_input'][key].values()))
-            fix_vals_permuted_list.append(vals_permuted)
+            vals_permuted_list = [item for sublist in vals_permuted for item in sublist]
+            fix_vals_permuted_list.append(vals_permuted_list)
 
         fix_vals_keys = list(params['fixed_vars_vals_input'].keys())
-        fix_vals_permuted = [item for sublist in fix_vals_permuted_list for item in sublist]
-
-    else:
-        fix_vals_keys = []
-        fix_vals_permuted = []
 
     # perform EE for each forecast variable on the axis 1
     output_ee_data = \
-        equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axis='1')
+        equalize_axis_data(fix_vals_keys, fix_vals_permuted_list, params, input_data, axis='1')
 
     # if the second Y axis is present - run event equalizer on Y1
     # and then run event equalizer on Y1 and Y2 equalized data
     if params['series_val_2']:
         # perform EE for each forecast variable on the axis 2
         output_ee_data_2 = \
-            equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axis='2')
+            equalize_axis_data(fix_vals_keys, fix_vals_permuted_list, params, input_data, axis='2')
 
         # append and reindex output from both axis
         all_ee_records = output_ee_data.append(output_ee_data_2).reindex()
@@ -644,7 +640,7 @@ def perform_event_equalization(params, input_data):
         output_ee_data = event_equalize(all_ee_records, params['indy_var'],
                                         all_series,
                                         fix_vals_keys,
-                                        fix_vals_permuted, True,
+                                        fix_vals_permuted_list, True,
                                         params['line_type'] == "ssvar")
         output_ee_data = output_ee_data.drop('equalize', axis=1)
 
