@@ -449,9 +449,19 @@ class AggStat():
         mse_oerr = data_for_prepare['rmse_oerr'].values * data_for_prepare['rmse_oerr'].values
         crps_climo = data_for_prepare['crps'].values * data_for_prepare['crps'].values
 
+        variance = data_for_prepare['spread'].values * data_for_prepare['spread'].values
+        variance_oerr = data_for_prepare['spread_oerr'].values * data_for_prepare['spread_oerr'].values
+        variance_plus_oerr = data_for_prepare['spread_oerr'].values * data_for_prepare['spread_oerr'].values
+
         data_for_prepare['mse'] = mse * data_for_prepare['total'].values
         data_for_prepare['mse_oerr'] = mse_oerr * data_for_prepare['total'].values
         data_for_prepare['crps_climo'] = crps_climo * data_for_prepare['total'].values
+
+        data_for_prepare['variance'] = variance * data_for_prepare['total'].values
+        data_for_prepare['variance_oerr'] = variance_oerr * data_for_prepare['total'].values
+        data_for_prepare['variance_plus_oerr'] = variance_plus_oerr * data_for_prepare['total'].values
+
+        self.column_names = data_for_prepare.columns.values
 
         if self.statistic in self.STATISTIC_TO_FIELDS.keys():
             for column in self.STATISTIC_TO_FIELDS[self.statistic]:
@@ -829,7 +839,8 @@ class AggStat():
             # and statistics and then permute them
             series_val = self.params['series_val_' + axis]
             all_fields_values = series_val.copy()
-            all_fields_values[self.params['indy_var']] = indy_vals
+            if indy_vals:
+                all_fields_values[self.params['indy_var']] = indy_vals
             all_fields_values['stat_name'] = self.params['list_stat_' + axis]
             all_points = list(itertools.product(*all_fields_values.values()))
 
@@ -896,7 +907,7 @@ class AggStat():
                     series_var_val = self.params['series_val_' + axis]
                     if any(';' in series_val for series_val in series_var_val):
                         point_data = aggregate_field_values(series_var_val, point_data, self.params['line_type'])
-                    elif ';' in indy_val:
+                    elif indy_val and ';' in indy_val:
                         # if aggregated value in indy val - add it to series values add aggregate
                         series_indy_var_val = series_var_val
                         series_indy_var_val[self.params['indy_var']] = [indy_val]

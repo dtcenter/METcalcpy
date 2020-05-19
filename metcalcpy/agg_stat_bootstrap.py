@@ -38,7 +38,7 @@ from metcalcpy.util.mode_2d_arearat_statistics import *
 from metcalcpy.util.mode_2d_ratio_statistics import *
 from metcalcpy.util.mode_3d_volrat_statistics import *
 from metcalcpy.util.mode_3d_ratio_statistics import *
-from metcalcpy.util.utils import is_string_integer
+from metcalcpy.util.utils import is_string_integer, parse_bool
 
 
 class AggStatBootstrap():
@@ -259,7 +259,9 @@ class AggStatBootstrap():
                 np.random.seed(self.params['random_seed'])
 
             # perform EE if needed
-            self._perform_event_equalization()
+            is_event_equal = parse_bool(self.params['event_equal'])
+            if is_event_equal:
+                self._perform_event_equalization()
 
             # build the case information for each record
             self.input_data['case'] = self.input_data.loc[:, 'fcst_valid'].astype(str) \
@@ -285,7 +287,7 @@ class AggStatBootstrap():
         """ Performs event equalisation on input data
         """
         agg_stat_event_eqz = AggStatEventEqz(self.params)
-        output_ee_data = agg_stat_event_eqz.perform_ee()
+        output_ee_data = agg_stat_event_eqz.calculate_values()
 
         self.input_data = output_ee_data
         file_name = self.params['agg_stat_input'].replace("agg_stat_bootstrap", "dataAfterEq")
