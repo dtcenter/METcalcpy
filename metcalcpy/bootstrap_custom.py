@@ -3,7 +3,7 @@ Program Name: bootstrap_custom.py
 """
 
 import numpy as _np
-from bootstrapped.bootstrap import _bootstrap_distribution, BootstrapResults, _validate_arrays
+from bootstrapped.bootstrap import _bootstrap_distribution, BootstrapResults
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
@@ -66,7 +66,8 @@ def bootstrap_and_value(values, stat_func, alpha=0.05,
                 the bootstrap. Defaults to 1. If -1 is specified then
                 multiprocessing.cpu_count() is used instead.
             ci_method: method for bootstrapping confidence intervals.
-            save_data: Save or not the original data to the resultiong object
+            save_data: Save or not the original data to the resulting object
+            save_distributions: Save or not the distributions to the resulting object
         Returns:
             BootstrapDistributionResults representing CI, stat value and the original distribution.
     """
@@ -123,7 +124,8 @@ def bootstrap_and_value_mode(values, cases, stat_func, alpha=0.05,
                 the bootstrap. Defaults to 1. If -1 is specified then
                 multiprocessing.cpu_count() is used instead.
             ci_method: method for bootstrapping confidence intervals.
-            save_data: Save or not the original data to the resultiong object
+            save_data: Save or not the original data to the resulting object
+            save_distributions: Save or not the distributions
         Returns:
             BootstrapDistributionResults representing CI, stat value and the original distribution.
     """
