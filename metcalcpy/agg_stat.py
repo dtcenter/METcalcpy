@@ -24,8 +24,8 @@ How to use:
 import sys
 import itertools
 import argparse
-import yaml
 from inspect import signature
+import yaml
 import bootstrapped.bootstrap
 from metcalcpy.bootstrap_custom import BootstrapDistributionResults, bootstrap_and_value
 from metcalcpy.util.ctc_statistics import *
@@ -81,7 +81,7 @@ def _sort_data(series_data):
     return series_data
 
 
-class AggStat():
+class AggStat:
     """A class that performs aggregation statistic logic on input data frame.
            All parameters including data description and location is in the parameters dictionary
            Usage:
@@ -90,7 +90,8 @@ class AggStat():
                 This method will crate and save to the file aggregation statistics
                     agg_stat = AggStat(params)
                     agg_stat.calculate_stats_and_ci()
-            Raises: EmptyDataError or ValueError when the input DataFrame is empty or doesn't have data
+            Raises: EmptyDataError or ValueError when the input DataFrame is empty
+                or doesn't have data
        """
 
     def __init__(self, in_params):
@@ -98,7 +99,8 @@ class AggStat():
 
             Args:
                 in_params - input parameters as a dictionary
-            Raises: EmptyDataError or ValueError when the input DataFrame is empty or doesn't have data
+            Raises: EmptyDataError or ValueError when the input DataFrame is empty
+                or doesn't have data
         """
 
         self.statistic = None
@@ -327,6 +329,7 @@ class AggStat():
             stat_values = []
             num_of_columns = values_both_arrays.shape[2] - 1
             for row in values_both_arrays:
+
                 # get values for the 1st array
                 values_1 = row[:, 0:int(num_of_columns / 2)]
                 # get values for the 2nd array
@@ -502,8 +505,7 @@ class AggStat():
 
         total = data_for_prepare['total'].values
         fbs = total * data_for_prepare['fbs'].values
-        fss_den = (data_for_prepare['fbs'].values / (1.0 - data_for_prepare['fss'].values)) \
-                  * total
+        fss_den = (data_for_prepare['fbs'].values / (1.0 - data_for_prepare['fss'].values)) * total
 
         f_rate = total * data_for_prepare['f_rate'].values
         data_for_prepare['fbs'] = fbs
@@ -567,8 +569,10 @@ class AggStat():
         # find all components for the 1st and 2nd series
         derived_curve_component = self.derived_name_to_values[derived_name]
         permute_for_first_series = derived_curve_component.first_component.copy()
-        permute_for_first_series.extend(list(series[1:]))
-        permute_for_first_series = unique(permute_for_first_series)
+        for series_comp in series[1:]:
+            if  series_comp not in permute_for_first_series :
+                permute_for_first_series.append(series_comp)
+
 
         # replace first_series components group names to values
         for i, perm in enumerate(permute_for_first_series):
@@ -576,8 +580,9 @@ class AggStat():
                 permute_for_first_series[i] = self.group_to_value[perm]
 
         permute_for_second_series = derived_curve_component.second_component.copy()
-        permute_for_second_series.extend(list(series[1:]))
-        permute_for_second_series = unique(permute_for_second_series)
+        for series_comp in series[1:]:
+            if series_comp not in permute_for_second_series:
+                permute_for_second_series.append(series_comp)
 
         # replace second_series components group names to values
         for i, perm in enumerate(permute_for_second_series):
@@ -644,7 +649,7 @@ class AggStat():
         if derived_curve_component.derived_operation == 'DIFF_SIG':
             distribution_mean = np.mean(results.distributions)
             distribution_under_h0 = results.distributions - distribution_mean
-            pval = np.mean(np.absolute(distribution_under_h0) <= np.absolute(results.distributions))
+            pval = np.mean(np.absolute(distribution_under_h0) <= np.absolute(results.value))
             diff_sig = perfect_score_adjustment(ds_1.value, ds_2.value, self.statistic, pval)
             results.value = diff_sig
 
@@ -788,17 +793,30 @@ class AggStat():
             Returns: a list of all possible values for the each derived points
 
         """
-        series_var = list(series_val.keys())[-1]
+
         # for each derived series
         result = []
         for derived_serie in self.params['derived_series_' + axis]:
-            derived_val = series_val.copy()
-            derived_val[series_var] = None
             # series 1 components
             ds_1 = derived_serie[0].split(' ')
 
             # series 2 components
             ds_2 = derived_serie[1].split(' ')
+            # find a variable of the operation by comparing values in each derived series component
+            series_var_vals = ()
+            for ind, name in enumerate(ds_1):
+                if name != ds_2[ind]:
+                    series_var_vals = (name, ds_2[ind])
+                    break
+
+            series_var = list(series_val.keys())[-1]
+            for var in series_val.keys():
+                if all(elem in series_val[var] for elem in series_var_vals):
+                    series_var = var
+                    break
+
+            derived_val = series_val.copy()
+            derived_val[series_var] = None
 
             for var in series_val.keys():
                 if derived_val[var] is not None \
