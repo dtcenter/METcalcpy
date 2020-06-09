@@ -84,8 +84,8 @@ def main(params):
         doc = xml.dom.minidom.parse(file)
 
         plot_name = doc.getElementsByTagName('plot_file')[0].firstChild.nodeValue
-        original_plot_path = doc.getElementsByTagName('plots')[0].firstChild.nodeValue \
-                             + '/' + plot_name
+        plot_path = doc.getElementsByTagName('plots')[0].firstChild.nodeValue
+        original_plot_path = plot_path + '/' + plot_name
 
         # replace the original XML with new values
         doc.getElementsByTagName('plot_file')[0].firstChild.nodeValue \
