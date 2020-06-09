@@ -60,7 +60,6 @@ class AggStatEventEqualize:
         """Performs event equalisation if needed and saves equalized data to the file.
         """
         if not self.input_data.empty:
-            output_ee_data = pd.DataFrame()
 
             # list all fixed variables
             if 'fixed_vars_vals_input' in self.params:
@@ -101,7 +100,7 @@ class AggStatEventEqualize:
 
         header = True
         mode = 'w'
-        export_csv = output_ee_data.to_csv(self.params['agg_stat_output'],
+        output_ee_data.to_csv(self.params['agg_stat_output'],
                                            index=None, header=header, mode=mode,
                                            sep="\t", na_rep="NA")
 
