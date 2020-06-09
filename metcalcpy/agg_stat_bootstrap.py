@@ -41,7 +41,7 @@ from metcalcpy.util.mode_3d_ratio_statistics import *
 from metcalcpy.util.utils import is_string_integer, parse_bool
 
 
-class AggStatBootstrap():
+class AggStatBootstrap:
     """A class that performs aggregation statistic logic fot MODE and MTD ratio statistics on input data frame.
         All parameters including data description and location is in the parameters dictionary
         Usage:
@@ -146,9 +146,9 @@ class AggStatBootstrap():
                     point_data = filtered_by_indy_data.loc[mask]
 
                     # build a list of cases to sample
-                    case_cur = \
-                        np.unique(point_data.loc[:, 'fcst_valid'].astype(str) \
-                                  + '#' + point_data.loc[:, self.params['indy_var']].astype(str))
+                    fcst_valid = point_data.loc[:, 'fcst_valid'].astype(str)
+                    indy_var = point_data.loc[:, self.params['indy_var']].astype(str)
+                    case_cur = np.unique(fcst_valid + '#' + indy_var)
                     cases = np.sort(np.unique(np.append(cases, case_cur)))
                     cases = np.reshape(cases, (cases.shape[0], 1))
                 # calculate bootstrap for cases
@@ -221,7 +221,7 @@ class AggStatBootstrap():
     def _calc_stats(self, cases):
         """Calculate the statistic of values for each bootstrap sample
             Args:
-                values: a np.array of values we want to calculate the statistic on
+                cases: a np.array of values we want to calculate the statistic on
                     This is actually a 2d array (matrix) of values. Each row represents
                     a bootstrap resample simulation that we wish to aggregate across.
              Returns:
@@ -264,9 +264,9 @@ class AggStatBootstrap():
                 self._perform_event_equalization()
 
             # build the case information for each record
-            self.input_data['case'] = self.input_data.loc[:, 'fcst_valid'].astype(str) \
-                                      + '#' \
-                                      + self.input_data.loc[:, self.params['indy_var']].astype(str)
+            fcst_valid = self.input_data.loc[:, 'fcst_valid'].astype(str)
+            indy_var = self.input_data.loc[:, self.params['indy_var']].astype(str)
+            self.input_data['case'] = fcst_valid + '#' + indy_var
 
             # get results for axis1
             out_frame = self._proceed_with_axis("1")
@@ -287,12 +287,10 @@ class AggStatBootstrap():
         """ Performs event equalisation on input data
         """
         agg_stat_event_eqz = AggStatEventEqz(self.params)
-        output_ee_data = agg_stat_event_eqz.calculate_values()
 
-        self.input_data = output_ee_data
+        self.input_data = agg_stat_event_eqz.calculate_values()
         file_name = self.params['agg_stat_input'].replace("agg_stat_bootstrap", "dataAfterEq")
-        export_csv = \
-            output_ee_data.to_csv(file_name, index=None, header=True, mode='w', sep="\t", na_rep="NA")
+        self.input_data.to_csv(file_name, index=None, header=True, mode='w', sep="\t", na_rep="NA")
 
 
 if __name__ == "__main__":
