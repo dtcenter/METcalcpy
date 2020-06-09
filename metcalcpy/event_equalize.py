@@ -3,6 +3,7 @@ Program Name: event_equalize.py
 """
 
 import itertools
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -39,7 +40,7 @@ def event_equalize(series_data, indy_var, series_var_vals, fix_vars,
     """
     pd.options.mode.chained_assignment = None
     column_names = list(series_data)
-    exception_columns = ["","fcst_valid_beg", 'fcst_lead', 'fcst_valid', 'fcst_init', 'fcst_init_beg']
+    exception_columns = ["", "fcst_valid_beg", 'fcst_lead', 'fcst_valid', 'fcst_init', 'fcst_init_beg']
     if isinstance(fix_vars, str):
         fix_vars = [fix_vars]
     if 'fcst_valid_beg' in column_names:
@@ -113,13 +114,13 @@ def event_equalize(series_data, indy_var, series_var_vals, fix_vars,
                 pd.Series(equalization_cases, dtype=np.str).isin(set(permutation_data['equalize']))
 
             # identify discarded cases for this permutation
-            discarded_cases = equalization_cases[~common_cases_ind]
+            discarded_cases: list = equalization_cases[~common_cases_ind]
 
             # add cases that are in current permutation
             # but not in the common cases and add them to the discarded list
             permutation_cases_not_in_common_cases_ind = \
                 pd.Series(permutation_data['equalize'], dtype=np.str).isin(equalization_cases)
-            permutation_cases_not_in_common_cases = \
+            permutation_cases_not_in_common_cases: Any = \
                 permutation_data['equalize'][~permutation_cases_not_in_common_cases_ind]
 
             discarded_cases = discarded_cases.append(permutation_cases_not_in_common_cases)
