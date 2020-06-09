@@ -84,9 +84,9 @@ class AggStatEventEqz:
                     'Event equalisation was not performed because the input data is empty.'
                 )
 
-        export_csv = output_ee_data.to_csv(self.params['agg_stat_output'],
-                                           index=None, header=True, mode='w',
-                                           sep="\t", na_rep="NA")
+        output_ee_data.to_csv(self.params['agg_stat_output'],
+                              index=None, header=True, mode='w',
+                              sep="\t", na_rep="NA")
 
     def perform_ee_on_axis(self, prev_cases, axis='1'):
         """Performs event equalisation against previously calculated cases for the selected axis
