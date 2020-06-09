@@ -22,7 +22,7 @@ OPERATION_TO_SIGN = {
 STR_TO_BOOL = {'True': True, 'False': False}
 
 # precision value for statistics calculations
-PRECISION = 5
+PRECISION = 7
 
 TWO_D_DATA_FILTER = {'object_type': '2d'}
 THREE_D_DATA_FILTER = {'object_type': '3d'}
