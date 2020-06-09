@@ -43,7 +43,7 @@ from metcalcpy.util.utils import is_string_integer, parse_bool, \
     aggregate_field_values, perform_event_equalization
 
 
-class SumStat():
+class SumStat:
     """A class that performs event equalisation if needed and statistics calculation
         on each row of the input data frame.
         if one of the field values contain ';' (EAST;NMT) this class aggregate the values
@@ -153,7 +153,7 @@ class SumStat():
             self.input_data = self.input_data.drop(labels=['equalize'], axis=1)
 
         # save the result to file
-        export_csv = self.input_data.to_csv(self.params['sum_stat_output'],
+        self.input_data.to_csv(self.params['sum_stat_output'],
                                             index=None, header=True, mode='w',
                                             sep="\t", na_rep="NA")
 
