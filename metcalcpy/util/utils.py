@@ -645,3 +645,50 @@ def perform_event_equalization(params, input_data):
         output_ee_data = output_ee_data.drop('equalize', axis=1)
 
     return output_ee_data
+
+
+def create_permutations(input_dict):
+        """
+           Create all permutations (ie cartesian products) between the
+           elements in the lists of dictionaries under the input_dict
+           dictionary:
+
+           for example:
+
+           input_dict:
+              model:
+                - GFS_0p25_G193
+              vx_mask:
+                - NH_CMORPH_G193
+                - SH_CMORPH_G193
+                - TROP_CMORPH_G193
+
+
+            So for the above case, we have two lists in the input_dict dictionary,
+            one for model and another for vx_mask:
+            model_list = ["GFS_0p25_G193"]
+            vx_mask_list = ["NH_CMORPH_G193", "SH_CMORPH_G193", "TROP_CMORPH_G193"]
+
+            and a cartesian product representing all permutations of the lists
+            above results in the following:
+
+           ("GFS_0p25_G193", "NH_CMORPH_G193")
+           ("GFS_0p25_G193", "SH_CMORPH_G193")
+           ("GFS_0p25_G193", "TROP_CMORPH_G193")
+
+           Args:
+                input_dict: an input dictionary containing lists of values to
+                            permute
+           Returns:
+               permutation: a list of tuples that represent the possible
+               permutations of values in all lists
+        """
+
+        # Retrieve the lists from the input_dict dictionary
+        vals_list = input_dict
+
+        # Utilize itertools' product() to create the cartesian product of all elements
+        # in the lists to produce all permutations of the values in the lists.
+        permutations = [p for p in itertools.product(*vals_list)]
+
+        return permutations
