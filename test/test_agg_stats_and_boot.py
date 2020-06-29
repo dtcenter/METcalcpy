@@ -131,9 +131,11 @@ def settings():
     Returns:
         dictionary with values of different type
     """
-    params = {'random_seed': 1, 'indy_var': 'fcst_lead', 'list_static_val': {'fcst_var': 'DPT'}, 'method': 'perc',
+    params = {'random_seed': 1, 'indy_var': 'fcst_lead',
+              'list_static_val': {'fcst_var': 'DPT'}, 'method': 'perc',
               'num_iterations': 100, 'event_equal': 'True',
-              'derived_series_1': [['ENS001v3.6.1_d01 DPT FBAR', 'ENS001v3.6.1_d02 DPT FBAR', 'DIFF']],
+              'derived_series_1': [
+                  ['ENS001v3.6.1_d01 DPT FBAR', 'ENS001v3.6.1_d02 DPT FBAR', 'DIFF']],
               'derived_series_2': [],
               'agg_stat_input': 'data/agg_stat_and_boot_data.data',
               'fcst_var_val_1': {'DPT': ['FBAR']},
@@ -144,7 +146,8 @@ def settings():
               'series_val_2': {},
               'alpha': 0.05, 'line_type': 'sl1l2',
               'num_threads': -1,
-              'indy_vals': ['0', '30000', '60000', '90000', '120000', '150000', '180000', '210000', '240000'],
+              'indy_vals': ['0', '30000', '60000', '90000',
+                            '120000', '150000', '180000', '210000', '240000'],
               'list_stat_1': ['FBAR'],
               'list_stat_2': []}
     agg_stat = AggStat(params)
