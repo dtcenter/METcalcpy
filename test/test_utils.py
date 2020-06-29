@@ -89,6 +89,7 @@ def test_round_half_up():
     assert 1.3 == round_half_up(1.25, 1)
     assert -1.2 == round_half_up(-1.25, 1)
     assert 0.12346 == round_half_up(0.1234567875, 5)
+    assert 456792.12346 == round_half_up(456792.1234567875, 5)
 
 
 def test_sum_column_data_by_name(settings):
