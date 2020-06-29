@@ -37,6 +37,7 @@ def calculate_rps(input_data, columns_names, aggregation=False):
 
 def calculate_rps_comp(input_data, columns_names, aggregation=False):
     """Performs calculation of RPS_COMP - Complement of the Ranked Probability Score
+       It is computed simply as RPS_COMP = 1 - RPS
 
         Args:
             input_data: 2-dimensional numpy array with data for the calculation
