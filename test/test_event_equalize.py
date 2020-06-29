@@ -6,7 +6,7 @@ import pandas as pd
 import pytest
 
 from metcalcpy.event_equalize import event_equalize
-from metcalcpy.event_equalize import represents_int
+from metcalcpy.util.utils import represents_int
 
 
 def test_event_equalize():
