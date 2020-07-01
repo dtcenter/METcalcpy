@@ -570,9 +570,8 @@ class AggStat:
         derived_curve_component = self.derived_name_to_values[derived_name]
         permute_for_first_series = derived_curve_component.first_component.copy()
         for series_comp in series[1:]:
-            if  series_comp not in permute_for_first_series :
+            if series_comp not in permute_for_first_series:
                 permute_for_first_series.append(series_comp)
-
 
         # replace first_series components group names to values
         for i, perm in enumerate(permute_for_first_series):
@@ -909,15 +908,20 @@ class AggStat:
                     point_data = self.input_data.loc[mask]
 
                     if self.params['line_type'] == 'pct':
-                        mask_wihtout_indy = np.array(filters_wihtout_indy).all(axis=0)
-                        point_data_wihtout_indy = self.input_data.loc[mask_wihtout_indy]
-                        n_i = [row.oy_i + row.on_i for index, row
-                               in point_data_wihtout_indy.iterrows()]
-                        sum_n_i_orig = sum(n_i)
-                        oy_total = sum(point_data_wihtout_indy['oy_i'].to_numpy())
-                        o_bar = oy_total / sum_n_i_orig
 
-                        point_data.insert(len(point_data.columns), 'T', sum_n_i_orig)
+                        # collect all columns that starts with oy_i and on_i
+                        filter_oy_i = [col for col in point_data if col.startswith('oy_i')]
+                        filter_on_i = [col for col in point_data if col.startswith('on_i')]
+                        # calculate oy_total
+                        oy_total = point_data[filter_oy_i].values.sum()
+
+                        # calculate T
+                        sum_n_i_orig_T = point_data[filter_on_i].values.sum() + oy_total
+
+                        # calculate o_bar
+                        o_bar = oy_total / sum_n_i_orig_T
+
+                        point_data.insert(len(point_data.columns), 'T', sum_n_i_orig_T)
                         point_data.insert(len(point_data.columns), 'oy_total', oy_total)
                         point_data.insert(len(point_data.columns), 'o_bar', o_bar)
 
