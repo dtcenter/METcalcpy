@@ -301,7 +301,7 @@ def calculate_anom_corr(input_data, columns_names, aggregation=False):
             aggregation: if the aggregation on fields was performed
 
         Returns:
-            calculated PR_CORR as float
+            calculated ANOM_CORR as float
             or None if some of the data values are missing or invalid
     """
     warnings.filterwarnings('error')
@@ -325,6 +325,43 @@ def calculate_anom_corr(input_data, columns_names, aggregation=False):
         anom_corr = None
     warnings.filterwarnings('ignore')
     return anom_corr
+
+
+def calculate_anom_corr_raw(input_data, columns_names, aggregation=False):
+    """Performs calculation of ANOM_CORR_RAW - The Uncentered Anomaly Correlation
+     including normal confidence limits
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
+
+        Returns:
+            calculated ANOM_CORR_RAW as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = get_total_values(input_data, columns_names, aggregation)
+        ffbar = sum_column_data_by_name(input_data, columns_names, 'ffbar') / total
+        oobar = sum_column_data_by_name(input_data, columns_names, 'oobar') / total
+        fobar = sum_column_data_by_name(input_data, columns_names, 'fobar') / total
+        v = ffbar * oobar
+        if v < 0:
+            return None
+        anom_corr_raw = fobar / np.sqrt(v)
+        if anom_corr_raw > 1:
+            anom_corr_raw = 1
+        elif anom_corr_raw < -1:
+            anom_corr_raw = -1
+
+        anom_corr_raw = round_half_up(anom_corr_raw, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning):
+        anom_corr_raw = None
+    warnings.filterwarnings('ignore')
+    return anom_corr_raw
 
 
 def calculate_rmsfa(input_data, columns_names, aggregation=False):
