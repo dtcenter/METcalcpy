@@ -31,6 +31,7 @@ from metcalcpy.bootstrap_custom import BootstrapDistributionResults, bootstrap_a
 from metcalcpy.util.ctc_statistics import *
 from metcalcpy.util.grad_statistics import *
 from metcalcpy.util.sl1l2_statistics import *
+from metcalcpy.util.sal1l2_statistics import *
 from metcalcpy.util.ssvar_statistics import *
 from metcalcpy.util.val1l2_statistics import *
 from metcalcpy.util.vcnt_statistics import *
@@ -150,9 +151,10 @@ class AggStat:
         'mae': ['mae'],
         'mbias': ['obar', 'fbar'],
         'corr': ['ffbar', 'fbar', 'oobar', 'obar', 'fobar'],
-        'anom_corr': ['ffbar', 'fbar', 'oobar', 'obar', 'fobar'],
-        'rmsfa': ['ffbar'],
-        'rmsoa': ['oobar'],
+        'anom_corr': ['ffabar', 'fabar', 'ooabar', 'oabar', 'foabar'],
+        'anom_corr_raw': ['ffabar', 'ooabar', 'foabar'],
+        'rmsfa': ['ffabar'],
+        'rmsoa': ['ooabar'],
         'me': ['fbar', 'obar'],
         'me2': ['fbar', 'obar'],
         'mse': ['ffbar', 'oobar', 'fobar'],
@@ -908,7 +910,6 @@ class AggStat:
                     point_data = self.input_data.loc[mask]
 
                     if self.params['line_type'] == 'pct':
-
                         # collect all columns that starts with oy_i and on_i
                         filter_oy_i = [col for col in point_data if col.startswith('oy_i')]
                         filter_on_i = [col for col in point_data if col.startswith('on_i')]
