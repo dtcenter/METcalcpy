@@ -318,7 +318,7 @@ def perfect_score_adjustment(mean_stats_1, mean_stats_2, statistic, pval):
     one_perf_score_stats = ('ACC', 'FBIAS', 'PODY', 'PODN', 'CSI', 'GSS',
                             'HK', 'HSS', 'ORSS', 'EDS', 'SEDS',
                             'EDI', 'SEDI', 'BAGSS', 'PR_CORR', 'SP_CORR',
-                            'KT_CORR', 'MBIAS', 'ANOM_CORR',
+                            'KT_CORR', 'MBIAS', 'ANOM_CORR', 'ANOM_CORR_RAW',
                             'VL1L2_BIAS', 'VL1L2_CORR',
                             'PSTD_BSS', 'PSTD_BSS_SMPL', 'NBR_FSS', 'NBR_AFSS',
                             'VAL1L2_ANOM_CORR', 'NBR_ACC',
