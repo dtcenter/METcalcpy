@@ -4,11 +4,12 @@ Program Name: ssvar_statistics.py
 import warnings
 import numpy as np
 
+from metcalcpy.util.sal1l2_statistics import calculate_anom_corr
 from metcalcpy.util.sl1l2_statistics import calculate_fbar, calculate_fstdev, \
     calculate_obar, calculate_ostdev, \
     calculate_pr_corr, calculate_me, calculate_estdev, calculate_mse, \
     calculate_bcmse, calculate_bcrmse, calculate_rmse, \
-    calculate_anom_corr, calculate_me2, calculate_msess
+    calculate_me2, calculate_msess
 from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION, get_total_values
 
 __author__ = 'Tatiana Burek'
@@ -216,7 +217,14 @@ def calculate_ssvar_anom_corr(input_data, columns_names, aggregation=False):
             calculated SSVAR_ANOM_CORR as float
             or None if some of the data values are missing or invalid
     """
-    return calculate_anom_corr(input_data, columns_names, aggregation)
+    # change the names to comply with sal1l2 names
+    sal1l2_columns_names = np.copy(columns_names)
+    sal1l2_columns_names[sal1l2_columns_names  == 'ffbar'] = 'ffabar'
+    sal1l2_columns_names[sal1l2_columns_names  == 'fbar'] = 'fabar'
+    sal1l2_columns_names[sal1l2_columns_names  == 'oobar'] = 'ooabar'
+    sal1l2_columns_names[sal1l2_columns_names  == 'obar'] = 'oabar'
+    sal1l2_columns_names[sal1l2_columns_names  == 'fobar'] = 'foabar'
+    return calculate_anom_corr(input_data, sal1l2_columns_names, aggregation)
 
 
 def calculate_ssvar_me2(input_data, columns_names, aggregation=False):
