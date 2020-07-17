@@ -170,6 +170,37 @@ def calculate_pofd(input_data, columns_names):
     return result
 
 
+def calculate_ctc_roc(data):
+    """ Creates a data frame to hold the aggregated contingency table and ROC data
+            Args:
+                data: pandas data frame with ctc data and column names:
+                    - fcst_thresh
+                    - fy_oy
+                    - fy_on
+                    - fn_oy
+                    - fn_on
+                    - fcst_valid_beg
+                    - fcst_lead
+
+            Returns:
+                pandas data frame with ROC data and columns:
+                - thresh
+                - pody
+                - pofd
+    """
+    # create a data frame to hold the aggregated contingency table and ROC data
+    list_thresh = np.sort(data['fcst_thresh'].to_numpy())
+
+    df_roc = pd.DataFrame(
+        {'thresh': list_thresh, 'pody': None, 'pofd': None})
+
+    # generate the pody and pofd scores from the contingency tables
+    df_roc['pody'] = data['fy_oy']/(data['fy_oy'] + data['fn_oy'])
+    df_roc['pofd'] = data['fy_on']/(data['fy_on'] + data['fy_on'])
+
+    return df_roc
+
+
 def calculate_podn(input_data, columns_names):
     """Performs calculation of PODN - Probability of Detecting No
 
