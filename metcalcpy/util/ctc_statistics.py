@@ -196,7 +196,7 @@ def calculate_ctc_roc(data):
 
     # generate the pody and pofd scores from the contingency tables
     df_roc['pody'] = data['fy_oy']/(data['fy_oy'] + data['fn_oy'])
-    df_roc['pofd'] = data['fy_on']/(data['fy_on'] + data['fy_on'])
+    df_roc['pofd'] = data['fy_on']/(data['fy_on'] + data['fn_on'])
 
     return df_roc
 
