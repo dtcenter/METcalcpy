@@ -189,14 +189,15 @@ def calculate_ctc_roc(data):
                 - pofd
     """
     # create a data frame to hold the aggregated contingency table and ROC data
-    list_thresh = np.sort(data['fcst_thresh'].to_numpy())
+    list_thresh = np.sort(np.unique(data['fcst_thresh'].to_numpy()))
 
     df_roc = pd.DataFrame(
         {'thresh': list_thresh, 'pody': None, 'pofd': None})
 
-    # generate the pody and pofd scores from the contingency tables
-    df_roc['pody'] = data['fy_oy']/(data['fy_oy'] + data['fn_oy'])
-    df_roc['pofd'] = data['fy_on']/(data['fy_on'] + data['fn_on'])
+    data_np = data.to_numpy()
+    columns = data.columns.values
+    df_roc['pody'] = calculate_pody(data_np, columns)
+    df_roc['pofd'] = calculate_pofd(data_np, columns)
 
     return df_roc
 
