@@ -170,6 +170,9 @@ def _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_metho
 
     # TODO Only percentile method for the confident intervals is implemented
 
+    if stat_val is None:
+        ci_method = "None"
+
     if ci_method == 'pivotal':
         low = 2 * stat_val - _np.percentile(bootstrap_dist, 100 * (1 - alpha / 2.))
         val = stat_val
