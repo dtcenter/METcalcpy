@@ -326,6 +326,8 @@ class AggStat:
                 stat_values_1,
                 stat_values_2,
                 values_both_arrays[0, -1])
+            if not isinstance(stat_values, list):
+                stat_values = [stat_values]
         elif values_both_arrays is not None and values_both_arrays.ndim == 3:
             # bootstrapped case
             stat_values = []
@@ -359,6 +361,8 @@ class AggStat:
                     stat_values_1,
                     stat_values_2,
                     row[0, -1])
+                if not isinstance(stat_value, list):
+                    stat_value = [stat_value]
                 stat_values.append(stat_value)
 
             # pool = mp.Pool(mp.cpu_count())
@@ -648,10 +652,15 @@ class AggStat:
                 print(err)
 
         if derived_curve_component.derived_operation == 'DIFF_SIG':
-            distribution_mean = np.mean(results.distributions)
-            distribution_under_h0 = results.distributions - distribution_mean
-            pval = np.mean(np.absolute(distribution_under_h0) <= np.absolute(results.value))
-            diff_sig = perfect_score_adjustment(ds_1.value, ds_2.value, self.statistic, pval)
+            # remove None values in distributions
+            distributions = [i for i in results.distributions if i is not None]
+            diff_sig = None
+            if distributions and results.value is not None:
+                distribution_mean = np.mean(distributions)
+                distribution_under_h0 = distributions - distribution_mean
+                pval = np.mean(np.absolute(distribution_under_h0) <= np.absolute(results.value))
+                diff_sig = perfect_score_adjustment(ds_1.value, ds_2.value, self.statistic, pval)
+
             results.value = diff_sig
 
         return results
