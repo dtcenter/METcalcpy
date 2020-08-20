@@ -11,7 +11,7 @@ setuptools.setup(
     description="statistics and util package for METplus",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/NCAR/METcalcpy",
+    url="https://github.com/dtcenter/METcalcpy",
     packages=setuptools.find_packages(),
     classifiers=[
          "Programming Language :: Python :: 3",
