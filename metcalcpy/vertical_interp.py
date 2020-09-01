@@ -19,21 +19,20 @@ import os
 import sys
 import argparse
 import logging
-import math
-import numpy as np
+import xarray as xr
 
 def vertical_interp(
-    vertical_dim, coordinate_surfaces, field):
+    vertical_coord, coordinate_surfaces, field):
     """
     Interpolate field onto coordinate surfaces.
 
     Arguments:
-        vertical_dim (int): vertical dimension in field array
-        coordinate_surfaces (numpy.ndarray): coordinate surfaces
-        field (numpy.ndarray): field
+        vertical_coord (str): vertical coordinate in field
+        coordinate_surfaces (DataArray): coordinate surfaces
+        field (DataArray): field
 
     Return:
-        field_interp (numpy.ndarray): Interpolated field
+        field_interp (DataArray): Interpolated field
     """
     pass
 
@@ -48,6 +47,12 @@ if __name__ == '__main__':
     parser.add_argument('--input', type=str,
         required=True,
         help='input file name')
+    parser.add_argument('--dataset', type=str,
+        required=True,
+        help='dataset name')
+    parser.add_argument('--vertical_coord', type=str,
+        default='lev',
+        help='vertical coordinate name')
     parser.add_argument('--output', type=str,
         required=True,
         help='output file name')
