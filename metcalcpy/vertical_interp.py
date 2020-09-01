@@ -22,6 +22,21 @@ import logging
 import math
 import numpy as np
 
+def vertical_interp(
+    vertical_dim, coordinate_surfaces, field):
+    """
+    Interpolate field onto coordinate surfaces.
+
+    Arguments:
+        vertical_dim (int): vertical dimension in field array
+        coordinate_surfaces (numpy.ndarray): coordinate surfaces
+        field (numpy.ndarray): field
+
+    Return:
+        field_interp (numpy.ndarray): Interpolated field
+    """
+    pass
+
 if __name__ == '__main__':
     """
     Parse command line arguments
