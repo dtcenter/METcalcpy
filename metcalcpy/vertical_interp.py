@@ -19,6 +19,7 @@ import os
 import sys
 import argparse
 import logging
+import yaml
 import xarray as xr
 
 def vertical_interp(
@@ -74,4 +75,11 @@ if __name__ == '__main__':
     logging.info(args.input)
     logging.info(args.config)
     logging.info(args.output)
+
+    """
+    Read YAML configuration file
+    """
+    config = yaml.load(
+        open(args.config), Loader=yaml.FullLoader)
+    logging.info(config)
 

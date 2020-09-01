@@ -1,0 +1,11 @@
+vertical_levels :
+    - 100
+    - 200
+    - 500
+    - 1000
+    - 2000
+    - 3000
+    - 4000
+    - 5000
+vertical_level_units :
+    'meter'
