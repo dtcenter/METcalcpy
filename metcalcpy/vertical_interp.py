@@ -47,12 +47,9 @@ if __name__ == '__main__':
     parser.add_argument('--input', type=str,
         required=True,
         help='input file name')
-    parser.add_argument('--dataset', type=str,
+    parser.add_argument('--config', type=str,
         required=True,
-        help='dataset name')
-    parser.add_argument('--vertical_coord', type=str,
-        default='lev',
-        help='vertical coordinate name')
+        help='configuration file')
     parser.add_argument('--output', type=str,
         required=True,
         help='output file name')
@@ -69,4 +66,6 @@ if __name__ == '__main__':
     logging_level = logging.DEBUG if args.debug else logging.INFO
     logging.basicConfig(stream=args.logfile, level=logging_level)
     logging.info(args.datadir)
-    logging.info(args.filename)
+    logging.info(args.input)
+    logging.info(args.config)
+    logging.info(args.output)
