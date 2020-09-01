@@ -65,7 +65,13 @@ if __name__ == '__main__':
     """
     logging_level = logging.DEBUG if args.debug else logging.INFO
     logging.basicConfig(stream=args.logfile, level=logging_level)
-    logging.info(args.datadir)
+
+    if os.path.isdir(args.datadir):
+        logging.info(args.datadir)
+    else:
+        logging.error(args.datadir + ' not found')
+        sys.exit(1)
     logging.info(args.input)
     logging.info(args.config)
     logging.info(args.output)
+
