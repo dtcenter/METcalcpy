@@ -37,13 +37,22 @@ def vertical_interp(
     """
     pass
 
-def pressure_to_height():
+def height_from_pressure(
+    surface_temperature, virtual_temperature, pressure):
     """
     Compute height coordinate surfaces as a function of pressure.
 
+        Z_2 - Z_1 = (R_d / g) <T_v> log(p_1 / p_2)
+        R_d / g = 29.3
+        <T_v> = integral_p_2^p_1 T_v(p) (dp / p) / log(p_1 / p_2)
+
     Arguments:
+        surface_temperature (DataArray) : surface temperature
+        virtual_temperature (DataArray) : virtual temperature
+        pressure (DataArray) : pressure
 
     Returns:
+        height (DataArray) : height
     """
     logging.info('pressure to height conversion')
 
@@ -99,4 +108,4 @@ if __name__ == '__main__':
     if (config['vertical_coord_type_in'] == 'pressure'
         and config['vertical_coord_type_out'] == 'height'):
 
-        pressure_to_height()
+        height_from_pressure()
