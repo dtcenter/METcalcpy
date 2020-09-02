@@ -48,10 +48,6 @@ def height_from_pressure(
     """
     Compute height coordinate surfaces as a function of pressure.
 
-        Z_2 - Z_1 = (R_d / g) <T_v> log(p_1 / p_2)
-        R_d / g = 29.3
-        <T_v> = integral_p_2^p_1 T_v(p) (dp / p) / log(p_1 / p_2)
-
     Arguments:
         surface_pressure (DataArray) : surface pressure
         temperature (DataArray) : temperature
@@ -62,6 +58,27 @@ def height_from_pressure(
     """
     logging.info('pressure to height conversion')
     # use thickness_hydrostatic_from_relative_humidity
+
+def read_required_fields(config, ds):
+    """
+    Read required fields.
+
+    Arguments:
+        config (dictionary) : configuration parameters
+        ds (DataSet) : xarray dataset
+
+    Returns:
+        surface_pressure (DataArray) : surface pressure
+        temperature (DataArray) : temperature
+        relative_humidity (DataArray) : relative humidity
+    """
+    surface_pressure \
+        = ds[config['surface_pressure_name']]
+    temperature \
+        = ds[config['temperature_name']]
+    relative_humidity \
+        = ds[config['relative_humidity_name']]
+    return surface_pressure, temperature, relative_humidity
 
 if __name__ == '__main__':
     """
@@ -123,12 +140,8 @@ if __name__ == '__main__':
         except:
             logging.error('Unable to open ' + filename_in)
 
-        surface_pressure \
-            = ds[config['surface_pressure_name']]
-        temperature \
-            = ds[config['temperature_name']]
-        relative_humidity \
-            = ds[config['relative_humidity_name']]
+        surface_pressure, temperature, relative_humidity \
+            = read_required_fields(config, ds)
 
         height_from_pressure(
             surface_pressure, temperature, relative_humidity)
