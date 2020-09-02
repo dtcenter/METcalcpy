@@ -19,7 +19,7 @@ relative_humidity_name:
 temperature_name:
     'T'
 
-fields:
+field_names:
     - 'QV'
     - 'QL'
     - 'QI'
