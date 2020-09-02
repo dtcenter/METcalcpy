@@ -692,3 +692,25 @@ def create_permutations(input_dict):
         permutations = [p for p in itertools.product(*vals_list)]
 
         return permutations
+
+
+def convert_coords(longitude):
+    """
+
+        Args:
+        @params
+
+        longitude: a numpy array or python list containing values from 0 to 360
+                   to be converted to values from -180 to 180
+
+        Returns:
+            a numpy array containing values that range from -180 to 180 (West to East lons)
+    """
+
+    # First, convert lists to numpy array
+    lons = np.asarray(longitude)
+
+    # Use formula ((lons + 180) % 360) - 180 where % is the modulo operator
+    west_east_lons = np.mod((lons + 180), 360) - 180
+
+    return west_east_lons
