@@ -13,11 +13,11 @@
 surface_pressure_name:
     'PS'
 
-relative_humidity_name:
-    'RH'
-
 temperature_name:
     'T'
+
+relative_humidity_name:
+    'RH'
 
 field_names:
     - 'QV'

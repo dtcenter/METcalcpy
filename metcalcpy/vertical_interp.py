@@ -20,7 +20,13 @@ import sys
 import argparse
 import logging
 import yaml
-import xarray as xr
+import xarray as xr # http://xarray.pydata.org/
+
+"""
+Import MetPy
+    https://unidata.github.io/MetPy/
+"""
+import metpy
 
 def vertical_interp(
     vertical_coord, coordinate_surfaces, field):
@@ -95,6 +101,8 @@ if __name__ == '__main__':
     logging.info(args.config)
     logging.info(args.output)
 
+    filename_in = os.path.join(args.datadir, args.input)
+
     """
     Read YAML configuration file
     """
@@ -107,5 +115,18 @@ if __name__ == '__main__':
     """
     if (config['vertical_coord_type_in'] == 'pressure'
         and config['vertical_coord_type_out'] == 'height'):
+
+        try:
+            logging.info('Opening ' + filename_in)
+            ds = xr.open_dataset(filename_in)
+        except:
+            logging.error('Unable to open ' + filename_in)
+
+        surface_pressure \
+            = ds[config['surface_pressure_name']]
+        temperature \
+            = ds[config['temperature_name']]
+        relative_humidity \
+            = ds[config['relative_humidity_name']]
 
         height_from_pressure()
