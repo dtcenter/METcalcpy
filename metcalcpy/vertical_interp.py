@@ -26,7 +26,7 @@ import xarray as xr # http://xarray.pydata.org/
 Import MetPy
     https://unidata.github.io/MetPy/
 """
-import metpy
+from metpy import calc
 
 def vertical_interp(
     vertical_coord, coordinate_surfaces, field):
@@ -44,7 +44,7 @@ def vertical_interp(
     pass
 
 def height_from_pressure(
-    surface_temperature, virtual_temperature, pressure):
+    surface_pressure, temperature, relative_humidity):
     """
     Compute height coordinate surfaces as a function of pressure.
 
@@ -53,14 +53,15 @@ def height_from_pressure(
         <T_v> = integral_p_2^p_1 T_v(p) (dp / p) / log(p_1 / p_2)
 
     Arguments:
-        surface_temperature (DataArray) : surface temperature
-        virtual_temperature (DataArray) : virtual temperature
-        pressure (DataArray) : pressure
+        surface_pressure (DataArray) : surface pressure
+        temperature (DataArray) : temperature
+        relative_humidity (DataArray) : relative humidity
 
     Returns:
         height (DataArray) : height
     """
     logging.info('pressure to height conversion')
+    # use thickness_hydrostatic_from_relative_humidity
 
 if __name__ == '__main__':
     """
@@ -129,4 +130,5 @@ if __name__ == '__main__':
         relative_humidity \
             = ds[config['relative_humidity_name']]
 
-        height_from_pressure()
+        height_from_pressure(
+            surface_pressure, temperature, relative_humidity)
