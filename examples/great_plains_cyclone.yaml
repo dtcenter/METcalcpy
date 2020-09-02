@@ -1,3 +1,31 @@
+#
+# Filename: great_plains_cyclone.yaml
+#
+# Sample YAML configuration file for vertical_interp.py
+#
+# Author: David Fillmore
+# Email:  met_help@ucar.edu
+#
+# Version    Date
+# 0.1.0      2020/09/01    Initial version
+#
+
+surface_pressure_name:
+    'PS'
+
+relative_humidity_name:
+    'RH'
+
+temperature_name:
+    'T'
+
+fields:
+    - 'QV'
+    - 'QL'
+    - 'QI'
+    - 'U'
+    - 'V'
+
 vertical_coord_type_in:
     'pressure'
 
