@@ -32,10 +32,20 @@ def vertical_interp(
         coordinate_surfaces (DataArray): coordinate surfaces
         field (DataArray): field
 
-    Return:
+    Returns:
         field_interp (DataArray): Interpolated field
     """
     pass
+
+def pressure_to_height():
+    """
+    Compute height coordinate surfaces as a function of pressure.
+
+    Arguments:
+
+    Returns:
+    """
+    logging.info('pressure to height conversion')
 
 if __name__ == '__main__':
     """
@@ -83,3 +93,10 @@ if __name__ == '__main__':
         open(args.config), Loader=yaml.FullLoader)
     logging.info(config)
 
+    """
+    Convert pressure levels to height levels
+    """
+    if (config['vertical_coord_type_in'] == 'pressure'
+        and config['vertical_coord_type_out'] == 'height'):
+
+        pressure_to_height()
