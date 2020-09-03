@@ -58,6 +58,14 @@ def height_from_pressure(
     """
     logging.info('pressure to height conversion')
     # use thickness_hydrostatic_from_relative_humidity
+    logging.debug(temperature.coords)
+    lev_dim = config['vertical_dim_name']
+    pressure = temperature.coords[lev_dim]
+    logging.debug(pressure)
+    for k in range(len(pressure)):
+        logging.debug({lev_dim : slice(k)})
+        temperature_slice = temperature.loc[{lev_dim : slice(k)}]
+        logging.debug(temperature_slice)
 
 def read_required_fields(config, ds):
     """

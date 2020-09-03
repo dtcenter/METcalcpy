@@ -32,6 +32,9 @@ vertical_coord_type_in:
 vertical_coord_type_out:
     'height'
 
+vertical_dim_name:
+    'lev'
+
 vertical_levels :
     - 100
     - 200
