@@ -8,6 +8,7 @@ Instructions for installing the metcalcpy package locally
 - from within your active conda environment, cd to the METcalcpy/ directory, where you will see the setup.py script
 - from this directory, run the following on the command line: pip install -e .
 - the -e option stands for editable, which is useful in that you can update your METcalcpy/metcalcpy source without reinstalling it 
+- the . indicates that you should search the current directory for the setup.py script
 
 - use metcalcpy package via import statement:
   - Examples:
