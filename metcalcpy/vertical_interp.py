@@ -64,7 +64,9 @@ def height_from_pressure(
     pressure_coord = temperature.coords[lev_dim]
     # logging.debug(pressure_coord)
 
-    # create pressure field
+    """
+    Create pressure field
+    """
     pressure = xr.DataArray(
         np.empty(temperature.shape),
         dims=temperature.dims,
@@ -74,6 +76,9 @@ def height_from_pressure(
     for p in pressure_coord:
         pressure.loc[{lev_dim:p}] = p
 
+    """
+    Compute mixing ratio
+    """
     mixing_ratio \
         = xr.DataArray(
             calc.mixing_ratio_from_relative_humidity(
@@ -82,6 +87,9 @@ def height_from_pressure(
         coords=temperature.coords,
         attrs={'long_name' : 'mixing ratio'})
 
+    """
+    Compute virtual temperature
+    """
     virtual_temperature \
         = xr.DataArray(
             calc.virtual_temperature(temperature, mixing_ratio),
@@ -90,6 +98,9 @@ def height_from_pressure(
         attrs={'long_name' : 'virtual temperature',
                'units' : temperature.attrs['units']})
 
+    """
+    Write fields for debugging
+    """
     if (logging.root.level == logging.DEBUG):
         ds_debug = xr.Dataset(
             {'pressure' : pressure,
