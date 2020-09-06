@@ -20,10 +20,11 @@ import sys
 import argparse
 import logging
 import yaml
+import numpy as np
 import xarray as xr # http://xarray.pydata.org/
 
 """
-Import MetPy
+Import MetPy modules
     https://unidata.github.io/MetPy/
 """
 from metpy import calc
@@ -58,20 +59,43 @@ def height_from_pressure(
     """
     logging.info('pressure to height conversion')
     logging.debug(temperature.coords)
+    logging.debug(temperature.shape)
     lev_dim = config['vertical_dim_name']
     pressure_coord = temperature.coords[lev_dim]
-    logging.debug(pressure_coord)
+    # logging.debug(pressure_coord)
 
     # create pressure field
     pressure = xr.DataArray(
+        np.empty(temperature.shape),
         dims=temperature.dims,
-        coords=temperature.coords, attrs=pressure_coord.attrs)
+        coords=temperature.coords,
+        attrs={'long_name' : 'pressure',
+               'units' : pressure_coord.attrs['units']})
+    for p in pressure_coord:
+        pressure.loc[{lev_dim:p}] = p
 
     mixing_ratio \
-        = calc.mixing_ratio_from_relative_humidity(
-            relative_humidity, temperature, pressure)
+        = xr.DataArray(
+            calc.mixing_ratio_from_relative_humidity(
+                relative_humidity, temperature, pressure),
+        dims=temperature.dims,
+        coords=temperature.coords,
+        attrs={'long_name' : 'mixing ratio'})
+
     virtual_temperature \
-        = calc.virtual_temperature(temperature, mixing_ratio)
+        = xr.DataArray(
+            calc.virtual_temperature(temperature, mixing_ratio),
+        dims=temperature.dims,
+        coords=temperature.coords,
+        attrs={'long_name' : 'virtual temperature',
+               'units' : temperature.attrs['units']})
+
+    if (logging.root.level == logging.DEBUG):
+        ds_debug = xr.Dataset(
+            {'pressure' : pressure,
+             'mixing_ratio' : mixing_ratio,
+             'virtual_temperature' : virtual_temperature})
+        ds_debug.to_netcdf('vertical_interp_debug.nc')
 
 def read_required_fields(config, ds):
     """
