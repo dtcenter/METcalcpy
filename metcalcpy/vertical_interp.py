@@ -57,15 +57,21 @@ def height_from_pressure(
         height (DataArray) : height
     """
     logging.info('pressure to height conversion')
-    # use thickness_hydrostatic_from_relative_humidity
     logging.debug(temperature.coords)
     lev_dim = config['vertical_dim_name']
-    pressure = temperature.coords[lev_dim]
-    logging.debug(pressure)
-    for k in range(len(pressure)):
-        logging.debug({lev_dim : slice(k)})
-        temperature_slice = temperature.loc[{lev_dim : slice(k)}]
-        logging.debug(temperature_slice)
+    pressure_coord = temperature.coords[lev_dim]
+    logging.debug(pressure_coord)
+
+    # create pressure field
+    pressure = xr.DataArray(
+        dims=temperature.dims,
+        coords=temperature.coords, attrs=pressure_coord.attrs)
+
+    mixing_ratio \
+        = calc.mixing_ratio_from_relative_humidity(
+            relative_humidity, temperature, pressure)
+    virtual_temperature \
+        = calc.virtual_temperature(temperature, mixing_ratio)
 
 def read_required_fields(config, ds):
     """
