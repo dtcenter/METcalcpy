@@ -44,12 +44,15 @@ def vertical_interp(
     """
     pass
 
-def height_from_pressure(
-    surface_pressure, temperature, relative_humidity):
+def height_from_pressure(config,
+    surface_height, surface_pressure,
+    temperature, relative_humidity):
     """
     Compute height coordinate surfaces as a function of pressure.
 
     Arguments:
+        config (dictionary) : configuration parameters
+        surface_height (DataArray) : surface geopotential height
         surface_pressure (DataArray) : surface pressure
         temperature (DataArray) : temperature
         relative_humidity (DataArray) : relative humidity
@@ -62,7 +65,6 @@ def height_from_pressure(
     logging.debug(temperature.shape)
     lev_dim = config['vertical_dim_name']
     pressure_coord = temperature.coords[lev_dim]
-    # logging.debug(pressure_coord)
 
     """
     Create pressure field
@@ -103,7 +105,9 @@ def height_from_pressure(
     """
     if (logging.root.level == logging.DEBUG):
         ds_debug = xr.Dataset(
-            {'pressure' : pressure,
+            {'surface_height' : surface_height,
+             'surface_pressure' : surface_pressure,
+             'pressure' : pressure,
              'mixing_ratio' : mixing_ratio,
              'virtual_temperature' : virtual_temperature})
         ds_debug.to_netcdf('vertical_interp_debug.nc')
@@ -121,13 +125,16 @@ def read_required_fields(config, ds):
         temperature (DataArray) : temperature
         relative_humidity (DataArray) : relative humidity
     """
+    surface_height \
+        = ds[config['surface_height_name']]
     surface_pressure \
         = ds[config['surface_pressure_name']]
     temperature \
         = ds[config['temperature_name']]
     relative_humidity \
         = ds[config['relative_humidity_name']]
-    return surface_pressure, temperature, relative_humidity
+    return surface_height, surface_pressure, \
+        temperature, relative_humidity
 
 if __name__ == '__main__':
     """
@@ -189,8 +196,10 @@ if __name__ == '__main__':
         except:
             logging.error('Unable to open ' + filename_in)
 
-        surface_pressure, temperature, relative_humidity \
-            = read_required_fields(config, ds)
+        surface_height, surface_pressure, \
+            temperature, relative_humidity \
+                = read_required_fields(config, ds)
 
-        height_from_pressure(
-            surface_pressure, temperature, relative_humidity)
+        height_from_pressure(config,
+            surface_height, surface_pressure,
+            temperature, relative_humidity)
