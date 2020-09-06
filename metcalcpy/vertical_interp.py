@@ -101,6 +101,21 @@ def height_from_pressure(config,
                'units' : temperature.attrs['units']})
 
     """
+    Compute layer thickness
+    Z_2 - Z_1 = (R_d / g) <T_v> log(p_1 / p_2)
+    R_d / g = dry_air_gas_constant / earth_gravity
+    <T_v> = integral_p_2^p_1 T_v(p) (dp / p) / log(p_1 / p_2)
+    """
+    layer_thickness = xr.DataArray(
+        np.empty(temperature.shape),
+        dims=temperature.dims,
+        coords=temperature.coords)
+    nlev = len(pressure_coord)
+    pressure_indices = np.arange(nlev)
+    for k in pressure_indices[nlev-2::-1]:
+        logging.debug(k)
+
+    """
     Write fields for debugging
     """
     if (logging.root.level == logging.DEBUG):
