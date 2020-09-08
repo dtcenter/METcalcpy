@@ -62,13 +62,19 @@ def height_from_pressure(config,
     Returns:
         height (DataArray) : height
     """
-    ureg = pint.UnitRegistry()
 
+    ureg = pint.UnitRegistry()
     logging.info('pressure to height conversion')
+
+    """
+    Get pressure coordinates
+    """
     logging.debug(temperature.coords)
     logging.debug(temperature.shape)
     lev_dim = config['vertical_dim_name']
     pressure_coord = temperature.coords[lev_dim]
+    nlev = len(pressure_coord)
+    pressure_indices = np.arange(nlev)
 
     """
     Create pressure field
@@ -111,24 +117,29 @@ def height_from_pressure(config,
     <T_v> = integral_p_2^p_1 T_v(p) (dp / p) / log(p_1 / p_2)
     """
     gas_constant_gravity_ratio \
-        = constants.dry_air_gas_constant / constants.earth_gravity
+        = (constants.dry_air_gas_constant \
+        / constants.earth_gravity).to_base_units()
     logging.debug(gas_constant_gravity_ratio)
     logging.debug(surface_pressure.attrs['units'])
     logging.debug(pressure.attrs['units'])
 
-    # unit conversion
+    # pressure unit conversion
+    pressure_convert = (ureg.Quantity(1, surface_pressure.attrs['units'])
+        / ureg.Quantity(1, pressure.attrs['units'])).to_base_units()
+    logging.debug(pressure_convert)
 
     layer_thickness = xr.DataArray(
         np.empty(temperature.shape),
         dims=temperature.dims,
-        coords=temperature.coords)
-    nlev = len(pressure_coord)
-    pressure_indices = np.arange(nlev)
+        coords=temperature.coords,
+        attrs={'long_name' : 'layer thickness',
+               'units' : 'meter'})
 
     layer_thickness.loc[{lev_dim:pressure_coord[0]}] \
         = gas_constant_gravity_ratio \
         * virtual_temperature.loc[{lev_dim:pressure_coord[0]}] \
-        * np.log(surface_pressure / pressure.loc[{lev_dim:pressure_coord[0]}])
+        * np.log(pressure_convert * surface_pressure
+                 / pressure.loc[{lev_dim:pressure_coord[0]}])
 
     for k in pressure_indices[1:]:
         # logging.debug(k)
