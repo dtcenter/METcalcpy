@@ -24,9 +24,10 @@ import numpy as np
 import xarray as xr # http://xarray.pydata.org/
 
 """
-Import MetPy modules
+Import Pint and MetPy modules
     https://unidata.github.io/MetPy/
 """
+import pint
 from metpy import calc, constants
 
 def vertical_interp(
@@ -42,6 +43,7 @@ def vertical_interp(
     Returns:
         field_interp (DataArray): Interpolated field
     """
+    # not yet implemented
     pass
 
 def height_from_pressure(config,
@@ -60,6 +62,8 @@ def height_from_pressure(config,
     Returns:
         height (DataArray) : height
     """
+    ureg = pint.UnitRegistry()
+
     logging.info('pressure to height conversion')
     logging.debug(temperature.coords)
     logging.debug(temperature.shape)
@@ -94,11 +98,11 @@ def height_from_pressure(config,
     """
     virtual_temperature \
         = xr.DataArray(
-            calc.virtual_temperature(temperature, mixing_ratio),
-        dims=temperature.dims,
-        coords=temperature.coords,
-        attrs={'long_name' : 'virtual temperature',
-               'units' : temperature.attrs['units']})
+        calc.virtual_temperature(temperature, mixing_ratio),
+    dims=temperature.dims,
+    coords=temperature.coords,
+    attrs={'long_name' : 'virtual temperature',
+           'units' : temperature.attrs['units']})
 
     """
     Compute layer thickness
@@ -106,9 +110,13 @@ def height_from_pressure(config,
     R_d / g = dry_air_gas_constant / earth_gravity
     <T_v> = integral_p_2^p_1 T_v(p) (dp / p) / log(p_1 / p_2)
     """
-    # R_d_g = constants.dry_air_gas_constant / constants.earth_gravity
-    R_d_g = 29.3
-    logging.debug(R_d_g)
+    gas_constant_gravity_ratio \
+        = constants.dry_air_gas_constant / constants.earth_gravity
+    logging.debug(gas_constant_gravity_ratio)
+    logging.debug(surface_pressure.attrs['units'])
+    logging.debug(pressure.attrs['units'])
+
+    # unit conversion
 
     layer_thickness = xr.DataArray(
         np.empty(temperature.shape),
@@ -118,13 +126,15 @@ def height_from_pressure(config,
     pressure_indices = np.arange(nlev)
 
     layer_thickness.loc[{lev_dim:pressure_coord[0]}] \
-        = R_d_g * virtual_temperature.loc[{lev_dim:pressure_coord[0]}] \
+        = gas_constant_gravity_ratio \
+        * virtual_temperature.loc[{lev_dim:pressure_coord[0]}] \
         * np.log(surface_pressure / pressure.loc[{lev_dim:pressure_coord[0]}])
 
     for k in pressure_indices[1:]:
-        logging.debug(k)
+        # logging.debug(k)
         layer_thickness.loc[{lev_dim:pressure_coord[k]}] \
-            = R_d_g * virtual_temperature.loc[{lev_dim:pressure_coord[k]}] \
+            = gas_constant_gravity_ratio \
+            * virtual_temperature.loc[{lev_dim:pressure_coord[k]}] \
             * np.log(pressure.loc[{lev_dim:pressure_coord[k - 1]}]
             / pressure.loc[{lev_dim:pressure_coord[k]}])
 
