@@ -27,7 +27,7 @@ import xarray as xr # http://xarray.pydata.org/
 Import MetPy modules
     https://unidata.github.io/MetPy/
 """
-from metpy import calc
+from metpy import calc, constants
 
 def vertical_interp(
     vertical_coord, coordinate_surfaces, field):
@@ -106,14 +106,27 @@ def height_from_pressure(config,
     R_d / g = dry_air_gas_constant / earth_gravity
     <T_v> = integral_p_2^p_1 T_v(p) (dp / p) / log(p_1 / p_2)
     """
+    # R_d_g = constants.dry_air_gas_constant / constants.earth_gravity
+    R_d_g = 29.3
+    logging.debug(R_d_g)
+
     layer_thickness = xr.DataArray(
         np.empty(temperature.shape),
         dims=temperature.dims,
         coords=temperature.coords)
     nlev = len(pressure_coord)
     pressure_indices = np.arange(nlev)
-    for k in pressure_indices[nlev-2::-1]:
+
+    layer_thickness.loc[{lev_dim:pressure_coord[0]}] \
+        = R_d_g * virtual_temperature.loc[{lev_dim:pressure_coord[0]}] \
+        * np.log(surface_pressure / pressure.loc[{lev_dim:pressure_coord[0]}])
+
+    for k in pressure_indices[1:]:
         logging.debug(k)
+        layer_thickness.loc[{lev_dim:pressure_coord[k]}] \
+            = R_d_g * virtual_temperature.loc[{lev_dim:pressure_coord[k]}] \
+            * np.log(pressure.loc[{lev_dim:pressure_coord[k - 1]}]
+            / pressure.loc[{lev_dim:pressure_coord[k]}])
 
     """
     Write fields for debugging
@@ -124,7 +137,8 @@ def height_from_pressure(config,
              'surface_pressure' : surface_pressure,
              'pressure' : pressure,
              'mixing_ratio' : mixing_ratio,
-             'virtual_temperature' : virtual_temperature})
+             'virtual_temperature' : virtual_temperature,
+             'layer_thickness': layer_thickness})
         ds_debug.to_netcdf('vertical_interp_debug.nc')
 
 def read_required_fields(config, ds):
