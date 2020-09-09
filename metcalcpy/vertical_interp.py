@@ -69,7 +69,12 @@ def height_from_pressure(config,
     """
     Compute surface geopotential height from geopotential
     """
-    surface_height = surface_geopotential / constants.earth_gravity.to_base_units()
+    surface_height = xr.DataArray(
+        surface_geopotential / constants.earth_gravity.to_base_units(),
+        dims = surface_geopotential.dims,
+        coords = surface_geopotential.coords,
+        attrs = {'long_name': 'surface geopotential height',
+                 'units': 'meter'})
 
     """
     Get pressure coordinates
