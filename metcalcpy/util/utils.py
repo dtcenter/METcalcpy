@@ -694,17 +694,21 @@ def create_permutations(input_dict):
         return permutations
 
 
-def convert_coords(longitude):
+def convert_lon_360_to_180(longitude):
     """
+        Convert a list or numpy array of longitudes from 0,360 to -180 to 180 (West-East)
 
         Args:
         @params
 
-        longitude: a numpy array or python list containing values from 0 to 360
+        longitude: a numpy array or python list containing integer or float values from 0 to 360
                    to be converted to values from -180 to 180
 
         Returns:
             a numpy array containing values that range from -180 to 180 (West to East lons)
+            Maintains the input type, ie if longitudes are int, then the numpy array returned will
+            consist of int64.  If longitudes are float, then the returned numpy array will consist of
+            float.
     """
 
     # First, convert lists to numpy array
