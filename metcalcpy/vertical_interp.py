@@ -47,14 +47,14 @@ def vertical_interp(
     pass
 
 def height_from_pressure(config,
-    surface_height, surface_pressure,
+    surface_geopotential, surface_pressure,
     temperature, relative_humidity):
     """
     Compute height coordinate surfaces as a function of pressure.
 
     Arguments:
         config (dictionary) : configuration parameters
-        surface_height (DataArray) : surface geopotential height
+        surface_geopotential (DataArray) : surface geopotential
         surface_pressure (DataArray) : surface pressure
         temperature (DataArray) : temperature
         relative_humidity (DataArray) : relative humidity
@@ -65,6 +65,11 @@ def height_from_pressure(config,
 
     ureg = pint.UnitRegistry()
     logging.info('pressure to height conversion')
+
+    """
+    Compute surface geopotential height from geopotential
+    """
+    surface_height = surface_geopotential / constants.earth_gravity.to_base_units()
 
     """
     Get pressure coordinates
@@ -154,7 +159,8 @@ def height_from_pressure(config,
     """
     if (logging.root.level == logging.DEBUG):
         ds_debug = xr.Dataset(
-            {'surface_height' : surface_height,
+            {'surface_geopotential' : surface_geopotential,
+             'surface_height' : surface_height,
              'surface_pressure' : surface_pressure,
              'pressure' : pressure,
              'mixing_ratio' : mixing_ratio,
@@ -171,19 +177,20 @@ def read_required_fields(config, ds):
         ds (DataSet) : xarray dataset
 
     Returns:
+        surface_geopotential (DataArray) : surface geopotential
         surface_pressure (DataArray) : surface pressure
         temperature (DataArray) : temperature
         relative_humidity (DataArray) : relative humidity
     """
-    surface_height \
-        = ds[config['surface_height_name']]
+    surface_geopotential \
+        = ds[config['surface_geopotential_name']]
     surface_pressure \
         = ds[config['surface_pressure_name']]
     temperature \
         = ds[config['temperature_name']]
     relative_humidity \
         = ds[config['relative_humidity_name']]
-    return surface_height, surface_pressure, \
+    return surface_geopotential, surface_pressure, \
         temperature, relative_humidity
 
 if __name__ == '__main__':

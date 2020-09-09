@@ -13,8 +13,7 @@
 #
 # Required fields
 #
-
-surface_height_name:
+surface_geopotential_name:
     'PHIS'
 
 surface_pressure_name:
