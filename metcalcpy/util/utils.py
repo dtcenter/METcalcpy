@@ -8,9 +8,9 @@ __email__ = 'met_help@ucar.edu'
 
 import math
 import itertools
+import statistics as st
 import numpy as np
 import pandas as pd
-import statistics as st
 from scipy import stats
 from statsmodels.tsa.arima.model import ARIMA
 
@@ -545,7 +545,7 @@ def calc_series_sums(input_df, line_type):
         sums_data_frame['rps'] = [np.nansum(input_df["rps"] * input_df.total.astype(np.float))
                                   / total]
         sums_data_frame['rps_comp'] = [np.nansum(input_df["rps_comp"] * input_df.total.astype(np.float))
-                                  / total]
+                                       / total]
         sums_data_frame['rps_climo'] = [np.nansum(d_rps_climo * input_df.total.astype(np.float))
                                         / total]
 
@@ -651,135 +651,181 @@ def perform_event_equalization(params, input_data):
 
 
 def create_permutations(input_dict):
-        """
-           Create all permutations (ie cartesian products) between the
-           elements in the lists of dictionaries under the input_dict
-           dictionary:
+    """
+       Create all permutations (ie cartesian products) between the
+       elements in the lists of dictionaries under the input_dict
+       dictionary:
 
-           for example:
+       for example:
 
-           input_dict:
-              model:
-                - GFS_0p25_G193
-              vx_mask:
-                - NH_CMORPH_G193
-                - SH_CMORPH_G193
-                - TROP_CMORPH_G193
-
-
-            So for the above case, we have two lists in the input_dict dictionary,
-            one for model and another for vx_mask:
-            model_list = ["GFS_0p25_G193"]
-            vx_mask_list = ["NH_CMORPH_G193", "SH_CMORPH_G193", "TROP_CMORPH_G193"]
-
-            and a cartesian product representing all permutations of the lists
-            above results in the following:
-
-           ("GFS_0p25_G193", "NH_CMORPH_G193")
-           ("GFS_0p25_G193", "SH_CMORPH_G193")
-           ("GFS_0p25_G193", "TROP_CMORPH_G193")
-
-           Args:
-                input_dict: an input dictionary containing lists of values to
-                            permute
-           Returns:
-               permutation: a list of tuples that represent the possible
-               permutations of values in all lists
-        """
-
-        # Retrieve the lists from the input_dict dictionary
-        vals_list = input_dict
-
-        # Utilize itertools' product() to create the cartesian product of all elements
-        # in the lists to produce all permutations of the values in the lists.
-        permutations = [p for p in itertools.product(*vals_list)]
-
-        return permutations
-
-def Compute_STDerr_from_mean(data):
-    RATIO_flag = 0
-    var = st.variance(data)
+       input_dict:
+          model:
+            - GFS_0p25_G193
+          vx_mask:
+            - NH_CMORPH_G193
+            - SH_CMORPH_G193
+            - TROP_CMORPH_G193
 
 
-    nones = sum(x is None for x in data)
-    if var > 0.0 and (len(data) - nones) > 2:
+        So for the above case, we have two lists in the input_dict dictionary,
+        one for model and another for vx_mask:
+        model_list = ["GFS_0p25_G193"]
+        vx_mask_list = ["NH_CMORPH_G193", "SH_CMORPH_G193", "TROP_CMORPH_G193"]
+
+        and a cartesian product representing all permutations of the lists
+        above results in the following:
+
+       ("GFS_0p25_G193", "NH_CMORPH_G193")
+       ("GFS_0p25_G193", "SH_CMORPH_G193")
+       ("GFS_0p25_G193", "TROP_CMORPH_G193")
+
+       Args:
+            input_dict: an input dictionary containing lists of values to
+                        permute
+       Returns:
+           permutation: a list of tuples that represent the possible
+           permutations of values in all lists
+    """
+
+    # Retrieve the lists from the input_dict dictionary
+    vals_list = input_dict
+
+    # Utilize itertools' product() to create the cartesian product of all elements
+    # in the lists to produce all permutations of the values in the lists.
+    permutations = [p for p in itertools.product(*vals_list)]
+
+    return permutations
+
+
+def compute_std_err_from_mean(data):
+    """
+    Function to compute the Standard Error of an uncorrelated time series using mean
+    Arg:
+        data: array of values presorted by date/time
+
+    Returns: Standard Error, variance inflation factor flag, AR1 coefficient, the length of data
+    """
+    ratio_flag = 0
+    variance = st.variance(data)
+
+    number_of_none = sum(x is None for x in data)
+    if variance > 0.0 and (len(data) - number_of_none) > 2:
         # Compute the first order auto-correlation coefficient.
         arima = ARIMA(data, order=(1, 0, 0))
-        res = arima.fit()
-        ar_1 = res.arparams[0]
-        # Compute a variance inflation factor (having removed that portion of the time series that was correlated).
-        RATIO = (1 + ar_1) / (1 - ar_1)
+        ar_1 = arima.fit().arparams[0]
+
+        # Compute a variance inflation factor
+        # (having removed that portion of the time series that was correlated).
+        ratio = (1 + ar_1) / (1 - ar_1)
+
         # Check for a zero RATIO, that will then be operated on by SQRT.
         # If necessary, try a different arima method, or just set RATIO to one.
-        if RATIO < 0.0:
-            RATIO = 1.0
-            RATIO_flag = 1
-        variance_inflation_factor = math.sqrt(RATIO)
+        if ratio < 0.0:
+            ratio = 1.0
+            ratio_flag = 1
+
+        variance_inflation_factor = math.sqrt(ratio)
 
         # If the AR1 coefficient is less than 0.3, then don't even use a vif!  Set vif = 1.0
         if ar_1 < 0.3 or ar_1 >= 0.99:
             variance_inflation_factor = 1.0
 
         # Compute the Standard Error using the variance inflation factor.
-        STDerr_data = variance_inflation_factor * math.sqrt(var) / math.sqrt(len(data))
+        std_err = variance_inflation_factor * math.sqrt(variance) / math.sqrt(len(data))
 
     else:
-        STDerr_data = 0.0
+        std_err = 0.0
         ar_1 = 0.0
-    return (STDerr_data, RATIO_flag, ar_1, len(data))
+    return std_err, ratio_flag, ar_1, len(data)
 
 
-def Compute_STDerr_from_median_no_variance_inflation_factor(data):
+def compute_std_err_from_median_no_variance_inflation_factor(data):
+    """
+    Function to compute the Standard Error of an uncorrelated time series.
+    Remove the correlated portion of a time series, using a first order auto-correlation coefficient
+    to help compute an inflated variance factor for the uncorrelated portion of the time series.
+    Originator Rscript:  Eric Gilleland and Andrew Loughe, 08 JUL 2008
+    Arg:
+        data: array of values presorted by date/time
+
+    Returns: Standard Error, variance inflation factor flag, AR1 coefficient, the length of data
+    """
+
     iqr = stats.iqr(data, interpolation='linear')
-    nones = sum(x is None for x in data)
-    if iqr > 0.0 and (len(data) - nones) > 2:
-        STDerr_data = (iqr * math.sqrt(math.pi / 2.)) / (1.349 * math.sqrt(len(data) - nones))
+    number_of_none = sum(x is None for x in data)
+    if iqr > 0.0 and (len(data) - number_of_none) > 2:
+        # Compute the Standard Error using the variance inflation factor.
+        std_err = (iqr * math.sqrt(math.pi / 2.)) / (1.349 * math.sqrt(len(data) - number_of_none))
     else:
-        STDerr_data = 0.0
-    return (STDerr_data, 0, 0, len(data) - nones)
+        std_err = 0.0
+    return std_err, 0, 0, len(data) - number_of_none
 
 
-def Compute_STDerr_from_median_variance_inflation_factor(data):
-    RATIO_flag = 0
+def compute_std_err_from_median_variance_inflation_factor(data):
+    """
+        Function to compute the Standard Error of an uncorrelated time series
+        from median variance inflation factor.
+        Arg:
+            data: array of values presorted by date/time
+
+        Returns: Standard Error, variance inflation factor flag, AR1 coefficient, the length of data
+    """
+    ratio_flag = 0
     iqr = stats.iqr(data, interpolation='linear')
-    nones = sum(x is None for x in data)
+    number_of_none = sum(x is None for x in data)
 
-    if iqr > 0.0 and (len(data) - nones) > 2:
+    if iqr > 0.0 and (len(data) - number_of_none) > 2:
         # Compute the first order auto-correlation coefficient
         # using a vector that is the same size as "data", but represents
         # represents excusions from the median of the data.
 
         # Use excursions from the median to compute the first order auto-correlation coefficient.
         data_excursions = list()
-        # for (i in 1:length(data) ) {data_excursions < - c( data_excursions, as.numeric( data[i] >= median(data) ) );}
-
         median = st.median(data)
         for val in data:
             if val >= median:
                 data_excursions.append(1)
             else:
                 data_excursions.append(0)
+
         arima = ARIMA(data_excursions, order=(1, 0, 0))
-        res = arima.fit()
-        ar_1 = res.arparams[0]
-        RATIO = (1 + ar_1) / (1 - ar_1)
-        if RATIO < 0.0:
-            RATIO = 1.0
-            RATIO_flag = 1
-        variance_inflation_factor = math.sqrt(RATIO)
+        ar_1 = arima.fit().arparams[0]
+
+        # Compute an variance inflation factor
+        # (having removed that portion of the time series that was correlated).
+        ratio = (1 + ar_1) / (1 - ar_1)
+
+        # Check for a zero RATIO, that will then be operated on by SQRT.
+        if ratio < 0.0:
+            ratio = 1.0
+            ratio_flag = 1
+
+        variance_inflation_factor = math.sqrt(ratio)
+
+        # If the AR1 coefficient is less than 0.3, then don't even use a vif!  Set vif = 1.0
         if ar_1 < 0.3 or ar_1 >= 0.99:
             variance_inflation_factor = 1.0
+
+        # Compute the Standard Error using the variance inflation factor.
         iqr = stats.iqr(data, interpolation='linear')
-        ## Compute the Standard Error using the variance inflation factor.
-        STDerr_data = variance_inflation_factor * (iqr * math.sqrt(math.pi / 2.)) / (1.349 * math.sqrt(len(data)))
+        std_err = variance_inflation_factor * (iqr * math.sqrt(math.pi / 2.)) / (1.349 * math.sqrt(len(data)))
 
     else:
-        STDerr_data = 0.0
+        std_err = 0.0
         ar_1 = 0
-    return (STDerr_data, RATIO_flag, ar_1, len(data))
+    return std_err, ratio_flag, ar_1, len(data)
 
 
-def Compute_STDerr_from_sum(data):
-    STDerr = Compute_STDerr_from_mean(data)
+def compute_std_err_from_sum(data):
+    """
+        Function to compute the Standard Error of an uncorrelated time series
+        from sum.
+        Arg:
+            data: array of values presorted by date/time
+
+        Returns: Standard Error, variance inflation factor flag, AR1 coefficient, the length of data
+    """
+    std_err = compute_std_err_from_mean(data)
+
     # multiply Standard Error by data size
-    return (STDerr[0] * len(data), STDerr[1], STDerr[2], STDerr[3])
+    return std_err[0] * len(data), std_err[1], std_err[2], std_err[3]
