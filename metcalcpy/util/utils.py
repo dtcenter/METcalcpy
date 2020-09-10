@@ -853,5 +853,6 @@ def convert_lon_360_to_180(longitude):
 
     # Use formula ((lons + 180) % 360) - 180 where % is the modulo operator
     west_east_lons = np.mod((lons + 180), 360) - 180
+    negative_to_positive = np.sort(west_east_lons)
 
-    return west_east_lons
+    return negative_to_positive
