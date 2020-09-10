@@ -1,0 +1,5 @@
+# Apache 2 license
+# https://apache.org/licenses/LICENSE-2.0
+
+# from Github's license chooser:
+# https://choosealicense.com/licenses/apache-2.0/
