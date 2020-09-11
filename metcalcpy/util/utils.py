@@ -829,3 +829,30 @@ def compute_std_err_from_sum(data):
 
     # multiply Standard Error by data size
     return std_err[0] * len(data), std_err[1], std_err[2], std_err[3]
+
+  
+def convert_lon_360_to_180(longitude):
+    """
+        Convert a list or numpy array of longitudes from 0,360 to -180 to 180 (West-East)
+
+        Args:
+        @params
+
+        longitude: a numpy array or python list containing integer or float values from 0 to 360
+                   to be converted to values from -180 to 180
+
+        Returns:
+            a numpy array containing values that range from -180 to 180 (West to East lons)
+            Maintains the input type, ie if longitudes are int, then the numpy array returned will
+            consist of int64.  If longitudes are float, then the returned numpy array will consist of
+            float.
+    """
+
+    # First, convert lists to numpy array
+    lons = np.asarray(longitude)
+
+    # Use formula ((lons + 180) % 360) - 180 where % is the modulo operator
+    west_east_lons = np.mod((lons + 180), 360) - 180
+    negative_to_positive = np.sort(west_east_lons)
+
+    return negative_to_positive

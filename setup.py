@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="metcalpy",
-    version="0.0.1",
+    version="0.1",
     author="METplus",
     author_email="met-help@ucar.edu",
     description="statistics and util package for METplus",
