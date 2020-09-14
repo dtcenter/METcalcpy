@@ -171,7 +171,7 @@ def height_from_pressure(config,
             / pressure.loc[{lev_dim:pressure_coord[k]}])
 
         layer_height.loc[{lev_dim:pressure_coord[k]}] \
-            + layer_height.loc[{lev_dim: pressure_coord[k - 1]}] \
+            = layer_height.loc[{lev_dim: pressure_coord[k - 1]}] \
             + layer_thickness.loc[{lev_dim: pressure_coord[k]}]
 
     """
