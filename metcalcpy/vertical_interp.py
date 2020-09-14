@@ -145,6 +145,12 @@ def height_from_pressure(config,
         attrs={'long_name' : 'layer thickness',
                'units' : 'meter'})
 
+    surface_mask = xr.DataArray(
+        np.empty(temperature.shape, dtype=np.bool),
+        dims=temperature.dims,
+        coords=temperature.coords,
+        attrs={'long_name' : 'surface mask'})
+
     layer_height = xr.DataArray(
         np.empty(temperature.shape),
         dims=temperature.dims,
@@ -158,6 +164,9 @@ def height_from_pressure(config,
         * np.log(pressure_convert * surface_pressure
                  / pressure.loc[{lev_dim:pressure_coord[0]}])
 
+    surface_mask.loc[{lev_dim: pressure_coord[0]}] \
+        = pressure.loc[{lev_dim: pressure_coord[0]}] \
+        < pressure_convert * surface_pressure
     layer_height.loc[{lev_dim:pressure_coord[0]}] \
         = surface_height \
         + layer_thickness.loc[{lev_dim: pressure_coord[0]}]
@@ -169,6 +178,13 @@ def height_from_pressure(config,
             * virtual_temperature.loc[{lev_dim:pressure_coord[k]}] \
             * np.log(pressure.loc[{lev_dim:pressure_coord[k - 1]}]
             / pressure.loc[{lev_dim:pressure_coord[k]}])
+
+        surface_mask.loc[{lev_dim: pressure_coord[k]}] \
+            = np.logical_and(
+            pressure.loc[{lev_dim: pressure_coord[k - 1]}]
+            > pressure_convert * surface_pressure,
+            pressure.loc[{lev_dim: pressure_coord[k]}]
+            < pressure_convert * surface_pressure)
 
         layer_height.loc[{lev_dim:pressure_coord[k]}] \
             = layer_height.loc[{lev_dim: pressure_coord[k - 1]}] \
@@ -182,6 +198,7 @@ def height_from_pressure(config,
             {'surface_geopotential' : surface_geopotential,
              'surface_height' : surface_height,
              'surface_pressure' : surface_pressure,
+             'surface_mask' : surface_mask,
              'pressure' : pressure,
              'mixing_ratio' : mixing_ratio,
              'virtual_temperature' : virtual_temperature,
