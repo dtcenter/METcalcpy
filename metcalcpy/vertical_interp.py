@@ -60,7 +60,7 @@ def height_from_pressure(config,
         relative_humidity (DataArray) : relative humidity
 
     Returns:
-        height (DataArray) : height
+        layer_height (DataArray) : layer upper boundary height
     """
 
     ureg = pint.UnitRegistry()
@@ -121,7 +121,7 @@ def height_from_pressure(config,
            'units' : temperature.attrs['units']})
 
     """
-    Compute layer thickness
+    Compute layer thickness and layer upper boundary height
     Z_2 - Z_1 = (R_d / g) <T_v> log(p_1 / p_2)
     R_d / g = dry_air_gas_constant / earth_gravity
     <T_v> = integral_p_2^p_1 T_v(p) (dp / p) / log(p_1 / p_2)
@@ -145,11 +145,22 @@ def height_from_pressure(config,
         attrs={'long_name' : 'layer thickness',
                'units' : 'meter'})
 
+    layer_height = xr.DataArray(
+        np.empty(temperature.shape),
+        dims=temperature.dims,
+        coords=temperature.coords,
+        attrs={'long_name' : 'layer upper boundary height',
+               'units' : 'meter'})
+
     layer_thickness.loc[{lev_dim:pressure_coord[0]}] \
         = gas_constant_gravity_ratio \
         * virtual_temperature.loc[{lev_dim:pressure_coord[0]}] \
         * np.log(pressure_convert * surface_pressure
                  / pressure.loc[{lev_dim:pressure_coord[0]}])
+
+    layer_height.loc[{lev_dim:pressure_coord[0]}] \
+        = surface_height \
+        + layer_thickness.loc[{lev_dim: pressure_coord[0]}]
 
     for k in pressure_indices[1:]:
         # logging.debug(k)
@@ -158,6 +169,10 @@ def height_from_pressure(config,
             * virtual_temperature.loc[{lev_dim:pressure_coord[k]}] \
             * np.log(pressure.loc[{lev_dim:pressure_coord[k - 1]}]
             / pressure.loc[{lev_dim:pressure_coord[k]}])
+
+        layer_height.loc[{lev_dim:pressure_coord[k]}] \
+            + layer_height.loc[{lev_dim: pressure_coord[k - 1]}] \
+            + layer_thickness.loc[{lev_dim: pressure_coord[k]}]
 
     """
     Write fields for debugging
@@ -170,8 +185,11 @@ def height_from_pressure(config,
              'pressure' : pressure,
              'mixing_ratio' : mixing_ratio,
              'virtual_temperature' : virtual_temperature,
-             'layer_thickness': layer_thickness})
+             'layer_thickness': layer_thickness,
+             'layer_height': layer_height})
         ds_debug.to_netcdf('vertical_interp_debug.nc')
+
+    return layer_height
 
 def read_required_fields(config, ds):
     """
@@ -258,10 +276,10 @@ if __name__ == '__main__':
         except:
             logging.error('Unable to open ' + filename_in)
 
-        surface_height, surface_pressure, \
+        surface_geopotential, surface_pressure, \
             temperature, relative_humidity \
                 = read_required_fields(config, ds)
 
-        height_from_pressure(config,
-            surface_height, surface_pressure,
+        layer_height = height_from_pressure(config,
+            surface_geopotential, surface_pressure,
             temperature, relative_humidity)
