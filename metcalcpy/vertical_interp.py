@@ -121,7 +121,7 @@ def height_from_pressure(config,
            'units' : temperature.attrs['units']})
 
     """
-    Compute layer thickness and layer upper boundary height
+    Compute layer thickness
     Z_2 - Z_1 = (R_d / g) <T_v> log(p_1 / p_2)
     R_d / g = dry_air_gas_constant / earth_gravity
     <T_v> = integral_p_2^p_1 T_v(p) (dp / p) / log(p_1 / p_2)
@@ -164,6 +164,23 @@ def height_from_pressure(config,
         * np.log(pressure_convert * surface_pressure
                  / pressure.loc[{lev_dim:pressure_coord[0]}])
 
+    for k in pressure_indices[1:]:
+        # logging.debug(k)
+        layer_thickness.loc[{lev_dim:pressure_coord[k]}] \
+            = gas_constant_gravity_ratio \
+            * virtual_temperature.loc[{lev_dim:pressure_coord[k]}] \
+            * np.log(pressure.loc[{lev_dim:pressure_coord[k - 1]}] \
+            / pressure.loc[{lev_dim:pressure_coord[k]}])
+
+    layer_thickness = layer_thickness.fillna(0)
+    layer_thickness = layer_thickness.clip(min = 0)
+
+    """
+    Compute layer upper boundary height and surface mask
+        The surface mask value value is true if the surface pressure
+        is less than the pressure coordinate below the given layer
+        and greater than the pressure coordinate of the given layer.
+    """
     surface_mask.loc[{lev_dim: pressure_coord[0]}] \
         = pressure.loc[{lev_dim: pressure_coord[0]}] \
         < pressure_convert * surface_pressure
@@ -172,12 +189,6 @@ def height_from_pressure(config,
         + layer_thickness.loc[{lev_dim: pressure_coord[0]}]
 
     for k in pressure_indices[1:]:
-        # logging.debug(k)
-        layer_thickness.loc[{lev_dim:pressure_coord[k]}] \
-            = gas_constant_gravity_ratio \
-            * virtual_temperature.loc[{lev_dim:pressure_coord[k]}] \
-            * np.log(pressure.loc[{lev_dim:pressure_coord[k - 1]}]
-            / pressure.loc[{lev_dim:pressure_coord[k]}])
 
         surface_mask.loc[{lev_dim: pressure_coord[k]}] \
             = np.logical_and(
