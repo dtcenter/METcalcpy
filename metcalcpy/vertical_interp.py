@@ -168,7 +168,8 @@ def height_from_pressure(config,
         # logging.debug(k)
         layer_thickness.loc[{lev_dim:pressure_coord[k]}] \
             = gas_constant_gravity_ratio \
-            * virtual_temperature.loc[{lev_dim:pressure_coord[k]}] \
+            * 0.5 * (virtual_temperature.loc[{lev_dim:pressure_coord[k - 1]}]
+            + virtual_temperature.loc[{lev_dim:pressure_coord[k]}]) \
             * np.log(pressure.loc[{lev_dim:pressure_coord[k - 1]}] \
             / pressure.loc[{lev_dim:pressure_coord[k]}])
 
@@ -178,7 +179,7 @@ def height_from_pressure(config,
     """
     Compute layer upper boundary height and surface mask
         The surface mask value value is true if the surface pressure
-        is less than the pressure coordinate below the given layer.
+        is between the lower layer and upper (current) layers.
     """
     surface_mask.loc[{lev_dim: pressure_coord[0]}] \
         = pressure.loc[{lev_dim: pressure_coord[0]}] \
