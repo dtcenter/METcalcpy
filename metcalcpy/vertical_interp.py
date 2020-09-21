@@ -186,8 +186,7 @@ def height_from_pressure(config,
 
     layer_height.loc[{lev_dim:pressure_coord[0]}] \
         = xr.where(surface_mask.loc[{lev_dim: pressure_coord[0]}],
-            surface_height \
-            + layer_thickness.loc[{lev_dim: pressure_coord[0]}],
+            surface_height + layer_thickness.loc[{lev_dim: pressure_coord[0]}],
             np.nan)
 
     for k in pressure_indices[1:]:
@@ -200,8 +199,10 @@ def height_from_pressure(config,
             < pressure_convert * surface_pressure)
 
         layer_height.loc[{lev_dim:pressure_coord[k]}] \
-            = layer_height.loc[{lev_dim: pressure_coord[k - 1]}] \
-            + layer_thickness.loc[{lev_dim: pressure_coord[k]}]
+            = xr.where(surface_mask.loc[{lev_dim: pressure_coord[k]}],
+                surface_height + layer_thickness.loc[{lev_dim: pressure_coord[k]}],
+                layer_height.loc[{lev_dim: pressure_coord[k - 1]}]
+                + layer_thickness.loc[{lev_dim: pressure_coord[k]}])
 
     """
     Write fields for debugging
