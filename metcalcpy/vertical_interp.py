@@ -44,7 +44,10 @@ def vertical_interp(
         field_interp (DataArray): Interpolated field
     """
     # not yet implemented
-    pass
+    logging.debug(vertical_coord)
+    logging.debug(coordinate_surfaces.shape)
+    logging.debug(field.shape)
+    field_interp = field
 
 def height_from_pressure(config,
     surface_geopotential, surface_pressure,
@@ -60,7 +63,7 @@ def height_from_pressure(config,
         relative_humidity (DataArray) : relative humidity
 
     Returns:
-        layer_height (DataArray) : layer upper boundary height
+        layer_height (DataArray) : layer height
     """
 
     ureg = pint.UnitRegistry()
@@ -155,7 +158,7 @@ def height_from_pressure(config,
         np.empty(temperature.shape),
         dims=temperature.dims,
         coords=temperature.coords,
-        attrs={'long_name' : 'layer upper boundary height',
+        attrs={'long_name' : 'layer height',
                'units' : 'meter'})
 
     layer_thickness.loc[{lev_dim:pressure_coord[0]}] \
@@ -177,7 +180,7 @@ def height_from_pressure(config,
     layer_thickness = layer_thickness.clip(min = 0)
 
     """
-    Compute layer upper boundary height and surface mask
+    Compute layer height and surface mask
         The surface mask value value is true if the surface pressure
         is between the lower layer and upper (current) layers.
     """
@@ -315,3 +318,8 @@ if __name__ == '__main__':
         layer_height = height_from_pressure(config,
             surface_geopotential, surface_pressure,
             temperature, relative_humidity)
+
+        for field in config['fields']:
+            logging.info(field)
+            field_interp = vertical_interp(
+                config['vertical_levels'], layer_height, ds[field])
