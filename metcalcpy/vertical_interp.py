@@ -46,6 +46,7 @@ def vertical_interp(config,
     # not yet implemented
     lev_dim = config['vertical_dim_name']
     vertical_coord = np.array(config['vertical_levels'], dtype=field.dtype)
+    nlev_interp = len(vertical_coord)
 
     logging.debug(vertical_coord)
     logging.debug(coordinate_surfaces.shape)
@@ -53,15 +54,22 @@ def vertical_interp(config,
     logging.debug(field.dims)
     logging.debug(field.attrs)
 
-    field_interp_coords = field.coords
-    # field_interp_coords[lev_dim] = vertical_coord
-    logging.debug(field_interp_coords)
-
+    """
+    Initialize interpolated field
+    """
     field_interp = xr.DataArray(
         np.empty(field.shape),
         dims = field.dims,
         coords = field.coords,
-        attrs = field.attrs)
+        attrs = field.attrs).isel({lev_dim : slice(None, nlev_interp)})
+    # Better way to resize vertical dim of an xarray?
+    # Assuming nlev_interp < nlev for now,
+    #     if nlev_interp > nlev consider pad method.
+    field_interp.coords[lev_dim] = vertical_coord 
+    # set coordinate units
+    field_interp.coords[lev_dim].attrs['units'] \
+        = config['vertical_level_units']
+    logging.debug(field_interp.coords)
 
     return field_interp
 
