@@ -30,13 +30,13 @@ Import Pint and MetPy modules
 import pint
 from metpy import calc, constants
 
-def vertical_interp(
-    vertical_coord, coordinate_surfaces, field):
+def vertical_interp(config,
+    coordinate_surfaces, field):
     """
     Interpolate field onto coordinate surfaces.
 
     Arguments:
-        vertical_coord (str): vertical coordinate in field
+        config (dictionary) : configuration parameters
         coordinate_surfaces (DataArray): coordinate surfaces
         field (DataArray): field
 
@@ -44,10 +44,26 @@ def vertical_interp(
         field_interp (DataArray): Interpolated field
     """
     # not yet implemented
+    lev_dim = config['vertical_dim_name']
+    vertical_coord = np.array(config['vertical_levels'], dtype=field.dtype)
+
     logging.debug(vertical_coord)
     logging.debug(coordinate_surfaces.shape)
-    logging.debug(field.shape)
-    field_interp = field
+
+    logging.debug(field.dims)
+    logging.debug(field.attrs)
+
+    field_interp_coords = field.coords
+    # field_interp_coords[lev_dim] = vertical_coord
+    logging.debug(field_interp_coords)
+
+    field_interp = xr.DataArray(
+        np.empty(field.shape),
+        dims = field.dims,
+        coords = field.coords,
+        attrs = field.attrs)
+
+    return field_interp
 
 def height_from_pressure(config,
     surface_geopotential, surface_pressure,
@@ -321,5 +337,5 @@ if __name__ == '__main__':
 
         for field in config['fields']:
             logging.info(field)
-            field_interp = vertical_interp(
-                config['vertical_levels'], layer_height, ds[field])
+            field_interp = vertical_interp(config,
+                layer_height, ds[field])
