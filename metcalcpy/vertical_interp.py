@@ -315,6 +315,7 @@ if __name__ == '__main__':
     logging.info(args.output)
 
     filename_in = os.path.join(args.datadir, args.input)
+    filename_out = os.path.join(args.datadir, args.output)
 
     """
     Read YAML configuration file
@@ -343,7 +344,17 @@ if __name__ == '__main__':
             surface_geopotential, surface_pressure,
             temperature, relative_humidity)
 
-        for field in config['fields']:
-            logging.info(field)
-            field_interp = vertical_interp(config,
-                layer_height, ds[field])
+    ds_out = xr.Dataset()
+
+    for field in config['fields']:
+        logging.info(field)
+        field_interp = vertical_interp(config,
+            layer_height, ds[field])
+        ds_out[field] = field_interp
+
+    try:
+        logging.info('Creating ' + filename_out)
+        ds_out.to_netcdf(filename_out)
+    except:
+        logging.error('Unable to create ' + filename_out)
+
