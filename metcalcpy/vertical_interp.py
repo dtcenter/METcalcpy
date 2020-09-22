@@ -73,7 +73,7 @@ def vertical_interp(config,
 
     for eta in vertical_coord:
         """
-        Initialize weights
+        Compute interpolation weights
         """
         weights = xr.DataArray(
             np.zeros(field.shape),
@@ -87,7 +87,7 @@ def vertical_interp(config,
         if (logging.root.level == logging.DEBUG):
             ds_debug = xr.Dataset({'distances' : distances})
             ds_debug.to_netcdf(
-                'vertical_interp_debug_' + str(eta) + '.nc')
+                'vertical_interp_debug_' + str(int(eta)) + '.nc')
 
     return field_interp
 
