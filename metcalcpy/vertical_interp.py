@@ -72,15 +72,22 @@ def vertical_interp(config,
     logging.debug(field_interp.coords)
 
     for eta in vertical_coord:
-        below = (coordinate_surfaces < eta)
-        above = (coordinate_surfaces > eta)
+        """
+        Initialize weights
+        """
+        weights = xr.DataArray(
+            np.zeros(field.shape),
+            dims = field.dims,
+            coords = field.coords)
+        distances = eta - coordinate_surfaces
 
-    """
-    Write fields for debugging
-    """
-    if (logging.root.level == logging.DEBUG):
-        ds_debug = xr.Dataset()
-        ds_debug.to_netcdf('vertical_interp_debug.nc')
+        """
+        Write fields for debugging
+        """
+        if (logging.root.level == logging.DEBUG):
+            ds_debug = xr.Dataset({'distances' : distances})
+            ds_debug.to_netcdf(
+                'vertical_interp_debug_' + str(eta) + '.nc')
 
     return field_interp
 
