@@ -252,6 +252,8 @@ def height_from_pressure(config,
 
     """
     Write fields for debugging
+    Approximate layer heights
+        800 hPa ~ 2 km, 500 hPa ~ 6 km, 200 hPa ~ 12 km
     """
     if (logging.root.level == logging.DEBUG):
         ds_debug = xr.Dataset(
