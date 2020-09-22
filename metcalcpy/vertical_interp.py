@@ -314,6 +314,9 @@ if __name__ == '__main__':
     logging.info(args.config)
     logging.info(args.output)
 
+    """
+    Construct input and output filenames
+    """
     filename_in = os.path.join(args.datadir, args.input)
     filename_out = os.path.join(args.datadir, args.output)
 
@@ -325,16 +328,19 @@ if __name__ == '__main__':
     logging.info(config)
 
     """
+    Read dataset
+    """
+    try:
+        logging.info('Opening ' + filename_in)
+        ds = xr.open_dataset(filename_in)
+    except:
+        logging.error('Unable to open ' + filename_in)
+
+    """
     Convert pressure levels to height levels
     """
     if (config['vertical_coord_type_in'] == 'pressure'
         and config['vertical_coord_type_out'] == 'height'):
-
-        try:
-            logging.info('Opening ' + filename_in)
-            ds = xr.open_dataset(filename_in)
-        except:
-            logging.error('Unable to open ' + filename_in)
 
         surface_geopotential, surface_pressure, \
             temperature, relative_humidity \
@@ -344,14 +350,22 @@ if __name__ == '__main__':
             surface_geopotential, surface_pressure,
             temperature, relative_humidity)
 
+    """
+    Interpolate
+    """
     ds_out = xr.Dataset()
 
     for field in config['fields']:
         logging.info(field)
+
         field_interp = vertical_interp(config,
             layer_height, ds[field])
+
         ds_out[field] = field_interp
 
+    """
+    Write dataset
+    """
     try:
         logging.info('Creating ' + filename_out)
         ds_out.to_netcdf(filename_out)
