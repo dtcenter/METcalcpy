@@ -34,6 +34,7 @@ def vertical_interp(config,
     coordinate_surfaces, field):
     """
     Interpolate field onto coordinate surfaces.
+    Linear interpolation is the only method currently implemented.
 
     Arguments:
         config (dictionary) : configuration parameters
@@ -43,7 +44,6 @@ def vertical_interp(config,
     Returns:
         field_interp (DataArray): Interpolated field
     """
-    # not yet implemented
     lev_dim = config['vertical_dim_name']
     vertical_coord = np.array(config['vertical_levels'], dtype=field.dtype)
     nlev_interp = len(vertical_coord)
@@ -70,6 +70,17 @@ def vertical_interp(config,
     field_interp.coords[lev_dim].attrs['units'] \
         = config['vertical_level_units']
     logging.debug(field_interp.coords)
+
+    for eta in vertical_coord:
+        below = (coordinate_surfaces < eta)
+        above = (coordinate_surfaces > eta)
+
+    """
+    Write fields for debugging
+    """
+    if (logging.root.level == logging.DEBUG):
+        ds_debug = xr.Dataset()
+        ds_debug.to_netcdf('vertical_interp_debug.nc')
 
     return field_interp
 
@@ -246,7 +257,7 @@ def height_from_pressure(config,
              'virtual_temperature' : virtual_temperature,
              'layer_thickness': layer_thickness,
              'layer_height': layer_height})
-        ds_debug.to_netcdf('vertical_interp_debug.nc')
+        ds_debug.to_netcdf('height_from_pressure_debug.nc')
 
     return layer_height
 
