@@ -213,10 +213,12 @@ def height_from_pressure(config,
         # logging.debug(k)
         layer_thickness.loc[{lev_dim:pressure_coord[k]}] \
             = gas_constant_gravity_ratio \
-            * 0.5 * (virtual_temperature.loc[{lev_dim:pressure_coord[k - 1]}]
-            + virtual_temperature.loc[{lev_dim:pressure_coord[k]}]) \
+            * virtual_temperature.loc[{lev_dim:pressure_coord[k]}] \
             * np.log(pressure.loc[{lev_dim:pressure_coord[k - 1]}] \
             / pressure.loc[{lev_dim:pressure_coord[k]}])
+
+            # * 0.5 * (virtual_temperature.loc[{lev_dim:pressure_coord[k - 1]}]
+            # + virtual_temperature.loc[{lev_dim:pressure_coord[k]}]) \
 
     layer_thickness = layer_thickness.fillna(0)
     layer_thickness = layer_thickness.clip(min = 0)
@@ -351,8 +353,12 @@ if __name__ == '__main__':
     Read dataset
     """
     try:
-        logging.info('Opening ' + filename_in)
-        ds = xr.open_dataset(filename_in)
+        if (filename_in.split('.')[-1] == 'grb2'):
+            logging.info('Opening GRIB2 ' + filename_in)
+            ds = xr.open_dataset(filename_in, engine='cfgrib')
+        else:
+            logging.info('Opening NetCDF ' + filename_in)
+            ds = xr.open_dataset(filename_in)
     except:
         logging.error('Unable to open ' + filename_in)
 
