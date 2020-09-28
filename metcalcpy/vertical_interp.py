@@ -369,7 +369,8 @@ if __name__ == '__main__':
     """
     Convert pressure levels to height levels
     """
-    if (config['vertical_coord_type_in'] == 'pressure'
+    if (config['height_from_pressure']
+        and config['vertical_coord_type_in'] == 'pressure'
         and config['vertical_coord_type_out'] == 'height'):
 
         surface_geopotential, surface_pressure, \
@@ -379,6 +380,10 @@ if __name__ == '__main__':
         layer_height = height_from_pressure(config,
             surface_geopotential, surface_pressure,
             temperature, relative_humidity)
+
+    else:
+
+        layer_height = ds[config['geopotential_height_name']]
 
     """
     Interpolate
