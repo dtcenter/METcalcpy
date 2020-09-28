@@ -364,6 +364,8 @@ if __name__ == '__main__':
         logging.error('Unable to open ' + filename_in)
         logging.error(sys.exc_info()[0])
 
+    logging.debug(ds)
+
     """
     Convert pressure levels to height levels
     """
