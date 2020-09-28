@@ -355,12 +355,14 @@ if __name__ == '__main__':
     try:
         if (filename_in.split('.')[-1] == 'grb2'):
             logging.info('Opening GRIB2 ' + filename_in)
-            ds = xr.open_dataset(filename_in, engine='cfgrib')
+            ds = xr.open_dataset(filename_in, engine='cfgrib',
+                backend_kwargs={'filter_by_keys':{'typeOfLevel': 'isobaricInhPa'}})
         else:
             logging.info('Opening NetCDF ' + filename_in)
             ds = xr.open_dataset(filename_in)
     except:
         logging.error('Unable to open ' + filename_in)
+        logging.error(sys.exc_info()[0])
 
     """
     Convert pressure levels to height levels
