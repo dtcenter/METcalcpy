@@ -22,6 +22,7 @@ import logging
 import yaml
 import numpy as np
 import xarray as xr # http://xarray.pydata.org/
+import netCDF4 as nc
 
 """
 Import Pint and MetPy modules
@@ -86,8 +87,11 @@ def vertical_interp(config,
         """
         if (logging.root.level == logging.DEBUG):
             ds_debug = xr.Dataset({'distances' : distances})
-            ds_debug.to_netcdf(
-                'vertical_interp_debug_' + str(int(eta)) + '.nc')
+            # ds_debug.to_netcdf(
+            #     'vertical_interp_debug_' + str(int(eta)) + '.nc')
+            ds_nc = nc.Dataset(
+                'vertical_interp_debug_' + str(int(eta)) + '.nc', 'w')
+            ds_nc.close()
 
     return field_interp
 
@@ -296,6 +300,12 @@ def read_required_fields(config, ds):
         = ds[config['relative_humidity_name']]
     return surface_geopotential, surface_pressure, \
         temperature, relative_humidity
+
+def write_dataset(ds, ds_nc):
+    """
+    Write xarray Dataset to NetCDF file
+    """
+    pass
 
 if __name__ == '__main__':
     """
