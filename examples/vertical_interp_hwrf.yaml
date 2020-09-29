@@ -13,28 +13,22 @@
 #
 # Required fields
 #
-surface_geopotential_name:
-    'PHIS'
-
-surface_pressure_name:
-    'PS'
-
-temperature_name:
-    'T'
-
-relative_humidity_name:
-    'RH'
+geopotential_height_name:
+    'gh'
 
 #
 # Field list to process
 #
 
 fields:
-    - 'QV'
-    - 'QL'
-    - 'QI'
-    - 'U'
-    - 'V'
+    - 'u'
+    - 'v'
+
+#
+# Set to compute geopotential height from pressure
+#
+height_from_pressure:
+    False
 
 #
 # Vertical coordinate information
@@ -47,7 +41,7 @@ vertical_coord_type_out:
     'height'
 
 vertical_dim_name:
-    'lev'
+    'isobaricInhPa'
 
 vertical_levels :
     - 100

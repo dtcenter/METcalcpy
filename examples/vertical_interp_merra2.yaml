@@ -37,6 +37,12 @@ fields:
     - 'V'
 
 #
+# Set to compute geopotential height from pressure
+#
+height_from_pressure:
+    True
+
+#
 # Vertical coordinate information
 #
 
