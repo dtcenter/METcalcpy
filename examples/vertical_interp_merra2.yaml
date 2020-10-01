@@ -13,17 +13,8 @@
 #
 # Required fields
 #
-surface_geopotential_name:
-    'PHIS'
-
-surface_pressure_name:
-    'PS'
-
-temperature_name:
-    'T'
-
-relative_humidity_name:
-    'RH'
+geopotential_height_name:
+    'H'
 
 #
 # Field list to process

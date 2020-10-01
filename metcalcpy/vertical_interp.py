@@ -88,12 +88,14 @@ def vertical_interp(config,
         """
         if (logging.root.level == logging.DEBUG):
             ds_debug = xr.Dataset({'distances' : distances})
-            # ds_debug.to_netcdf(
-            #     'vertical_interp_debug_' + str(int(eta)) + '.nc')
-            ds_nc = nc.Dataset(
-                'vertical_interp_debug_' + str(int(eta)) + '.nc', 'w')
-            write_dataset(ds_debug, ds_nc)
-            ds_nc.close()
+            try:
+                ds_debug.to_netcdf(
+                    'vertical_interp_debug_' + str(int(eta)) + '.nc')
+            except:
+                ds_nc = nc.Dataset(
+                    'vertical_interp_debug_' + str(int(eta)) + '.nc', 'w')
+                write_dataset(ds_debug, ds_nc)
+                ds_nc.close()
 
     return field_interp
 
@@ -367,6 +369,9 @@ if __name__ == '__main__':
         help='log file (default stdout)')
     parser.add_argument('--debug', action='store_true',
         help='set logging level to debug')
+    parser.add_argument('--debugdir', type=str,
+        default=os.path.join(os.getenv('DATA_DIR'), 'Debug'),
+        help='debug file directory (default $DATA_DIR/Debug)')
     args = parser.parse_args()
 
     """
