@@ -314,7 +314,10 @@ def write_dataset(ds, ds_nc):
         coord[:] = ds.coords[dim].values
 
     for field in ds:
-        logging.debug(field)
+        logging.debug('Creating variable ' + field)
+        var = ds_nc.createVariable(
+            field, ds[field].dtype, ds[field].dims)
+        var[:] = ds[field].values
 
 if __name__ == '__main__':
     """
