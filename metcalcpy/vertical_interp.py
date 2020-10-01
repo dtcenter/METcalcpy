@@ -317,7 +317,10 @@ def write_dataset(ds, ds_nc):
         logging.debug('Creating variable ' + field)
         var = ds_nc.createVariable(
             field, ds[field].dtype, ds[field].dims)
+        logging.debug(ds[field].attrs)
         var[:] = ds[field].values
+        for attr in ds[field].attrs:
+            logging.debug(attr)
 
 if __name__ == '__main__':
     """
@@ -424,8 +427,13 @@ if __name__ == '__main__':
     Write dataset
     """
     try:
-        logging.info('Creating ' + filename_out)
+        logging.info('Creating with xarray ' + filename_out)
         ds_out.to_netcdf(filename_out)
     except:
         logging.error('Unable to create ' + filename_out)
-
+        try:
+            logging.info('Creating with NetCDF4 ' + filename_out)
+            ds_nc = nc.Dataset(filename_out, 'w')
+            write_dataset(ds_out, ds_nc)
+        except:
+            logging.error('Unable to create ' + filename_out)
