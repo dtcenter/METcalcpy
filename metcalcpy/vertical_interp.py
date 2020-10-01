@@ -21,6 +21,7 @@ import argparse
 import logging
 import yaml
 import numpy as np
+import pandas as pd
 import xarray as xr # http://xarray.pydata.org/
 import netCDF4 as nc
 
@@ -312,6 +313,28 @@ def write_dataset(ds, ds_nc):
         coord = ds_nc.createVariable(
             dim, ds.coords[dim].dtype, (dim))
         coord[:] = ds.coords[dim].values
+
+    if 'time' in ds.coords:
+        time = pd.Timestamp(ds.coords['time'].values)
+        logging.debug(time)
+        date_int \
+            = 10000 * time.year + 100 * time.month \
+            + time.day
+        time_int \
+            = 10000 * time.hour + 100 * time.minute \
+            + time.second
+        ds_nc.time = 1000000 * date_int + time_int
+
+    if 'valid_time' in ds.coords:
+        valid_time = pd.Timestamp(ds.coords['valid_time'].values)
+        logging.debug(valid_time)
+        date_int \
+            = 10000 * valid_time.year + 100 * valid_time.month \
+            + valid_time.day
+        time_int \
+            = 10000 * valid_time.hour + 100 * valid_time.minute \
+            + valid_time.second
+        ds_nc.valid_time = 1000000 * date_int + time_int
 
     for field in ds:
         logging.debug('Creating variable ' + field)
