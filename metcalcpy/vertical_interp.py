@@ -317,10 +317,10 @@ def write_dataset(ds, ds_nc):
         logging.debug('Creating variable ' + field)
         var = ds_nc.createVariable(
             field, ds[field].dtype, ds[field].dims)
-        logging.debug(ds[field].attrs)
         var[:] = ds[field].values
         for attr in ds[field].attrs:
-            logging.debug(attr)
+            logging.debug((attr, ds[field].attrs[attr]))
+            setattr(var, attr, ds[field].attrs[attr])
 
 if __name__ == '__main__':
     """
