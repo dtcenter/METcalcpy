@@ -47,10 +47,13 @@ def vertical_interp(config,
         field_interp (DataArray): Interpolated field
     """
     lev_dim = config['vertical_dim_name']
-    vertical_coord = np.array(config['vertical_levels'], dtype=field.dtype)
-    nlev_interp = len(vertical_coord)
+    vertical_coord = field.coords[lev_dim]
+    nlev = len(vertical_coord)
 
-    logging.debug(vertical_coord)
+    vertical_levels = np.array(config['vertical_levels'], dtype=field.dtype)
+    nlev_interp = len(vertical_levels)
+
+    logging.debug(vertical_levels)
     logging.debug(coordinate_surfaces.shape)
 
     logging.debug(field.dims)
@@ -67,15 +70,16 @@ def vertical_interp(config,
     # Better way to resize vertical dim of an xarray?
     # Assuming nlev_interp < nlev for now,
     #     if nlev_interp > nlev consider pad method.
-    field_interp.coords[lev_dim] = vertical_coord 
+    field_interp.coords[lev_dim] = vertical_levels
     # set coordinate units
     field_interp.coords[lev_dim].attrs['units'] \
         = config['vertical_level_units']
     logging.debug(field_interp.coords)
 
-    for eta in vertical_coord:
+    for eta in vertical_levels:
         """
         Compute interpolation weights
+        Todo: unit conversion
         """
         weights = xr.DataArray(
             np.zeros(field.shape),
