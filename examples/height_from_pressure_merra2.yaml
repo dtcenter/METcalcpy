@@ -1,5 +1,5 @@
 #
-# Filename: vertical_interp_merra2.yaml
+# Filename: height_from_pressure_merra2.yaml
 #
 # Sample YAML configuration file for vertical_interp.py
 #
@@ -13,17 +13,8 @@
 #
 # Required fields
 #
-surface_geopotential_name:
-    'PHIS'
-
-surface_pressure_name:
-    'PS'
-
-temperature_name:
-    'T'
-
-relative_humidity_name:
-    'RH'
+geopotential_height_name:
+    'H'
 
 #
 # Field list to process
@@ -40,7 +31,7 @@ fields:
 # Set to compute geopotential height from pressure
 #
 height_from_pressure:
-    False
+    True
 
 #
 # Vertical coordinate information
