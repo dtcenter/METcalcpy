@@ -91,6 +91,7 @@ def vertical_interp(config,
             #     'vertical_interp_debug_' + str(int(eta)) + '.nc')
             ds_nc = nc.Dataset(
                 'vertical_interp_debug_' + str(int(eta)) + '.nc', 'w')
+            write_dataset(ds_debug, ds_nc)
             ds_nc.close()
 
     return field_interp
@@ -305,7 +306,15 @@ def write_dataset(ds, ds_nc):
     """
     Write xarray Dataset to NetCDF file
     """
-    pass
+    for dim in ds.dims:
+        logging.info('Creating dimension ' + dim)
+        ds_nc.createDimension(dim, len(ds.coords[dim]))
+        coord = ds_nc.createVariable(
+            dim, ds.coords[dim].dtype, (dim))
+        coord[:] = ds.coords[dim].values
+
+    for field in ds:
+        logging.debug(field)
 
 if __name__ == '__main__':
     """
