@@ -88,12 +88,12 @@ def vertical_interp(config,
         """
         if (logging.root.level == logging.DEBUG):
             ds_debug = xr.Dataset({'distances' : distances})
+            debugfile = os.path.join(args.debugdir,
+                'vertical_interp_debug_' + str(int(eta)) + '.nc')
             try:
-                ds_debug.to_netcdf(
-                    'vertical_interp_debug_' + str(int(eta)) + '.nc')
+                ds_debug.to_netcdf(debugfile)
             except:
-                ds_nc = nc.Dataset(
-                    'vertical_interp_debug_' + str(int(eta)) + '.nc', 'w')
+                ds_nc = nc.Dataset(debugfile, 'w')
                 write_dataset(ds_debug, ds_nc)
                 ds_nc.close()
 
@@ -276,7 +276,14 @@ def height_from_pressure(config,
              'virtual_temperature' : virtual_temperature,
              'layer_thickness': layer_thickness,
              'layer_height': layer_height})
-        ds_debug.to_netcdf('height_from_pressure_debug.nc')
+        debugfile = os.path.join(args.debugdir,
+            'height_from_pressure_debug.nc')
+        try:
+            ds_debug.to_netcdf(debugfile)
+        except:
+            ds_nc = nc.Dataset(debugfile, 'w')
+            write_dataset(ds_debug, ds_nc)
+            ds_nc.close()
 
     return layer_height
 
