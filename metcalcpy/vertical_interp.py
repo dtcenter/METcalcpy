@@ -49,6 +49,7 @@ def vertical_interp(config,
     lev_dim = config['vertical_dim_name']
     vertical_coord = field.coords[lev_dim]
     nlev = len(vertical_coord)
+    vertical_indices = np.arange(nlev)
 
     vertical_levels = np.array(config['vertical_levels'], dtype=field.dtype)
     nlev_interp = len(vertical_levels)
@@ -82,16 +83,27 @@ def vertical_interp(config,
         Todo: unit conversion
         """
         weights = xr.DataArray(
-            np.zeros(field.shape),
-            dims = field.dims,
-            coords = field.coords)
+           np.zeros(field.shape),
+           dims = field.dims,
+           coords = field.coords)
+
         distances = eta - coordinate_surfaces
+        above = distances < 0
+        below = distances > 0
+        distances_above = xr.where(above, np.abs(distances), 0)
+        distances_below = xr.where(below, np.abs(distances), 0)
+
+        for k in vertical_indices:
+            distances_slice = distances.loc[{lev_dim:vertical_coord[k]}]
 
         """
         Write fields for debugging
         """
         if (logging.root.level == logging.DEBUG):
-            ds_debug = xr.Dataset({'distances' : distances})
+            ds_debug = xr.Dataset(
+                {'distances' : distances,
+                 'distances_above' : distances_above,
+                 'distances_below' : distances_below})
             debugfile = os.path.join(args.debugdir,
                 'vertical_interp_debug_' + str(int(eta)) + '.nc')
             try:
