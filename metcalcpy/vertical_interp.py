@@ -90,8 +90,6 @@ def vertical_interp(config,
         distances = eta - coordinate_surfaces
         above = distances < 0
         below = distances > 0
-        distances_above = xr.where(above, np.abs(distances), 0)
-        distances_below = xr.where(below, np.abs(distances), 0)
 
         # where bottom most layer is above eta
         layer_above = above.loc[{lev_dim: vertical_coord[0]}]
@@ -101,7 +99,22 @@ def vertical_interp(config,
         for k in vertical_indices[1:]:
             layer_above = above.loc[{lev_dim:vertical_coord[k]}]
             layer_below = below.loc[{lev_dim:vertical_coord[k - 1]}]
+            # where upper layer is above and lower layer is below eta
             mask = np.logical_and(layer_above, layer_below)
+
+            # w(z_1) = 1 - (z_1 - eta) / (z_1 - z_0) =  (eta - z_0) / (z_1 - z_0)
+            weight_above = distances.loc[{lev_dim: vertical_coord[k - 1]}] \
+                / (coordinate_surfaces.loc[{lev_dim: vertical_coord[k]}]
+                 - coordinate_surfaces.loc[{lev_dim: vertical_coord[k - 1]}])
+            # w(z_0) = 1 - w_1 = (z_1 - eta) / (z_1 - z_0)
+            weight_below = 1 - weight_above
+
+            weights.loc[{lev_dim: vertical_coord[k]}] \
+                = xr.where(mask, weight_above,
+                           weights.loc[{lev_dim: vertical_coord[k]}])
+            weights.loc[{lev_dim: vertical_coord[k - 1]}] \
+                = xr.where(mask, weight_below,
+                           weights.loc[{lev_dim: vertical_coord[k - 1]}])
 
         # where top most layer is below eta
         layer_below = below.loc[{lev_dim: vertical_coord[nlev - 1]}]
@@ -114,8 +127,6 @@ def vertical_interp(config,
         if (logging.root.level == logging.DEBUG):
             ds_debug = xr.Dataset(
                 {'distances' : distances,
-                 'distances_above' : distances_above,
-                 'distances_below' : distances_below,
                  'weights' : weights})
             debugfile = os.path.join(args.debugdir,
                 'vertical_interp_debug_' + str(int(eta)) + '.nc')
