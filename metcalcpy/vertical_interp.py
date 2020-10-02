@@ -57,14 +57,35 @@ def vertical_interp(config,
     logging.debug(vertical_levels)
     logging.debug(coordinate_surfaces.shape)
 
-    logging.debug(field.dims)
     logging.debug(field.attrs)
+    logging.debug(field.dims)
+    dims_interp = list(field.dims)
+    i = dims_interp.index(lev_dim)
+    shape_interp = list(field.shape)
+    shape_slice = list(field.shape)
+    shape_interp[i] = nlev_interp
+    shape_slice.pop(i)
+    shape_interp = tuple(shape_interp)
+    shape_slice = tuple(shape_slice)
+    logging.debug(shape_slice)
 
     """
     Initialize interpolated field
     """
+    field_no_vertical = field.drop(lev_dim)
+    coords_no_vertical = field_no_vertical.coords
+    logging.debug(coords_no_vertical)
+    # coords_interp = coords_no_vertical
+    # coords_interp['lev'] = vertical_levels
+
     field_interp = xr.DataArray(
-        np.empty(field.shape),
+        np.zeros(shape_interp),
+        dims = field.dims,
+        attrs = field.attrs)
+
+    """
+    field_interp = xr.DataArray(
+        np.zeros(field.shape),
         dims = field.dims,
         coords = field.coords,
         attrs = field.attrs).isel({lev_dim : slice(None, nlev_interp)})
@@ -75,13 +96,19 @@ def vertical_interp(config,
     # set coordinate units
     field_interp.coords[lev_dim].attrs['units'] \
         = config['vertical_level_units']
-    logging.debug(field_interp.coords)
+    # find lev dim in dims
+    logging.debug(field_interp.dims)
+    # logging.debug(field_interp.coords)
+    """
 
-    for eta in vertical_levels:
+    for k_interp, eta in zip(range(nlev_interp), vertical_levels):
         """
         Compute interpolation weights
         Todo: unit conversion
         """
+
+        logging.debug((k_interp, eta))
+
         weights = xr.DataArray(
             np.zeros(field.shape),
             dims = field.dims,
@@ -96,9 +123,13 @@ def vertical_interp(config,
         weights.loc[{lev_dim: vertical_coord[0]}] \
             = xr.where(layer_above, 1, 0)
 
+        field_interp[{lev_dim: eta}] = field_interp[{lev_dim: eta}] \
+            + weights.loc[{lev_dim: vertical_coord[0]}] \
+            * field.loc[{lev_dim: vertical_coord[0]}]
+
         for k in vertical_indices[1:]:
-            layer_above = above.loc[{lev_dim:vertical_coord[k]}]
-            layer_below = below.loc[{lev_dim:vertical_coord[k - 1]}]
+            layer_above = above.loc[{lev_dim: vertical_coord[k]}]
+            layer_below = below.loc[{lev_dim: vertical_coord[k - 1]}]
             # where upper layer is above and lower layer is below eta
             mask = np.logical_and(layer_above, layer_below)
 
@@ -116,10 +147,18 @@ def vertical_interp(config,
                 = xr.where(mask, weight_below,
                            weights.loc[{lev_dim: vertical_coord[k - 1]}])
 
+            field_interp[{lev_dim: eta}] = field_interp[{lev_dim: eta}] \
+                + weights.loc[{lev_dim: vertical_coord[k]}] \
+                * field.loc[{lev_dim: vertical_coord[k]}]
+
         # where top most layer is below eta
         layer_below = below.loc[{lev_dim: vertical_coord[nlev - 1]}]
         weights.loc[{lev_dim: vertical_coord[nlev - 1]}] \
             = xr.where(layer_below, 1, 0)
+
+        field_interp[{lev_dim: eta}] = field_interp[{lev_dim: eta}] \
+            + weights.loc[{lev_dim: vertical_coord[nlev - 1]}] \
+            * field.loc[{lev_dim: vertical_coord[nlev - 1]}]
 
         """
         Write fields for debugging
