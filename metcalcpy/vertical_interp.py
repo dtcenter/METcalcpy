@@ -83,9 +83,9 @@ def vertical_interp(config,
         Todo: unit conversion
         """
         weights = xr.DataArray(
-           np.zeros(field.shape),
-           dims = field.dims,
-           coords = field.coords)
+            np.zeros(field.shape),
+            dims = field.dims,
+            coords = field.coords)
 
         distances = eta - coordinate_surfaces
         above = distances < 0
@@ -93,8 +93,20 @@ def vertical_interp(config,
         distances_above = xr.where(above, np.abs(distances), 0)
         distances_below = xr.where(below, np.abs(distances), 0)
 
-        for k in vertical_indices:
-            distances_slice = distances.loc[{lev_dim:vertical_coord[k]}]
+        # where bottom most layer is above eta
+        layer_above = above.loc[{lev_dim: vertical_coord[0]}]
+        weights.loc[{lev_dim: vertical_coord[0]}] \
+            = xr.where(layer_above, 1, 0)
+
+        for k in vertical_indices[1:]:
+            layer_above = above.loc[{lev_dim:vertical_coord[k]}]
+            layer_below = below.loc[{lev_dim:vertical_coord[k - 1]}]
+            mask = np.logical_and(layer_above, layer_below)
+
+        # where top most layer is below eta
+        layer_below = below.loc[{lev_dim: vertical_coord[nlev - 1]}]
+        weights.loc[{lev_dim: vertical_coord[nlev - 1]}] \
+            = xr.where(layer_below, 1, 0)
 
         """
         Write fields for debugging
@@ -103,7 +115,8 @@ def vertical_interp(config,
             ds_debug = xr.Dataset(
                 {'distances' : distances,
                  'distances_above' : distances_above,
-                 'distances_below' : distances_below})
+                 'distances_below' : distances_below,
+                 'weights' : weights})
             debugfile = os.path.join(args.debugdir,
                 'vertical_interp_debug_' + str(int(eta)) + '.nc')
             try:
