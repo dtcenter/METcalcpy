@@ -46,35 +46,52 @@ def vertical_interp(config,
     Returns:
         field_interp (DataArray): Interpolated field
     """
+
+    """
+    Vertical coordinates
+    """
     lev_dim = config['vertical_dim_name']
     vertical_coord = field.coords[lev_dim]
     nlev = len(vertical_coord)
     vertical_indices = np.arange(nlev)
 
+    """
+    Vertical coordinates on which to interpolate
+    """
     vertical_levels = np.array(config['vertical_levels'], dtype=field.dtype)
     nlev_interp = len(vertical_levels)
-
     logging.debug(vertical_levels)
     logging.debug(coordinate_surfaces.shape)
 
-    logging.debug(field.attrs)
-    logging.debug(field.dims)
+    """
+    Setup interpolated field shape
+    """
     dims_interp = list(field.dims)
     i = dims_interp.index(lev_dim)
     shape_interp = list(field.shape)
-    shape_slice = list(field.shape)
     shape_interp[i] = nlev_interp
-    shape_slice.pop(i)
     shape_interp = tuple(shape_interp)
+    logging.debug(shape_interp)
+
+    """
+    Setup shape and dimensions for a vertical slice
+    """
+    shape_slice = list(field.shape)
+    shape_slice.pop(i)
     shape_slice = tuple(shape_slice)
     logging.debug(shape_slice)
+    dims_slice = list(field.dims)
+    dims_slice.pop(i)
+    dims_slice = tuple(dims_slice)
+    logging.debug(dims_slice)
+
+    field_slice = field.drop(lev_dim)
+    coords_slice = field_slice.coords
+    logging.debug(coords_slice)
 
     """
     Initialize interpolated field
     """
-    field_no_vertical = field.drop(lev_dim)
-    coords_no_vertical = field_no_vertical.coords
-    logging.debug(coords_no_vertical)
     # coords_interp = coords_no_vertical
     # coords_interp['lev'] = vertical_levels
 
@@ -113,6 +130,8 @@ def vertical_interp(config,
             np.zeros(field.shape),
             dims = field.dims,
             coords = field.coords)
+
+        # field_slice =
 
         distances = eta - coordinate_surfaces
         above = distances < 0
