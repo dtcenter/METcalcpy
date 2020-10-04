@@ -122,14 +122,13 @@ def vertical_interp(fieldname, config,
         above = distances < 0
         below = distances > 0
 
+        """
+        Compute weights for linear interpolation
+        """
         # where bottom most layer is above eta
         layer_above = above.loc[{lev_dim: vertical_coord[0]}]
         weights.loc[{lev_dim: vertical_coord[0]}] \
             = xr.where(layer_above, 1, 0)
-
-        field_slice = field_slice \
-            + weights.loc[{lev_dim: vertical_coord[0]}] \
-            * field.loc[{lev_dim: vertical_coord[0]}]
 
         for k in vertical_indices[1:]:
             layer_above = above.loc[{lev_dim: vertical_coord[k]}]
@@ -151,18 +150,18 @@ def vertical_interp(fieldname, config,
                 = xr.where(mask, weight_below,
                            weights.loc[{lev_dim: vertical_coord[k - 1]}])
 
-            field_slice = field_slice \
-                + weights.loc[{lev_dim: vertical_coord[k]}] \
-                * field.loc[{lev_dim: vertical_coord[k]}]
-
         # where top most layer is below eta
         layer_below = below.loc[{lev_dim: vertical_coord[nlev - 1]}]
         weights.loc[{lev_dim: vertical_coord[nlev - 1]}] \
             = xr.where(layer_below, 1, 0)
 
-        field_slice = field_slice \
-            + weights.loc[{lev_dim: vertical_coord[nlev - 1]}] \
-            * field.loc[{lev_dim: vertical_coord[nlev - 1]}]
+        """
+        Compute weighted mean
+        """
+        for k in vertical_indices:
+            field_slice = field_slice \
+                + weights.loc[{lev_dim: vertical_coord[k]}] \
+                * field.loc[{lev_dim: vertical_coord[k]}]
 
         """
         Write fields for debugging
