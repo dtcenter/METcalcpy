@@ -67,24 +67,23 @@ def vertical_interp(config,
     Setup interpolated field shape
     """
     dims_interp = list(field.dims)
-    i = dims_interp.index(lev_dim)
+    i_lev_dim = dims_interp.index(lev_dim)
     shape_interp = list(field.shape)
-    shape_interp[i] = nlev_interp
+    shape_interp[i_lev_dim] = nlev_interp
     shape_interp = tuple(shape_interp)
     logging.debug(shape_interp)
 
     """
-    Setup shape and dimensions for a vertical slice
+    Setup dimensions and shape for a vertical slice
     """
-    shape_slice = list(field.shape)
-    shape_slice.pop(i)
-    shape_slice = tuple(shape_slice)
-    logging.debug(shape_slice)
     dims_slice = list(field.dims)
-    dims_slice.pop(i)
+    dims_slice.pop(i_lev_dim)
     dims_slice = tuple(dims_slice)
     logging.debug(dims_slice)
-
+    shape_slice = list(field.shape)
+    shape_slice.pop(i_lev_dim)
+    shape_slice = tuple(shape_slice)
+    logging.debug(shape_slice)
     field_slice = field.drop(lev_dim)
     coords_slice = field_slice.coords
     logging.debug(coords_slice)
@@ -92,31 +91,10 @@ def vertical_interp(config,
     """
     Initialize interpolated field
     """
-    # coords_interp = coords_no_vertical
-    # coords_interp['lev'] = vertical_levels
-
     field_interp = xr.DataArray(
         np.zeros(shape_interp),
         dims = field.dims,
         attrs = field.attrs)
-
-    """
-    field_interp = xr.DataArray(
-        np.zeros(field.shape),
-        dims = field.dims,
-        coords = field.coords,
-        attrs = field.attrs).isel({lev_dim : slice(None, nlev_interp)})
-    # Better way to resize vertical dim of an xarray?
-    # Assuming nlev_interp < nlev for now,
-    #     if nlev_interp > nlev consider pad method.
-    field_interp.coords[lev_dim] = vertical_levels
-    # set coordinate units
-    field_interp.coords[lev_dim].attrs['units'] \
-        = config['vertical_level_units']
-    # find lev dim in dims
-    logging.debug(field_interp.dims)
-    # logging.debug(field_interp.coords)
-    """
 
     for k_interp, eta in zip(range(nlev_interp), vertical_levels):
         """
@@ -131,7 +109,11 @@ def vertical_interp(config,
             dims = field.dims,
             coords = field.coords)
 
-        # field_slice =
+        field_slice = xr.DataArray(
+            np.zeros(field_slice.shape),
+            dims = field_slice.dims,
+            coords = field_slice.coords,
+        )
 
         distances = eta - coordinate_surfaces
         above = distances < 0
@@ -142,7 +124,7 @@ def vertical_interp(config,
         weights.loc[{lev_dim: vertical_coord[0]}] \
             = xr.where(layer_above, 1, 0)
 
-        field_interp[{lev_dim: eta}] = field_interp[{lev_dim: eta}] \
+        field_slice = field_slice \
             + weights.loc[{lev_dim: vertical_coord[0]}] \
             * field.loc[{lev_dim: vertical_coord[0]}]
 
@@ -166,18 +148,18 @@ def vertical_interp(config,
                 = xr.where(mask, weight_below,
                            weights.loc[{lev_dim: vertical_coord[k - 1]}])
 
-            field_interp[{lev_dim: eta}] = field_interp[{lev_dim: eta}] \
-                + weights.loc[{lev_dim: vertical_coord[k]}] \
-                * field.loc[{lev_dim: vertical_coord[k]}]
+            # field_slice = field_slice \
+            #     + weights.loc[{lev_dim: vertical_coord[k]}] \
+            #     * field.loc[{lev_dim: vertical_coord[k]}]
 
         # where top most layer is below eta
         layer_below = below.loc[{lev_dim: vertical_coord[nlev - 1]}]
         weights.loc[{lev_dim: vertical_coord[nlev - 1]}] \
             = xr.where(layer_below, 1, 0)
 
-        field_interp[{lev_dim: eta}] = field_interp[{lev_dim: eta}] \
-            + weights.loc[{lev_dim: vertical_coord[nlev - 1]}] \
-            * field.loc[{lev_dim: vertical_coord[nlev - 1]}]
+        # field_slice = field_slice \
+        #     + weights.loc[{lev_dim: vertical_coord[nlev - 1]}] \
+        #     * field.loc[{lev_dim: vertical_coord[nlev - 1]}]
 
         """
         Write fields for debugging
