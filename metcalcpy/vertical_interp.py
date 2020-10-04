@@ -110,9 +110,9 @@ def vertical_interp(config,
             coords = field.coords)
 
         field_slice = xr.DataArray(
-            np.zeros(field_slice.shape),
-            dims = field_slice.dims,
-            coords = field_slice.coords,
+            np.zeros(shape_slice),
+            dims = dims_slice,
+            coords = coords_slice
         )
 
         distances = eta - coordinate_surfaces
@@ -148,18 +148,18 @@ def vertical_interp(config,
                 = xr.where(mask, weight_below,
                            weights.loc[{lev_dim: vertical_coord[k - 1]}])
 
-            # field_slice = field_slice \
-            #     + weights.loc[{lev_dim: vertical_coord[k]}] \
-            #     * field.loc[{lev_dim: vertical_coord[k]}]
+            field_slice = field_slice \
+                + weights.loc[{lev_dim: vertical_coord[k]}] \
+                * field.loc[{lev_dim: vertical_coord[k]}]
 
         # where top most layer is below eta
         layer_below = below.loc[{lev_dim: vertical_coord[nlev - 1]}]
         weights.loc[{lev_dim: vertical_coord[nlev - 1]}] \
             = xr.where(layer_below, 1, 0)
 
-        # field_slice = field_slice \
-        #     + weights.loc[{lev_dim: vertical_coord[nlev - 1]}] \
-        #     * field.loc[{lev_dim: vertical_coord[nlev - 1]}]
+        field_slice = field_slice \
+            + weights.loc[{lev_dim: vertical_coord[nlev - 1]}] \
+            * field.loc[{lev_dim: vertical_coord[nlev - 1]}]
 
         """
         Write fields for debugging
@@ -167,7 +167,8 @@ def vertical_interp(config,
         if (logging.root.level == logging.DEBUG):
             ds_debug = xr.Dataset(
                 {'distances' : distances,
-                 'weights' : weights})
+                 'weights' : weights,
+                 'field_slice' : field_slice})
             debugfile = os.path.join(args.debugdir,
                 'vertical_interp_debug_' + str(int(eta)) + '.nc')
             try:
