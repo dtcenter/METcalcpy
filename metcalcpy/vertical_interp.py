@@ -32,13 +32,14 @@ Import Pint and MetPy modules
 import pint
 from metpy import calc, constants
 
-def vertical_interp(config,
+def vertical_interp(fieldname, config,
     coordinate_surfaces, field):
     """
     Interpolate field onto coordinate surfaces.
     Linear interpolation is the only method currently implemented.
 
     Arguments:
+        fieldname (string) : short name of field
         config (dictionary) : configuration parameters
         coordinate_surfaces (DataArray): coordinate surfaces
         field (DataArray): field
@@ -46,6 +47,8 @@ def vertical_interp(config,
     Returns:
         field_interp (DataArray): Interpolated field
     """
+    logging.info(fieldname)
+    logging.debug(field.attrs)
 
     """
     Vertical coordinates
@@ -112,8 +115,8 @@ def vertical_interp(config,
         field_slice = xr.DataArray(
             np.zeros(shape_slice),
             dims = dims_slice,
-            coords = coords_slice
-        )
+            coords = coords_slice,
+            attrs = field.attrs)
 
         distances = eta - coordinate_surfaces
         above = distances < 0
@@ -168,9 +171,10 @@ def vertical_interp(config,
             ds_debug = xr.Dataset(
                 {'distances' : distances,
                  'weights' : weights,
-                 'field_slice' : field_slice})
+                 fieldname : field_slice})
             debugfile = os.path.join(args.debugdir,
-                'vertical_interp_debug_' + str(int(eta)) + '.nc')
+                'vertical_interp_debug_'
+                + fieldname + '_' + str(int(eta)) + '.nc')
             try:
                 ds_debug.to_netcdf(debugfile)
             except:
@@ -531,13 +535,12 @@ if __name__ == '__main__':
     """
     ds_out = xr.Dataset()
 
-    for field in config['fields']:
-        logging.info(field)
+    for fieldname in config['fields']:
 
-        field_interp = vertical_interp(config,
-            layer_height, ds[field])
+        field_interp = vertical_interp(fieldname, config,
+            layer_height, ds[fieldname])
 
-        ds_out[field] = field_interp
+        ds_out[fieldname] = field_interp
 
     """
     Write dataset
