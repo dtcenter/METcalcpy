@@ -112,12 +112,6 @@ def vertical_interp(fieldname, config,
             dims = field.dims,
             coords = field.coords)
 
-        field_slice = xr.DataArray(
-            np.zeros(shape_slice),
-            dims = dims_slice,
-            coords = coords_slice,
-            attrs = field.attrs)
-
         distances = eta - coordinate_surfaces
         above = distances < 0
         below = distances > 0
@@ -158,12 +152,28 @@ def vertical_interp(fieldname, config,
         """
         Compute weighted sum
         """
+        field_slice = xr.DataArray(
+            np.zeros(shape_slice),
+            dims = dims_slice,
+            coords = coords_slice,
+            attrs = field.attrs)
+
+        counts = xr.DataArray(
+            np.zeros(shape_slice),
+            dims = dims_slice,
+            coords = coords_slice,
+            attrs = field.attrs)
+
         for k in vertical_indices:
             weights_k = weights.loc[{lev_dim: vertical_coord[k]}]
             field_k = field.loc[{lev_dim: vertical_coord[k]}]
             mask = weights_k > 0
             field_slice = xr.where(mask,
                 field_slice + weights_k * field_k, field_slice)
+            counts = xr.where(mask, counts + 1, counts)
+
+        mask = counts > 0
+        field_slice = xr.where(mask, field_slice, np.nan)
 
         """
         Write fields for debugging
