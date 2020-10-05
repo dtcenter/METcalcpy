@@ -156,19 +156,14 @@ def vertical_interp(fieldname, config,
             = xr.where(layer_below, 1, 0)
 
         """
-        Set field NaNs to 0 when weight is 0
-            so that those NaNs to not contribute to weighted sum
-        """
-        mask = np.logical_and(np.isnan(field), weights == 0)
-        field = xr.where(mask, 0, field)
-
-        """
         Compute weighted sum
         """
         for k in vertical_indices:
-            field_slice = field_slice \
-                + weights.loc[{lev_dim: vertical_coord[k]}] \
-                * field.loc[{lev_dim: vertical_coord[k]}]
+            weights_k = weights.loc[{lev_dim: vertical_coord[k]}]
+            field_k = field.loc[{lev_dim: vertical_coord[k]}]
+            mask = weights_k > 0
+            field_slice = xr.where(mask,
+                field_slice + weights_k * field_k, field_slice)
 
         """
         Write fields for debugging
