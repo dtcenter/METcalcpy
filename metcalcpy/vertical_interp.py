@@ -156,7 +156,14 @@ def vertical_interp(fieldname, config,
             = xr.where(layer_below, 1, 0)
 
         """
-        Compute weighted mean
+        Set field NaNs to 0 when weight is 0
+            so that those NaNs to not contribute to weighted sum
+        """
+        mask = np.logical_and(np.isnan(field), weights == 0)
+        field = xr.where(mask, 0, field)
+
+        """
+        Compute weighted sum
         """
         for k in vertical_indices:
             field_slice = field_slice \
