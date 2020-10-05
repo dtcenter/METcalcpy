@@ -2,13 +2,14 @@
 """
 Piecewise linear function class.
 
-Created on Thu Mar  5 08:26:59 2020
-Last modified Mon Mar 30 11:21:30 2020
-@author: campbell
 """
 
 import numpy as np
 import matplotlib.pyplot as plt
+
+__author__ = 'Bill Campbell (NRL)'
+__version__ = '0.1.0'
+__email__ = 'met_help@ucar.edu'
 
 
 class IncompatibleLengths(Exception):

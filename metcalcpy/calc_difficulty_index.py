@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """
+Program Name: calc_difficulty_index.py
 
 Forecast decision difficulty indices.
 
@@ -8,23 +9,24 @@ definite quantities such as wind speed and wave height.
 
 Created on Thu Feb 20 16:23:06 2020
 Last modified on Mon Mar 30 11:25:30 2020
-@author: campbell
 """
 
 import numpy as np
 import matplotlib.pyplot as plt
-from .piecewise_linear.py import PiecewiseLinear as plin
-import mycolormaps as mcmap
+from piecewise_linear import PiecewiseLinear as plin
+
+__author__ = 'Bill Campbell (NRL) and Lindsay Blank (NCAR)'
+__version__ = '0.1.0'
+__email__ = 'met_help@ucar.edu'
 
 # Enforce positive definiteness of quantities such as standard deviations
 EPS = np.finfo(np.float32).eps
 # Only allow 2D fields for now
 FIELD_DIM = 2
 
-def _input_check_v4567(sigmaij, muij, threshold, fieldijn,
-                       sigma_over_mu_ref, under_factor):
+def _input_check(sigmaij, muij, threshold, fieldijn, sigma_over_mu_ref, under_factor):
     """
-    Check for valid input to index_v456.
+    Check for valid input to _difficulty_index.
 
     Parameters
     ----------
@@ -46,8 +48,8 @@ def _input_check_v4567(sigmaij, muij, threshold, fieldijn,
     None.
 
     """
-    assert isinstance(threshold, (int, float,
-                                  np.int32, np.float32))
+
+    assert isinstance(threshold, (int, float, np.int32, np.float32))
     assert np.ndim(sigmaij) == FIELD_DIM
     assert np.all(sigmaij) >= EPS
     fieldshape = np.shape(fieldijn)
@@ -62,13 +64,9 @@ def _input_check_v4567(sigmaij, muij, threshold, fieldijn,
     assert 0.0 <= under_factor <= 1.0
 
 
-def _index_v4567(sigmaij, muij, threshold, fieldijn,
-                 Aplin, sigma_over_mu_ref=EPS, under_factor=0.5):
+def _difficuly_index(sigmaij, muij, threshold, fieldijn, Aplin, sigma_over_mu_ref=EPS, under_factor=0.5):
     """
-    Versions 4, 5, 6, 6.1, and 7 of forecast difficulty index.
-
-    Main difference between versions is the envelope function Aplin.
-    Secondary difference between 4 and the others is the under_factor
+    Calculates public version (v7) of forecast difficulty index.
     The threshold terms all penalize equal (or slightly unequal) spread.
 
     Parameters
@@ -97,18 +95,18 @@ def _index_v4567(sigmaij, muij, threshold, fieldijn,
 
     """
     # Check for valid input
-    _input_check_v4567(sigmaij, muij, threshold, fieldijn,
-                       sigma_over_mu_ref, under_factor)
+    _input_check(sigmaij, muij, threshold, fieldijn, sigma_over_mu_ref, under_factor)
 
     # Variance term in range 0 to 1
     sigma_over_mu = sigmaij / muij
     sigma_over_mu_max = np.nanmax(sigma_over_mu)
+    
     # Force reference value to be greater than current max of sigmaij / muij
     sigma_over_mu_ref = np.nanmax([sigma_over_mu_ref,
                                    sigma_over_mu_max])
     variance_term = sigma_over_mu / sigma_over_mu_ref
 
-    # Depends on under_factor, which is 0.5 except for v4
+    # Depends on under_factor.
     under_threshold_count =\
         np.ma.masked_greater_equal(fieldijn, threshold).count(axis=-1)
     nmembers = np.shape(fieldijn)[-1]
@@ -130,8 +128,8 @@ def _index_v4567(sigmaij, muij, threshold, fieldijn,
 def forecast_difficulty(sigmaij, muij, threshold, fieldijn,
                         Aplin=None, sigma_over_mu_ref=EPS):
     """
-    Calls private function _index_v4567,
-    version 7 of forecast difficulty index.
+    Calls private function _index, 
+    to calculate the public version (v7) of forecast difficulty index.
 
     Parameters
     ----------
@@ -157,29 +155,22 @@ def forecast_difficulty(sigmaij, muij, threshold, fieldijn,
 
     """
     if Aplin is None:
-        # Envelope for version 6.1, the default
+        # Envelope for public version (v7) the default
         xunits = 'feet'
-        A6_1_name = "A6_1"
-        A6_1_left = 0.0
-        A6_1_right = 0.0
-        A6_1_xlist = [3.0, 9.0, 12.0, 21.0]
-        A6_1_ylist = [0.0, 1.5, 1.5, 0.0]
-        Aplin =\
-            plin.PiecewiseLinear(A6_1_xlist, A6_1_ylist, xunits=xunits,
-                                 right=A6_1_right, left=A6_1_left,
-                                 name=A6_1_name)
+        A7_name = "A7"
+        A7_left = 0.0
+        A7_right = 0.0
+        A7_xlist = [3.0, 9.0, 12.0, 21.0]
+        A7_ylist = [0.0, 1.0, 1.0, 0.0] 
+        Aplin = plin(A7_xlist, A7_ylist, xunits=xunits,
+                right=A7_right, left=A7_left, name=A7_name)
 
-    dij = _index_v4567(sigmaij, muij, threshold, fieldijn,
+    dij = _difficuly_index(sigmaij, muij, threshold, fieldijn,
                        Aplin, sigma_over_mu_ref)
 
     return dij
 
-# Taking out references to plotting in main.
-# Then test dependencies 
-# Then print out arrays
-# Then test
-# Then get rid of main
-
+# Get rid of main
 def main():
     
     
@@ -224,15 +215,16 @@ def main():
     A7_right = 0.0
     A7_xlist = [3.0, 9.0, 12.0, 21.0]
     A7_ylist = [0.0, 1.0, 1.0, 0.0]
-    A7 = plin.PiecewiseLinear(A7_xlist, A7_ylist, xunits=xunits,
+    A7 = plin(A7_xlist, A7_ylist, xunits=xunits,
                               right=A7_right, left=A7_left, name=A7_name)
-    dijv7 = _index_v4567(sigmaij, muij, threshold, fieldijn,
+    dijv7 = _difficuly_index(sigmaij, muij, threshold, fieldijn,
                          A7, sigma_over_mu_ref=EPS)
     
     # Test public forecast_difficulty, which should be the same as version 7
     dijfd = forecast_difficulty(sigmaij, muij, threshold, fieldijn, Aplin=A7,
                                 sigma_over_mu_ref=EPS)
 
+    print(dijfd)
 
 
 if __name__ == "__main__":
