@@ -22,7 +22,7 @@ import logging
 import yaml
 import numpy as np
 import pandas as pd
-import xarray as xr # http://xarray.pydata.org/
+import xarray as xr  # http://xarray.pydata.org/
 import netCDF4 as nc
 
 """
@@ -30,7 +30,9 @@ Import Pint and MetPy modules
     https://unidata.github.io/MetPy/
 """
 import pint
-from metpy import calc, constants
+import metpy.calc as calc
+import metpy.constants as constants
+
 
 def vertical_interp(fieldname, config,
     coordinate_surfaces, field):
@@ -67,14 +69,20 @@ def vertical_interp(fieldname, config,
     logging.debug(coordinate_surfaces.shape)
 
     """
-    Setup interpolated field shape
+    Setup interpolated field shape and coordinates
     """
     dims_interp = list(field.dims)
+    logging.debug(('dims_interp:', dims_interp))
     i_lev_dim = dims_interp.index(lev_dim)
     shape_interp = list(field.shape)
     shape_interp[i_lev_dim] = nlev_interp
     shape_interp = tuple(shape_interp)
     logging.debug(shape_interp)
+    coord_names_interp = list(field.coords)
+    # logging.debug(('coord_names_interp:', coord_names_interp))
+    coord_arrays_interp = [field.coords[coord] for coord in field.coords]
+    coord_arrays_interp[coord_names_interp.index(lev_dim)] = vertical_levels
+    # logging.debug(('coord_arrays_interp:', coord_arrays_interp))
 
     """
     Setup dimensions and shape for a vertical slice
@@ -96,8 +104,8 @@ def vertical_interp(fieldname, config,
     """
     field_interp = xr.DataArray(
         np.zeros(shape_interp),
-        dims = field.dims,
-        attrs = field.attrs)
+        dims=dims_interp,
+        attrs=field.attrs)
 
     for k_interp, eta in zip(range(nlev_interp), vertical_levels):
         """
@@ -109,8 +117,8 @@ def vertical_interp(fieldname, config,
 
         weights = xr.DataArray(
             np.zeros(field.shape),
-            dims = field.dims,
-            coords = field.coords)
+            dims=field.dims,
+            coords=field.coords)
 
         distances = eta - coordinate_surfaces
         above = distances < 0
@@ -133,7 +141,7 @@ def vertical_interp(fieldname, config,
             # w(z_1) = 1 - (z_1 - eta) / (z_1 - z_0) =  (eta - z_0) / (z_1 - z_0)
             weight_above = distances.loc[{lev_dim: vertical_coord[k - 1]}] \
                 / (coordinate_surfaces.loc[{lev_dim: vertical_coord[k]}]
-                 - coordinate_surfaces.loc[{lev_dim: vertical_coord[k - 1]}])
+                    - coordinate_surfaces.loc[{lev_dim: vertical_coord[k - 1]}])
             # w(z_0) = 1 - w_1 = (z_1 - eta) / (z_1 - z_0)
             weight_below = 1 - weight_above
 
@@ -154,22 +162,22 @@ def vertical_interp(fieldname, config,
         """
         field_slice = xr.DataArray(
             np.zeros(shape_slice),
-            dims = dims_slice,
-            coords = coords_slice,
-            attrs = field.attrs)
+            dims=dims_slice,
+            coords=coords_slice,
+            attrs=field.attrs)
 
         counts = xr.DataArray(
             np.zeros(shape_slice),
-            dims = dims_slice,
-            coords = coords_slice,
-            attrs = field.attrs)
+            dims=dims_slice,
+            coords=coords_slice,
+            attrs=field.attrs)
 
         for k in vertical_indices:
             weights_k = weights.loc[{lev_dim: vertical_coord[k]}]
             field_k = field.loc[{lev_dim: vertical_coord[k]}]
             mask = weights_k > 0
             field_slice = xr.where(mask,
-                field_slice + weights_k * field_k, field_slice)
+                                   field_slice + weights_k * field_k, field_slice)
             counts = xr.where(mask, counts + 1, counts)
 
         mask = counts > 0
@@ -178,11 +186,11 @@ def vertical_interp(fieldname, config,
         """
         Write fields for debugging
         """
-        if (logging.root.level == logging.DEBUG):
+        if logging.root.level == logging.DEBUG:
             ds_debug = xr.Dataset(
-                {'distances' : distances,
-                 'weights' : weights,
-                 fieldname : field_slice})
+                {'distances': distances,
+                 'weights': weights,
+                 fieldname: field_slice})
             debugfile = os.path.join(args.debugdir,
                 'vertical_interp_debug_'
                 + fieldname + '_' + str(int(eta)) + '.nc')
@@ -194,6 +202,7 @@ def vertical_interp(fieldname, config,
                 ds_nc.close()
 
     return field_interp
+
 
 def height_from_pressure(config,
     surface_geopotential, surface_pressure,
