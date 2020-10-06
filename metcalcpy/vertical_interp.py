@@ -191,9 +191,8 @@ def vertical_interp(fieldname, config,
                 {'distances': distances,
                  'weights': weights,
                  fieldname: field_slice})
-            debugfile = os.path.join(args.debugdir,
-                'vertical_interp_debug_'
-                + fieldname + '_' + str(int(eta)) + '.nc')
+            debugfile = os.path.join(args.debugdir, 'vertical_interp_debug_'
+                                     + fieldname + '_' + str(int(eta)) + '.nc')
             try:
                 ds_debug.to_netcdf(debugfile)
             except:
@@ -229,9 +228,9 @@ def height_from_pressure(config,
     """
     surface_height = xr.DataArray(
         surface_geopotential / constants.earth_gravity.to_base_units(),
-        dims = surface_geopotential.dims,
-        coords = surface_geopotential.coords,
-        attrs = {'long_name': 'surface geopotential height',
+        dims=surface_geopotential.dims,
+        coords=surface_geopotential.coords,
+        attrs={'long_name': 'surface geopotential height',
                  'units': 'meter'})
 
     """
@@ -251,10 +250,10 @@ def height_from_pressure(config,
         np.empty(temperature.shape),
         dims=temperature.dims,
         coords=temperature.coords,
-        attrs={'long_name' : 'pressure',
-               'units' : pressure_coord.attrs['units']})
+        attrs={'long_name': 'pressure',
+               'units': pressure_coord.attrs['units']})
     for p in pressure_coord:
-        pressure.loc[{lev_dim:p}] = p
+        pressure.loc[{lev_dim: p}] = p
 
     """
     Compute mixing ratio
@@ -263,20 +262,20 @@ def height_from_pressure(config,
         = xr.DataArray(
             calc.mixing_ratio_from_relative_humidity(
                 relative_humidity, temperature, pressure),
-        dims=temperature.dims,
-        coords=temperature.coords,
-        attrs={'long_name' : 'mixing ratio'})
+            dims=temperature.dims,
+            coords=temperature.coords,
+            attrs={'long_name': 'mixing ratio'})
 
     """
     Compute virtual temperature
     """
     virtual_temperature \
         = xr.DataArray(
-        calc.virtual_temperature(temperature, mixing_ratio),
-    dims=temperature.dims,
-    coords=temperature.coords,
-    attrs={'long_name' : 'virtual temperature',
-           'units' : temperature.attrs['units']})
+            calc.virtual_temperature(temperature, mixing_ratio),
+            dims=temperature.dims,
+            coords=temperature.coords,
+            attrs={'long_name': 'virtual temperature',
+                   'units': temperature.attrs['units']})
 
     """
     Compute layer thickness
@@ -285,7 +284,7 @@ def height_from_pressure(config,
     <T_v> = integral_p_2^p_1 T_v(p) (dp / p) / log(p_1 / p_2)
     """
     gas_constant_gravity_ratio \
-        = (constants.dry_air_gas_constant \
+        = (constants.dry_air_gas_constant
         / constants.earth_gravity).to_base_units()
     logging.debug(gas_constant_gravity_ratio)
     logging.debug(surface_pressure.attrs['units'])
@@ -300,41 +299,38 @@ def height_from_pressure(config,
         np.empty(temperature.shape),
         dims=temperature.dims,
         coords=temperature.coords,
-        attrs={'long_name' : 'layer thickness',
-               'units' : 'meter'})
+        attrs={'long_name': 'layer thickness',
+               'units': 'meter'})
 
     surface_mask = xr.DataArray(
         np.empty(temperature.shape, dtype=np.bool),
         dims=temperature.dims,
         coords=temperature.coords,
-        attrs={'long_name' : 'surface mask'})
+        attrs={'long_name': 'surface mask'})
 
     layer_height = xr.DataArray(
         np.empty(temperature.shape),
         dims=temperature.dims,
         coords=temperature.coords,
-        attrs={'long_name' : 'layer height',
-               'units' : 'meter'})
+        attrs={'long_name': 'layer height',
+               'units': 'meter'})
 
-    layer_thickness.loc[{lev_dim:pressure_coord[0]}] \
+    layer_thickness.loc[{lev_dim: pressure_coord[0]}] \
         = gas_constant_gravity_ratio \
-        * virtual_temperature.loc[{lev_dim:pressure_coord[0]}] \
+        * virtual_temperature.loc[{lev_dim: pressure_coord[0]}] \
         * np.log(pressure_convert * surface_pressure
-                 / pressure.loc[{lev_dim:pressure_coord[0]}])
+                 / pressure.loc[{lev_dim: pressure_coord[0]}])
 
     for k in pressure_indices[1:]:
         # logging.debug(k)
         layer_thickness.loc[{lev_dim:pressure_coord[k]}] \
             = gas_constant_gravity_ratio \
-            * virtual_temperature.loc[{lev_dim:pressure_coord[k]}] \
-            * np.log(pressure.loc[{lev_dim:pressure_coord[k - 1]}] \
-            / pressure.loc[{lev_dim:pressure_coord[k]}])
-
-            # * 0.5 * (virtual_temperature.loc[{lev_dim:pressure_coord[k - 1]}]
-            # + virtual_temperature.loc[{lev_dim:pressure_coord[k]}]) \
+            * virtual_temperature.loc[{lev_dim: pressure_coord[k]}] \
+            * np.log(pressure.loc[{lev_dim: pressure_coord[k - 1]}] \
+            / pressure.loc[{lev_dim: pressure_coord[k]}])
 
     layer_thickness = layer_thickness.fillna(0)
-    layer_thickness = layer_thickness.clip(min = 0)
+    layer_thickness = layer_thickness.clip(min=0)
 
     """
     Compute layer height and surface mask
@@ -345,7 +341,7 @@ def height_from_pressure(config,
         = pressure.loc[{lev_dim: pressure_coord[0]}] \
         < pressure_convert * surface_pressure
 
-    layer_height.loc[{lev_dim:pressure_coord[0]}] \
+    layer_height.loc[{lev_dim: pressure_coord[0]}] \
         = xr.where(surface_mask.loc[{lev_dim: pressure_coord[0]}],
             surface_height + layer_thickness.loc[{lev_dim: pressure_coord[0]}],
             np.nan)
@@ -359,7 +355,7 @@ def height_from_pressure(config,
             pressure.loc[{lev_dim: pressure_coord[k]}]
             < pressure_convert * surface_pressure)
 
-        layer_height.loc[{lev_dim:pressure_coord[k]}] \
+        layer_height.loc[{lev_dim: pressure_coord[k]}] \
             = xr.where(surface_mask.loc[{lev_dim: pressure_coord[k]}],
                 surface_height + layer_thickness.loc[{lev_dim: pressure_coord[k]}],
                 layer_height.loc[{lev_dim: pressure_coord[k - 1]}]
@@ -370,15 +366,15 @@ def height_from_pressure(config,
     Approximate layer heights
         800 hPa ~ 2 km, 500 hPa ~ 6 km, 200 hPa ~ 12 km
     """
-    if (logging.root.level == logging.DEBUG):
+    if logging.root.level == logging.DEBUG:
         ds_debug = xr.Dataset(
-            {'surface_geopotential' : surface_geopotential,
-             'surface_height' : surface_height,
-             'surface_pressure' : surface_pressure,
-             'surface_mask' : surface_mask,
-             'pressure' : pressure,
-             'mixing_ratio' : mixing_ratio,
-             'virtual_temperature' : virtual_temperature,
+            {'surface_geopotential': surface_geopotential,
+             'surface_height': surface_height,
+             'surface_pressure': surface_pressure,
+             'surface_mask': surface_mask,
+             'pressure': pressure,
+             'mixing_ratio': mixing_ratio,
+             'virtual_temperature': virtual_temperature,
              'layer_thickness': layer_thickness,
              'layer_height': layer_height})
         debugfile = os.path.join(args.debugdir,
@@ -416,6 +412,7 @@ def read_required_fields(config, ds):
         = ds[config['relative_humidity_name']]
     return surface_geopotential, surface_pressure, \
         temperature, relative_humidity
+
 
 def write_dataset(ds, ds_nc):
     """
@@ -458,6 +455,7 @@ def write_dataset(ds, ds_nc):
         for attr in ds[field].attrs:
             logging.debug((attr, ds[field].attrs[attr]))
             setattr(var, attr, ds[field].attrs[attr])
+
 
 if __name__ == '__main__':
     """
@@ -518,10 +516,10 @@ if __name__ == '__main__':
     Read dataset
     """
     try:
-        if (filename_in.split('.')[-1] == 'grb2'):
+        if filename_in.split('.')[-1] == 'grb2':
             logging.info('Opening GRIB2 ' + filename_in)
             ds = xr.open_dataset(filename_in, engine='cfgrib',
-                backend_kwargs={'filter_by_keys':{'typeOfLevel': 'isobaricInhPa'}})
+                backend_kwargs={'filter_by_keys': {'typeOfLevel': 'isobaricInhPa'}})
         else:
             logging.info('Opening NetCDF ' + filename_in)
             ds = xr.open_dataset(filename_in)
@@ -540,7 +538,7 @@ if __name__ == '__main__':
 
         surface_geopotential, surface_pressure, \
             temperature, relative_humidity \
-                = read_required_fields(config, ds)
+            = read_required_fields(config, ds)
 
         layer_height = height_from_pressure(config,
             surface_geopotential, surface_pressure,
