@@ -183,6 +183,8 @@ def vertical_interp(fieldname, config,
         mask = counts > 0
         field_slice = xr.where(mask, field_slice, np.nan)
 
+        field_interp[dict(lev=k_interp)] = field_slice
+
         """
         Write fields for debugging
         """
@@ -523,11 +525,11 @@ if __name__ == '__main__':
         else:
             logging.info('Opening NetCDF ' + filename_in)
             ds = xr.open_dataset(filename_in)
+        logging.debug(ds)
     except:
+        ds = xr.Dataset()
         logging.error('Unable to open ' + filename_in)
         logging.error(sys.exc_info()[0])
-
-    logging.debug(ds)
 
     """
     Convert pressure levels to height levels
