@@ -80,9 +80,9 @@ def vertical_interp(fieldname, config,
     logging.debug(shape_interp)
     coord_names_interp = list(field.coords)
     # logging.debug(('coord_names_interp:', coord_names_interp))
-    coord_arrays_interp = [field.coords[coord] for coord in field.coords]
+    coord_arrays_interp = [field.coords[dim] for dim in dims_interp]
     coord_arrays_interp[coord_names_interp.index(lev_dim)] = vertical_levels
-    # logging.debug(('coord_arrays_interp:', coord_arrays_interp))
+    logging.debug(('coord_arrays_interp:', coord_arrays_interp))
 
     """
     Setup dimensions and shape for a vertical slice
@@ -105,6 +105,7 @@ def vertical_interp(fieldname, config,
     field_interp = xr.DataArray(
         np.zeros(shape_interp),
         dims=dims_interp,
+        # coords=coord_arrays_interp,
         attrs=field.attrs)
 
     for k_interp, eta in zip(range(nlev_interp), vertical_levels):
@@ -183,7 +184,9 @@ def vertical_interp(fieldname, config,
         mask = counts > 0
         field_slice = xr.where(mask, field_slice, np.nan)
 
-        field_interp[dict(lev=k_interp)] = field_slice
+        # field_interp[dict(isobaricInhPa=k_interp)] = field_slice
+        # field_interp[dict(lev=k_interp)] = field_slice
+        field_interp[{lev_dim: k_interp}] = field_slice
 
         """
         Write fields for debugging
