@@ -11,6 +11,12 @@
 #
 
 #
+# Set to compute geopotential height from pressure
+#
+height_from_pressure:
+    False
+
+#
 # Required fields
 #
 geopotential_height_name:
@@ -26,12 +32,6 @@ fields:
     - 'QI'
     - 'U'
     - 'V'
-
-#
-# Set to compute geopotential height from pressure
-#
-height_from_pressure:
-    False
 
 #
 # Vertical coordinate information
