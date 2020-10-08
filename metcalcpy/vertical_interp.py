@@ -72,14 +72,14 @@ def vertical_interp(fieldname, config,
     Setup interpolated field shape and coordinates
     """
     dims_interp = list(field.dims)
-    logging.debug(('dims_interp:', dims_interp))
     i_lev_dim = dims_interp.index(lev_dim)
+    logging.debug(('dims_interp:', dims_interp))
     shape_interp = list(field.shape)
     shape_interp[i_lev_dim] = nlev_interp
     shape_interp = tuple(shape_interp)
     logging.debug(shape_interp)
-    coord_names_interp = list(field.coords)
     coord_arrays_interp = [field.coords[dim] for dim in dims_interp]
+    dims_interp[i_lev_dim] = 'lev'
     coord_arrays_interp[i_lev_dim] = vertical_levels
     coords_interp = list(zip(dims_interp, coord_arrays_interp))
     logging.debug('\n\n')
@@ -110,6 +110,10 @@ def vertical_interp(fieldname, config,
         dims=dims_interp,
         coords=coords_interp,
         attrs=field.attrs)
+
+    # propagating coordinate attributes does not work
+    for dim in dims_slice:
+        field_interp[dim][1].attrs = field.coords[dim][1].attrs
 
     for k_interp, eta in zip(range(nlev_interp), vertical_levels):
         """
@@ -188,8 +192,8 @@ def vertical_interp(fieldname, config,
         field_slice = xr.where(mask, field_slice, np.nan)
 
         # field_interp[dict(isobaricInhPa=k_interp)] = field_slice
-        # field_interp[dict(lev=k_interp)] = field_slice
-        field_interp[{lev_dim: k_interp}] = field_slice
+        # field_interp[{lev_dim: k_interp}] = field_slice
+        field_interp[dict(lev=k_interp)] = field_slice
 
         """
         Write fields for debugging
