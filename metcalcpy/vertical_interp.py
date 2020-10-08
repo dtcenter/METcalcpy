@@ -51,6 +51,7 @@ def vertical_interp(fieldname, config,
     """
     logging.info(fieldname)
     logging.debug(field.attrs)
+    ureg = pint.UnitRegistry()
 
     """
     Vertical coordinates
@@ -114,6 +115,12 @@ def vertical_interp(fieldname, config,
     # propagating coordinate attributes does not work
     for dim in dims_slice:
         field_interp[dim][1].attrs = field.coords[dim][1].attrs
+    field_interp['lev'][1].attrs['units'] = config['vertical_level_units']
+
+    # length unit conversion
+    length_convert = float((ureg.Quantity(1, config['vertical_level_units'])
+                   / ureg.Quantity(1, coordinate_surfaces.attrs['units'])).to_base_units())
+    logging.debug(length_convert)
 
     for k_interp, eta in zip(range(nlev_interp), vertical_levels):
         """
@@ -128,7 +135,7 @@ def vertical_interp(fieldname, config,
             dims=field.dims,
             coords=field.coords)
 
-        distances = eta - coordinate_surfaces
+        distances = eta - length_convert * coordinate_surfaces
         above = distances < 0
         below = distances > 0
 
@@ -148,8 +155,9 @@ def vertical_interp(fieldname, config,
 
             # w(z_1) = 1 - (z_1 - eta) / (z_1 - z_0) =  (eta - z_0) / (z_1 - z_0)
             weight_above = distances.loc[{lev_dim: vertical_coord[k - 1]}] \
-                / (coordinate_surfaces.loc[{lev_dim: vertical_coord[k]}]
+                / ((coordinate_surfaces.loc[{lev_dim: vertical_coord[k]}]
                     - coordinate_surfaces.loc[{lev_dim: vertical_coord[k - 1]}])
+                    * length_convert)
             # w(z_0) = 1 - w_1 = (z_1 - eta) / (z_1 - z_0)
             weight_below = 1 - weight_above
 
