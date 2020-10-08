@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-import util.utils as utils
+import metcalcpy.util.utils as utils
 
 def test_lon_from_360_to_180():
 
