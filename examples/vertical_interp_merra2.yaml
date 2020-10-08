@@ -22,10 +22,10 @@ geopotential_height_name:
 
 fields:
     - 'QV'
-#    - 'QL'
-#    - 'QI'
-#    - 'U'
-#    - 'V'
+    - 'QL'
+    - 'QI'
+    - 'U'
+    - 'V'
 
 #
 # Set to compute geopotential height from pressure
