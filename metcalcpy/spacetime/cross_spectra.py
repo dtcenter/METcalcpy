@@ -1,8 +1,6 @@
 import xarray as xr
 import numpy as np
-import sys
 
-sys.path.append('../../')
 """
 local scripts, if loading from a different directory include that with a '.' between
 directory name and script name
