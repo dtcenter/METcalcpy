@@ -79,10 +79,13 @@ def vertical_interp(fieldname, config,
     shape_interp = tuple(shape_interp)
     logging.debug(shape_interp)
     coord_names_interp = list(field.coords)
-    # logging.debug(('coord_names_interp:', coord_names_interp))
     coord_arrays_interp = [field.coords[dim] for dim in dims_interp]
-    coord_arrays_interp[coord_names_interp.index(lev_dim)] = vertical_levels
-    logging.debug(('coord_arrays_interp:', coord_arrays_interp))
+    coord_arrays_interp[i_lev_dim] = vertical_levels
+    coords_interp = list(zip(dims_interp, coord_arrays_interp))
+    logging.debug('\n\n')
+    for coord_interp in coords_interp:
+        logging.debug(coord_interp)
+        logging.debug('\n\n')
 
     """
     Setup dimensions and shape for a vertical slice
@@ -105,7 +108,7 @@ def vertical_interp(fieldname, config,
     field_interp = xr.DataArray(
         np.zeros(shape_interp),
         dims=dims_interp,
-        # coords=coord_arrays_interp,
+        coords=coords_interp,
         attrs=field.attrs)
 
     for k_interp, eta in zip(range(nlev_interp), vertical_levels):
