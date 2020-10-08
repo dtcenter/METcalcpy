@@ -118,8 +118,12 @@ def vertical_interp(fieldname, config,
     field_interp['lev'][1].attrs['units'] = config['vertical_level_units']
 
     # length unit conversion
-    length_convert = float((ureg.Quantity(1, config['vertical_level_units'])
-                   / ureg.Quantity(1, coordinate_surfaces.attrs['units'])).to_base_units())
+    try:
+        length_convert = float((ureg.Quantity(1, config['vertical_level_units'])
+                       / ureg.Quantity(1, coordinate_surfaces.attrs['units'])).to_base_units())
+    except pint.errors.UndefinedUnitError:
+        logging.error('Unknown unit:' + coordinate_surfaces.attrs['units'])
+        length_convert = 1
     logging.debug(length_convert)
 
     for k_interp, eta in zip(range(nlev_interp), vertical_levels):
