@@ -48,7 +48,6 @@ def _input_check(sigmaij, muij, threshold, fieldijn, sigma_over_mu_ref, under_fa
     None.
 
     """
-    print("We made it here")
     assert isinstance(threshold, (int, float, np.int32, np.float32))
     assert np.ndim(sigmaij) == FIELD_DIM
     assert np.all(sigmaij) >= EPS
