@@ -4,8 +4,21 @@ Program Name: vertical_interp.py
 A python script to vertically interpolate fields
 between grids with pressure or height vertical coordinates.
 
+Currently only pressure to height conversion is implemented.
+Currently only linear interpolation is implemented.
+
 Version  Date
 0.1.0    2020/09/01  David Fillmore  Initial version
+
+Known Issues:
+    xarray does not propagate coordinate attributes to interpolation field
+    need to handle unknown units
+
+Needed Enhancements:
+    multiple input files on command line or config file
+    config file definition of user defined units
+    config file option for interpolation weights
+        above (below) the highest (lowest) coordinate surface
 """
 
 __author__ = 'David Fillmore'
@@ -115,7 +128,9 @@ def vertical_interp(fieldname, config,
     # propagating coordinate attributes does not work
     for dim in dims_slice:
         field_interp[dim][1].attrs = field.coords[dim][1].attrs
+        logging.debug(field.coords[dim][1].attrs)
     field_interp['lev'][1].attrs['units'] = config['vertical_level_units']
+    logging.debug(field_interp.coords[dim][1].attrs)
 
     # length unit conversion
     try:
@@ -129,7 +144,6 @@ def vertical_interp(fieldname, config,
     for k_interp, eta in zip(range(nlev_interp), vertical_levels):
         """
         Compute interpolation weights
-        Todo: unit conversion
         """
 
         logging.debug((k_interp, eta))
@@ -598,3 +612,4 @@ if __name__ == '__main__':
             write_dataset(ds_out, ds_nc)
         except:
             logging.error('Unable to create ' + filename_out)
+    logging.debug(os.system('ncdump -h ' + filename_out))
