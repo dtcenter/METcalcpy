@@ -426,6 +426,7 @@ def height_from_pressure(config,
 
     return layer_height
 
+
 def read_required_fields(config, ds):
     """
     Read required fields.
@@ -456,24 +457,34 @@ def write_dataset(ds, ds_nc):
     """
     Write xarray Dataset to NetCDF file
     """
+    coord_vars = {}
     for dim in ds.dims:
         logging.info('Creating dimension ' + dim)
         ds_nc.createDimension(dim, len(ds.coords[dim]))
         coord = ds_nc.createVariable(
             dim, ds.coords[dim].dtype, (dim))
+        coord_vars[dim] = coord
         coord[:] = ds.coords[dim].values
-        for attr in ds.coords[dim].attrs:
-            logging.debug((attr, ds.coords[dim].attrs[attr]))
-            setattr(coord, attr, ds.coords[dim].attrs[attr])
+
 
     for field in ds:
         logging.debug('Creating variable ' + field)
         var = ds_nc.createVariable(
             field, ds[field].dtype, ds[field].dims)
         var[:] = ds[field].values
+
         for attr in ds[field].attrs:
             logging.debug((attr, ds[field].attrs[attr]))
             setattr(var, attr, ds[field].attrs[attr])
+
+        logging.debug(ds[field].coords)
+        for dim in ds.dims:
+            logging.debug(ds[field].coords[dim][1].attrs)
+
+        for field_coord in ds[field].coords:
+            logging.debug(('field_coord', field_coord))
+            for attr in ds[field].coords[field_coord].attrs:
+                logging.debug(('field_attr', attr))
 
 
 if __name__ == '__main__':
