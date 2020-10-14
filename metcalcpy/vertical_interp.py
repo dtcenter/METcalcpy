@@ -124,13 +124,14 @@ def vertical_interp(fieldname, config,
         dims=dims_interp,
         coords=coords_interp,
         attrs=field.attrs)
+    # coordinate attributes lost in constructor above
 
-    # propagating coordinate attributes does not work
     for dim in dims_slice:
-        field_interp[dim][1].attrs = field.coords[dim][1].attrs
+        field_interp.coords[dim][1].attrs = field.coords[dim][1].attrs
         logging.debug(field.coords[dim][1].attrs)
+        logging.debug(('field_interp_coords_attrs', field_interp.coords[dim][1].attrs))
     field_interp['lev'][1].attrs['units'] = config['vertical_level_units']
-    logging.debug(field_interp.coords[dim][1].attrs)
+    logging.debug(field_interp.coords['lev'][1].attrs)
 
     # length unit conversion
     try:
@@ -237,6 +238,9 @@ def vertical_interp(fieldname, config,
                 ds_nc = nc.Dataset(debugfile, 'w')
                 write_dataset(ds_debug, ds_nc)
                 ds_nc.close()
+
+    for dim in field_interp.dims:
+        logging.debug(('field_interp_coords_attrs', field_interp.coords[dim][1].attrs))
 
     return field_interp
 
