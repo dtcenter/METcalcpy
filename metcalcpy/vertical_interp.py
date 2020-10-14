@@ -462,28 +462,9 @@ def write_dataset(ds, ds_nc):
         coord = ds_nc.createVariable(
             dim, ds.coords[dim].dtype, (dim))
         coord[:] = ds.coords[dim].values
-
-    if 'time' in ds.coords:
-        time = pd.Timestamp(ds.coords['time'].values)
-        logging.debug(time)
-        date_int \
-            = 10000 * time.year + 100 * time.month \
-            + time.day
-        time_int \
-            = 10000 * time.hour + 100 * time.minute \
-            + time.second
-        ds_nc.time = 1000000 * date_int + time_int
-
-    if 'valid_time' in ds.coords:
-        valid_time = pd.Timestamp(ds.coords['valid_time'].values)
-        logging.debug(valid_time)
-        date_int \
-            = 10000 * valid_time.year + 100 * valid_time.month \
-            + valid_time.day
-        time_int \
-            = 10000 * valid_time.hour + 100 * valid_time.minute \
-            + valid_time.second
-        ds_nc.valid_time = 1000000 * date_int + time_int
+        for attr in ds.coords[dim].attrs:
+            logging.debug((attr, ds.coords[dim].attrs[attr]))
+            setattr(coord, attr, ds.coords[dim].attrs[attr])
 
     for field in ds:
         logging.debug('Creating variable ' + field)
@@ -602,14 +583,11 @@ if __name__ == '__main__':
     Write dataset
     """
     try:
-        logging.info('Creating with xarray ' + filename_out)
-        ds_out.to_netcdf(filename_out)
+        logging.info('Creating with NetCDF4 ' + filename_out)
+        ds_nc = nc.Dataset(filename_out, 'w')
+        write_dataset(ds_out, ds_nc)
+        ds_nc.close()
     except:
         logging.error('Unable to create ' + filename_out)
-        try:
-            logging.info('Creating with NetCDF4 ' + filename_out)
-            ds_nc = nc.Dataset(filename_out, 'w')
-            write_dataset(ds_out, ds_nc)
-        except:
-            logging.error('Unable to create ' + filename_out)
+
     logging.debug(os.system('ncdump -h ' + filename_out))
