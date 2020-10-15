@@ -126,13 +126,6 @@ def vertical_interp(fieldname, config,
         attrs=field.attrs)
     # coordinate attributes lost in constructor above
 
-    for dim in dims_slice:
-        field_interp.coords[dim][1].attrs = field.coords[dim][1].attrs
-        logging.debug(field.coords[dim][1].attrs)
-        logging.debug(('field_interp_coords_attrs', field_interp.coords[dim][1].attrs))
-    field_interp['lev'][1].attrs['units'] = config['vertical_level_units']
-    logging.debug(field_interp.coords['lev'][1].attrs)
-
     # length unit conversion
     try:
         length_convert = float((ureg.Quantity(1, config['vertical_level_units'])
@@ -242,7 +235,7 @@ def vertical_interp(fieldname, config,
     for dim in field_interp.dims:
         logging.debug(('field_interp_coords_attrs', field_interp.coords[dim][1].attrs))
 
-    return field_interp
+    return field_interp, coords_interp
 
 
 def height_from_pressure(config,
@@ -589,7 +582,7 @@ if __name__ == '__main__':
 
     for fieldname in config['fields']:
 
-        field_interp = vertical_interp(fieldname, config,
+        field_interp, coords_interp = vertical_interp(fieldname, config,
             layer_height, ds[fieldname])
 
         ds_out[fieldname] = field_interp
