@@ -94,7 +94,9 @@ def vertical_interp(fieldname, config,
     logging.debug(shape_interp)
     coord_arrays_interp = [field.coords[dim] for dim in dims_interp]
     dims_interp[i_lev_dim] = 'lev'
-    coord_arrays_interp[i_lev_dim] = vertical_levels
+    coord_arrays_interp[i_lev_dim] \
+        = xr.DataArray(vertical_levels,
+                       attrs={'units': config['vertical_level_units']})
     coords_interp = list(zip(dims_interp, coord_arrays_interp))
     logging.debug('\n\n')
     for coord_interp in coords_interp:
@@ -462,8 +464,9 @@ def write_dataset(ds, ds_nc, coords_interp=None):
 
     if coords_interp is not None:
         for dim, coord_array in coords_interp:
-            logging.debug(dim)
-            logging.debug(coord_array)
+            logging.info('Setting coordinate attributes for ' + dim)
+            for attr in coord_array.attrs:
+                setattr(coord_vars[dim], attr, coord_array.attrs[attr])
 
     for field in ds:
         logging.debug('Creating variable ' + field)
