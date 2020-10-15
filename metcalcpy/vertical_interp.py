@@ -232,9 +232,6 @@ def vertical_interp(fieldname, config,
                 write_dataset(ds_debug, ds_nc)
                 ds_nc.close()
 
-    for dim in field_interp.dims:
-        logging.debug(('field_interp_coords_attrs', field_interp.coords[dim][1].attrs))
-
     return field_interp, coords_interp
 
 
@@ -450,7 +447,7 @@ def read_required_fields(config, ds):
         temperature, relative_humidity
 
 
-def write_dataset(ds, ds_nc):
+def write_dataset(ds, ds_nc, coords_interp=None):
     """
     Write xarray Dataset to NetCDF file
     """
@@ -463,6 +460,10 @@ def write_dataset(ds, ds_nc):
         coord_vars[dim] = coord
         coord[:] = ds.coords[dim].values
 
+    if coords_interp is not None:
+        for dim, coord_array in coords_interp:
+            logging.debug(dim)
+            logging.debug(coord_array)
 
     for field in ds:
         logging.debug('Creating variable ' + field)
@@ -473,15 +474,6 @@ def write_dataset(ds, ds_nc):
         for attr in ds[field].attrs:
             logging.debug((attr, ds[field].attrs[attr]))
             setattr(var, attr, ds[field].attrs[attr])
-
-        logging.debug(ds[field].coords)
-        for dim in ds.dims:
-            logging.debug(ds[field].coords[dim][1].attrs)
-
-        for field_coord in ds[field].coords:
-            logging.debug(('field_coord', field_coord))
-            for attr in ds[field].coords[field_coord].attrs:
-                logging.debug(('field_attr', attr))
 
 
 if __name__ == '__main__':
@@ -593,7 +585,7 @@ if __name__ == '__main__':
     try:
         logging.info('Creating with NetCDF4 ' + filename_out)
         ds_nc = nc.Dataset(filename_out, 'w')
-        write_dataset(ds_out, ds_nc)
+        write_dataset(ds_out, ds_nc, coords_interp=coords_interp)
         ds_nc.close()
     except:
         logging.error('Unable to create ' + filename_out)
