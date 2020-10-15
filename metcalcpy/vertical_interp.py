@@ -457,8 +457,11 @@ def write_dataset(ds, ds_nc, coords_interp=None):
     for dim in ds.dims:
         logging.info('Creating dimension ' + dim)
         ds_nc.createDimension(dim, len(ds.coords[dim]))
+        dtype = ds.coords[dim].dtype
+        if dtype not in ['uint32', 'uint64', 'int32', 'int64', 'float32', 'float64']:
+            dtype = 'uint64'
         coord = ds_nc.createVariable(
-            dim, ds.coords[dim].dtype, (dim))
+            dim, dtype, (dim))
         coord_vars[dim] = coord
         coord[:] = ds.coords[dim].values
 
@@ -591,6 +594,7 @@ if __name__ == '__main__':
         write_dataset(ds_out, ds_nc, coords_interp=coords_interp)
         ds_nc.close()
     except:
-        logging.error('Unable to create ' + filename_out)
+        logging.info('Creating with xarray ' + filename_out)
+        ds_nc.to_netcdf(filename_out)
 
     logging.debug(os.system('ncdump -h ' + filename_out))
