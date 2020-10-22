@@ -2,7 +2,7 @@ Difficulty Index
 -----------------
 Written by Bill Campbell and Liz Satterfield (NRL)
 Modified by Lindsay Blank (NCAR)
-Date Modified: October 8, 2020
+Date Modified: October 22, 2020
 
 Background
 ----------
