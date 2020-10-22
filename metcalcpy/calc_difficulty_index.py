@@ -6,9 +6,6 @@ Forecast decision difficulty indices.
 
 Implement a set of decision difficulty indices for forecasts of postive
 definite quantities such as wind speed and wave height.
-
-Created on Thu Feb 20 16:23:06 2020
-Last modified on Mon Mar 30 11:25:30 2020
 """
 
 import numpy as np
@@ -65,7 +62,7 @@ def _input_check(sigmaij, muij, threshold, fieldijn, sigma_over_mu_ref, under_fa
 
 def _difficulty_index(sigmaij, muij, threshold, fieldijn, Aplin, sigma_over_mu_ref=EPS, under_factor=0.5):
     """
-    Calculates public version (v7) of forecast difficulty index.
+    Calculates version 6.1 of forecast difficulty index.
     The threshold terms all penalize equal (or slightly unequal) spread.
 
     Parameters
@@ -89,7 +86,7 @@ def _difficulty_index(sigmaij, muij, threshold, fieldijn, Aplin, sigma_over_mu_r
     Returns
     -------
     dij : 2D numpy array
-        Normalized v4567 difficulty index ([0,1.5]). Larger (> 0.5)
+        Normalized v6.1 difficulty index ([0,1.5]). Larger (> 0.5)
         means more difficult.
 
     """
@@ -128,7 +125,7 @@ def forecast_difficulty(sigmaij, muij, threshold, fieldijn,
                         Aplin=None, sigma_over_mu_ref=EPS):
     """
     Calls private function _difficulty_index, 
-    to calculate the public version (v7) of forecast difficulty index.
+    to calculate version (v6.1) of forecast difficulty index.
 
     Parameters
     ----------
@@ -154,19 +151,19 @@ def forecast_difficulty(sigmaij, muij, threshold, fieldijn,
 
     """
     if Aplin is None:
-        # Envelope for public version (v7) the default
-        xunits = 'feet'
-        A7_name = "A7"
-        A7_left = 0.0
-        A7_right = 0.0
-        A7_xlist = [3.0, 9.0, 12.0, 21.0]
-        A7_ylist = [0.0, 1.0, 1.0, 0.0] 
-        Aplin = plin(A7_xlist, A7_ylist, xunits=xunits,
-                right=A7_right, left=A7_left, name=A7_name)
-
+        #  Default to envelope version 6.1
+        xunits="feet"                                                                           
+        A6_1_name = "A6_1"                                                          
+        A6_1_left = 0.0                                                                         
+        A6_1_right = 0.0                                                                        
+        A6_1_xlist = [3.0, 9.0, 12.0, 21.0]                                                         
+        A6_1_ylist = [0.0, 1.5, 1.5, 0.0]                                                   
+        Aplin =\
+                plin(A6_1_xlist, A6_1_ylist, xunits=xunits,
+                        right=A6_1_right, left=A6_1_left,                                       
+                        name=A6_1_name)                                                                   
     dij = _difficulty_index(sigmaij, muij, threshold, fieldijn,
                        Aplin, sigma_over_mu_ref)
-
     return dij
 
 if __name__ == "__main__":
