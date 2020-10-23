@@ -856,3 +856,30 @@ def convert_lon_360_to_180(longitude):
     negative_to_positive = np.sort(west_east_lons)
 
     return negative_to_positive
+
+def convert_lons_indices(lons_in, minlon_in, range_in):
+    '''
+
+    Input:
+    @param lons_in: A list of longitudes to convert
+    @param minlon_in: The minimum value/starting value of converted longitudes
+    @param range_in: The number of longitudes to convert
+
+    Returns:
+      reordered_lons:  sorted array of longitudes
+      lonsortlocs:  sorted array indices
+    '''
+
+    minlon = abs(minlon_in)
+
+    # Use formula to convert longitude values based on the starting lon value and
+    # the target number of longitudes
+    newlons = np.mod((lons_in + minlon), range_in) - minlon
+
+    # get the sorted array indices
+    lonsortlocs = np.argsort(newlons)
+
+    # get the sorted, converted array
+    reordered_lons = newlons[lonsortlocs]
+
+    return reordered_lons,lonsortlocs
