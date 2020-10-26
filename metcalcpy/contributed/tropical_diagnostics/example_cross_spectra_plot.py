@@ -1,3 +1,8 @@
+"""
+This is an example script for plotting cross spectral components. The script reads in output files computed
+by the example_cross_spectra.py script and uses the plotly plotting routines in spacetime_plot.py to generate
+a panel plot of coherence spectra.
+"""
 import numpy as np
 import xarray as xr
 
