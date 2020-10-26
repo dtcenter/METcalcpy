@@ -41,6 +41,13 @@ print("reading data from file:")
 """ 
 Read in data here. Example:
 """
+ds = xr.open_dataset(datapath+'precip.trmm.'+str(spd)+'x.1p0.v7a.fillmiss.comp.2014-2016.nc')
+z = ds.precip
+z = z.sel(lat=slice(latMin, latMax))
+z = z.sel(time=slice(datestrt, datelast))
+z = z.squeeze()
+latC = ds.lat.sel(lat=slice(latMin, latMax))
+
 ds = xr.open_dataset(datapath+'precip.erai.sfc.1p0.'+str(spd)+'x.2014-2016.nc')
 x = ds.precip
 x = x.sel(lat=slice(latMin, latMax))
@@ -56,12 +63,14 @@ y = y.sel(time=slice(datestrt, datelast))
 y = y.squeeze()
 latB = ds.lat.sel(lat=slice(latMin, latMax))
 
-ds = xr.open_dataset(datapath+'precip.trmm.'+str(spd)+'x.1p0.v7a.fillmiss.comp.2014-2016.nc')
-z = ds.precip
-z = z.sel(lat=slice(latMin, latMax))
-z = z.sel(time=slice(datestrt, datelast))
-z = z.squeeze()
-latC = ds.lat.sel(lat=slice(latMin, latMax))
+ds = xr.open_dataset(datapath+'div.erai.200.1p0.'+str(spd)+'x.2014-2016.nc')
+w = ds.div
+w = y.sel(lat=slice(latMin, latMax))
+w = y.sel(time=slice(datestrt, datelast))
+w = y.squeeze()
+latB = ds.lat.sel(lat=slice(latMin, latMax))
+
+
 
 if any(latA - latB) != 0:
     print("Latitudes must be the same for both variables! Check latitude ordering.")
@@ -71,10 +80,12 @@ if Symmetry == "symm" or Symmetry == "asymm":
     X = get_symmasymm(x, latA, Symmetry)
     Y = get_symmasymm(y, latB, Symmetry)
     Z = get_symmasymm(z, latC, Symmetry)
+    W = get_symmasymm(w, latB, Symmetry)
 else:
     X = x
     Y = y
     Z = z
+    W = w
 
 print("compute cross-spectrum:")
 """
@@ -100,9 +111,18 @@ STC = result['STC']  # , freq, wave, number_of_segments, dof, prob, prob_coh2
 freq = result['freq']
 freq = freq * spd
 wnum = result['wave']
-
 # save spectra in netcdf file
 fileout = 'SpaceTimeSpectra_ERAI_P_D850_' + Symmetry + '_' + str(spd) + 'spd'
+print('saving spectra to file: ' + pathout + fileout + '.nc')
+save_Spectra(STC, freq, wnum, fileout, pathout)
+
+result = mjo_cross(X, W, nperseg, segOverLap)
+STC = result['STC']  # , freq, wave, number_of_segments, dof, prob, prob_coh2
+freq = result['freq']
+freq = freq * spd
+wnum = result['wave']
+# save spectra in netcdf file
+fileout = 'SpaceTimeSpectra_ERAI_P_D200_' + Symmetry + '_' + str(spd) + 'spd'
 print('saving spectra to file: ' + pathout + fileout + '.nc')
 save_Spectra(STC, freq, wnum, fileout, pathout)
 
@@ -111,7 +131,6 @@ STC = result['STC']  # , freq, wave, number_of_segments, dof, prob, prob_coh2
 freq = result['freq']
 freq = freq * spd
 wnum = result['wave']
-
 # save spectra in netcdf file
 fileout = 'SpaceTimeSpectra_ERAI_TRMM_P_' + Symmetry + '_' + str(spd) + 'spd'
 print('saving spectra to file: ' + pathout + fileout + '.nc')
