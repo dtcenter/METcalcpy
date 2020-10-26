@@ -22,7 +22,6 @@ var = "precip"  # variable to plot
 lev = ""   # level
 
 print("reading data from file:")
-
 ds = xr.open_dataset(datapath+'precip.erai.sfc.1p0.'+str(spd)+'x.2014-2016.nc')
 A = ds[var]
 lonA = ds.lon
