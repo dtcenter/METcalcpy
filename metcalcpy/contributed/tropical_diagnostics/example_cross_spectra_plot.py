@@ -5,6 +5,7 @@ import spacetime_plot as stp
 
 # location of the output files from example_cross_spectra
 pathdata = '../data/'
+# location of the plot files
 plotpath = '../plots/'
 
 # plot layout parameters
