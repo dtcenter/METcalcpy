@@ -1,5 +1,4 @@
 import numpy as np
-from netCDF4 import Dataset
 import xarray as xr
 
 import spacetime_plot as stp
