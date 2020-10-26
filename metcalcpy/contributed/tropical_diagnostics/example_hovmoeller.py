@@ -5,7 +5,9 @@ local scripts, if loading from a different directory include that with a '.' bet
 directory name and script name
 """
 from hovmoeller_calc import lat_avg
-from hovmoeller_plotly import hovmoeller
+from hovmoeller_plotly import hovmoeller  # this may need to move the METplotpy
+
+
 plotpath = '../plots/'
 datapath = '../data/'
 
