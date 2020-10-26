@@ -6,6 +6,8 @@ List of functions:
 
 mjo_cross_segment:
 
+mjo_cross_segment_realfft:
+
 get_symmasymm:
 
 mjo_cross_coh2pha:
@@ -212,6 +214,7 @@ def get_symmasymm(X, lat, opt=False):
     :param X: Array (time, lat, lon).
     :param lat: Latitude values corresponding to dimension 1 of X.
     :param opt: Parameter to choose symmetric or anti-symmetric part across the equator.
+    :return : symmetric or anti-symmetric part of X
     """
     if opt:
         NT, NM, NL = X.shape
