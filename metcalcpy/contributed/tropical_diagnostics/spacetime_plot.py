@@ -12,6 +12,10 @@ from functools import reduce
 import pandas as pd
 import Ngl as ngl
 import string
+
+"""
+local scripts
+"""
 import matsuno_plot as mp
 
 pi = np.pi
