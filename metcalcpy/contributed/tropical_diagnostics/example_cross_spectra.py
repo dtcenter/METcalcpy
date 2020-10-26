@@ -1,5 +1,6 @@
 """
-This is an example script for cross-spectral analysis. Computes power and cross-spectra for two input data sets.
+This is an example script for cross-spectral analysis. Computes power and cross-spectra for multiple input
+data sets.
 """
 import xarray as xr
 import numpy as np
