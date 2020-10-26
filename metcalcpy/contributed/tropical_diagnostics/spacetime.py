@@ -4,11 +4,6 @@ Mirrors the capabilities of NCL.
 
 List of functions:
 
-mjo_cross:
-  The main function to compute cross-spectra is called as
-  result = mjo_cross(X,Y,nperseg,segoverlap). This splits the data in X and Y
-  into segments of length nperseg, the segments overlap by segoverlap.
-
 mjo_cross_segment:
 
 get_symmasymm:
@@ -21,76 +16,56 @@ smooth121_1D:
 
 window_cosbell:
 
+mjo_cross:
+  The main function to compute cross-spectra is called as
+  result = mjo_cross(X,Y,nperseg,segoverlap). This splits the data in X and Y
+  into segments of length nperseg, the segments overlap by segoverlap.
+
 kf_filter_mask:
+
+kf_filter:
 
 """
 
-import numpy
+import numpy as np
 from scipy import signal
-from netCDF4 import Dataset
 
-pi = numpy.pi
+pi = np.pi
 re = 6.371008e6  # Earth's radius in meters
 g = 9.80665  # Gravitational acceleration [m s^{-2}]
 omega = 7.292e-05  # Angular speed of rotation of Earth [rad s^{-1}]
 beta = 2. * omega / re  # beta parameter at the equator
 
-def save_Spectra(STCin, freq_in, wnum_in, filename, filepath, opt=False):
-    nc = Dataset(filepath + filename + '.nc', 'w', format='NETCDF4')
-
-    nvar, nfrq, nwave = STCin.shape
-    # dimensions
-    nc.createDimension('freq', nfrq)
-    nc.createDimension('wnum', nwave)
-    nc.createDimension('var', nvar)
-
-    # variables
-    freq = nc.createVariable('freq', 'double', ('freq',))
-    wnum = nc.createVariable('wnum', 'int', ('wnum',))
-    var = nc.createVariable('var', 'int', ('var',))
-    STC = nc.createVariable('STC', 'double', ('var', 'freq', 'wnum',))
-
-    # attributes
-    STC.varnames = ['PX', 'PY', 'CXY', 'QXY', 'COH2', 'PHA', 'V1', 'V2']
-    STC.long_name = "Space time spectra"
-    freq.units = "cpd"
-    freq.long_name = "frequency"
-    wnum.units = ""
-    wnum.long_name = "zonal wavenumber"
-    var.long_name = "variable number"
-
-    # data
-    var[:] = np.linspace(0, nvar - 1, nvar)
-    freq[:] = freq_in
-    wnum[:] = wnum_in
-    STC[:, :, :] = STCin
-
-    nc.close()
-
 
 def mjo_cross_segment(XX, YY, opt=False):
     """
-  Compute the FFT to get the power and cross-spectra for one time segment.
-  """
+    Compute the FFT to get the power and cross-spectra for one time segment.
+    :param XX: Input array (time, lat, lon)
+    :param YY: Input array (time, lat, lon)
+    :param opt: Optional parameter, not currently used. Set to False.
+    :return STC: Spectra array of shape (8, nfreq, nwave). Last 4 entries are blank and need to be computed by calling
+    mjo_cross_coh2pha. The first 4 entries contain power spectra for XX, power spectra for YY, co-spectra between XX
+    and YY, quadrature spectra between XX and YY.
+    """
     NT, NM, NL = XX.shape
     # compute fourier decomposition in time and longitude
-    Xfft = numpy.fft.fft2(XX, axes=(0, 2))
-    Yfft = numpy.fft.fft2(YY, axes=(0, 2))
+    Xfft = np.fft.fft2(XX, axes=(0, 2))
+    Yfft = np.fft.fft2(YY, axes=(0, 2))
     # normalize by # time samples
     Xfft = Xfft / (NT * NL)
     Yfft = Yfft / (NT * NL)
     # shift 0 frequency and 0 wavenumber to the center
-    Xfft = numpy.fft.fftshift(Xfft, axes=(0, 2))
-    Yfft = numpy.fft.fftshift(Yfft, axes=(0, 2))
+    Xfft = np.fft.fftshift(Xfft, axes=(0, 2))
+    Yfft = np.fft.fftshift(Yfft, axes=(0, 2))
 
     # average the power spectra across all latitudes
-    PX = numpy.average(numpy.square(numpy.abs(Xfft)), axis=1)
-    PY = numpy.average(numpy.square(numpy.abs(Yfft)), axis=1)
+    PX = np.average(np.square(np.abs(Xfft)), axis=1)
+    PY = np.average(np.square(np.abs(Yfft)), axis=1)
 
     # compute co- and quadrature spectrum
-    PXY = numpy.average(numpy.conj(Yfft) * Xfft, axis=1)
-    CXY = numpy.real(PXY)
-    QXY = numpy.imag(PXY)
+    PXY = np.average(np.conj(Yfft) * Xfft, axis=1)
+    CXY = np.real(PXY)
+    QXY = np.imag(PXY)
 
     PX = PX[:, ::-1]
     PY = PY[:, ::-1]
@@ -104,14 +79,14 @@ def mjo_cross_segment(XX, YY, opt=False):
         nfreq = NT
         if NL % 2 == 1:
             nwave = NL
-            STC = numpy.zeros([8, nfreq, nwave], dtype='double')
+            STC = np.zeros([8, nfreq, nwave], dtype='double')
             STC[0, :NT, :NL] = PX
             STC[1, :NT, :NL] = PY
             STC[2, :NT, :NL] = CXY
             STC[3, :NT, :NL] = QXY
         else:
             nwave = NL + 1
-            STC = numpy.zeros([8, nfreq, nwave], dtype='double')
+            STC = np.zeros([8, nfreq, nwave], dtype='double')
             STC[0, :NT, 1:NL + 1] = PX
             STC[1, :NT, 1:NL + 1] = PY
             STC[2, :NT, 1:NL + 1] = CXY
@@ -121,7 +96,7 @@ def mjo_cross_segment(XX, YY, opt=False):
         nfreq = NT + 1
         if NL % 2 == 1:
             nwave = NL
-            STC = numpy.zeros([8, nfreq, nwave], dtype='double')
+            STC = np.zeros([8, nfreq, nwave], dtype='double')
             STC[0, :NT, :NL] = PX
             STC[1, :NT, :NL] = PY
             STC[2, :NT, :NL] = CXY
@@ -129,7 +104,7 @@ def mjo_cross_segment(XX, YY, opt=False):
             STC[:, NT, :] = STC[:, 0, :]
         else:
             nwave = NL + 1
-            STC = numpy.zeros([8, nfreq, nwave], dtype='double')
+            STC = np.zeros([8, nfreq, nwave], dtype='double')
             STC[0, :NT, 1:NL + 1] = PX
             STC[1, :NT, 1:NL + 1] = PY
             STC[2, :NT, 1:NL + 1] = CXY
@@ -137,15 +112,107 @@ def mjo_cross_segment(XX, YY, opt=False):
             STC[0, NT, :] = STC[0, 0, :]
             STC[:, :, 0] = STC[:, :, NL]
 
-    return (STC)
+    return STC
+
+
+def mjo_cross_segment_realfft(XX, YY, opt=False):
+    """
+    Compute the FFT to get the power and cross-spectra for one time segment.
+    :param XX: Input array (time, lat, lon)
+    :param YY: Input array (time, lat, lon)
+    :param opt: Optional parameter, not currently used. Set to False.
+    :return STC: Spectra array of shape (8, nfreq, nwave). Last 4 entries are blank and need to be computed by calling
+    mjo_cross_coh2pha. The first 4 entries contain power spectra for XX, power spectra for YY, co-spectra between XX
+    and YY, quadrature spectra between XX and YY.
+    """
+    NT, NM, NL = XX.shape
+
+    XX = np.transpose(XX, axes=[1, 2, 0])  # is now (lat, lon, time)
+    YY = np.transpose(YY, axes=[1, 2, 0])  # is now (lat, lon, time)
+
+    # compute fourier decomposition in time and longitude
+    Xfft = np.fft.rfft2(XX, axes=(1, 2))  # (lat, nlon, ntim)
+    Yfft = np.fft.rfft2(YY, axes=(1, 2))   # (lat, nlon, ntim)
+
+    # return array to (time, lat, lon)
+    Xfft = np.transpose(Xfft, axes=[2, 0, 1])
+    Yfft = np.transpose(Yfft, axes=[2, 0, 1])
+
+    # normalize by # time samples
+    Xfft = Xfft / (NT * NL)
+    Yfft = Yfft / (NT * NL)
+
+    # shift 0 wavenumber to the center
+    Xfft = np.fft.fftshift(Xfft, axes=2)
+    Yfft = np.fft.fftshift(Yfft, axes=2)
+
+    # average the power spectra across all latitudes
+    PX = np.average(np.square(np.abs(Xfft)), axis=1)
+    PY = np.average(np.square(np.abs(Yfft)), axis=1)
+
+    # compute co- and quadrature spectrum
+    PXY = np.conj(Xfft) * Yfft
+    CXY = np.average(np.real(PXY), axis=1)
+    QXY = np.average(np.imag(PXY), axis=1)
+
+    PX = PX[:, ::-1]
+    PY = PY[:, ::-1]
+    CXY = CXY[:, ::-1]
+    QXY = QXY[:, ::-1]
+
+    # test if time and longitude are odd or even, fft algorithm
+    # returns the Nyquist frequency once for even NT or NL and twice
+    # if they are odd
+    NT = int(NT / 2) + 1
+    if NT % 2 == 1:
+        nfreq = NT
+        if NL % 2 == 1:
+            nwave = NL
+            STC = np.zeros([8, nfreq, nwave], dtype='double')
+            STC[0, :NT, :NL] = PX
+            STC[1, :NT, :NL] = PY
+            STC[2, :NT, :NL] = CXY
+            STC[3, :NT, :NL] = QXY
+        else:
+            nwave = NL + 1
+            STC = np.zeros([8, nfreq, nwave], dtype='double')
+            STC[0, :NT, 1:NL + 1] = PX
+            STC[1, :NT, 1:NL + 1] = PY
+            STC[2, :NT, 1:NL + 1] = CXY
+            STC[3, :NT, 1:NL + 1] = QXY
+            STC[:, :, 0] = STC[:, :, NL]
+    else:
+        nfreq = NT + 1
+        if NL % 2 == 1:
+            nwave = NL
+            STC = np.zeros([8, nfreq, nwave], dtype='double')
+            STC[0, :NT, :NL] = PX
+            STC[1, :NT, :NL] = PY
+            STC[2, :NT, :NL] = CXY
+            STC[3, :NT, :NL] = QXY
+            STC[:, NT, :] = STC[:, 0, :]
+        else:
+            nwave = NL + 1
+            STC = np.zeros([8, nfreq, nwave], dtype='double')
+            STC[0, :NT, 1:NL + 1] = PX
+            STC[1, :NT, 1:NL + 1] = PY
+            STC[2, :NT, 1:NL + 1] = CXY
+            STC[3, :NT, 1:NL + 1] = QXY
+            STC[:, NT, :] = STC[:, 0, :]
+            STC[:, :, 0] = STC[:, :, NL]
+
+    return STC
 
 
 def get_symmasymm(X, lat, opt=False):
     """
-  Split the data in X into symmetric and anti-symmetric
-  (across the equator) parts. Return only the part we are
-  interested in.
-  """
+    Split the data in X into symmetric and anti-symmetric
+    (across the equator) parts. Return only the part we are
+    interested in.
+    :param X: Array (time, lat, lon).
+    :param lat: Latitude values corresponding to dimension 1 of X.
+    :param opt: Parameter to choose symmetric or anti-symmetric part across the equator.
+    """
     if opt:
         NT, NM, NL = X.shape
         if opt == 'symm':
@@ -157,7 +224,7 @@ def get_symmasymm(X, lat, opt=False):
                 for ll in range(NM // 2):
                     x[:, ll, :] = 0.5 * (X[:, ll, :] + X[:, NM - ll - 1, :])
         else:
-            if opt == 'asymm':
+            if opt == 'asymm' or opt == 'anti-symm':
                 x = X[:, lat[:] > 0, :]
                 if len(lat) % 2 == 1:
                     for ll in range(NM // 2):
@@ -168,14 +235,17 @@ def get_symmasymm(X, lat, opt=False):
     else:
         print("Please provide a valid option: symm or asymm.")
 
-    return (x)
+    return x
 
 
 def mjo_cross_coh2pha(STC, opt=False):
     """
-  Compute coherence squared and phase spectrum from averaged power and
-  cross-spectral estimates.
-  """
+    Compute coherence squared and phase spectrum from averaged power and
+    cross-spectral estimates.
+    :param STC: Spectra array.
+    :return STC: Spectra array of the same size with entries 4-7 (coherence squared, phase angle, phase component 1,
+    phase component 2) recomputed based on the power and cross-spectra in entries 0-3.
+    """
 
     nvar, nfreq, nwave = STC.shape
 
@@ -184,17 +254,13 @@ def mjo_cross_coh2pha(STC, opt=False):
     CXY = STC[2, :, :]
     QXY = STC[3, :, :]
 
-    PY[PY == 0] = numpy.nan
-    COH2 = (numpy.square(CXY) + numpy.square(QXY)) / (PX * PY)
-    PHAS = numpy.arctan2(QXY, CXY)
+    PY[PY == 0] = np.nan
+    COH2 = (np.square(CXY) + np.square(QXY)) / (PX * PY)
+    PHAS = np.arctan2(QXY, CXY)
 
-    V1 = -QXY / numpy.sqrt(numpy.square(QXY) + numpy.square(CXY))
-    # V1[:,0:nwave//2+1]  = -1*QXY[:,0:nwave//2+1]/numpy.sqrt( numpy.square(QXY[:,0:nwave//2+1])+numpy.square(CXY[:,0:nwave//2+1]) )
-    # QXY[:,0:nwave//2+1] = -1*QXY[:,0:nwave//2+1]
+    V1 = -QXY / np.sqrt(np.square(QXY) + np.square(CXY))
+    V2 = CXY / np.sqrt(np.square(QXY) + np.square(CXY))
 
-    V2 = CXY / numpy.sqrt(numpy.square(QXY) + numpy.square(CXY))
-
-    # STC[3,:,:] = QXY
     STC[4, :, :] = COH2
     STC[5, :, :] = PHAS
     STC[6, :, :] = V1
@@ -212,14 +278,14 @@ def smooth121(STC, freq, opt=False):
     Smooth only in frequency and only positive frequencies.
     :param array_in:
         Input array
-    :type array_in: Numpy array
+    :type array_in: np array
     :return: STC
-    :rtype: Numpy array
+    :rtype: np array
     """
     nvar, nfreq, nwave = STC.shape
 
     # find time-mean index
-    indfreqzero = int(numpy.where(freq == 0.)[0])
+    indfreqzero = int(np.where(freq == 0.)[0])
 
     for wv in range(0, nwave):
         STC[0, indfreqzero + 1:, wv] = smooth121_1D(STC[0, indfreqzero + 1:, wv])
@@ -237,38 +303,26 @@ def smooth121_1D(array_in):
     The weights for the first and last points are  3-1 (1st) or 1-3 (last) conserving the total sum.
     :param array_in:
         Input array
-    :type array_in: Numpy array
+    :type array_in: np array
     :return: array_out
-    :rtype: Numpy array
+    :rtype: np array
     """
 
-    temp = numpy.copy(array_in)
-    array_out = numpy.copy(temp) * 0.0
-    weights = numpy.array([1.0, 2.0, 1.0]) / 4.0
-    sma = numpy.convolve(temp, weights, 'valid')
-    array_out[1:-1] = sma
+    temp = np.copy(array_in)
+    array_out = np.copy(temp) * 0.0
+    #weights = np.array([1.0, 2.0, 1.0]) / 4.0
+    #sma = np.convolve(temp, weights, 'valid')
+    #array_out[1:-1] = sma
 
-    # Now its time to correct the borders
-    if (numpy.isnan(temp[1])):
-        if (numpy.isnan(temp[0])):
-            array_out[0] = numpy.nan
+    for i in np.arange(0, len(temp), 1):
+        if np.isnan(temp[i]):
+            array_out[0] = np.nan
+        elif i == 0 or np.isnan(temp[i-1]):
+            array_out[i] = (3*temp[i]+temp[i+1])/4
+        elif i == (len(temp)-1) or np.isnan(temp[i+1]):
+            array_out[i] = (3 * temp[i] + temp[i-1]) / 4
         else:
-            array_out[0] = temp[0]
-    else:
-        if (numpy.isnan(temp[0])):
-            array_out[0] = numpy.nan
-        else:
-            array_out[0] = (temp[1] + 3.0 * temp[0]) / 4.0
-    if (numpy.isnan(temp[-2])):
-        if (numpy.isnan(temp[-1])):
-            array_out[-1] = numpy.nan
-        else:
-            array_out[-2] = array_out[-2]
-    else:
-        if (numpy.isnan(temp[-1])):
-            array_out[-1] = numpy.nan
-        else:
-            array_out[-1] = (temp[-2] + 3.0 * temp[-1]) / 4.0
+            array_out[i] = (temp[i+1] + 2 * temp[i] + temp[i-1]) / 4
 
     return array_out
 
@@ -276,28 +330,39 @@ def smooth121_1D(array_in):
 def window_cosbell(N, pct, opt=False):
     """
     Compute an equivalent tapering window to the NCL taper function.
+    :param N: Length of the time series to be tapered.
+    :param pct: Percent of the time series to taper.
+    :return x: Array of length N and values 1 with pct/2 beginning and end values tapered to zero.
     """
 
-    x = numpy.ones(N, dtype='double')
+    x = np.ones(N, dtype='double')
     M = int((pct * N + 0.5) / 2)
     if M < 1:
         M = 1
 
     for i in range(1, M + 1):
-        wgt = 0.5 - 0.5 * numpy.cos(numpy.pi / M * (i - 0.5))
+        wgt = 0.5 - 0.5 * np.cos(np.pi / M * (i - 0.5))
         x[i - 1] = x[i - 1] * wgt
         x[-i] = x[-i] * wgt
 
-    return (x)
+    return x
 
 
 def mjo_cross(X, Y, segLen, segOverLap, opt=False):
     """
-  MJO cross spectrum function. This function calls the above functions to compute
-  cross spectral estimates for each segment of length segLen. Segments overlap by
-  segOverLap. This function mirrors the NCL routine mjo_cross.
-  Return value is a dictionary.
-  """
+    MJO cross spectrum function. This function calls the above functions to compute
+    cross spectral estimates for each segment of length segLen. Segments overlap by
+    segOverLap. This function mirrors the NCL routine mjo_cross.
+    Return value is a dictionary.
+    :param X: Input data 3D array ( time, lat, lon).
+    :param Y: Input data 3D array ( time, lat, lon).
+    :param segLen: Length of the time segments.
+    :param segOverLap: Length of the overlap between time segments.
+    :param opt: Optional parameter. Not currently used, set to False.
+    :return dict: Dictionary containing the spectral array (STC), frequency array (freq), zonal wavenumber array (wave),
+    the number of segments used (nseg), the estimated degrees of freedom (dof), the probability levels (p),
+    the coherence squared values corresponding to the probability levels (prob_coh2)
+    """
 
     ntim, nlat, mlon = X.shape
     ntim1, nlat1, mlon1 = Y.shape
@@ -318,29 +383,29 @@ def mjo_cross(X, Y, segLen, segOverLap, opt=False):
     # generate Tukey window, taper 10% of series
     pct = 0.10
     window = window_cosbell(segLen, pct)
-    window = numpy.tile(window, [1, 1, 1])
-    window = numpy.transpose(window)
-    window = numpy.tile(window, [1, nlat, mlon])
+    window = np.tile(window, [1, 1, 1])
+    window = np.transpose(window)
+    window = np.tile(window, [1, nlat, mlon])
 
     # test if time and longitude are odd or even, fft algorithm
     # returns the Nyquist frequency once for even NT or NL and twice
     # if they are odd
-    if segLen % 2 == 1:
-        nfreq = segLen
+    if (segLen/2+1) % 2 == 1:
+        nfreq = int(segLen/2) + 1
     else:
-        nfreq = segLen + 1
+        nfreq = int(segLen/2) + 2
     if mlon % 2 == 1:
         nwave = mlon
     else:
         nwave = mlon + 1
 
     # initialize spectrum array
-    STC = numpy.zeros([8, nfreq, nwave], dtype='double')
-    wave = numpy.arange(-int(nwave / 2), int(nwave / 2) + 1, 1.)
-    freq = numpy.arange(-1. * int(segLen / 2), 1. * int(segLen / 2) + 1., 1) / (segLen)
+    STC = np.zeros([8, nfreq, nwave], dtype='double')
+    wave = np.arange(-int(nwave / 2), int(nwave / 2) + 1, 1.)
+    freq = np.linspace(0, 0.5, num=nfreq)
 
     # find time-mean index
-    indfreq0 = numpy.where(freq == 0.)[0]
+    indfreq0 = np.where(freq == 0.)[0]
 
     # loop through segments and compute cross-spectra
     kseg = 0
@@ -354,9 +419,9 @@ def mjo_cross(X, Y, segLen, segOverLap, opt=False):
 
         XX = x[ntStrt:ntLast, :, :] * window
         YY = y[ntStrt:ntLast, :, :] * window
-        STCseg = mjo_cross_segment(XX, YY, 0)
+        STCseg = mjo_cross_segment_realfft(XX, YY, 0)
         # set time-mean power to NaN
-        STCseg[:, indfreq0, :] = numpy.nan
+        STCseg[:, indfreq0, :] = np.nan
         # apply 1-2-1 smoother in frequency
         smooth121(STCseg, freq)
         # sum segment spectra
@@ -374,104 +439,163 @@ def mjo_cross(X, Y, segLen, segOverLap, opt=False):
     dof = 2.667 * kseg
     p = [0.80, 0.85, 0.90, 0.925, 0.95, 0.99]  # probability levels
     prob = p
-    prob_coh2 = 1 - (1 - numpy.power(p, (0.5 * dof - 1)))
+    prob_coh2 = 1 - (1 - np.power(p, (0.5 * dof - 1)))
 
     return {'STC': STC, 'freq': freq, 'wave': wave, 'nseg': kseg, 'dof': dof, 'p': prob, 'prob_coh2': prob_coh2}
 
 
-def kf_filter_mask(fftData, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveName):
+def kf_filter_mask(fftIn, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveName):
     """
-    Generate a filter mask array based on the FFT array and the wave information. Set all values
+    Generate a filtered mask array based on the FFT array and the wave information. Set all values
     outside the specified wave dispersion curves to zero.
+    :param fftData: Array of fft coefficients ( wavenumber x freq ), has to be 2 dimensional.
+    :param obsPerDay: Number of observations per day.
+    :param tMin: Minimum period to include in filtering region.
+    :param tMax: Maximum period to include in filtering region.
+    :param kMin: Minimum wavenumber to include in filtering region.
+    :param kMax: Maximum wavenumber to include in filtering region.
+    :param hMin: Minimum equivalent depth to include in filtering region.
+    :param hMax: Maximum equivalent depth to include in filtering region.
+    :param waveName: Name of the wave to filter for.
+    :return: Array containing the fft coefficients of the same size as the input data, with coefficients outside the
+    desired region set to zero.
     """
+    fftData = np.copy(fftIn)
+    fftData = np.transpose(fftData)
     nf, nk = fftData.shape  # frequency, wavenumber array
+    fftData = fftData[:, ::-1]
+
     nt = (nf - 1) * 2
     jMin = int(round(nt / (tMax * obsPerDay)))
     jMax = int(round(nt / (tMin * obsPerDay)))
-    jMax = numpy.array([jMax, nf]).min()
+    jMax = np.array([jMax, nf]).min()
 
     if kMin < 0:
         iMin = int(round(nk + kMin))
-        iMin = numpy.array([iMin, nk // 2]).max()
+        iMin = np.array([iMin, nk // 2]).max()
     else:
         iMin = int(round(kMin))
-        iMin = numpy.array([iMin, nk // 2]).min()
+        iMin = np.array([iMin, nk // 2]).min()
 
     if kMax < 0:
         iMax = int(round(nk + kMax))
-        iMax = numpy.array([iMax, nk // 2]).max()
+        iMax = np.array([iMax, nk // 2]).max()
     else:
         iMax = int(round(kMax))
-        iMax = numpy.array([iMax, nk // 2]).min()
+        iMax = np.array([iMax, nk // 2]).min()
 
     # set the appropriate coefficients outside the frequency range to zero
+    # print(fftData[:, 0])
     if jMin > 0:
         fftData[0:jMin, :] = 0
-    if jMax < (nf - 1):
-        fftData[jMax:, :] = 0
+    if jMax < nf:
+        fftData[jMax + 1:nf, :] = 0
     if iMin < iMax:
         # Set things outside the wavenumber range to zero, this is more normal
         if iMin > 0:
             fftData[:, 0:iMin] = 0
-        if iMax < (nk - 1):
-            fftData[:, iMax + 1:] = 0
-        else:
-            # Set things inside the wavenumber range to zero, this should be somewhat unusual
-            fftData[:, iMax + 1:iMin] = 0
+        if iMax < nk:
+            fftData[:, iMax + 1:nk] = 0
+    else:
+        # Set things inside the wavenumber range to zero, this should be somewhat unusual
+        fftData[:, iMax + 1:iMin] = 0
 
-    c = numpy.sqrt(g * [hMin, hMax])
+    c = np.empty([2])
+    if hMin == -9999:
+        c[0] = np.nan
+        if hMax == -9999:
+            c[1] = np.nan
+    else:
+        if hMax == -9999:
+            c[1] = np.nan
+        else:
+            c = np.sqrt(g * np.array([hMin, hMax]))
+
     spc = 24 * 3600. / (2 * pi * obsPerDay)  # seconds per cycle
 
     # Now set things to zero that are outside the wave dispersion. Loop through wavenumbers
     # and find the limits for each one.
     for i in range(nk):
         if i < (nk / 2):
-            # k is negative
-            k = -i / re
-        else:
             # k is positive
-            k = (nk - i) / re
-        freq = numpy.array([0, nf]) / spc
+            k = i / re
+        else:
+            # k is negative
+            k = -(nk - i) / re
+
+        freq = np.array([0, nf]) / spc
         jMinWave = 0
         jMaxWave = nf
-        if ((waveName == "Kelvin") or (waveName == "kelvin") or (waveName == "KELVIN")):
+        if (waveName == "Kelvin") or (waveName == "kelvin") or (waveName == "KELVIN"):
             ftmp = k * c
-            freq = numpy.array([ftmp, ftmp])
-        if ((waveName == "ER") or (waveName == "er")):
-            ftmp = -beta * k / (k ^ 2 + 3. * beta / c)
-            freq = numpy.array([ftmp, ftmp])
-        if ((waveName == "MRG") or (waveName == "IG0") or (waveName == "mrg") or (waveName == "ig0")):
-            if (k == 0):
-                ftmp = numpy.sqrt(beta * c)
-                freq = numpy.array([ftmp, ftmp])
+            freq = np.array(ftmp)
+        if (waveName == "ER") or (waveName == "er"):
+            ftmp = -beta * k / (k ** 2 + 3 * beta / c)
+            freq = np.array(ftmp)
+        if (waveName == "MRG") or (waveName == "IG0") or (waveName == "mrg") or (waveName == "ig0"):
+            if k == 0:
+                ftmp = np.sqrt(beta * c)
+                freq = np.array(ftmp)
             else:
-                if (k > 0):
-                    ftmp = k * c * (0.5 + 0.5 * numpy.sqrt(1 + 4 * beta / (k ^ 2 * c)))
-                    freq = numpy.array([ftmp, ftmp])
+                if k > 0:
+                    ftmp = k * c * (0.5 + 0.5 * np.sqrt(1 + 4 * beta / (k ** 2 * c)))
+                    freq = np.array(ftmp)
                 else:
-                    ftmp = k * c * (0.5 - 0.5 * numpy.sqrt(1 + 4 * beta / (k ^ 2 * c)))
-                    freq = numpy.array([ftmp, ftmp])
-        if ((waveName == "IG1") or (waveName == "ig1")):
-            ftmp = numpy.sqrt(3 * beta * c + k ^ 2 * c ^ 2)
-            freq = numpy.array([ftmp, ftmp])
-        if ((waveName == "IG2") or (waveName == "ig2")):
-            ftmp = numpy.sqrt(5 * beta * c + k ^ 2 * c ^ 2)
-            freq = numpy.array([ftmp, ftmp])
+                    ftmp = k * c * (0.5 - 0.5 * np.sqrt(1 + 4 * beta / (k ** 2 * c)))
+                    freq = np.array(ftmp)
+        if (waveName == "IG1") or (waveName == "ig1"):
+            ftmp = np.sqrt(3 * beta * c + k ** 2 * c ** 2)
+            freq = np.array(ftmp)
+        if (waveName == "IG2") or (waveName == "ig2"):
+            ftmp = np.sqrt(5 * beta * c + k ** 2 * c ** 2)
+            freq = np.array(ftmp)
 
-        if (hMin == -9999):
+        if hMin == -9999:
             jMinWave = 0
         else:
-            jMinWave = int(numpy.floor(freq[0] * spc * nt))
-        if (hMax == -9999):
+            jMinWave = int(np.floor(freq[0] * spc * nt))
+        if hMax == -9999:
             jMaxWave = nf
         else:
-            jMaxWave = int(numpy.ceil(freq[1] * spc * nt))
-        jMaxWave = numpy.array([jMaxWave, 0]).max()
-        jMinWave = numpy.array([jMinWave, freqDim]).min()
+            jMaxWave = int(np.ceil(freq[1] * spc * nt))
+        jMaxWave = np.array([jMaxWave, 0]).max()
+        jMinWave = np.array([jMinWave, nf]).min()
+
         # set appropriate coefficients to zero
-        if (jMinWave > 0):
-            fftData[:jMinWave, i] = 0
-        if (jMaxWave < (nf - 1)):
-            fftData[jMaxWave + 1:, i] = 0
+        if jMinWave > 0:
+            fftData[0:jMinWave, i] = 0
+        if jMaxWave < nf:
+            fftData[jMaxWave + 1:nf, i] = 0
+
+    fftData = fftData[:, ::-1]
+    fftData = np.transpose(fftData)
 
     return fftData
+
+
+def kf_filter(data, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveName):
+    """
+    Filter 2D (time x lon) input data for a convectively coupled equatorial wave region in
+    wavenumber - frequency space.
+    :param Data: Input data ( time x lon ), has to be 2 dimensional.
+    :param obsPerDay: Number of observations per day.
+    :param tMin: Minimum period to include in filtering region.
+    :param tMax: Maximum period to include in filtering region.
+    :param kMin: Minimum wavenumber to include in filtering region.
+    :param kMax: Maximum wavenumber to include in filtering region.
+    :param hMin: Minimum equivalent depth to include in filtering region.
+    :param hMax: Maximum equivalent depth to include in filtering region.
+    :param waveName: Name of the wave to filter for.
+    :return: Array containing the filtered data of the same size as the input data.
+    """
+
+    # reorder to (lon x time) to be able to use rfft on the time dimension
+    data = np.transpose(data, axes=[1, 0])
+    fftdata = np.fft.rfft2(data, axes=(0, 1))
+
+    fftfilt = kf_filter_mask(fftdata, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveName)
+
+    datafilt = np.fft.irfft2(fftfilt, axes=(0, 1))
+    datafilt = np.transpose(datafilt, axes=[1, 0])
+
+    return datafilt
