@@ -133,8 +133,8 @@ def calculate_ecnt_rmse(input_data, columns_names, aggregation=False):
     warnings.filterwarnings('error')
     try:
         total = get_total_values(input_data, columns_names, aggregation)
-        mse = sum_column_data_by_name(input_data, columns_names, 'mse') / total
-        result = round_half_up(mse, PRECISION)
+        rmse =  math.sqrt(sum_column_data_by_name(input_data, columns_names, 'mse') / total)
+        result = round_half_up(rmse, PRECISION)
     except (TypeError, ZeroDivisionError, Warning):
         result = None
     warnings.filterwarnings('ignore')
