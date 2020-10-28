@@ -3,7 +3,8 @@ import numpy as np
 import pytest
 
 from metcalcpy.util.utils import represents_int, is_string_integer, get_derived_curve_name, calc_derived_curve_value, \
-    unique, intersection, is_derived_point, parse_bool, round_half_up, sum_column_data_by_name, nrow_column_data_by_name_value
+    unique, intersection, is_derived_point, parse_bool, round_half_up, sum_column_data_by_name, \
+    nrow_column_data_by_name_value,  create_permutations_mv
 
 
 @pytest.fixture
@@ -74,7 +75,7 @@ def test_is_derived_point():
     point = ('stochmp1', '20000', 'PSTD_BRIER')
     assert not is_derived_point(point)
     point = (
-    'DIFF(stochmp1 TMP_ENS_FREQ_ge283 PSTD_BRIER-stochmp2 TMP_ENS_FREQ_ge283 PSTD_BRIER)', '20000', 'PSTD_BRIER')
+        'DIFF(stochmp1 TMP_ENS_FREQ_ge283 PSTD_BRIER-stochmp2 TMP_ENS_FREQ_ge283 PSTD_BRIER)', '20000', 'PSTD_BRIER')
     assert is_derived_point(point)
 
 
@@ -124,8 +125,25 @@ def test_nrow_column_data_by_name_value(settings):
         ['dicast15', '2019-07-03 12:00:00', '2019-07-05 13:15:00', 491500, 'SWS01', 'GHI', 'MAE', 1, 1, 518.43, 501.36,
          259920.0648, 268769.6649, 251361.8496, 17.07]
     ])
-    filters = {'fcst_lead':491500, 'stat_value': 0}
+    filters = {'fcst_lead': 491500, 'stat_value': 0}
     assert 2 == nrow_column_data_by_name_value(data_values, settings['columns'], filters)
+
+
+def test_create_permutations_mv_dict():
+    fields_values = {'vx_mask': ['FULL'], 'model': ['HREF', 'HREFV3'], 'fcst_var': ['HGT'],
+                     'stat_name': ['ECNT_RMSE', 'ECNT_SPREAD']}
+    expected_result = [['FULL', 'HREF', 'HGT', 'ECNT_RMSE'], ['FULL', 'HREFV3', 'HGT', 'ECNT_RMSE'],
+                       ['FULL', 'HREF', 'HGT', 'ECNT_SPREAD'], ['FULL', 'HREFV3', 'HGT', 'ECNT_SPREAD']]
+    result = create_permutations_mv(fields_values, 0)
+    assert expected_result == result
+
+
+def test_create_permutations_mv_list():
+    fields_values = [['FULL'],  ['HREF', 'HREFV3'],  ['HGT'], ['ECNT_RMSE', 'ECNT_SPREAD']]
+    expected_result = [['FULL', 'HREF', 'HGT', 'ECNT_RMSE'], ['FULL', 'HREFV3', 'HGT', 'ECNT_RMSE'],
+                       ['FULL', 'HREF', 'HGT', 'ECNT_SPREAD'], ['FULL', 'HREFV3', 'HGT', 'ECNT_SPREAD']]
+    result = create_permutations_mv(fields_values, 0)
+    assert expected_result == result
 
 
 if __name__ == "__main__":
