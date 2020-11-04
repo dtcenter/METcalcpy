@@ -860,8 +860,10 @@ class AggStat:
             # replace thresh_i values for reliability plot
             indy_vals = self.params['indy_vals']
             if self.params['indy_var'] == 'thresh_i' and self.params['line_type'] == 'pct':
-                indy_vals = self.input_data['thresh_i'].sort()
-                indy_vals = np.unique(indy_vals)
+                indy_vals_int = self.input_data['thresh_i'].tolist()
+                indy_vals_int.sort()
+                indy_vals_int = np.unique(indy_vals_int).tolist()
+                indy_vals = list(map(str, indy_vals_int))
 
             # identify all possible points values by adding series values, indy values
             # and statistics and then permute them
@@ -906,13 +908,14 @@ class AggStat:
                         for i, filter_val in enumerate(filter_list):
                             if is_string_integer(filter_val):
                                 filter_list[i] = int(filter_val)
-                        if field != self.params['indy_var']:
-                            filters_wihtout_indy. \
-                                append((self.input_data[field].isin(filter_list)))
-                        else:
-                            indy_val = filter_value
+                        if field in self.input_data.keys():
+                            if field != self.params['indy_var']: #
+                                filters_wihtout_indy. \
+                                    append((self.input_data[field].isin(filter_list)))
+                            else:
+                                indy_val = filter_value
 
-                        all_filters.append((self.input_data[field].isin(filter_list)))
+                            all_filters.append((self.input_data[field].isin(filter_list)))
 
                     # use numpy to select the rows where any record evaluates to True
                     mask = np.array(all_filters).all(axis=0)
