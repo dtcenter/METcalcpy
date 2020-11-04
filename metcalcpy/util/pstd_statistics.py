@@ -178,6 +178,58 @@ def calculate_pstd_uncertainty(input_data, columns_names):
     return result
 
 
+def calculate_pstd_calibration(input_data, columns_names):
+    """Performs calculation of calibration
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated calibration as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        oy_i = input_data[0, get_column_index_by_name(columns_names, 'oy_i')]
+        n_i = calculate_pstd_ni(input_data, columns_names)
+        calibration = oy_i / n_i
+        result = round_half_up(calibration, PRECISION)
+
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_pstd_ni(input_data, columns_names):
+    """Performs calculation of ni - Uncertainty
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated ni as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        oy_i = input_data[0, get_column_index_by_name(columns_names, 'oy_i')]
+        on_i = input_data[0, get_column_index_by_name(columns_names, 'on_i')]
+        n_i = oy_i + on_i
+        result = round_half_up(n_i, PRECISION)
+
+    except (TypeError, ZeroDivisionError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
 def calculate_pstd_roc_auc(input_data, columns_names):
     """Performs calculation of ROC_AUC - Area under the receiver operating characteristic curve
 
