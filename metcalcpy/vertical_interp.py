@@ -493,6 +493,10 @@ def write_dataset(ds, ds_nc, coords_interp=None):
             logging.debug((attr, ds[field].attrs[attr]))
             setattr(var, attr, ds[field].attrs[attr])
 
+    for attr in ds.attrs:
+        logging.debug((attr, ds.attrs[attr]))
+        setattr(ds_nc, attr, ds.attrs[attr])
+
 
 if __name__ == '__main__':
     """
@@ -569,7 +573,6 @@ if __name__ == '__main__':
     if 'valid_time' in ds:
         logging.info(datetime.utcfromtimestamp(
                      ds['valid_time'].astype('O')/1e9))
-    if 'time' in ds:
         logging.info(datetime.utcfromtimestamp(
                      ds['time'].astype('O')/1e9))
 
@@ -599,6 +602,9 @@ if __name__ == '__main__':
     if 'valid_time' in ds:
         ds_out['valid_time'] = ds['valid_time'].values
         ds_out['forecast_reference_time'] = ds['time'].values
+
+    for attr in ds.attrs:
+        ds_out.attrs[attr] = ds.attrs[attr]
 
     for fieldname in config['fields']:
 
