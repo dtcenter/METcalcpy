@@ -465,6 +465,11 @@ def write_dataset(ds, ds_nc, coords_interp=None):
         coord_vars[dim] = coord
         coord[:] = ds.coords[dim].values
 
+    if 'time' not in ds.dims:
+        ds_nc.createDimension('time', 1)
+        coord = ds_nc.createVariable(
+            'time', 'uint64', ('time'))
+
     if coords_interp is not None:
         for dim, coord_array in coords_interp:
             logging.info('Setting coordinate attributes for ' + dim)
@@ -473,8 +478,11 @@ def write_dataset(ds, ds_nc, coords_interp=None):
 
     for field in ds:
         logging.debug('Creating variable ' + field)
+        dtype = ds[field].dtype
+        if dtype not in ['uint32', 'uint64', 'int32', 'int64', 'float32', 'float64']:
+            dtype = 'uint64'
         var = ds_nc.createVariable(
-            field, ds[field].dtype, ds[field].dims)
+            field, dtype, ds[field].dims)
         var[:] = ds[field].values
 
         for attr in ds[field].attrs:
@@ -577,6 +585,8 @@ if __name__ == '__main__':
     Interpolate
     """
     ds_out = xr.Dataset()
+    ds_out['valid_time'] = ds.coords['valid_time']
+    logging.debug(ds_out['valid_time'])
 
     for fieldname in config['fields']:
 
