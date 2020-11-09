@@ -33,6 +33,7 @@ import sys
 import argparse
 import logging
 import yaml
+from datetime import datetime
 import numpy as np
 import pandas as pd
 import xarray as xr  # http://xarray.pydata.org/
@@ -467,8 +468,11 @@ def write_dataset(ds, ds_nc, coords_interp=None):
 
     if 'time' not in ds.dims:
         ds_nc.createDimension('time', 1)
-        coord = ds_nc.createVariable(
+        time_coord = ds_nc.createVariable(
             'time', 'uint64', ('time'))
+        time_coord[:] = ds['valid_time']
+        logging.info(datetime.utcfromtimestamp(
+                     ds['valid_time'].astype('O')/1e9))
 
     if coords_interp is not None:
         for dim, coord_array in coords_interp:
@@ -562,6 +566,13 @@ if __name__ == '__main__':
         logging.error('Unable to open ' + filename_in)
         logging.error(sys.exc_info()[0])
 
+    if 'valid_time' in ds:
+        logging.info(datetime.utcfromtimestamp(
+                     ds['valid_time'].astype('O')/1e9))
+    if 'time' in ds:
+        logging.info(datetime.utcfromtimestamp(
+                     ds['time'].astype('O')/1e9))
+
     """
     Convert pressure levels to height levels
     """
@@ -585,8 +596,9 @@ if __name__ == '__main__':
     Interpolate
     """
     ds_out = xr.Dataset()
-    ds_out['valid_time'] = ds.coords['valid_time']
-    logging.debug(ds_out['valid_time'])
+    if 'valid_time' in ds:
+        ds_out['valid_time'] = ds['valid_time'].values
+        ds_out['forecast_reference_time'] = ds['time'].values
 
     for fieldname in config['fields']:
 
