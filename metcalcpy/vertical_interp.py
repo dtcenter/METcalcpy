@@ -134,7 +134,7 @@ def vertical_interp(fieldname, config,
         length_convert = float((ureg.Quantity(1, config['vertical_level_units'])
                        / ureg.Quantity(1, coordinate_surfaces.attrs['units'])).to_base_units())
     except pint.errors.UndefinedUnitError:
-        logging.error('Unknown unit:' + coordinate_surfaces.attrs['units'])
+        logging.warning('Unknown unit:' + coordinate_surfaces.attrs['units'])
         length_convert = 1
     logging.debug(length_convert)
 
