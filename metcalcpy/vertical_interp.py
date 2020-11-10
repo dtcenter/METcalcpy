@@ -460,19 +460,27 @@ def write_dataset(ds, ds_nc, coords_interp=None):
         ds_nc.createDimension(dim, len(ds.coords[dim]))
         dtype = ds.coords[dim].dtype
         if dtype not in ['uint32', 'uint64', 'int32', 'int64', 'float32', 'float64']:
-            dtype = 'uint64'
+            dtype = 'float64'
         coord = ds_nc.createVariable(
             dim, dtype, (dim))
         coord_vars[dim] = coord
-        coord[:] = ds.coords[dim].values
+        if dim != 'time':
+            coord[:] = ds.coords[dim].values
+        else:
+            dt_array = [datetime.utcfromtimestamp(dt.astype('O')/1e9)
+                        for dt in ds.coords[dim].values]
+            t_array = np.array([(dt - dt_array[0]).total_seconds()
+                                for dt in dt_array], dtype=np.float64)
+            coord[:] = t_array
 
     if 'time' not in ds.dims:
         ds_nc.createDimension('time', 1)
         time_coord = ds_nc.createVariable(
-            'time', 'uint64', ('time'))
-        time_coord[:] = ds['valid_time']
-        logging.info(datetime.utcfromtimestamp(
-                     ds['valid_time'].astype('O')/1e9))
+            'time', 'float64', ('time'))
+        time_coord[:] = (datetime.utcfromtimestamp(
+            ds['valid_time'].astype('O')/1e9)
+            - datetime.utcfromtimestamp(
+                ds['init_time'].astype('O')/1e9)).total_seconds()
 
     if coords_interp is not None:
         for dim, coord_array in coords_interp:
@@ -601,7 +609,7 @@ if __name__ == '__main__':
     ds_out = xr.Dataset()
     if 'valid_time' in ds:
         ds_out['valid_time'] = ds['valid_time'].values
-        ds_out['forecast_reference_time'] = ds['time'].values
+        ds_out['init_time'] = ds['time'].values
 
     for attr in ds.attrs:
         ds_out.attrs[attr] = ds.attrs[attr]
