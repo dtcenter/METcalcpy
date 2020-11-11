@@ -493,9 +493,16 @@ def write_dataset(ds, ds_nc, coords_interp=None):
         dtype = ds[field].dtype
         if dtype not in ['uint32', 'uint64', 'int32', 'int64', 'float32', 'float64']:
             dtype = 'uint64'
-        var = ds_nc.createVariable(
-            field, dtype, ds[field].dims)
-        var[:] = ds[field].values
+        if 'time' not in ds.dims:
+            dims_with_time = list(ds[field].dims)
+            dims_with_time.insert(0, 'time')
+            var = ds_nc.createVariable(
+                field, dtype, tuple(dims_with_time))
+            var[:] = ds[field].values
+        else:
+            var = ds_nc.createVariable(
+                field, dtype, ds[field].dims)
+            var[:] = ds[field].values
 
         for attr in ds[field].attrs:
             logging.debug((attr, ds[field].attrs[attr]))
