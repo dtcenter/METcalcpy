@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="metcalpy",
+    name="metcalcpy",
     version="0.1",
     author="METplus",
     author_email="met-help@ucar.edu",
