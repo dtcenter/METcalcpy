@@ -477,10 +477,13 @@ def write_dataset(ds, ds_nc, coords_interp=None):
         ds_nc.createDimension('time', 1)
         time_coord = ds_nc.createVariable(
             'time', 'float64', ('time'))
-        time_coord[:] = (datetime.utcfromtimestamp(
+        dt_valid = datetime.utcfromtimestamp(
             ds['valid_time'].astype('O')/1e9)
-            - datetime.utcfromtimestamp(
-                ds['init_time'].astype('O')/1e9)).total_seconds()
+        dt_init = datetime.utcfromtimestamp(
+            ds['init_time'].astype('O')/1e9)
+        time_coord[:] = (dt_valid - dt_init).total_seconds()
+        time_coord.long_name = 'time'
+        time_coord.units = 'seconds since ' + str(dt_init)
 
     if coords_interp is not None:
         for dim, coord_array in coords_interp:
