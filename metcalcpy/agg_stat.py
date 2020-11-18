@@ -26,6 +26,7 @@ import itertools
 import argparse
 from inspect import signature
 import yaml
+import pandas
 import bootstrapped.bootstrap
 from metcalcpy.bootstrap_custom import BootstrapDistributionResults, bootstrap_and_value
 from metcalcpy.util.ctc_statistics import *
@@ -42,7 +43,7 @@ from metcalcpy.util.nbrctc_statistics import *
 from metcalcpy.util.pstd_statistics import *
 from metcalcpy.util.rps_statistics import *
 
-from metcalcpy.util.utils import is_string_integer, get_derived_curve_name, unique, \
+from metcalcpy.util.utils import is_string_integer, get_derived_curve_name, \
     calc_derived_curve_value, intersection, is_derived_point, parse_bool, \
     OPERATION_TO_SIGN, perfect_score_adjustment, perform_event_equalization, aggregate_field_values
 
@@ -107,7 +108,7 @@ class AggStat:
         self.statistic = None
         self.derived_name_to_values = {}
         self.params = in_params
-        import pandas
+
         try:
             self.input_data = pd.read_csv(
                 self.params['agg_stat_input'],
@@ -117,8 +118,8 @@ class AggStat:
             self.column_names = self.input_data.columns.values
         except pandas.errors.EmptyDataError:
             raise
-        except KeyError as e:
-            print(f'ERROR: parameter with key {e} is missing')
+        except KeyError as er:
+            print(f'ERROR: parameter with key {er} is missing')
             raise
         self.group_to_value = {}
 
@@ -503,7 +504,7 @@ class AggStat:
 
     def _prepare_nbr_cnt_data(self, data_for_prepare):
         """Prepares nbrcnt data.
-            Multiplies needed for the statistic calculation columns to the 'total'value
+            Multiplies needed for the statistic calculation columns to the 'total' value
 
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
@@ -894,6 +895,7 @@ class AggStat:
                 if not is_derived:
                     # filter point data
                     all_filters = []
+                    all_filters_pct = []
                     filters_wihtout_indy = []
                     indy_val = None
                     for field_ind, field in enumerate(all_fields_values.keys()):
@@ -909,27 +911,34 @@ class AggStat:
                             if is_string_integer(filter_val):
                                 filter_list[i] = int(filter_val)
                         if field in self.input_data.keys():
-                            if field != self.params['indy_var']: #
+                            if field != self.params['indy_var']:  #
                                 filters_wihtout_indy. \
                                     append((self.input_data[field].isin(filter_list)))
                             else:
                                 indy_val = filter_value
 
                             all_filters.append((self.input_data[field].isin(filter_list)))
+                        if field in series_val.keys():
+                            all_filters_pct.append((self.input_data[field].isin(filter_list)))
 
                     # use numpy to select the rows where any record evaluates to True
                     mask = np.array(all_filters).all(axis=0)
                     point_data = self.input_data.loc[mask]
 
                     if self.params['line_type'] == 'pct':
+                        if all_filters_pct:
+                            mask_pct = np.array(all_filters_pct).all(axis=0)
+                            point_data_pct = self.input_data.loc[mask_pct]
+                        else:
+                            point_data_pct = self.input_data
                         # collect all columns that starts with oy_i and on_i
-                        filter_oy_i = [col for col in point_data if col.startswith('oy_i')]
-                        filter_on_i = [col for col in point_data if col.startswith('on_i')]
+                        filter_oy_i = [col for col in point_data_pct if col.startswith('oy_i')]
+                        filter_on_i = [col for col in point_data_pct if col.startswith('on_i')]
                         # calculate oy_total
-                        oy_total = point_data[filter_oy_i].values.sum()
+                        oy_total = point_data_pct[filter_oy_i].values.sum()
 
                         # calculate T
-                        sum_n_i_orig_T = point_data[filter_on_i].values.sum() + oy_total
+                        sum_n_i_orig_T = point_data_pct[filter_on_i].values.sum() + oy_total
 
                         # calculate o_bar
                         o_bar = oy_total / sum_n_i_orig_T
