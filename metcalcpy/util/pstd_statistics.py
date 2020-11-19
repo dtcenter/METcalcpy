@@ -38,7 +38,7 @@ def calculate_pstd_brier(input_data, columns_names):
 
         brier = reliability - resolution + uncertainty
         result = round_half_up(brier, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -70,7 +70,7 @@ def calculate_pstd_bss_smpl(input_data, columns_names):
         bss_smpl = (resolution - reliability) / uncertainty
         result = round_half_up(bss_smpl, PRECISION)
 
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -90,10 +90,13 @@ def calculate_pstd_baser(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        baser = input_data[0, get_column_index_by_name(columns_names, 'o_bar')]
+
+        oy_total = sum(input_data[:, get_column_index_by_name(columns_names, 'oy_i')])
+        T = calculate_pstd_ni(input_data, columns_names)
+        baser = oy_total / T
         result = round_half_up(baser, PRECISION)
 
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -120,7 +123,7 @@ def calculate_pstd_reliability(input_data, columns_names):
         reliability = calc_reliability(T, df_pct_perm)
         result = round_half_up(reliability, PRECISION)
 
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -147,7 +150,7 @@ def calculate_pstd_resolution(input_data, columns_names):
 
         resolution = calc_resolution(T, df_pct_perm, o_bar)
         result = round_half_up(resolution, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -172,7 +175,7 @@ def calculate_pstd_uncertainty(input_data, columns_names):
         uncertainty = calc_uncertainty(o_bar)
         result = round_half_up(uncertainty, PRECISION)
 
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -193,12 +196,12 @@ def calculate_pstd_calibration(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        oy_i = input_data[0, get_column_index_by_name(columns_names, 'oy_i')]
+        oy_i = sum(input_data[:, get_column_index_by_name(columns_names, 'oy_i')])
         n_i = calculate_pstd_ni(input_data, columns_names)
         calibration = oy_i / n_i
         result = round_half_up(calibration, PRECISION)
 
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -219,12 +222,12 @@ def calculate_pstd_ni(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        oy_i = input_data[0, get_column_index_by_name(columns_names, 'oy_i')]
-        on_i = input_data[0, get_column_index_by_name(columns_names, 'on_i')]
+        oy_i = sum(input_data[:, get_column_index_by_name(columns_names, 'oy_i')])
+        on_i = sum(input_data[:, get_column_index_by_name(columns_names, 'on_i')])
         n_i = oy_i + on_i
         result = round_half_up(n_i, PRECISION)
 
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -266,7 +269,7 @@ def calculate_pstd_roc_auc(input_data, columns_names):
 
         result = round_half_up(roc_auc, PRECISION)
 
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
