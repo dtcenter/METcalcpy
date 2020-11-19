@@ -37,7 +37,7 @@ def calculate_val1l2_anom_corr(input_data, columns_names, aggregation=False):
         uvooabar = sum_column_data_by_name(input_data, columns_names, 'uvooabar') / total
         result = calc_wind_corr(ufabar, vfabar, uoabar, voabar, uvfoabar, uvffabar, uvooabar)
         result = round_half_up(result, PRECISION)
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -61,7 +61,7 @@ def calc_wind_corr(uf, vf, uo, vo, uvfo, uvff, uvoo):
     try:
         corr = (uvfo - uf * uo - vf * vo) / (np.sqrt(uvff - uf * uf - vf * vf)
                                              * np.sqrt(uvoo - uo * uo - vo * vo))
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         corr = None
     return corr
 

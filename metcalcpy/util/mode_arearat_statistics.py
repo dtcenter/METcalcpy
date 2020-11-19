@@ -33,7 +33,7 @@ def calculate_arearat_fsa_asa(input_data, columns_names):
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / (denominator), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -62,7 +62,7 @@ def calculate_arearat_osa_asa(input_data, columns_names):
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / (denominator), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -91,7 +91,7 @@ def calculate_arearat_asm_asa(input_data, columns_names):
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / (denominator), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -120,7 +120,7 @@ def calculate_arearat_asu_asa(input_data, columns_names):
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / (denominator), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -149,7 +149,7 @@ def calculate_arearat_fsm_fsa(input_data, columns_names):
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / (denominator), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -178,7 +178,7 @@ def calculate_arearat_fsu_fsa(input_data, columns_names):
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / (denominator), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -207,7 +207,7 @@ def calculate_arearat_osm_osa(input_data, columns_names):
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / (denominator), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -237,7 +237,7 @@ def calculate_arearat_osu_osa(input_data, columns_names):
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / (denominator), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -266,7 +266,7 @@ def calculate_arearat_fsm_asm(input_data, columns_names):
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / (denominator), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -295,7 +295,7 @@ def calculate_arearat_osm_asm(input_data, columns_names):
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / (denominator), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -324,7 +324,7 @@ def calculate_arearat_osu_asu(input_data, columns_names):
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / (denominator), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -351,7 +351,7 @@ def calculate_arearat_fsa_aaa(input_data, columns_names):
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(input_data, columns_names, 'area')
         result = round_half_up(nominator / (denominator), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -378,7 +378,7 @@ def calculate_arearat_osa_aaa(input_data, columns_names):
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(input_data, columns_names, 'area')
         result = round_half_up(nominator / (denominator), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -407,7 +407,7 @@ def calculate_arearat_fsa_faa(input_data, columns_names):
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -436,7 +436,7 @@ def calculate_arearat_fca_faa(input_data, columns_names):
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -465,7 +465,7 @@ def calculate_arearat_osa_oaa(input_data, columns_names):
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -494,7 +494,7 @@ def calculate_arearat_oca_oaa(input_data, columns_names):
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -523,7 +523,7 @@ def calculate_arearat_fca_aca(input_data, columns_names):
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -552,7 +552,7 @@ def calculate_arearat_oca_aca(input_data, columns_names):
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -582,7 +582,7 @@ def calculate_arearat_fsa_osa(input_data, columns_names):
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -612,7 +612,7 @@ def calculate_arearat_osa_fsa(input_data, columns_names):
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -641,7 +641,7 @@ def calculate_arearat_aca_asa(input_data, columns_names):
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -670,7 +670,7 @@ def calculate_arearat_asa_aca(input_data, columns_names):
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -699,7 +699,7 @@ def calculate_arearat_fca_fsa(input_data, columns_names):
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -728,7 +728,7 @@ def calculate_arearat_fsa_fca(input_data, columns_names):
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -758,7 +758,7 @@ def calculate_arearat_oca_osa(input_data, columns_names):
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -788,7 +788,7 @@ def calculate_arearat_osa_oca(input_data, columns_names):
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -815,7 +815,7 @@ def calculate_objahits(input_data, columns_names):
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = 2
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -841,7 +841,7 @@ def calculate_objamisses(input_data, columns_names):
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         result = round_half_up(nominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -867,7 +867,7 @@ def calculate_objafas(input_data, columns_names):
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         result = round_half_up(nominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -903,7 +903,7 @@ def calculate_objacsi(input_data, columns_names):
             column_data_by_name_value(input_data, columns_names, denominator_filter_2)
         denominator_2 = sum_column_data_by_name(denominator_2_data, columns_names, 'area')
         result = round_half_up(nominator / (denominator_1 + 2 * denominator_2), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -939,7 +939,7 @@ def calculate_objapody(input_data, columns_names):
             column_data_by_name_value(input_data, columns_names, denominator_filter_2)
         denominator_2 = sum_column_data_by_name(denominator_2_data, columns_names, 'area')
         result = round_half_up(nominator / (denominator_1 + 2 * denominator_2), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -975,7 +975,7 @@ def calculate_objafar(input_data, columns_names):
             column_data_by_name_value(input_data, columns_names, denominator_filter_2)
         denominator_2 = sum_column_data_by_name(denominator_2_data, columns_names, 'area')
         result = round_half_up(nominator / (denominator_1 + 2 * denominator_2), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result

@@ -282,7 +282,7 @@ def calculate_ssvar_spread(input_data, columns_names, aggregation=False):
         var_mean = sum_column_data_by_name(input_data, columns_names, 'var_mean') / total
         result = np.sqrt(var_mean)
         result = round_half_up(result, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
