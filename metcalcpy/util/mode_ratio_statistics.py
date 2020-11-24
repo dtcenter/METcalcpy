@@ -29,7 +29,7 @@ def calculate_ratio_asm_asa(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -55,7 +55,7 @@ def calculate_ratio_fsa_asa(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -81,7 +81,7 @@ def calculate_ratio_osa_asa(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -107,7 +107,7 @@ def calculate_ratio_asu_asa(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -133,7 +133,7 @@ def calculate_ratio_fsm_fsa(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -159,7 +159,7 @@ def calculate_ratio_fsu_fsa(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -185,7 +185,7 @@ def calculate_ratio_osm_osa(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -211,7 +211,7 @@ def calculate_ratio_osu_osa(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -237,7 +237,7 @@ def calculate_ratio_fsm_asm(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -263,7 +263,7 @@ def calculate_ratio_osm_asm(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -289,7 +289,7 @@ def calculate_ratio_fsu_asu(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -315,7 +315,7 @@ def calculate_ratio_osu_asu(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -342,7 +342,7 @@ def calculate_ratio_fsa_aaa(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -369,7 +369,7 @@ def calculate_ratio_osa_aaa(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -395,7 +395,7 @@ def calculate_ratio_fsa_faa(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -421,7 +421,7 @@ def calculate_ratio_fca_faa(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -447,7 +447,7 @@ def calculate_ratio_osa_oaa(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -473,7 +473,7 @@ def calculate_ratio_oca_oaa(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -499,7 +499,7 @@ def calculate_ratio_fca_aca(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -525,7 +525,7 @@ def calculate_ratio_oca_aca(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -551,7 +551,7 @@ def calculate_ratio_fsa_osa(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -577,7 +577,7 @@ def calculate_ratio_osa_fsa(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -603,7 +603,7 @@ def calculate_ratio_aca_asa(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -629,7 +629,7 @@ def calculate_ratio_asa_aca(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -655,7 +655,7 @@ def calculate_ratio_fca_fsa(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -681,7 +681,7 @@ def calculate_ratio_fsa_fca(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -707,7 +707,7 @@ def calculate_ratio_oca_osa(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -733,7 +733,7 @@ def calculate_ratio_osa_oca(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -759,7 +759,7 @@ def calculate_objhits(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = 2
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -784,7 +784,7 @@ def calculate_objmisses(input_data, columns_names):
     try:
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         result = round_half_up(nominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -809,7 +809,7 @@ def calculate_objfas(input_data, columns_names):
     try:
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         result = round_half_up(nominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -840,7 +840,7 @@ def calculate_objcsi(input_data, columns_names):
         denominator_2 = \
             nrow_column_data_by_name_value(input_data, columns_names, denominator_filter_2)
         result = round_half_up(nominator / (denominator_1 + 2 * denominator_2), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -871,7 +871,7 @@ def calculate_objpody(input_data, columns_names):
         denominator_2 = \
             nrow_column_data_by_name_value(input_data, columns_names, denominator_filter_2)
         result = round_half_up(nominator / (denominator_1 + 2 * denominator_2), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -902,7 +902,7 @@ def calculate_objfar(input_data, columns_names):
         denominator_2 = \
             nrow_column_data_by_name_value(input_data, columns_names, denominator_filter_2)
         result = round_half_up(nominator / (denominator_1 + denominator_2 / 2), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result

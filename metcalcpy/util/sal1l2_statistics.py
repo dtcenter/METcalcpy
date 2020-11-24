@@ -42,7 +42,7 @@ def calculate_anom_corr(input_data, columns_names, aggregation=False):
             anom_corr = None
         else:
             anom_corr = round_half_up(anom_corr, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         anom_corr = None
     warnings.filterwarnings('ignore')
     return anom_corr
@@ -79,7 +79,7 @@ def calculate_anom_corr_raw(input_data, columns_names, aggregation=False):
             anom_corr_raw = -1
 
         anom_corr_raw = round_half_up(anom_corr_raw, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         anom_corr_raw = None
     warnings.filterwarnings('ignore')
     return anom_corr_raw
@@ -139,7 +139,7 @@ def calculate_rmsoa(input_data, columns_names, aggregation=False):
         else:
             result = np.sqrt(oobar)
             result = round_half_up(result, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result

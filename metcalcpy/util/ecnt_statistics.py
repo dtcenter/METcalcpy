@@ -31,7 +31,7 @@ def calculate_ecnt_crps(input_data, columns_names, aggregation=False):
         total = get_total_values(input_data, columns_names, aggregation)
         crps = sum_column_data_by_name(input_data, columns_names, 'crps') / total
         result = round_half_up(crps, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -58,7 +58,7 @@ def calculate_ecnt_crpss(input_data, columns_names, aggregation=False):
         crps = sum_column_data_by_name(input_data, columns_names, 'crps') / total
         crpss = (crps_climo - crps) / crps_climo
         result = round_half_up(crpss, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -83,7 +83,7 @@ def calculate_ecnt_ign(input_data, columns_names, aggregation=False):
         total = get_total_values(input_data, columns_names, aggregation)
         ign = sum_column_data_by_name(input_data, columns_names, 'ign') / total
         result = round_half_up(ign, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -109,7 +109,7 @@ def calculate_ecnt_me(input_data, columns_names, aggregation=False):
         total = get_total_values(input_data, columns_names, aggregation)
         me = sum_column_data_by_name(input_data, columns_names, 'me') / total
         result = round_half_up(me, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -135,7 +135,7 @@ def calculate_ecnt_rmse(input_data, columns_names, aggregation=False):
         total = get_total_values(input_data, columns_names, aggregation)
         rmse =  math.sqrt(sum_column_data_by_name(input_data, columns_names, 'mse') / total)
         result = round_half_up(rmse, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -161,7 +161,7 @@ def calculate_ecnt_spread(input_data, columns_names, aggregation=False):
         total = get_total_values(input_data, columns_names, aggregation)
         spread = math.sqrt(sum_column_data_by_name(input_data, columns_names, 'variance') / total)
         result = round_half_up(spread, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -186,7 +186,7 @@ def calculate_ecnt_me_oerr(input_data, columns_names, aggregation=False):
         total = get_total_values(input_data, columns_names, aggregation)
         me_oerr = sum_column_data_by_name(input_data, columns_names, 'me_oerr') / total
         result = round_half_up(me_oerr, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -212,7 +212,7 @@ def calculate_ecnt_rmse_oerr(input_data, columns_names, aggregation=False):
         mse_oerr = sum_column_data_by_name(input_data, columns_names, 'mse_oerr') / total
         rmse_oerr = np.sqrt(mse_oerr)
         result = round_half_up(rmse_oerr, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -239,7 +239,7 @@ def calculate_ecnt_spread_oerr(input_data, columns_names, aggregation=False):
         total = get_total_values(input_data, columns_names, aggregation)
         spread_oerr = math.sqrt(sum_column_data_by_name(input_data, columns_names, 'variance_oerr') / total)
         result = round_half_up(spread_oerr, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -264,7 +264,7 @@ def calculate_ecnt_spread_plus_oerr(input_data, columns_names, aggregation=False
         total = get_total_values(input_data, columns_names, aggregation)
         spread_plus_oerr = math.sqrt(sum_column_data_by_name(input_data, columns_names, 'variance_plus_oerr') / total)
         result = round_half_up(spread_plus_oerr, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
