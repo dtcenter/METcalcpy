@@ -1,0 +1,26 @@
+#
+# Filename: grid_diag_hwrf.yaml
+#
+# Sample YAML configuration file for grid_diag.py
+#
+# Author: David Fillmore
+# Email:  met_help@ucar.edu
+#
+# Version    Date
+# 0.1.0      2020/12/01    Initial version
+#
+
+regex: gfs_4_20200601_0000_000.grb2
+
+field:
+    name: Temperature_surface
+    min: 200
+    max: 350
+    n_bins: 150
+
+field:
+    name: Temperature_height_above_ground
+    level: 2m
+    min: 200
+    max: 350
+    n_bins: 150
