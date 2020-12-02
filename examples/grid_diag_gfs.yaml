@@ -10,7 +10,9 @@
 # 0.1.0      2020/12/01    Initial version
 #
 
-regex: gfs_4_20200601_0000_???.grb2
+regex: gfs_4_2020060?_??00_000.grb2
+
+level_type: surface
 
 data:
 
@@ -19,8 +21,7 @@ data:
         max: 350
         n_bins: 150
 
-    - Temperature_height_above_ground:
-        level: 2m
+    - Temperature_surface:
         min: 200
         max: 350
         n_bins: 150

@@ -26,6 +26,9 @@ import xarray as xr  # http://xarray.pydata.org/
 import netCDF4 as nc
 
 
+# sys.tracebacklimit = 0
+
+
 def process_data(args, config):
     """
     Arguments:
@@ -37,7 +40,24 @@ def process_data(args, config):
     datafiles = glob(regex)
 
     for datafile in sorted(datafiles):
-        logging.info(datafile)
+
+        if '.grb2' in datafile:
+            try:
+                logging.info('Opening GRIB2\n' + datafile)
+                ds = xr.open_dataset(datafile, engine='cfgrib',
+                    backend_kwargs={'filter_by_keys':
+                    {'typeOfLevel': config['level_type']}})
+                logging.debug(ds)
+            except Exception as e:
+                logging.error('Error opening GRIB2\n' + datafile)
+                logging.error(e)
+
+        elif '.nc' in datafile or '.nc4' in datafile:
+            logging.info('Opening NetCDF\n' + datafile)
+
+        else:
+            logging.error('Unrecognized data format\n' + datafile)
+            sys.exit(1)
 
 
 if __name__ == '__main__':
