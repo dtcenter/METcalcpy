@@ -12,15 +12,15 @@
 
 regex: gfs_4_20200601_0000_000.grb2
 
-field:
-    name: Temperature_surface
-    min: 200
-    max: 350
-    n_bins: 150
+data:
 
-field:
-    name: Temperature_height_above_ground
-    level: 2m
-    min: 200
-    max: 350
-    n_bins: 150
+    - Temperature_surface:
+        min: 200
+        max: 350
+        n_bins: 150
+
+    - Temperature_height_above_ground:
+        level: 2m
+        min: 200
+        max: 350
+        n_bins: 150
