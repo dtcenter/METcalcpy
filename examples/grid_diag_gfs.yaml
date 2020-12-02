@@ -10,7 +10,7 @@
 # 0.1.0      2020/12/01    Initial version
 #
 
-regex: gfs_4_20200601_0000_000.grb2
+regex: gfs_4_20200601_0000_???.grb2
 
 data:
 
