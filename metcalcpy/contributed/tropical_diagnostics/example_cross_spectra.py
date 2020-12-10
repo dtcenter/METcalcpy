@@ -34,9 +34,11 @@ datestrt = '2015-12-01'  # plot start date, format: yyyy-mm-dd
 datelast = '2016-03-31'  # plot end date, format: yyyy-mm-dd
 
 # path to the location of the example scripts
-datapath = '../data/'
+# datapath = '../data/'
+datapath = '/Volumes/d1/fillmore/Data/TropicalDiagnostics/'
 # path to the location where to save the output spectra
-pathout = '../data/'
+# pathout = '../data/'
+pathout = '/Users/fillmore/working/'
 
 print("reading data from file:")
 """ 
