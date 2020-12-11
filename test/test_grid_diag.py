@@ -1,10 +1,11 @@
 import argparse
+import math
 import numpy as np
 
 if __name__ == '__main__':
 
-    nx_default = 100
-    ny_default = 100
+    nx_default = 10
+    ny_default = 10
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--nx', type=int,
@@ -25,6 +26,15 @@ if __name__ == '__main__':
     parser.add_argument('--y_max', type=float,
                         default=ny_default,
                         help='Domain top y-coordinate')
+    parser.add_argument('--sigma', type=float,
+                        default=1,
+                        help='Normal distribution width')
+    parser.add_argument('--mu_x', type=float,
+                        default=0,
+                        help='Normal distribution x-mean')
+    parser.add_argument('--mu_y', type=float,
+                        default=0,
+                        help='Normal distribution y-mean')
     parser.add_argument('--n_bin', type=int,
                         default=10,
                         help='Number of bins')
@@ -32,13 +42,21 @@ if __name__ == '__main__':
                         default=0,
                         help='Bin minimum')
     parser.add_argument('--max', type=int,
-                        default=0,
+                        default=0.1,
                         help='Bin maximum')
     args = parser.parse_args()
 
     x_coords = np.linspace(args.x_min, args.x_max, args.nx + 1)
     y_coords = np.linspace(args.y_min, args.y_max, args.ny + 1)
+    x_mesh, y_mesh = np.meshgrid(x_coords, y_coords)
 
-    print(x_coords)
-    print(y_coords)
+    r2 = (x_mesh - args.mu_x) * (x_mesh - args.mu_x) \
+        + (y_mesh - args.mu_y) * (y_mesh - args.mu_y)
+    sigma2 = args.sigma * args.sigma
+    values = np.exp(- r2 / (2 * sigma2)) / math.sqrt(2 * math.pi * sigma2)
+
+    print(values)
+
+    pdf = np.histogram(values, bins=args.n_bin, range=(args.min, args.max))
+    print(pdf)
 
