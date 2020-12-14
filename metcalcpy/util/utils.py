@@ -583,11 +583,9 @@ def equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axi
                     series_data_for_ee = series_data_for_ee[
                         series_data_for_ee[series_var].isin(series_var_vals_no_group)]
                 if 'fcst_var' in input_data.keys():
-                    series_data_for_ee = series_data_for_ee[
-                        series_data_for_ee[series_data_for_ee['fcst_var'] == fcst_var]]
+                    series_data_for_ee = series_data_for_ee[series_data_for_ee['fcst_var'] == fcst_var]
                 if 'stat_name' in input_data.keys():
-                    series_data_for_ee = series_data_for_ee[
-                        series_data_for_ee[series_data_for_ee["stat_name"] == fcst_var_stat]]
+                    series_data_for_ee = series_data_for_ee[series_data_for_ee["stat_name"] == fcst_var_stat]
 
             # perform EE on filtered data
             # for SSVAR use equalization of multiple events
