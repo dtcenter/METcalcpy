@@ -1,5 +1,5 @@
 """
-Program Name: statistics.py
+Program Name: met_stats.py
 """
 
 __author__ = 'Tatiana Burek'

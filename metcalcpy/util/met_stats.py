@@ -1,5 +1,5 @@
 """
-Program Name: statistics.py
+Program Name: met_stats.py
 """
 import math
 import numpy as np
