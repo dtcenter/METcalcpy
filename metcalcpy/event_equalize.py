@@ -93,9 +93,11 @@ def event_equalize(series_data, indy_var, series_var_vals, fix_vars,
                 permutation_data = permutation_data[permutation_data[var_for_ee]
                                                     == int(permutation[var_for_ee_ind])]
             else:
-                permutation_data = permutation_data[permutation_data[var_for_ee]
-                                                    == permutation[var_for_ee_ind]]
-
+                if permutation[var_for_ee_ind] == 'NA':
+                    permutation_data = permutation_data[permutation_data[var_for_ee].isnull()]
+                else:
+                    permutation_data = permutation_data[permutation_data[var_for_ee]
+                                                        == permutation[var_for_ee_ind]]
         # if the list contains repetitive values, show a warning
         if multi is False and len(permutation_data['equalize']) \
                 != len(set(permutation_data['equalize'])):
