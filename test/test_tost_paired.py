@@ -14,15 +14,18 @@ def test_tost_paired():
 
     result = tost_paired(len(x), statistics.mean(x), statistics.mean(y),
                          statistics.stdev(x), statistics.stdev(y), corr,
-                         -0.4, 0.4)
+                         -0.001, 0.001)
     assert result['dif'] == -4.225
-    assert result['t'] == (0.257861, -2.5134203)
-    assert result['p'] == (0.4006374, 0.0144053)
+    assert result['t'] == (-1.1243156, -1.1312438)
+    assert result['p'] == (0.8575922, 0.1410063)
     assert result['degrees_of_freedom'] == 11
     assert result['ci_tost'] == (-10.9529216, 2.5029216)
     assert result['ci_ttest'] == (-12.4705487, 4.0205487)
-    assert result['xlim'] == (-12.298506, 6.5366086)
+    assert result['eqbound'] == (-0.0129776, 0.0129776)
+    assert result['xlim'] == (-12.298506, 3.848506)
     assert result['combined_outcome'] == 'no_diff_no_eqv'
+    assert result['test_outcome'] == 'non-significant'
+    assert result['tost_outcome'] == 'non-significant'
 
 
 if __name__ == "__main__":

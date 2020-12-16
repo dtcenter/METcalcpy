@@ -77,12 +77,15 @@ def tost_paired(n, m1, m2, sd1, sd2, r12, low_eqbound_dz, high_eqbound_dz, alpha
         Returns a dictionary with calculated TOST values
                 dif - Mean Difference
                 t - TOST t-values 1 and 2 as a tuple
-                p - TOST p-values1 and 2 as a tuple
+                p - TOST p-values and 2 as a tuple
                 degrees_of_freedom - degrees of freedom
                 ci_tost - confidence interval TOST Lower and Upper limit as a tuple
                 ci_ttest - confidence interval TTEST Lower and Upper limit as a tuple
+                eqbound - equivalence bound low and high as a tuple
                 xlim - limits for x-axis
                 combined_outcome - outcome
+                test_outcome - pt test outcome
+                tist_outcome - TOST outcome
 
     """
     if not alpha:
@@ -142,6 +145,16 @@ def tost_paired(n, m1, m2, sd1, sd2, r12, low_eqbound_dz, high_eqbound_dz, alpha
     if pttest > alpha and ptost > alpha:
         combined_outcome = 'no_diff_no_eqv'
 
+    if pttest < alpha:
+        test_outcome = 'significant'
+    else:
+        test_outcome = 'non-significant'
+
+    if ptost < alpha:
+        tost_outcome = 'significant'
+    else:
+        tost_outcome = 'non-significant'
+
     return {
         'dif': round_half_up(dif, PRECISION),
         't': (round_half_up(t1, PRECISION), round_half_up(t2, PRECISION)),
@@ -149,8 +162,11 @@ def tost_paired(n, m1, m2, sd1, sd2, r12, low_eqbound_dz, high_eqbound_dz, alpha
         'degrees_of_freedom': round_half_up(degree_f, PRECISION),
         'ci_tost': (round_half_up(ll90, PRECISION), round_half_up(ul90, PRECISION) ),
         'ci_ttest': (round_half_up(ll95, PRECISION), round_half_up(ul95, PRECISION)),
+        'eqbound': (round_half_up(low_eqbound, PRECISION), round_half_up(high_eqbound, PRECISION)),
         'xlim': (round_half_up(xlim_l, PRECISION), round_half_up(xlim_u, PRECISION)),
-        'combined_outcome': combined_outcome
+        'combined_outcome': combined_outcome,
+        'test_outcome': test_outcome,
+        'tost_outcome': tost_outcome
     }
 
 
