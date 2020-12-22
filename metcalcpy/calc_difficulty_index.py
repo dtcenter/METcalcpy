@@ -122,7 +122,7 @@ def _difficulty_index(sigmaij, muij, threshold, fieldijn, Aplin, sigma_over_mu_r
 
 
 def forecast_difficulty(sigmaij, muij, threshold, fieldijn,
-                        Aplin=None, sigma_over_mu_ref=EPS):
+                        Aplin, sigma_over_mu_ref=EPS):
     """
     Calls private function _difficulty_index, 
     to calculate version (v6.1) of forecast difficulty index.
