@@ -6,6 +6,7 @@ __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
 __email__ = 'met_help@ucar.edu'
 
+from typing import Union
 import math
 import itertools
 import statistics as st
@@ -577,11 +578,15 @@ def equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axi
 
                 # filter input data based on fcst_var, statistic
                 # and all series variables values
-                series_data_for_ee = input_data[
-                    (input_data['fcst_var'] == fcst_var)
-                    & (input_data["stat_name"] == fcst_var_stat)
-                    & (input_data[series_var].isin(series_var_vals_no_group))
-                    ]
+                series_data_for_ee = input_data
+                if series_var in input_data.keys():
+                    series_data_for_ee = series_data_for_ee[
+                        series_data_for_ee[series_var].isin(series_var_vals_no_group)]
+                if 'fcst_var' in input_data.keys():
+                    series_data_for_ee = series_data_for_ee[series_data_for_ee['fcst_var'] == fcst_var]
+                if 'stat_name' in input_data.keys():
+                    series_data_for_ee = series_data_for_ee[series_data_for_ee["stat_name"] == fcst_var_stat]
+
             # perform EE on filtered data
             # for SSVAR use equalization of multiple events
             series_data_after_ee = \
@@ -830,7 +835,7 @@ def compute_std_err_from_sum(data):
     # multiply Standard Error by data size
     return std_err[0] * len(data), std_err[1], std_err[2], std_err[3]
 
-  
+
 def convert_lon_360_to_180(longitude):
     """
         Convert a list or numpy array of longitudes from 0,360 to -180 to 180 (West-East)
@@ -856,3 +861,83 @@ def convert_lon_360_to_180(longitude):
     negative_to_positive = np.sort(west_east_lons)
 
     return negative_to_positive
+
+
+def convert_lons_indices(lons_in, minlon_in, range_in):
+    '''
+
+    Input:
+    @param lons_in: A list of longitudes to convert
+    @param minlon_in: The minimum value/starting value of converted longitudes
+    @param range_in: The number of longitudes to convert
+
+    Returns:
+      reordered_lons:  sorted array of longitudes
+      lonsortlocs:  sorted array indices
+    '''
+
+    minlon = abs(minlon_in)
+
+    # Use formula to convert longitude values based on the starting lon value and
+    # the target number of longitudes
+    newlons = np.mod((lons_in + minlon), range_in) - minlon
+
+    # get the sorted array indices
+    lonsortlocs = np.argsort(newlons)
+
+    # get the sorted, converted array
+    reordered_lons = newlons[lonsortlocs]
+
+    return reordered_lons, lonsortlocs
+
+
+def create_permutations_mv(fields_values: Union[dict, list], index: int) -> list:
+    """
+    Creates a list of all permutations of the dictionary or list values using METviewer logic
+    Input:
+    :param fields_values: dictionary of field-values, where values are lists
+        or a list of lists
+    :param index: the regression index
+    :return: the list of permutations
+    """
+
+    if isinstance(fields_values, dict):
+        keys = list(fields_values.keys())
+        # return an empty list if the dictionary is empty
+        if len(keys) == 0:
+            return []
+
+        values = fields_values[keys[index]]
+        # if the index has reached the end of the list, return the selected values
+        # from the last control
+        if len(keys) == index + 1:
+            return values
+    else:
+        if len(fields_values) == 0:
+            return []
+
+        values = fields_values[index]
+        # if the index has reached the end of the list, return the selected values
+        # from the last control
+        if len(fields_values) == index + 1:
+            return values
+
+    # otherwise, get the list for the next fcst_var and build upon it
+    val_next = create_permutations_mv(fields_values, index + 1)
+
+    if len(values) == 0:
+        return val_next
+
+    result = []
+    for val_next_el in val_next:
+        for listVal_el in values:
+
+            if isinstance(val_next_el, list):
+                # prepend value to the existing list and add it to the result
+                val_next_el_cp = val_next_el.copy()
+                val_next_el_cp.insert(0, listVal_el)
+                result.append(val_next_el_cp)
+            else:
+                # create a new array and add it to the result
+                result.append([listVal_el, val_next_el])
+    return result

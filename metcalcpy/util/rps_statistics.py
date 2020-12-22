@@ -29,7 +29,7 @@ def calculate_rps(input_data, columns_names, aggregation=False):
         total = get_total_values(input_data, columns_names, aggregation)
         rps = sum_column_data_by_name(input_data, columns_names, 'rps') / total
         result = round_half_up(rps, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -55,7 +55,7 @@ def calculate_rps_comp(input_data, columns_names, aggregation=False):
         total = get_total_values(input_data, columns_names, aggregation)
         rps_comp = sum_column_data_by_name(input_data, columns_names, 'rps_comp') / total
         result = round_half_up(rps_comp, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -82,7 +82,7 @@ def calculate_rpss(input_data, columns_names, aggregation=False):
         rps_climo = sum_column_data_by_name(input_data, columns_names, 'rps_climo') / total
         rpss = 1 - rps / rps_climo
         result = round_half_up(rpss, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result

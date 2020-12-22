@@ -28,7 +28,7 @@ def calculate_fgbar(input_data, columns_names, aggregation=False):
         total = get_total_values(input_data, columns_names, aggregation)
         result = sum_column_data_by_name(input_data, columns_names, 'fgbar') / total
         result = round_half_up(result, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -53,7 +53,7 @@ def calculate_ogbar(input_data, columns_names, aggregation=False):
         total = get_total_values(input_data, columns_names, aggregation)
         result = sum_column_data_by_name(input_data, columns_names, 'ogbar') / total
         result = round_half_up(result, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -79,7 +79,7 @@ def calculate_mgbar(input_data, columns_names, aggregation=False):
         total = get_total_values(input_data, columns_names, aggregation)
         result = sum_column_data_by_name(input_data, columns_names, 'mgbar') / total
         result = round_half_up(result, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -104,7 +104,7 @@ def calculate_egbar(input_data, columns_names, aggregation=False):
         total = get_total_values(input_data, columns_names, aggregation)
         result = sum_column_data_by_name(input_data, columns_names, 'egbar') / total
         result = round_half_up(result, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -131,7 +131,7 @@ def calculate_s1(input_data, columns_names, aggregation=False):
         mgbar = sum_column_data_by_name(input_data, columns_names, 'mgbar') / total
         result = 100 * egbar / mgbar
         result = round_half_up(result, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -158,7 +158,7 @@ def calculate_s1_og(input_data, columns_names, aggregation=False):
         ogbar = sum_column_data_by_name(input_data, columns_names, 'ogbar') / total
         result = 100 * egbar / ogbar
         result = round_half_up(result, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -185,7 +185,7 @@ def calculate_fgog_ratio(input_data, columns_names, aggregation=False):
         ogbar = sum_column_data_by_name(input_data, columns_names, 'ogbar') / total
         result = 100 * fgbar / ogbar
         result = round_half_up(result, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result

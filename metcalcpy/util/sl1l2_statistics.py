@@ -29,7 +29,7 @@ def calculate_fbar(input_data, columns_names, aggregation=False):
         total = get_total_values(input_data, columns_names, aggregation)
         result = sum_column_data_by_name(input_data, columns_names, 'fbar') / total
         result = round_half_up(result, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -54,7 +54,7 @@ def calculate_obar(input_data, columns_names, aggregation=False):
         total = get_total_values(input_data, columns_names, aggregation)
         result = sum_column_data_by_name(input_data, columns_names, 'obar') / total
         result = round_half_up(result, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -139,7 +139,7 @@ def calculate_fobar(input_data, columns_names, aggregation=False):
         total = get_total_values(input_data, columns_names, aggregation)
         result = sum_column_data_by_name(input_data, columns_names, 'fobar') / total
         result = round_half_up(result, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -164,7 +164,7 @@ def calculate_ffbar(input_data, columns_names, aggregation=False):
         total = get_total_values(input_data, columns_names, aggregation)
         result = sum_column_data_by_name(input_data, columns_names, 'ffbar') / total
         result = round_half_up(result, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -189,7 +189,7 @@ def calculate_oobar(input_data, columns_names, aggregation=False):
         total = get_total_values(input_data, columns_names, aggregation)
         result = sum_column_data_by_name(input_data, columns_names, 'oobar') / total
         result = round_half_up(result, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -214,7 +214,7 @@ def calculate_mae(input_data, columns_names, aggregation=False):
         total = get_total_values(input_data, columns_names, aggregation)
         result = sum_column_data_by_name(input_data, columns_names, 'mae') / total
         result = round_half_up(result, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -244,7 +244,7 @@ def calculate_mbias(input_data, columns_names, aggregation=False):
             fbar = sum_column_data_by_name(input_data, columns_names, 'fbar') / total
             result = fbar / obar
             result = round_half_up(result, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -283,7 +283,7 @@ def calculate_pr_corr(input_data, columns_names, aggregation=False):
             pr_corr = None
         else:
             pr_corr = round_half_up(pr_corr, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         pr_corr = None
     warnings.filterwarnings('ignore')
     return pr_corr
@@ -310,7 +310,7 @@ def calculate_me(input_data, columns_names, aggregation=False):
         obar = sum_column_data_by_name(input_data, columns_names, 'obar') / total
         result = fbar - obar
         result = round_half_up(result, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -389,7 +389,7 @@ def calculate_msess(input_data, columns_names, aggregation=False):
         mse = calculate_mse(input_data, columns_names, aggregation)
         result = 1.0 - mse / ostdev ** 2
         result = round_half_up(result, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result

@@ -1,0 +1,69 @@
+#
+# Filename: height_from_pressure_merra2.yaml
+#
+# Sample YAML configuration file for vertical_interp.py
+#
+# Author: David Fillmore
+# Email:  met_help@ucar.edu
+#
+# Version    Date
+# 0.1.0      2020/09/01    Initial version
+#
+
+#
+# Set to compute geopotential height from pressure
+#
+height_from_pressure:
+    True
+
+#
+# Required fields
+#
+surface_geopotential_name:
+    'PHIS'
+
+surface_pressure_name:
+    'PS'
+
+temperature_name:
+    'T'
+
+relative_humidity_name:
+    'RH'
+
+#
+# Field list to process
+#
+
+fields:
+    - 'QV'
+    - 'QL'
+    - 'QI'
+    - 'U'
+    - 'V'
+
+#
+# Vertical coordinate information
+#
+
+vertical_coord_type_in:
+    'pressure'
+
+vertical_coord_type_out:
+    'height'
+
+vertical_dim_name:
+    'lev'
+
+vertical_levels :
+    - 100
+    - 200
+    - 500
+    - 1000
+    - 2000
+    - 3000
+    - 4000
+    - 5000
+
+vertical_level_units :
+    'meter'
