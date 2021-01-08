@@ -2,8 +2,7 @@
 import statistics
 import pingouin as pg
 
-
-from metcalcpy.util.tost_paired import tost_paired
+from metcalcpy.util.utils import tost_paired
 
 
 def test_tost_paired():
