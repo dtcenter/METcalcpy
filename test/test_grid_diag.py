@@ -30,10 +30,10 @@ if __name__ == '__main__':
                         default=1,
                         help='Normal distribution width')
     parser.add_argument('--mu_x', type=float,
-                        default=0,
+                        default=nx_default/2,
                         help='Normal distribution x-mean')
     parser.add_argument('--mu_y', type=float,
-                        default=0,
+                        default=ny_default/2,
                         help='Normal distribution y-mean')
     parser.add_argument('--n_bin', type=int,
                         default=10,
@@ -42,7 +42,7 @@ if __name__ == '__main__':
                         default=0,
                         help='Bin minimum')
     parser.add_argument('--max', type=int,
-                        default=0.1,
+                        default=0.001,
                         help='Bin maximum')
     args = parser.parse_args()
 
