@@ -89,11 +89,11 @@ def bootstrap_and_value(values, stat_func, alpha=0.05,
 
     stat_val = stat_func(values)[0]
     sz = num_iterations / block_length
-    distributions = _bootstrap_distribution_custom(values_lists,
-                                                   stat_func_lists,
-                                                   num_iterations,
-                                                   iteration_batch_size,
-                                                   num_threads, block_length)
+    distributions = _bootstrap_distribution_cbb(values_lists,
+                                                stat_func_lists,
+                                                num_iterations,
+                                                iteration_batch_size,
+                                                num_threads, block_length)
 
     bootstrap_dist = do_division(*distributions)
     result = _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_method)
@@ -104,8 +104,8 @@ def bootstrap_and_value(values, stat_func, alpha=0.05,
     return result
 
 
-def _bootstrap_distribution_custom(values_lists, stat_func_lists,
-                                   num_iterations, iteration_batch_size, num_threads, block_length=1):
+def _bootstrap_distribution_cbb(values_lists, stat_func_lists,
+                                num_iterations, iteration_batch_size, num_threads, block_length=1):
     '''Returns the simulated bootstrap distribution. The idea is to sample the same
         indexes in a bootstrap re-sample across all arrays passed into values_lists.
 
@@ -154,8 +154,8 @@ def _bootstrap_distribution_custom(values_lists, stat_func_lists,
         num_threads = _multiprocessing.cpu_count()
 
     if num_threads <= 1:
-        results = _bootstrap_sim_custom(values_lists, stat_func_lists,
-                                        num_iterations, iteration_batch_size, None, block_length)
+        results = _bootstrap_sim_cbb(values_lists, stat_func_lists,
+                                     num_iterations, iteration_batch_size, None, block_length)
     else:
         pool = _multiprocessing.Pool(num_threads)
 
@@ -163,9 +163,9 @@ def _bootstrap_distribution_custom(values_lists, stat_func_lists,
 
         results = []
         for seed in _np.random.randint(0, 2 ** 32 - 1, num_threads):
-            r = pool.apply_async(_bootstrap_sim_custom, (values_lists, stat_func_lists,
-                                                         iter_per_job,
-                                                         iteration_batch_size, seed, block_length))
+            r = pool.apply_async(_bootstrap_sim_cbb, (values_lists, stat_func_lists,
+                                                      iter_per_job,
+                                                      iteration_batch_size, seed, block_length))
             results.append(r)
 
         results = _np.hstack([res.get() for res in results])
@@ -227,11 +227,11 @@ def bootstrap_and_value_mode(values, cases, stat_func, alpha=0.05,
     flat_cases = cases.flatten()
     values_current = values[_np.in1d(data_cases, flat_cases)].to_numpy()
     stat_val = stat_func(values_current)[0]
-    distributions = _bootstrap_distribution_custom(values_lists,
-                                                   stat_func_lists,
-                                                   num_iterations,
-                                                   iteration_batch_size,
-                                                   num_threads, block_length)
+    distributions = _bootstrap_distribution_cbb(values_lists,
+                                                stat_func_lists,
+                                                num_iterations,
+                                                iteration_batch_size,
+                                                num_threads, block_length)
 
     bootstrap_dist = do_division(*distributions)
     result = _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_method)
@@ -284,8 +284,8 @@ def _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_metho
                                         upper_bound=high)
 
 
-def _bootstrap_sim_custom(values_lists, stat_func_lists, num_iterations,
-                          iteration_batch_size, seed, block_length=1):
+def _bootstrap_sim_cbb(values_lists, stat_func_lists, num_iterations,
+                       iteration_batch_size, seed, block_length=1):
     """Returns simulated bootstrap distribution. Can do the independent and identically distributed (IID)
         or Circular Block Bootstrap (CBB) methods depending on the block_length
         Args:
@@ -322,7 +322,7 @@ def _bootstrap_sim_custom(values_lists, stat_func_lists, num_iterations,
     for rng in range(0, num_iterations, iteration_batch_size):
         max_rng = min(iteration_batch_size, num_iterations - rng)
 
-        values_sims = _generate_distributions_custom(values_lists, max_rng, block_length)
+        values_sims = _generate_distributions_cbb(values_lists, max_rng, block_length)
 
         for i, values_sim, stat_func in zip(range(len(values_sims)), values_sims, stat_func_lists):
             results[i].extend(stat_func(values_sim))
@@ -330,7 +330,7 @@ def _bootstrap_sim_custom(values_lists, stat_func_lists, num_iterations,
     return _np.array(results)
 
 
-def _generate_distributions_custom(values_lists, num_iterations, block_length=1):
+def _generate_distributions_cbb(values_lists, num_iterations, block_length=1):
     if isinstance(values_lists[0], _sparse.csr_matrix):
         # in the sparse case we dont actually need to bootstrap
         # the full sparse array since most values are 0
