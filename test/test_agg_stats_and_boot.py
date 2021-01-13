@@ -10,33 +10,38 @@ TEST_LENGTH = 1000
 
 
 def test_boot():
+    # size of array
+    n = 100
     for mean in range(6):
-        p = get_rejected(mean)
+        p = get_rejected(mean, n)
         print('for mean = {} p = {}'.format(mean, p))
 
 
-def get_rejected(mean):
+def get_rejected(mean, n):
     """Calculate the percent of rejected values for 0 hypothesis test
         for CI for mean statistic of the normal distribution of 100 values
 
         Args:
             mean - mean value for the normal distribution
+            n - size of array
         Returns:
             percent of rejected values
     """
+
+    block_lenght = int(math.sqrt(n))
 
     # create an array for accepted/rejected flags
     reject = [1] * TEST_LENGTH
     # run the boot ci TEST_LENGTH times
     for ind in range(TEST_LENGTH):
         # create normal distribution
-        data = np.random.normal(loc=mean, size=100, scale=10)
+        data = np.random.normal(loc=mean, size=n, scale=10)
         # get ci for mean stat for this distribution
         results = bootstrap_and_value(
             data,
             stat_func=bs_stats.mean,
-            num_iterations=1000, alpha=0.05,
-            num_threads=1, ci_method='perc')
+            num_iterations=500, alpha=0.05,
+            num_threads=1, ci_method='perc', block_length=block_lenght)
 
         # record if 0 in ci bounds (accept) or not (reject)
         if results.lower_bound <= 0 and results.upper_bound >= 0:
@@ -88,7 +93,7 @@ def test_calc_stats_derived(settings):
     values_both_arrays = np.concatenate((values_both_arrays, operation), axis=1)
     stat_val = agg_stat._calc_stats_derived(values_both_arrays)
 
-    assert np.allclose(np.array([0.00362]), stat_val)
+    assert np.allclose(np.array([0.00362229]), stat_val)
 
 
 def test_get_derived_series(settings):
@@ -118,10 +123,10 @@ def test_calculate_value_and_ci(settings):
     )
     assert result_frame.size == 216
     assert result_frame.shape == (27, 8)
-    assert math.isclose(result_frame['stat_value'][2], 192.13043)
-    assert math.isclose(result_frame['stat_value'][20], 0.00362)
-    assert math.isclose(result_frame['stat_bcl'][9], 192.12478)
-    assert math.isclose(result_frame['stat_bcu'][24], 0.01079)
+    assert np.allclose(result_frame['stat_value'][2], 192.1304275)
+    assert np.allclose(result_frame['stat_value'][20], 0.00362229)
+    assert np.allclose(result_frame['stat_bcl'][9], 192.12478)
+    assert np.allclose(result_frame['stat_bcu'][24], 0.0107868)
 
 
 @pytest.fixture
