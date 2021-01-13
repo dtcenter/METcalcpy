@@ -575,7 +575,7 @@ if __name__ == '__main__':
     Read dataset
     """
     try:
-        if filename_in.split('.')[-1] == 'grb2':
+        if filename_in.split('.')[-1] == 'grb2' or 'pgrb2' in filename_in:
             logging.info('Opening GRIB2 ' + filename_in)
             ds = xr.open_dataset(filename_in, engine='cfgrib',
                 backend_kwargs={'filter_by_keys': {'typeOfLevel': 'isobaricInhPa'}})
