@@ -5,7 +5,7 @@ import warnings
 import numpy as np
 import pandas as pd
 
-from metcalcpy.util.statistics import get_column_index_by_name
+from metcalcpy.util.met_stats import get_column_index_by_name
 from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION
 
 __author__ = 'Tatiana Burek'

@@ -1,7 +1,7 @@
 """Tests the operation of METcalcpy's statistics code."""
 import numpy as np
 import pytest
-from metcalcpy.util.statistics import get_column_index_by_name
+from metcalcpy.util.met_stats import get_column_index_by_name
 
 
 def test_get_column_index_by_name(settings):

@@ -257,6 +257,7 @@ class AggStat:
         num_parameters = len(signature(globals()[func_name]).parameters)
 
         if values is not None and values.ndim == 2:
+
             # The single value case
             if num_parameters == 2:
                 stat_values = [globals()[func_name](values, self.column_names)]
@@ -616,15 +617,33 @@ class AggStat:
                                                 upper_bound=None)
 
         # validate data
-        self._validate_series_cases_for_derived_operation(ds_1.values, axis)
-        self._validate_series_cases_for_derived_operation(ds_2.values, axis)
+        if derived_curve_component.derived_operation != 'SINGLE':
+            self._validate_series_cases_for_derived_operation(ds_1.values, axis)
+            self._validate_series_cases_for_derived_operation(ds_2.values, axis)
 
-        if self.params['num_iterations'] == 1:
+        if self.params['num_iterations'] == 1 or derived_curve_component.derived_operation == 'ETB':
             # don't need bootstrapping and CI calculation -
             # calculate the derived statistic and exit
+
+            if derived_curve_component.derived_operation == 'ETB':
+                index_array = np.where(self.column_names == 'stat_value')[0]
+                func_name = f'calculate_{self.statistic}'
+                for row in ds_1.values:
+                    stat = [globals()[func_name](row[np.newaxis, ...], self.column_names)]
+                    row[index_array] = stat
+                for row in ds_2.values:
+                    stat = [globals()[func_name](row[np.newaxis, ...], self.column_names)]
+                    row[index_array] = stat
+
+                ds_1_value = ds_1.values[:, index_array].flatten().tolist()
+                ds_2_value = ds_2.values[:, index_array].flatten().tolist()
+            else:
+                ds_1_value = [ds_1.value]
+                ds_2_value = [ds_2.value]
+
             stat_val = calc_derived_curve_value(
-                [ds_1.value],
-                [ds_2.value],
+                ds_1_value,
+                ds_2_value,
                 derived_curve_component.derived_operation)
             results = BootstrapDistributionResults(lower_bound=None,
                                                    value=round_half_up(stat_val[0], 5),
@@ -821,10 +840,11 @@ class AggStat:
                     break
 
             series_var = list(series_val.keys())[-1]
-            for var in series_val.keys():
-                if all(elem in series_val[var] for elem in series_var_vals):
-                    series_var = var
-                    break
+            if len(series_var_vals) > 0:
+                for var in series_val.keys():
+                    if all(elem in series_val[var] for elem in series_var_vals):
+                        series_var = var
+                        break
 
             derived_val = series_val.copy()
             derived_val[series_var] = None
@@ -837,7 +857,8 @@ class AggStat:
 
             derived_curve_name = get_derived_curve_name(derived_serie)
             derived_val[series_var] = [derived_curve_name]
-            derived_val[self.params['indy_var']] = indy_vals
+            if len(indy_vals) > 0:
+                derived_val[self.params['indy_var']] = indy_vals
 
             self.derived_name_to_values[derived_curve_name] \
                 = DerivedCurveComponent(ds_1, ds_2, derived_serie[-1])
@@ -846,6 +867,7 @@ class AggStat:
             else:
                 derived_val['stat_name'] = [ds_1[-1] + "," + ds_2[-1]]
             result.append(list(itertools.product(*derived_val.values())))
+
         return [y for x in result for y in x]
 
     def _proceed_with_axis(self, axis="1"):
@@ -1042,6 +1064,7 @@ class AggStat:
         export_csv = out_frame.to_csv(self.params['agg_stat_output'],
                                       index=None, header=header, mode=mode,
                                       sep="\t", na_rep="NA")
+
 
 
 if __name__ == "__main__":

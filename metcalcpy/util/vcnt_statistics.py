@@ -4,7 +4,7 @@ Program Name: vcnt_statistics.py
 import warnings
 import numpy as np
 
-from metcalcpy.util.statistics import calc_direction, calc_speed
+from metcalcpy.util.met_stats import calc_direction, calc_speed
 from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION, get_total_values
 
 __author__ = 'Tatiana Burek'

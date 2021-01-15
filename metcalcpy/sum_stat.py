@@ -27,6 +27,7 @@ import argparse
 import time
 import logging
 import yaml
+from inspect import signature
 from metcalcpy.util.ctc_statistics import *
 from metcalcpy.util.grad_statistics import *
 from metcalcpy.util.sl1l2_statistics import *
@@ -154,8 +155,8 @@ class SumStat:
 
         # save the result to file
         self.input_data.to_csv(self.params['sum_stat_output'],
-                                            index=None, header=True, mode='w',
-                                            sep="\t", na_rep="NA")
+                               index=None, header=True, mode='w',
+                               sep="\t", na_rep="NA")
 
     def aggregate_special_fields(self, axis='1'):
         """Finds the data for special fields - the field with ';' (EAST;NMT) -
@@ -231,14 +232,11 @@ class SumStat:
             # statistic name
             stat = row['stat_name'].lower()
 
-            # function name
-            func_name = f'calculate_{stat}'
-
             # array of row's data
             row_array = np.expand_dims(row.to_numpy(), axis=0)
 
             # calculate the stat value
-            stat_value = [globals()[func_name](row_array, self.column_names)][0]
+            stat_value = [calculate_statistic(row_array, self.column_names, stat)][0]
 
             # save the value to the 'stat_value' column
             self.input_data.at[index, 'stat_value'] = stat_value
@@ -256,6 +254,27 @@ class SumStat:
     #
     # def parallelize_on_rows(self, data, func, num_of_processes=8):
     #     return self.parallelize(data, partial(self.run_on_subset, func), num_of_processes)
+
+
+def calculate_statistic(values, columns_names, stat_name, aggregation=False):
+    """Calculate the statistic of values
+        Args:
+            values: a np.array of values we want to calculate the statistic on
+                    This is actually a 2d array (matrix) of values.
+            stat_name: the name of the statistic
+            aggregation: if the aggregation on fields was performed
+        Returns:
+            a  calculated statistics
+        Raises:
+            an error
+        """
+    func_name = f'calculate_{stat_name}'
+    num_parameters = len(signature(globals()[func_name]).parameters)
+    if num_parameters == 2:
+        stat = globals()[func_name](values, columns_names)
+    else:
+        stat = globals()[func_name](values, columns_names, aggregation)
+    return stat
 
 
 if __name__ == "__main__":
