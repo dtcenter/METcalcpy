@@ -7,7 +7,6 @@ The METcalcpy/src/util directory contains modules that provide common functional
 
 Required packages:
 
-pingouin version 0.3.8
 Cartopy 0.17.0
 kaleido
 matplotlib
@@ -15,7 +14,7 @@ netCDF 1.5.1.2
 numpy
 pandas
 Pillow
-pingouin
+pingouin 0.3.8
 Pint
 pyshp
 pytest 5.2.1
