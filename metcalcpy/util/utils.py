@@ -591,7 +591,7 @@ def equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axi
 
     fcst_var_val = params['fcst_var_val_' + axis]
     if not fcst_var_val:
-        fcst_var_val={'': ['']}
+        fcst_var_val = {'': ['']}
 
     for fcst_var, fcst_var_stats in fcst_var_val.items():
         series_data_for_ee = pd.DataFrame()
@@ -1069,19 +1069,26 @@ def tost_paired(n: int, m1: float, m2: float, sd1: float, sd2: float, r12: float
     low_eqbound = low_eqbound_dz * sdif
     high_eqbound = high_eqbound_dz * sdif
     se = sdif / math.sqrt(n)
-    t = (m1 - m2) / se
     degree_f = n - 1
 
-    pttest = 2 * pt(abs(t), degree_f, lower_tail=False)
-
-    t1 = ((m1 - m2) - (low_eqbound_dz * sdif)) / se
-    p1 = pt(t1, degree_f, lower_tail=False)
-    t2 = ((m1 - m2) - (high_eqbound_dz * sdif)) / se
-    p2 = pt(t2, degree_f, lower_tail=True)
+    if se != 0:
+        t = (m1 - m2) / se
+        pttest = 2 * pt(abs(t), degree_f, lower_tail=False)
+        t1 = ((m1 - m2) - (low_eqbound_dz * sdif)) / se
+        p1 = pt(t1, degree_f, lower_tail=False)
+        t2 = ((m1 - m2) - (high_eqbound_dz * sdif)) / se
+        p2 = pt(t2, degree_f, lower_tail=True)
+        ptost = max(p1, p2)
+    else:
+        pttest = None
+        t1 = None
+        p1 = None
+        t2 = None
+        p2 = None
+        ptost = None
 
     ll90 = ((m1 - m2) - qt(1 - alpha, degree_f) * se)
     ul90 = ((m1 - m2) + qt(1 - alpha, degree_f) * se)
-    ptost = max(p1, p2)
 
     dif = (m1 - m2)
     ll95 = ((m1 - m2) - qt(1 - (alpha / 2), degree_f) * se)
@@ -1089,32 +1096,42 @@ def tost_paired(n: int, m1: float, m2: float, sd1: float, sd2: float, r12: float
     xlim_l = min(ll90, low_eqbound) - max(ul90 - ll90, high_eqbound - low_eqbound) / 10
     xlim_u = max(ul90, high_eqbound) + max(ul90 - ll90, high_eqbound - low_eqbound) / 10
 
-    if pttest <= alpha and ptost <= alpha:
-        combined_outcome = 'diff_eqv'
+    if pttest and ptost:
+        if pttest <= alpha and ptost <= alpha:
+            combined_outcome = 'diff_eqv'
 
-    if pttest < alpha and ptost > alpha:
-        combined_outcome = 'diff_no_eqv'
+        if pttest < alpha and ptost > alpha:
+            combined_outcome = 'diff_no_eqv'
 
-    if pttest > alpha and ptost <= alpha:
-        combined_outcome = 'no_diff_eqv'
+        if pttest > alpha and ptost <= alpha:
+            combined_outcome = 'no_diff_eqv'
 
-    if pttest > alpha and ptost > alpha:
-        combined_outcome = 'no_diff_no_eqv'
+        if pttest > alpha and ptost > alpha:
+            combined_outcome = 'no_diff_no_eqv'
 
-    if pttest < alpha:
-        test_outcome = 'significant'
+        if pttest < alpha:
+            test_outcome = 'significant'
+        else:
+            test_outcome = 'non-significant'
+
+        if ptost < alpha:
+            tost_outcome = 'significant'
+        else:
+            tost_outcome = 'non-significant'
+
+        t = (round_half_up(t1, PRECISION), round_half_up(t2, PRECISION))
+        p = (round_half_up(p1, PRECISION), round_half_up(p2, PRECISION))
     else:
-        test_outcome = 'non-significant'
-
-    if ptost < alpha:
-        tost_outcome = 'significant'
-    else:
-        tost_outcome = 'non-significant'
+        combined_outcome = 'none'
+        tost_outcome = 'none'
+        test_outcome = 'none'
+        t = (None, None)
+        p = (None, None)
 
     return {
         'dif': round_half_up(dif, PRECISION),
-        't': (round_half_up(t1, PRECISION), round_half_up(t2, PRECISION)),
-        'p': (round_half_up(p1, PRECISION), round_half_up(p2, PRECISION)),
+        't': t,
+        'p': p,
         'degrees_of_freedom': round_half_up(degree_f, PRECISION),
         'ci_tost': (round_half_up(ll90, PRECISION), round_half_up(ul90, PRECISION)),
         'ci_ttest': (round_half_up(ll95, PRECISION), round_half_up(ul95, PRECISION)),
