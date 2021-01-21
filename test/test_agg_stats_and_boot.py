@@ -2,11 +2,106 @@ import numpy as np
 import bootstrapped.stats_functions as bs_stats
 import pytest
 import math
+import statistics
 
 from metcalcpy.agg_stat import AggStat, pd
 from metcalcpy.bootstrap_custom import bootstrap_and_value
+from metcalcpy.util.utils import round_half_up, PRECISION
 
 TEST_LENGTH = 1000
+
+
+def lossdiff_ml(data, ):
+    if len(data.shape) < 3:
+        lossdiff = data[:, 0] - data[:, 1]
+        return [statistics.mean(lossdiff)]
+    else:
+        result = []
+        for i in range(0, data.shape[0]):
+            lossdiff = data[i][:, 0] - data[i][:, 1]
+            result.append(statistics.mean(lossdiff))
+        return result
+
+
+def lossdiff_mal(data):
+    if len(data.shape) < 3:
+        ALlossdiff = abs(data[:, 0]) - abs(data[:, 1])
+        return [statistics.mean(ALlossdiff)]
+    else:
+        result = []
+        for i in range(0, data.shape[0]):
+            ALlossdiff = abs(data[i][:, 0]) - abs(data[i][:, 1])
+            result.append(statistics.mean(ALlossdiff))
+        return result
+
+
+def lossdiff_msl(data):
+    if len(data.shape) < 3:
+        SLlossdiff = data[:, 0] * data[:, 0] - abs(data[:, 1]) * abs(data[:, 1])
+        return [statistics.mean(SLlossdiff)]
+    else:
+        result = []
+        for i in range(0, data.shape[0]):
+            SLlossdiff = data[i][:, 0] * data[i][:, 0] - abs(data[i][:, 1]) * abs(data[i][:, 1])
+            result.append(statistics.mean(SLlossdiff))
+        return result
+
+
+def test_cboot():
+    vt = np.loadtxt(
+        "/Users/tatiana/PycharmProjects/METcalcpy/test/data/vt.txt")
+    et = np.loadtxt(
+        "/Users/tatiana/PycharmProjects/METcalcpy/test/data/et.txt", )
+
+    # create an array for accepted/rejected flags
+    ml_reject = [1] * TEST_LENGTH
+    mal_reject = [1] * TEST_LENGTH
+    msl_reject = [1] * TEST_LENGTH
+    # run the boot ci TEST_LENGTH times
+    for ind in range(TEST_LENGTH):
+        results_ml = bootstrap_and_value(
+            et,
+            stat_func=lossdiff_ml,
+            num_iterations=500, alpha=0.05,
+            num_threads=1, ci_method='perc', block_length=32)
+
+        # record if 0 in ci bounds (accept) = 0 or not (reject) = 1
+        if results_ml.lower_bound <= 0 and results_ml.upper_bound >= 0:
+            ml_reject[ind] = 0
+
+        results_mal = bootstrap_and_value(
+            et,
+            stat_func=lossdiff_mal,
+            num_iterations=500, alpha=0.05,
+            num_threads=1, ci_method='perc', block_length=32)
+        # record if 0 in ci bounds (accept)=0 or not (reject)=1
+        if results_mal.lower_bound <= 0 and results_mal.upper_bound >= 0:
+            mal_reject[ind] = 0
+
+        results_msl = bootstrap_and_value(
+            et,
+            stat_func=lossdiff_msl,
+            num_iterations=500, alpha=0.05,
+            num_threads=1, ci_method='perc', block_length=32)
+
+        # record if 0 in ci bounds (accept)=0 or not (reject)=1
+        if results_msl.lower_bound <= 0 and results_msl.upper_bound >= 0:
+            msl_reject[ind] = 0
+
+    # get the number of rejected
+    ml_number_of_rejected = sum(x == 1 for x in ml_reject)
+    ml_percent_of_rejected = ml_number_of_rejected * 100 / TEST_LENGTH
+
+    msl_number_of_rejected = sum(x == 1 for x in msl_reject)
+    msl_percent_of_rejected = msl_number_of_rejected * 100 / TEST_LENGTH
+
+    mal_number_of_rejected = sum(x == 1 for x in mal_reject)
+    mal_percent_of_rejected = mal_number_of_rejected * 100 / TEST_LENGTH
+
+    print('for ML  p = {} total rejected = {}'.format( ml_percent_of_rejected, ml_percent_of_rejected))
+    print('for MAL  p = {} total rejected = {}'.format( mal_percent_of_rejected,msl_number_of_rejected))
+    print('for MSL  p = {} total rejected = {}'.format( msl_percent_of_rejected,mal_number_of_rejected))
+
 
 
 def test_boot():
