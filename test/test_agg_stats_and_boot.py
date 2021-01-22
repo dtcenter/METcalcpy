@@ -37,7 +37,7 @@ def lossdiff_mal(data):
 
 def lossdiff_msl(data):
     if len(data.shape) < 3:
-        SLlossdiff = data[:, 0] * data[:, 0] - abs(data[:, 1]) * abs(data[:, 1])
+        SLlossdiff = data[:, 0] * data[:, 0] - data[:, 1] * data[:, 1]
         return [statistics.mean(SLlossdiff)]
     else:
         result = []
@@ -91,16 +91,21 @@ def test_cboot():
     # get the number of rejected
     ml_number_of_rejected = sum(x == 1 for x in ml_reject)
     ml_percent_of_rejected = ml_number_of_rejected * 100 / TEST_LENGTH
+    ml_frequencies_of_ml_rejected =  ml_number_of_rejected / TEST_LENGTH
 
     msl_number_of_rejected = sum(x == 1 for x in msl_reject)
     msl_percent_of_rejected = msl_number_of_rejected * 100 / TEST_LENGTH
+    msl_frequencies_of_rejected =  msl_number_of_rejected / TEST_LENGTH
+
 
     mal_number_of_rejected = sum(x == 1 for x in mal_reject)
     mal_percent_of_rejected = mal_number_of_rejected * 100 / TEST_LENGTH
+    mal_frequencies_of_rejected =  mal_number_of_rejected / TEST_LENGTH
 
-    print('for ML  p = {} total rejected = {}'.format( ml_percent_of_rejected, ml_percent_of_rejected))
-    print('for MAL  p = {} total rejected = {}'.format( mal_percent_of_rejected,msl_number_of_rejected))
-    print('for MSL  p = {} total rejected = {}'.format( msl_percent_of_rejected,mal_number_of_rejected))
+
+    print('for ML   p = {} total rejected = {} frequency = {}'.format( ml_percent_of_rejected, ml_percent_of_rejected,ml_frequencies_of_ml_rejected))
+    print('for MAL  p = {} total rejected = {} frequency = {}'.format( mal_percent_of_rejected,mal_number_of_rejected, mal_frequencies_of_rejected))
+    print('for MSL  p = {} total rejected = {} frequency = {}'.format( msl_percent_of_rejected,msl_number_of_rejected, msl_frequencies_of_rejected))
 
 
 
