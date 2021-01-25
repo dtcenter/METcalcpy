@@ -3,7 +3,10 @@ Program Name: bootstrap_custom.py
 """
 
 import numpy as _np
-from bootstrapped.bootstrap import _bootstrap_distribution, BootstrapResults
+import multiprocessing as _multiprocessing
+import scipy.sparse as _sparse
+
+from bootstrapped.bootstrap import BootstrapResults, _validate_arrays
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
@@ -39,8 +42,9 @@ class BootstrapDistributionResults(BootstrapResults):
 def bootstrap_and_value(values, stat_func, alpha=0.05,
                         num_iterations=1000, iteration_batch_size=None,
                         num_threads=1, ci_method='perc',
-                        save_data=True, save_distributions=False):
-    """Returns bootstrap estimate.
+                        save_data=True, save_distributions=False, block_length: int = 1):
+    """Returns bootstrap estimate. Can do the independent and identically distributed (IID)
+        or Circular Block Bootstrap (CBB) methods depending on the block_length
         Args:
             values: numpy array (or scipy.sparse.csr_matrix) of values to bootstrap
             stat_func: statistic to bootstrap. We provide several default functions:
@@ -68,6 +72,11 @@ def bootstrap_and_value(values, stat_func, alpha=0.05,
             ci_method: method for bootstrapping confidence intervals.
             save_data: Save or not the original data to the resulting object
             save_distributions: Save or not the distributions to the resulting object
+            block_length: number giving the desired block lengths.
+                Default (block.length = 1) is to do IID resamples.
+                Should be longer than the length of dependence in the data,
+                but much shorter than the size of the data. Generally, the square
+                root of the sample size is a good choice
         Returns:
             BootstrapDistributionResults representing CI, stat value and the original distribution.
     """
@@ -79,11 +88,12 @@ def bootstrap_and_value(values, stat_func, alpha=0.05,
         return distr
 
     stat_val = stat_func(values)[0]
-    distributions = _bootstrap_distribution(values_lists,
-                                            stat_func_lists,
-                                            num_iterations,
-                                            iteration_batch_size,
-                                            num_threads)
+    sz = num_iterations / block_length
+    distributions = _bootstrap_distribution_cbb(values_lists,
+                                                stat_func_lists,
+                                                num_iterations,
+                                                iteration_batch_size,
+                                                num_threads, block_length)
 
     bootstrap_dist = do_division(*distributions)
     result = _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_method)
@@ -94,10 +104,81 @@ def bootstrap_and_value(values, stat_func, alpha=0.05,
     return result
 
 
+def _bootstrap_distribution_cbb(values_lists, stat_func_lists,
+                                num_iterations, iteration_batch_size, num_threads, block_length=1):
+    '''Returns the simulated bootstrap distribution. The idea is to sample the same
+        indexes in a bootstrap re-sample across all arrays passed into values_lists.
+
+        This is especially useful when you want to co-sample records in a ratio metric.
+            numerator[k].sum() / denominator[k].sum()
+        and not
+            numerator[ j ].sum() / denominator[k].sum()
+    Args:
+        values_lists: list of numpy arrays (or scipy.sparse.csr_matrix)
+            each represents a set of values to bootstrap. All arrays in values_lists
+            must be of the same length.
+        stat_func_lists: statistic to bootstrap for each element in values_lists.
+        num_iterations: number of bootstrap iterations / resamples / simulations
+            to perform.
+        iteration_batch_size: The bootstrap sample can generate very large
+            matrices. This argument limits the memory footprint by
+            batching bootstrap rounds. If unspecified the underlying code
+            will produce a matrix of len(values) x num_iterations. If specified
+            the code will produce sets of len(values) x iteration_batch_size
+            (one at a time) until num_iterations have been simulated.
+            Defaults to no batching.
+        num_threads: The number of therads to use. This speeds up calculation of
+            the bootstrap. Defaults to 1. If -1 is specified then
+            multiprocessing.cpu_count() is used instead.
+        block_length: number giving the desired block lengths.
+                Default (block.length = 1) is to do IID resamples.
+                Should be longer than the length of dependence in the data,
+                but much shorter than the size of the data.Generally, the square
+                root of the sample size is a good choice
+    Returns:
+        The set of bootstrap resamples where each stat_function is applied on
+        the bootsrapped values.
+    '''
+
+    _validate_arrays(values_lists)
+
+    if iteration_batch_size is None:
+        iteration_batch_size = num_iterations
+
+    num_iterations = int(num_iterations)
+    iteration_batch_size = int(iteration_batch_size)
+
+    num_threads = int(num_threads)
+
+    if num_threads == -1:
+        num_threads = _multiprocessing.cpu_count()
+
+    if num_threads <= 1:
+        results = _bootstrap_sim_cbb(values_lists, stat_func_lists,
+                                     num_iterations, iteration_batch_size, None, block_length)
+    else:
+        pool = _multiprocessing.Pool(num_threads)
+
+        iter_per_job = _np.ceil(num_iterations * 1.0 / num_threads)
+
+        results = []
+        for seed in _np.random.randint(0, 2 ** 32 - 1, num_threads):
+            r = pool.apply_async(_bootstrap_sim_cbb, (values_lists, stat_func_lists,
+                                                      iter_per_job,
+                                                      iteration_batch_size, seed, block_length))
+            results.append(r)
+
+        results = _np.hstack([res.get() for res in results])
+
+        pool.close()
+
+    return results
+
+
 def bootstrap_and_value_mode(values, cases, stat_func, alpha=0.05,
                              num_iterations=1000, iteration_batch_size=None,
                              num_threads=1, ci_method='perc',
-                             save_data=True, save_distributions=False):
+                             save_data=True, save_distributions=False, block_length=1):
     """Returns bootstrap estimate.
         Args:
             values: numpy array (or scipy.sparse.csr_matrix) of values to bootstrap
@@ -126,6 +207,11 @@ def bootstrap_and_value_mode(values, cases, stat_func, alpha=0.05,
             ci_method: method for bootstrapping confidence intervals.
             save_data: Save or not the original data to the resulting object
             save_distributions: Save or not the distributions
+            block_length: number giving the desired block lengths.
+                Default (block.length = 1) is to do IID resamples.
+                Should be longer than the length of dependence in the data,
+                but much shorter than the size of the data. Generally, the square
+                root of the sample size is a good choice
         Returns:
             BootstrapDistributionResults representing CI, stat value and the original distribution.
     """
@@ -141,11 +227,11 @@ def bootstrap_and_value_mode(values, cases, stat_func, alpha=0.05,
     flat_cases = cases.flatten()
     values_current = values[_np.in1d(data_cases, flat_cases)].to_numpy()
     stat_val = stat_func(values_current)[0]
-    distributions = _bootstrap_distribution(values_lists,
-                                            stat_func_lists,
-                                            num_iterations,
-                                            iteration_batch_size,
-                                            num_threads)
+    distributions = _bootstrap_distribution_cbb(values_lists,
+                                                stat_func_lists,
+                                                num_iterations,
+                                                iteration_batch_size,
+                                                num_threads, block_length)
 
     bootstrap_dist = do_division(*distributions)
     result = _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_method)
@@ -196,6 +282,129 @@ def _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_metho
     return BootstrapDistributionResults(lower_bound=low,
                                         value=val,
                                         upper_bound=high)
+
+
+def _bootstrap_sim_cbb(values_lists, stat_func_lists, num_iterations,
+                       iteration_batch_size, seed, block_length=1):
+    """Returns simulated bootstrap distribution. Can do the independent and identically distributed (IID)
+        or Circular Block Bootstrap (CBB) methods depending on the block_length
+        Args:
+            values_lists: numpy array (or scipy.sparse.csr_matrix) of values to bootstrap
+
+            stat_func_lists: statistic to bootstrap
+
+            num_iterations: number of bootstrap iterations to run. The higher this
+            number the more sure you can be about the stability your bootstrap.
+
+            iteration_batch_size: The bootstrap sample can generate very large
+            matrices. This argument limits the memory footprint by
+            batching bootstrap rounds. If unspecified the underlying code
+            will produce a matrix of len(values) x num_iterations. If specified
+            the code will produce sets of len(values) x iteration_batch_size
+            (one at a time) until num_iterations have been simulated.
+
+            seed: random seed
+
+            block_length: number giving the desired block lengths.
+                Default (block.length = 1) is to do IID resamples.
+                Should be longer than the length of dependence in the data,
+                but much shorter than the size of the data.
+    """
+
+    if seed is not None:
+        _np.random.seed(seed)
+
+    num_iterations = int(num_iterations)
+    iteration_batch_size = int(iteration_batch_size)
+
+    results = [[] for _ in values_lists]
+
+    for rng in range(0, num_iterations, iteration_batch_size):
+        max_rng = min(iteration_batch_size, num_iterations - rng)
+
+        values_sims = _generate_distributions_cbb(values_lists, max_rng, block_length)
+
+        for i, values_sim, stat_func in zip(range(len(values_sims)), values_sims, stat_func_lists):
+            results[i].extend(stat_func(values_sim))
+
+    return _np.array(results)
+
+
+def _generate_distributions_cbb(values_lists, num_iterations, block_length=1):
+    if isinstance(values_lists[0], _sparse.csr_matrix):
+        # in the sparse case we dont actually need to bootstrap
+        # the full sparse array since most values are 0
+        # instead for each bootstrap iteration we:
+        #    1. generate B number of non-zero entries to sample from the
+        #          binomial distribution
+        #    2. resample with replacement the non-zero entries from values
+        #          B times
+        #    3. create a new sparse array with the B resamples, zero otherwise
+        results = [[] for _ in range(len(values_lists))]
+
+        pop_size = values_lists[0].shape[1]
+        non_sparse_size = values_lists[0].data.shape[0]
+
+        p = non_sparse_size * 1.0 / pop_size
+
+        for _ in range(num_iterations):
+            ids = _np.random.choice(
+                non_sparse_size,
+                _np.random.binomial(pop_size, p),
+                replace=True,
+            )
+
+            for arr, values in zip(results, values_lists):
+                data = values.data
+                d = _sparse.csr_matrix(
+                    (
+                        data[ids],
+                        (_np.zeros_like(ids), _np.arange(len(ids)))
+                    ),
+                    shape=(1, pop_size),
+                )
+
+                arr.append(d)
+        return [_sparse.vstack(r) for r in results]
+
+    else:
+        values_shape = values_lists[0].shape[0]
+        ids = _np.random.choice(
+            values_shape,
+            (num_iterations, values_shape),
+            replace=True
+        )
+
+        def apply_cbb(row):
+            """
+            Applyes Circular Block Bootstrap (CBB) method to each row
+            :param row:
+            """
+            counter = 0
+            init_val = row[0]
+            for ind, val in enumerate(row):
+                if counter == 0:
+                    # save a 1st value for the block
+                    init_val = val
+                else:
+                    # calculate current value by adding the counter to the initial value
+                    new_val = init_val + counter
+                    # the value should not be bigger then the size of the row
+                    if new_val > len(row) - 1:
+                        new_val = new_val - len(row)
+                    row[ind] = new_val
+                counter = counter + 1
+                if counter == block_length:
+                    # start a new block
+                    counter = 0
+            return row
+
+        if block_length > 1:
+            # uss CBB
+            ids = _np.apply_along_axis(apply_cbb, axis=1, arr=ids)
+
+        results = [values[ids] for values in values_lists]
+        return results
 
 
 def _all_the_same(elements):
