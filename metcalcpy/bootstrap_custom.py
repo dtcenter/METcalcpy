@@ -46,7 +46,7 @@ def bootstrap_and_value(values, stat_func, alpha=0.05,
     """Returns bootstrap estimate. Can do the independent and identically distributed (IID)
         or Circular Block Bootstrap (CBB) methods depending on the block_length
         Args:
-            values: numpy array (or scipy.sparse.csr_matrix) of values to bootstrap
+            values: numpy array  of values to bootstrap
             stat_func: statistic to bootstrap. We provide several default functions:
                     * stat_functions.mean
                     * stat_functions.sum
@@ -114,7 +114,7 @@ def _bootstrap_distribution_cbb(values_lists, stat_func_lists,
         and not
             numerator[ j ].sum() / denominator[k].sum()
     Args:
-        values_lists: list of numpy arrays (or scipy.sparse.csr_matrix)
+        values_lists: list of numpy arrays
             each represents a set of values to bootstrap. All arrays in values_lists
             must be of the same length.
         stat_func_lists: statistic to bootstrap for each element in values_lists.
@@ -181,7 +181,7 @@ def bootstrap_and_value_mode(values, cases, stat_func, alpha=0.05,
                              save_data=True, save_distributions=False, block_length=1):
     """Returns bootstrap estimate.
         Args:
-            values: numpy array (or scipy.sparse.csr_matrix) of values to bootstrap
+            values: numpy array  of values to bootstrap
             stat_func: statistic to bootstrap. We provide several default functions:
                     * stat_functions.mean
                     * stat_functions.sum
@@ -246,7 +246,8 @@ def _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_metho
     """Get the bootstrap confidence interval for a given distribution.
         Args:
             bootstrap_dist: numpy array of bootstrap results from
-                bootstrap_distribution() or bootstrap_ab_distribution()
+                bootstrap_distribution() or  bootstrap_distribution_cbb()
+                or bootstrap_ab_distribution()
             stat_val: The overall statistic that this method is attempting to
                 calculate error bars for.
             alpha: The alpha value for the confidence intervals.
@@ -289,7 +290,7 @@ def _bootstrap_sim_cbb(values_lists, stat_func_lists, num_iterations,
     """Returns simulated bootstrap distribution. Can do the independent and identically distributed (IID)
         or Circular Block Bootstrap (CBB) methods depending on the block_length
         Args:
-            values_lists: numpy array (or scipy.sparse.csr_matrix) of values to bootstrap
+            values_lists: numpy array  of values to bootstrap
 
             stat_func_lists: statistic to bootstrap
 
@@ -331,80 +332,43 @@ def _bootstrap_sim_cbb(values_lists, stat_func_lists, num_iterations,
 
 
 def _generate_distributions_cbb(values_lists, num_iterations, block_length=1):
-    if isinstance(values_lists[0], _sparse.csr_matrix):
-        # in the sparse case we dont actually need to bootstrap
-        # the full sparse array since most values are 0
-        # instead for each bootstrap iteration we:
-        #    1. generate B number of non-zero entries to sample from the
-        #          binomial distribution
-        #    2. resample with replacement the non-zero entries from values
-        #          B times
-        #    3. create a new sparse array with the B resamples, zero otherwise
-        results = [[] for _ in range(len(values_lists))]
+    values_shape = values_lists[0].shape[0]
+    ids = _np.random.choice(
+        values_shape,
+        (num_iterations, values_shape),
+        replace=True
+    )
 
-        pop_size = values_lists[0].shape[1]
-        non_sparse_size = values_lists[0].data.shape[0]
+    def apply_cbb(row):
+        """
+        Applyes Circular Block Bootstrap (CBB) method to each row
+        :param row:
+        """
+        counter = 0
+        init_val = row[0]
+        for ind, val in enumerate(row):
+            if counter == 0:
+                # save a 1st value for the block
+                init_val = val
+            else:
+                # calculate current value by adding the counter to the initial value
+                new_val = init_val + counter
+                # the value should not be bigger then the size of the row
+                if new_val > len(row) - 1:
+                    new_val = new_val - len(row)
+                row[ind] = new_val
+            counter = counter + 1
+            if counter == block_length:
+                # start a new block
+                counter = 0
+        return row
 
-        p = non_sparse_size * 1.0 / pop_size
+    if block_length > 1:
+        # uss CBB
+        ids = _np.apply_along_axis(apply_cbb, axis=1, arr=ids)
 
-        for _ in range(num_iterations):
-            ids = _np.random.choice(
-                non_sparse_size,
-                _np.random.binomial(pop_size, p),
-                replace=True,
-            )
-
-            for arr, values in zip(results, values_lists):
-                data = values.data
-                d = _sparse.csr_matrix(
-                    (
-                        data[ids],
-                        (_np.zeros_like(ids), _np.arange(len(ids)))
-                    ),
-                    shape=(1, pop_size),
-                )
-
-                arr.append(d)
-        return [_sparse.vstack(r) for r in results]
-
-    else:
-        values_shape = values_lists[0].shape[0]
-        ids = _np.random.choice(
-            values_shape,
-            (num_iterations, values_shape),
-            replace=True
-        )
-
-        def apply_cbb(row):
-            """
-            Applyes Circular Block Bootstrap (CBB) method to each row
-            :param row:
-            """
-            counter = 0
-            init_val = row[0]
-            for ind, val in enumerate(row):
-                if counter == 0:
-                    # save a 1st value for the block
-                    init_val = val
-                else:
-                    # calculate current value by adding the counter to the initial value
-                    new_val = init_val + counter
-                    # the value should not be bigger then the size of the row
-                    if new_val > len(row) - 1:
-                        new_val = new_val - len(row)
-                    row[ind] = new_val
-                counter = counter + 1
-                if counter == block_length:
-                    # start a new block
-                    counter = 0
-            return row
-
-        if block_length > 1:
-            # uss CBB
-            ids = _np.apply_along_axis(apply_cbb, axis=1, arr=ids)
-
-        results = [values[ids] for values in values_lists]
-        return results
+    results = [values[ids] for values in values_lists]
+    return results
 
 
 def _all_the_same(elements):
