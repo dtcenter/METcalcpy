@@ -658,6 +658,12 @@ class AggStat:
             values_both_arrays = np.concatenate((values_both_arrays, operation), axis=1)
 
             try:
+                # calculate a block length for the circular temporal block bootstrap if needed
+                block_length = 1
+                is_cbb = parse_bool(self.params['circular_block_bootstrap'])
+
+                if is_cbb:
+                    block_length = int(math.sqrt(len(values_both_arrays)))
                 results = bootstrap_and_value(
                     values_both_arrays,
                     stat_func=self._calc_stats_derived,
@@ -666,7 +672,8 @@ class AggStat:
                     ci_method=self.params['method'],
                     alpha=self.params['alpha'],
                     save_data=False,
-                    save_distributions=derived_curve_component.derived_operation == 'DIFF_SIG')
+                    save_distributions=derived_curve_component.derived_operation == 'DIFF_SIG',
+                    block_length=block_length)
             except KeyError as err:
                 results = bootstrapped.bootstrap.BootstrapResults(None, None, None)
                 print(err)
@@ -729,13 +736,19 @@ class AggStat:
         else:
             # need bootstrapping and CI calculation in addition to statistic
             try:
+                block_length = 1
+                is_cbb = parse_bool(self.params['circular_block_bootstrap'])
+
+                if is_cbb:
+                    block_length = int(math.sqrt(len(data)))
                 results = bootstrap_and_value(
                     data,
                     stat_func=self._calc_stats,
                     num_iterations=self.params['num_iterations'],
                     num_threads=self.params['num_threads'],
                     ci_method=self.params['method'],
-                    save_data=has_derived_series)
+                    save_data=has_derived_series,
+                    block_length=block_length)
 
             except KeyError as err:
                 results = BootstrapDistributionResults(None, None, None)
@@ -990,7 +1003,7 @@ class AggStat:
                     bootstrap_results = self._get_bootstrapped_stats_for_derived(
                         point,
                         point_to_distrib,
-                        axis)
+                        axis )
                     n_stats = 0
 
                 # save results to the output data frame
@@ -1064,7 +1077,6 @@ class AggStat:
         export_csv = out_frame.to_csv(self.params['agg_stat_output'],
                                       index=None, header=header, mode=mode,
                                       sep="\t", na_rep="NA")
-
 
 
 if __name__ == "__main__":
