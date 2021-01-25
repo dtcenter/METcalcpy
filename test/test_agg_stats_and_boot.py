@@ -48,15 +48,15 @@ def lossdiff_msl(data):
 
 
 def test_cboot():
-    vt = np.loadtxt(
-        "/Users/tatiana/PycharmProjects/METcalcpy/test/data/vt.txt")
+
     et = np.loadtxt(
-        "/Users/tatiana/PycharmProjects/METcalcpy/test/data/et.txt", )
+        "./data/et.txt" )
 
     # create an array for accepted/rejected flags
     ml_reject = [1] * TEST_LENGTH
     mal_reject = [1] * TEST_LENGTH
     msl_reject = [1] * TEST_LENGTH
+    mean_reject = [1] * TEST_LENGTH
     # run the boot ci TEST_LENGTH times
     for ind in range(TEST_LENGTH):
         results_ml = bootstrap_and_value(
@@ -88,25 +88,40 @@ def test_cboot():
         if results_msl.lower_bound <= 0 and results_msl.upper_bound >= 0:
             msl_reject[ind] = 0
 
+        results_mean = bootstrap_and_value(
+            et[:, 0],
+            stat_func=bs_stats.mean,
+            num_iterations=500, alpha=0.05,
+            num_threads=1, ci_method='perc', block_length=32)
+        if results_mean.lower_bound <= 0 and results_mean.upper_bound >= 0:
+            mean_reject[ind] = 0
+
     # get the number of rejected
     ml_number_of_rejected = sum(x == 1 for x in ml_reject)
     ml_percent_of_rejected = ml_number_of_rejected * 100 / TEST_LENGTH
-    ml_frequencies_of_ml_rejected =  ml_number_of_rejected / TEST_LENGTH
+    ml_frequencies_of_ml_rejected = ml_number_of_rejected / TEST_LENGTH
 
     msl_number_of_rejected = sum(x == 1 for x in msl_reject)
     msl_percent_of_rejected = msl_number_of_rejected * 100 / TEST_LENGTH
-    msl_frequencies_of_rejected =  msl_number_of_rejected / TEST_LENGTH
-
+    msl_frequencies_of_rejected = msl_number_of_rejected / TEST_LENGTH
 
     mal_number_of_rejected = sum(x == 1 for x in mal_reject)
     mal_percent_of_rejected = mal_number_of_rejected * 100 / TEST_LENGTH
-    mal_frequencies_of_rejected =  mal_number_of_rejected / TEST_LENGTH
+    mal_frequencies_of_rejected = mal_number_of_rejected / TEST_LENGTH
 
+    mean_number_of_rejected = sum(x == 1 for x in mean_reject)
+    mean_percent_of_rejected = mean_number_of_rejected * 100 / TEST_LENGTH
+    mean_frequencies_of_rejected = mean_number_of_rejected / TEST_LENGTH
 
-    print('for ML   p = {} total rejected = {} frequency = {}'.format( ml_percent_of_rejected, ml_percent_of_rejected,ml_frequencies_of_ml_rejected))
-    print('for MAL  p = {} total rejected = {} frequency = {}'.format( mal_percent_of_rejected,mal_number_of_rejected, mal_frequencies_of_rejected))
-    print('for MSL  p = {} total rejected = {} frequency = {}'.format( msl_percent_of_rejected,msl_number_of_rejected, msl_frequencies_of_rejected))
-
+    print('for ML   p = {} total rejected = {} frequency = {}'.format(ml_percent_of_rejected, ml_percent_of_rejected,
+                                                                      ml_frequencies_of_ml_rejected))
+    print('for MAL  p = {} total rejected = {} frequency = {}'.format(mal_percent_of_rejected, mal_number_of_rejected,
+                                                                      mal_frequencies_of_rejected))
+    print('for MSL  p = {} total rejected = {} frequency = {}'.format(msl_percent_of_rejected, msl_number_of_rejected,
+                                                                      msl_frequencies_of_rejected))
+    print(
+        'for mean  p = {} total rejected = {} frequency = {}'.format(mean_percent_of_rejected, mean_number_of_rejected,
+                                                                     mean_frequencies_of_rejected))
 
 
 def test_boot():
