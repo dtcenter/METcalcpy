@@ -4,12 +4,22 @@
 
 Bugfixes:
 
+* Fix event equalization and agg_stat logic when the following fixed_vars_vals_input values are 'NA':
+  fcst_thresh, fcst_thresh_1 (`#52 <https://github.com/dtcenter/METcalcpy/issues/52>`_)
+
 * Fix the No-Skill reference line on Reliability Plot implemented in Python (`#26 <https://github.com/dtcenter/METcalcpy/issues/26>`_)
 
 * Fix the calculation of ECNT_RMSE statistic so the Python and R implementations are consistent (`#42 <https://github.com/dtcenter/METcalcpy/issues/42>_`) 
 
 * Change the default setting of calc_difficulty_index to reproduce results originally generated from Naval Research Lab (`#37 <https://github.com/dtcenter/METcalcpy/issues/37>`_)
+
 New Functionality:
+
+* Add equivalence testing interval bounds to the existing continuous line type.  Two fields are added:
+  lower bound and upper bound (similar to calculating a normal confidence interval except it requires
+  using the non-central t-distribution (`#1 <https://github.com/dtcenter/METcalcpy/issues/1>`_)
+
+* Enhance bootstrapping to support circular temporal block bootstrap with overlapping blocks (`#3 <https://github.com/dtcenter/METcalcpy/issues/3>`_)
 
 * Add calculation for Difficulty Index from NRL (`#30 <https://github.com/dtcenter/METcalcpy/issues/30>`_)
 
@@ -28,6 +38,8 @@ Enhancements:
 * Incorporate the calculation of the Difficulty Index from Naval Research Lab  (`#27 <https://github.com/dtcenter/METcalcpy/issues/27>`_)
 
 Internal:
+
+* Confirm that Event Equalization for off-setting initialization is still working (`#16 <https://github.com/dtcenter/METcalcpy/issues/16>`_)
 
 * Move convert_lons_indices() function from plot_blocking.py to utils.py in METcalcpy (`#33 <https://github.com/dtcenter/METcalcpy/issues/33>`_)
 
