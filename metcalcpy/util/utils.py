@@ -597,23 +597,26 @@ def equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axi
         series_data_for_ee = pd.DataFrame()
         for fcst_var_stat in fcst_var_stats:
             # for each series for the specified axis
-            for series_var, series_var_vals in params['series_val_' + axis].items():
-                # ungroup series value if needed
-                series_var_vals_no_group = []
-                for val in series_var_vals:
-                    split_val = val.split(',')
-                    series_var_vals_no_group.extend(split_val)
-
-                # filter input data based on fcst_var, statistic
-                # and all series variables values
+            if len(params['series_val_' + axis]) == 0:
                 series_data_for_ee = input_data
-                if series_var in input_data.keys():
-                    series_data_for_ee = series_data_for_ee[
-                        series_data_for_ee[series_var].isin(series_var_vals_no_group)]
-                if 'fcst_var' in input_data.keys():
-                    series_data_for_ee = series_data_for_ee[series_data_for_ee['fcst_var'] == fcst_var]
-                if 'stat_name' in input_data.keys():
-                    series_data_for_ee = series_data_for_ee[series_data_for_ee["stat_name"] == fcst_var_stat]
+            else:
+                for series_var, series_var_vals in params['series_val_' + axis].items():
+                    # ungroup series value if needed
+                    series_var_vals_no_group = []
+                    for val in series_var_vals:
+                        split_val = val.split(',')
+                        series_var_vals_no_group.extend(split_val)
+
+                    # filter input data based on fcst_var, statistic
+                    # and all series variables values
+                    series_data_for_ee = input_data
+                    if series_var in input_data.keys():
+                        series_data_for_ee = series_data_for_ee[
+                            series_data_for_ee[series_var].isin(series_var_vals_no_group)]
+                    if 'fcst_var' in input_data.keys():
+                        series_data_for_ee = series_data_for_ee[series_data_for_ee['fcst_var'] == fcst_var]
+                    if 'stat_name' in input_data.keys():
+                        series_data_for_ee = series_data_for_ee[series_data_for_ee["stat_name"] == fcst_var_stat]
 
             # perform EE on filtered data
             # for SSVAR use equalization of multiple events
