@@ -2,6 +2,7 @@
 Program Name: ctc_statistics.py
 """
 import warnings
+import math
 import numpy as np
 import pandas as pd
 from scipy.special import lambertw
@@ -387,11 +388,13 @@ def calculate_odds(input_data, columns_names):
         if pody is None or pofd is None:
             result = None
         else:
+
             result = (pody * (1 - pofd)) / (pofd * (1 - pody))
             result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
+
     return result
 
 
@@ -715,3 +718,212 @@ def calculate_ctc_fn(input_data, columns_names):
     fn_on = sum_column_data_by_name(input_data, columns_names, 'fn_on')
     fn_oy = sum_column_data_by_name(input_data, columns_names, 'fn_oy')
     return round_half_up(fn_on + fn_oy, PRECISION)
+
+
+def pod_yes(input_data, columns_names):
+    warnings.filterwarnings('error')
+    try:
+        fy_oy = sum_column_data_by_name(input_data, columns_names, 'fy_oy')
+        num = fy_oy
+        den = fy_oy + sum_column_data_by_name(input_data, columns_names, 'fn_oy')
+        result = num / den
+        result = round_half_up(result, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def pod_no(input_data, columns_names):
+    warnings.filterwarnings('error')
+    try:
+        fn_on = sum_column_data_by_name(input_data, columns_names, 'fn_on')
+        num = fn_on
+        den = fn_on + sum_column_data_by_name(input_data, columns_names, 'fy_on')
+        result = num / den
+        result = round_half_up(result, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_odds1(input_data, columns_names):
+    """Performs calculation of ODDS - Odds Ratio
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated ODDS as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        py = pod_yes(input_data, columns_names)
+        pn = calculate_pofd(input_data, columns_names)
+
+        num = py / (1 - py)
+        den = pn / (1 - pn)
+        result = num / den
+        result = round_half_up(result, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_orss(input_data, columns_names):
+    """Performs calculation of ORSS - Odds Ratio Skill Score
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated ORSS as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        fy_oy = sum_column_data_by_name(input_data, columns_names, 'fy_oy')
+        fn_on = sum_column_data_by_name(input_data, columns_names, 'fn_on')
+        fy_on = sum_column_data_by_name(input_data, columns_names, 'fy_on')
+        fn_oy = sum_column_data_by_name(input_data, columns_names, 'fn_oy')
+
+        num = fy_oy * fn_on - fy_on * fn_oy
+        den = fy_oy * fn_on + fy_on * fn_oy
+        result = num / den
+        result = round_half_up(result, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_sedi(input_data, columns_names):
+    """Performs calculation of SEDI - Symmetric Extremal Depenency Index
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated SEDI as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        fn_on = sum_column_data_by_name(input_data, columns_names, 'fn_on')
+        fy_on = sum_column_data_by_name(input_data, columns_names, 'fy_on')
+
+        f = fy_on / (fy_on + fn_on)
+        h = pod_yes(input_data, columns_names)
+
+        num = math.log(f) - math.log(h) - math.log(1 - f) + math.log(1 - h)
+        den = math.log(f) + math.log(h) + math.log(1 - f) + math.log(1 - h)
+        result = num / den
+        result = round_half_up(result, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_seds(input_data, columns_names):
+    """Performs calculation of SEDS - Symmetric Extreme Dependency Score
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated SEDS as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        fy_oy = sum_column_data_by_name(input_data, columns_names, 'fy_oy')
+        fy_on = sum_column_data_by_name(input_data, columns_names, 'fy_on')
+        fn_oy = sum_column_data_by_name(input_data, columns_names, 'fn_oy')
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
+
+        num = math.log((fy_oy + fy_on) / total) + math.log((fy_oy + fn_oy) / total)
+
+        den = math.log(fy_oy / total)
+        result = num / den - 1.0
+        result = round_half_up(result, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_edi(input_data, columns_names):
+    """Performs calculation of EDI - Extreme Dependency Index
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated EDI as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        fn_on = sum_column_data_by_name(input_data, columns_names, 'fn_on')
+        fy_on = sum_column_data_by_name(input_data, columns_names, 'fy_on')
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
+        f = fy_on / (fy_on + fn_on)
+        h = pod_yes(input_data, columns_names)
+
+        num = math.log(f) - math.log(h)
+        den = math.log(f) + math.log(h)
+        result = num / den
+        result = round_half_up(result, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_eds(input_data, columns_names):
+    """Performs calculation of EDS - Extreme Dependency Score
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated EDs as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        fy_oy = sum_column_data_by_name(input_data, columns_names, 'fy_oy')
+        fn_oy = sum_column_data_by_name(input_data, columns_names, 'fn_oy')
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
+
+        num = math.log((fy_oy + fn_oy) / total)
+        den = math.log(fy_oy / total)
+
+        result = 2.0 * num / den - 1.0
+        result = round_half_up(result, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
