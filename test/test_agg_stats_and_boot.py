@@ -269,7 +269,8 @@ def settings():
               'indy_vals': ['0', '30000', '60000', '90000',
                             '120000', '150000', '180000', '210000', '240000'],
               'list_stat_1': ['FBAR'],
-              'list_stat_2': []}
+              'list_stat_2': [],
+              'circular_block_bootstrap': False}
     agg_stat = AggStat(params)
     settings_dict = dict()
     settings_dict['agg_stat'] = agg_stat
