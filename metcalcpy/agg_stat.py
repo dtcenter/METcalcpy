@@ -660,7 +660,11 @@ class AggStat:
             try:
                 # calculate a block length for the circular temporal block bootstrap if needed
                 block_length = 1
-                is_cbb = parse_bool(self.params['circular_block_bootstrap'])
+
+                # to use circular block bootstrap or not
+                is_cbb = True
+                if 'circular_block_bootstrap' in self.params.keys():
+                    is_cbb = parse_bool(self.params['circular_block_bootstrap'])
 
                 if is_cbb:
                     block_length = int(math.sqrt(len(values_both_arrays)))
@@ -737,7 +741,10 @@ class AggStat:
             # need bootstrapping and CI calculation in addition to statistic
             try:
                 block_length = 1
-                is_cbb = parse_bool(self.params['circular_block_bootstrap'])
+                # to use circular block bootstrap or not
+                is_cbb = True
+                if 'circular_block_bootstrap' in self.params.keys():
+                    is_cbb = parse_bool(self.params['circular_block_bootstrap'])
 
                 if is_cbb:
                     block_length = int(math.sqrt(len(data)))
