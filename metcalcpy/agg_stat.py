@@ -816,6 +816,7 @@ class AggStat:
 
         # the length of the frame with unique combinations should be the same
         # as the number of unique combinations calculated before
+
         if len(series_data) / num_diff_vals != unique_date_size \
                 and self.params['list_stat_' + axis] not in self.EXEMPTED_VARS:
             raise NameError("Derived curve can't be calculated."
