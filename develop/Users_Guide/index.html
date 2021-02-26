@@ -1,0 +1,336 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>User’s Guide &mdash; METcalcpy develop documentation</title>
+  
+
+  
+  
+  
+  
+    <link rel="canonical" href="https://dtcenter.github.io/METcalcpy/latest/Users_Guide/index.html"/>
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../_static/theme_override.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="METcalcpy develop documentation" href="../index.html"/>
+        <link rel="next" title="1. Installation guide for METplotpy" href="installation.html"/>
+        <link rel="prev" title="METcalcpy version develop" href="../index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> METcalcpy
+          
+
+          
+            
+            <img src="../_static/met_calcpy_logo_2019_09.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                
+                  <div class="version-dropdown">
+                    <select class="version-list" id="version-list">
+                      <option value=''>develop</option>
+                      
+                        
+                          <option value="../latest">latest</option>
+                        
+                      
+                        
+                      
+                    </select>
+                  </div>
+                
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">METcalcpy</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">User’s Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html">1. Installation guide for METplotpy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="release-notes.html">2. METcalcpy develop Release Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">METcalcpy</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>User’s Guide</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/Users_Guide/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="user-s-guide">
+<h1>User’s Guide<a class="headerlink" href="#user-s-guide" title="Permalink to this headline">¶</a></h1>
+<p><strong>Foreword: A note to METcalcpy users</strong></p>
+<p>This User’s guide is provided as an aid to users of METcalcpy.  METcalcpy is a
+Python version of the statistics calculation functionality of METviewer,
+METexpress, plotting packages in METplotpy and is a stand-alone package for any
+other application. It is also a component of the unified METplus verification
+framework. More details about METplus can be found on the
+<a class="reference external" href="http://dtcenter.org/community-code/metplus">METplus website</a>.</p>
+<p>It is important to note here that METcalcpy is an evolving software package.
+This documentation describes the develop release dated 20210331.
+Intermediate releases may include bug fixes. METcalcpy is also able to accept
+new modules contributed by the community. If you have code you would like to
+contribute, we will gladly consider your contribution. Please send an email to:
+<a class="reference external" href="mailto:">met_help<span>&#64;</span>ucar<span>&#46;</span>edu</a>. We will then determine if we will be able to
+include the contribution in a future version.</p>
+<p>This User’s Guide was prepared by the developers of METcalcpy, including
+Minna Win-Gildenmeister, Tatiana Burek, David Fillmore, John Halley Gotway,
+Dan Adriaansen, and Hank Fisher.</p>
+<p><strong>Model Evaluation Tools Calc Py (METcalcpy)  TERMS OF USE - IMPORTANT!</strong></p>
+<p>Copyright 2021, UCAR/NCAR, NOAA, CSU/CIRA, and CU/CIRES
+Licensed under the Apache License, Version 2.0 (the “License”);
+You may not use this file except in compliance with the License.</p>
+<p>You may obtain a copy of the License at</p>
+<p><a class="reference external" href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></p>
+<p>Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF
+ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.</p>
+<p><strong>Citations</strong></p>
+<p>The citation for this User’s Guide should be:</p>
+<p>Win-Gildenmeister, M., Burek, T., Fillmore, D., Halley Gotway, J., Adriaansen, D., Fisher, H., 2021: The METcalcpy Version develop User’s Guide.
+Developmental Testbed Center.
+Available at: <a class="reference external" href="https://github.com/dtcenter/METcalcpy/releases">METcalcpy releases</a></p>
+<p><strong>Acknowledgments</strong></p>
+<p>?? NOTE: THESE WERE TAKEN DIRECTLY FROM MET AND MAY NEED TO BE MODIFIED. ??</p>
+<p>We thank the National Science Foundation (NSF) along with three organizations
+within the National Oceanic and Atmospheric Administration (NOAA): 1) Office
+of Atmospheric Research (OAR); 2) Next Generation Global Prediction System
+project (NGGPS); and 3) United State Weather Research Program (USWRP), the
+United States Air Force (USAF), and the United States Department of Energy
+(DOE) for their support of this work. Funding for the development of MET-TC is
+from the NOAA’s Hurricane Forecast Improvement Project (HFIP) through the
+Developmental Testbed Center (DTC). Funding for the expansion of capability to
+address many methods pertinent to global and climate simulations was provided
+by NOAA’s Next Generation Global Prediction System (NGGPS) and NSF Earth
+System Model 2 (EaSM2) projects. We would like to thank James Franklin at the
+National Hurricane Center (NHC) for his insight into the original development
+of the existing NHC verification software. Thanks also go to the staff at the
+Developmental Testbed Center for their help, advice, and many types of support.
+We released METv1.0 in January 2008 and would not have made a decade of
+cutting-edge verification support without those who participated in the
+original MET planning workshops and the now dis-banded verification advisory
+group (Mike Baldwin, Matthew Sittel, Elizabeth Ebert, Geoff DiMego, Chris
+Davis, and Jason Knievel).</p>
+<p>The National Center for Atmospheric Research (NCAR) is sponsored by NSF. The
+DTC is sponsored by the National Oceanic and Atmospheric Administration (NOAA),
+the United States Air Force, and the National Science Foundation (NSF). NCAR
+is sponsored by the National Science Foundation (NSF).</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">1. Installation guide for METplotpy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html">2. METcalcpy develop Release Notes</a></li>
+</ul>
+</div>
+<div class="section" id="indices-and-tables">
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="../search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="installation.html" class="btn btn-neutral float-right" title="1. Installation guide for METplotpy" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../index.html" class="btn btn-neutral" title="METcalcpy version develop" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2021, UCAR/NCAR, NOAA, CSU/CIRA, and CU/CIRES.
+      Last updated on Feb 25, 2021, 5:21:11 PM.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+ 
+<script>var version_json_loc = "../../versions.json";</script>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
+    
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
