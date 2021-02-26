@@ -615,11 +615,27 @@ class AggStat:
             return BootstrapDistributionResults(lower_bound=None,
                                                 value=None,
                                                 upper_bound=None)
+        # calculate the number of values in the group if the series has a group
+        # it is need d for the validation
+        num_diff_vals_first = 0
+        num_diff_vals_second = 0
+        for val in permute_for_first_series:
+            size = len(val.split(','))
+            if size > 1:
+                num_diff_vals_first = num_diff_vals_first + size
+        for val in permute_for_second_series:
+            size = len(val.split(','))
+            if size > 1:
+                num_diff_vals_second = num_diff_vals_second + size
+        if num_diff_vals_first == 0:
+            num_diff_vals_first = 1
+        if num_diff_vals_second == 0:
+            num_diff_vals_second = 1
 
         # validate data
         if derived_curve_component.derived_operation != 'SINGLE':
-            self._validate_series_cases_for_derived_operation(ds_1.values, axis)
-            self._validate_series_cases_for_derived_operation(ds_2.values, axis)
+            self._validate_series_cases_for_derived_operation(ds_1.values, axis, num_diff_vals_first)
+            self._validate_series_cases_for_derived_operation(ds_2.values, axis, num_diff_vals_second)
 
         if self.params['num_iterations'] == 1 or derived_curve_component.derived_operation == 'ETB':
             # don't need bootstrapping and CI calculation -
@@ -762,7 +778,7 @@ class AggStat:
                 print(err)
         return results
 
-    def _validate_series_cases_for_derived_operation(self, series_data, axis="1"):
+    def _validate_series_cases_for_derived_operation(self, series_data, axis="1", num_diff_vals=1):
         """ Checks if the derived curve can be calculated.
             The criteria - input array must have only unique
             (fcst_valid, fcst_lead, stat_name) cases.
@@ -771,6 +787,9 @@ class AggStat:
 
             Args:
                 series_data: 2d numpu array
+                axis: axis of the series
+                num_diff_vals: number of values in the group if the series has a group,
+                    1 - otherwise
             Returns:
                  This method raises an error if this criteria is False
         """
@@ -804,7 +823,8 @@ class AggStat:
 
         # the length of the frame with unique combinations should be the same
         # as the number of unique combinations calculated before
-        if len(series_data) != unique_date_size \
+
+        if len(series_data) / num_diff_vals != unique_date_size \
                 and self.params['list_stat_' + axis] not in self.EXEMPTED_VARS:
             raise NameError("Derived curve can't be calculated."
                             " Multiple values for one valid date/fcst_lead")
@@ -1010,7 +1030,7 @@ class AggStat:
                     bootstrap_results = self._get_bootstrapped_stats_for_derived(
                         point,
                         point_to_distrib,
-                        axis )
+                        axis)
                     n_stats = 0
 
                 # save results to the output data frame
