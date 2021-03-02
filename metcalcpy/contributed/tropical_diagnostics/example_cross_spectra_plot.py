@@ -9,9 +9,11 @@ import xarray as xr
 import spacetime_plot as stp
 
 # location of the output files from example_cross_spectra
-pathdata = '../data/'
+# pathdata = '../data/'
+pathdata = '/Volumes/d1/fillmore/Data/TropicalDiagnostics/'
 # location of the plot files
-plotpath = '../plots/'
+# plotpath = '../plots/'
+plotpath = '/Users/fillmore/working/'
 
 # plot layout parameters
 flim = 0.5  # maximum frequency in cpd for plotting
