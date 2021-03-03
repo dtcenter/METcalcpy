@@ -46,7 +46,8 @@ def lossdiff_msl(data):
             result.append(statistics.mean(SLlossdiff))
         return result
 
-
+@pytest.mark.skip("Not to be run in regression testing, due to extensive "
+                  "number of data points.  This test takes a long time to run.")
 def test_cboot():
 
     et = np.loadtxt(
@@ -123,7 +124,8 @@ def test_cboot():
         'for mean  p = {} total rejected = {} frequency = {}'.format(mean_percent_of_rejected, mean_number_of_rejected,
                                                                      mean_frequencies_of_rejected))
 
-
+@pytest.mark.skip("Not to be run in as a regression test, it uses an extensive number of points"
+                  " and takes a long time (well beyond 5 minutes) to run.")
 def test_boot():
     # size of array
     n = 100
