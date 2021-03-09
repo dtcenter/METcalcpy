@@ -474,15 +474,15 @@ def write_dataset(ds, ds_nc, coords_interp=None):
             coord[:] = t_array
 
     if 'time' not in ds.dims:
-        ds_nc.createDimension('time', 1)
+        ds_nc.createDimension('valid_time', 1)
         time_coord = ds_nc.createVariable(
-            'time', 'float64', ('time'))
+            'valid_time', 'float64', ('valid_time'))
         dt_valid = datetime.utcfromtimestamp(
             ds['valid_time'].astype('O')/1e9)
         dt_init = datetime.utcfromtimestamp(
             ds['init_time'].astype('O')/1e9)
         time_coord[:] = (dt_valid - dt_init).total_seconds()
-        time_coord.long_name = 'time'
+        time_coord.long_name = 'valid_time'
         time_coord.units = 'seconds since ' + str(dt_init)
 
     if coords_interp is not None:
@@ -498,10 +498,11 @@ def write_dataset(ds, ds_nc, coords_interp=None):
             dtype = 'uint64'
         if 'time' not in ds.dims:
             dims_with_time = list(ds[field].dims)
-            dims_with_time.insert(0, 'time')
-            var = ds_nc.createVariable(
-                field, dtype, tuple(dims_with_time))
-            var[:] = ds[field].values
+            dims_with_time.insert(0, 'valid_time')
+            if field != 'valid_time':
+                var = ds_nc.createVariable(
+                    field, dtype, tuple(dims_with_time))
+                var[:] = ds[field].values
         else:
             var = ds_nc.createVariable(
                 field, dtype, ds[field].dims)
