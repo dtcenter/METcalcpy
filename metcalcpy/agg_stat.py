@@ -26,6 +26,7 @@ import itertools
 import argparse
 from inspect import signature
 import yaml
+import pandas
 import bootstrapped.bootstrap
 from metcalcpy.bootstrap_custom import BootstrapDistributionResults, bootstrap_and_value
 from metcalcpy.util.ctc_statistics import *
@@ -42,7 +43,7 @@ from metcalcpy.util.nbrctc_statistics import *
 from metcalcpy.util.pstd_statistics import *
 from metcalcpy.util.rps_statistics import *
 
-from metcalcpy.util.utils import is_string_integer, get_derived_curve_name, unique, \
+from metcalcpy.util.utils import is_string_integer, get_derived_curve_name, \
     calc_derived_curve_value, intersection, is_derived_point, parse_bool, \
     OPERATION_TO_SIGN, perfect_score_adjustment, perform_event_equalization, aggregate_field_values
 
@@ -107,7 +108,7 @@ class AggStat:
         self.statistic = None
         self.derived_name_to_values = {}
         self.params = in_params
-        import pandas
+
         try:
             self.input_data = pd.read_csv(
                 self.params['agg_stat_input'],
@@ -117,8 +118,8 @@ class AggStat:
             self.column_names = self.input_data.columns.values
         except pandas.errors.EmptyDataError:
             raise
-        except KeyError as e:
-            print(f'ERROR: parameter with key {e} is missing')
+        except KeyError as er:
+            print(f'ERROR: parameter with key {er} is missing')
             raise
         self.group_to_value = {}
 
@@ -256,6 +257,7 @@ class AggStat:
         num_parameters = len(signature(globals()[func_name]).parameters)
 
         if values is not None and values.ndim == 2:
+
             # The single value case
             if num_parameters == 2:
                 stat_values = [globals()[func_name](values, self.column_names)]
@@ -503,7 +505,7 @@ class AggStat:
 
     def _prepare_nbr_cnt_data(self, data_for_prepare):
         """Prepares nbrcnt data.
-            Multiplies needed for the statistic calculation columns to the 'total'value
+            Multiplies needed for the statistic calculation columns to the 'total' value
 
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
@@ -613,17 +615,51 @@ class AggStat:
             return BootstrapDistributionResults(lower_bound=None,
                                                 value=None,
                                                 upper_bound=None)
+        # calculate the number of values in the group if the series has a group
+        # it is need d for the validation
+        num_diff_vals_first = 0
+        num_diff_vals_second = 0
+        for val in permute_for_first_series:
+            size = len(val.split(','))
+            if size > 1:
+                num_diff_vals_first = num_diff_vals_first + size
+        for val in permute_for_second_series:
+            size = len(val.split(','))
+            if size > 1:
+                num_diff_vals_second = num_diff_vals_second + size
+        if num_diff_vals_first == 0:
+            num_diff_vals_first = 1
+        if num_diff_vals_second == 0:
+            num_diff_vals_second = 1
 
         # validate data
-        self._validate_series_cases_for_derived_operation(ds_1.values, axis)
-        self._validate_series_cases_for_derived_operation(ds_2.values, axis)
+        if derived_curve_component.derived_operation != 'SINGLE':
+            self._validate_series_cases_for_derived_operation(ds_1.values, axis, num_diff_vals_first)
+            self._validate_series_cases_for_derived_operation(ds_2.values, axis, num_diff_vals_second)
 
-        if self.params['num_iterations'] == 1:
+        if self.params['num_iterations'] == 1 or derived_curve_component.derived_operation == 'ETB':
             # don't need bootstrapping and CI calculation -
             # calculate the derived statistic and exit
+
+            if derived_curve_component.derived_operation == 'ETB':
+                index_array = np.where(self.column_names == 'stat_value')[0]
+                func_name = f'calculate_{self.statistic}'
+                for row in ds_1.values:
+                    stat = [globals()[func_name](row[np.newaxis, ...], self.column_names)]
+                    row[index_array] = stat
+                for row in ds_2.values:
+                    stat = [globals()[func_name](row[np.newaxis, ...], self.column_names)]
+                    row[index_array] = stat
+
+                ds_1_value = ds_1.values[:, index_array].flatten().tolist()
+                ds_2_value = ds_2.values[:, index_array].flatten().tolist()
+            else:
+                ds_1_value = [ds_1.value]
+                ds_2_value = [ds_2.value]
+
             stat_val = calc_derived_curve_value(
-                [ds_1.value],
-                [ds_2.value],
+                ds_1_value,
+                ds_2_value,
                 derived_curve_component.derived_operation)
             results = BootstrapDistributionResults(lower_bound=None,
                                                    value=round_half_up(stat_val[0], 5),
@@ -638,6 +674,16 @@ class AggStat:
             values_both_arrays = np.concatenate((values_both_arrays, operation), axis=1)
 
             try:
+                # calculate a block length for the circular temporal block bootstrap if needed
+                block_length = 1
+
+                # to use circular block bootstrap or not
+                is_cbb = True
+                if 'circular_block_bootstrap' in self.params.keys():
+                    is_cbb = parse_bool(self.params['circular_block_bootstrap'])
+
+                if is_cbb:
+                    block_length = int(math.sqrt(len(values_both_arrays)))
                 results = bootstrap_and_value(
                     values_both_arrays,
                     stat_func=self._calc_stats_derived,
@@ -646,7 +692,8 @@ class AggStat:
                     ci_method=self.params['method'],
                     alpha=self.params['alpha'],
                     save_data=False,
-                    save_distributions=derived_curve_component.derived_operation == 'DIFF_SIG')
+                    save_distributions=derived_curve_component.derived_operation == 'DIFF_SIG',
+                    block_length=block_length)
             except KeyError as err:
                 results = bootstrapped.bootstrap.BootstrapResults(None, None, None)
                 print(err)
@@ -709,20 +756,29 @@ class AggStat:
         else:
             # need bootstrapping and CI calculation in addition to statistic
             try:
+                block_length = 1
+                # to use circular block bootstrap or not
+                is_cbb = True
+                if 'circular_block_bootstrap' in self.params.keys():
+                    is_cbb = parse_bool(self.params['circular_block_bootstrap'])
+
+                if is_cbb:
+                    block_length = int(math.sqrt(len(data)))
                 results = bootstrap_and_value(
                     data,
                     stat_func=self._calc_stats,
                     num_iterations=self.params['num_iterations'],
                     num_threads=self.params['num_threads'],
                     ci_method=self.params['method'],
-                    save_data=has_derived_series)
+                    save_data=has_derived_series,
+                    block_length=block_length)
 
             except KeyError as err:
                 results = BootstrapDistributionResults(None, None, None)
                 print(err)
         return results
 
-    def _validate_series_cases_for_derived_operation(self, series_data, axis="1"):
+    def _validate_series_cases_for_derived_operation(self, series_data, axis="1", num_diff_vals=1):
         """ Checks if the derived curve can be calculated.
             The criteria - input array must have only unique
             (fcst_valid, fcst_lead, stat_name) cases.
@@ -731,6 +787,9 @@ class AggStat:
 
             Args:
                 series_data: 2d numpu array
+                axis: axis of the series
+                num_diff_vals: number of values in the group if the series has a group,
+                    1 - otherwise
             Returns:
                  This method raises an error if this criteria is False
         """
@@ -764,7 +823,8 @@ class AggStat:
 
         # the length of the frame with unique combinations should be the same
         # as the number of unique combinations calculated before
-        if len(series_data) != unique_date_size \
+
+        if len(series_data) / num_diff_vals != unique_date_size \
                 and self.params['list_stat_' + axis] not in self.EXEMPTED_VARS:
             raise NameError("Derived curve can't be calculated."
                             " Multiple values for one valid date/fcst_lead")
@@ -820,10 +880,11 @@ class AggStat:
                     break
 
             series_var = list(series_val.keys())[-1]
-            for var in series_val.keys():
-                if all(elem in series_val[var] for elem in series_var_vals):
-                    series_var = var
-                    break
+            if len(series_var_vals) > 0:
+                for var in series_val.keys():
+                    if all(elem in series_val[var] for elem in series_var_vals):
+                        series_var = var
+                        break
 
             derived_val = series_val.copy()
             derived_val[series_var] = None
@@ -836,7 +897,8 @@ class AggStat:
 
             derived_curve_name = get_derived_curve_name(derived_serie)
             derived_val[series_var] = [derived_curve_name]
-            derived_val[self.params['indy_var']] = indy_vals
+            if len(indy_vals) > 0:
+                derived_val[self.params['indy_var']] = indy_vals
 
             self.derived_name_to_values[derived_curve_name] \
                 = DerivedCurveComponent(ds_1, ds_2, derived_serie[-1])
@@ -845,6 +907,7 @@ class AggStat:
             else:
                 derived_val['stat_name'] = [ds_1[-1] + "," + ds_2[-1]]
             result.append(list(itertools.product(*derived_val.values())))
+
         return [y for x in result for y in x]
 
     def _proceed_with_axis(self, axis="1"):
@@ -860,8 +923,10 @@ class AggStat:
             # replace thresh_i values for reliability plot
             indy_vals = self.params['indy_vals']
             if self.params['indy_var'] == 'thresh_i' and self.params['line_type'] == 'pct':
-                indy_vals = self.input_data['thresh_i'].sort()
-                indy_vals = np.unique(indy_vals)
+                indy_vals_int = self.input_data['thresh_i'].tolist()
+                indy_vals_int.sort()
+                indy_vals_int = np.unique(indy_vals_int).tolist()
+                indy_vals = list(map(str, indy_vals_int))
 
             # identify all possible points values by adding series values, indy values
             # and statistics and then permute them
@@ -892,6 +957,7 @@ class AggStat:
                 if not is_derived:
                     # filter point data
                     all_filters = []
+                    all_filters_pct = []
                     filters_wihtout_indy = []
                     indy_val = None
                     for field_ind, field in enumerate(all_fields_values.keys()):
@@ -906,27 +972,35 @@ class AggStat:
                         for i, filter_val in enumerate(filter_list):
                             if is_string_integer(filter_val):
                                 filter_list[i] = int(filter_val)
-                        if field != self.params['indy_var']:
-                            filters_wihtout_indy. \
-                                append((self.input_data[field].isin(filter_list)))
-                        else:
-                            indy_val = filter_value
+                        if field in self.input_data.keys():
+                            if field != self.params['indy_var']:  #
+                                filters_wihtout_indy. \
+                                    append((self.input_data[field].isin(filter_list)))
+                            else:
+                                indy_val = filter_value
 
-                        all_filters.append((self.input_data[field].isin(filter_list)))
+                            all_filters.append((self.input_data[field].isin(filter_list)))
+                        if field in series_val.keys():
+                            all_filters_pct.append((self.input_data[field].isin(filter_list)))
 
                     # use numpy to select the rows where any record evaluates to True
                     mask = np.array(all_filters).all(axis=0)
                     point_data = self.input_data.loc[mask]
 
                     if self.params['line_type'] == 'pct':
+                        if all_filters_pct:
+                            mask_pct = np.array(all_filters_pct).all(axis=0)
+                            point_data_pct = self.input_data.loc[mask_pct]
+                        else:
+                            point_data_pct = self.input_data
                         # collect all columns that starts with oy_i and on_i
-                        filter_oy_i = [col for col in point_data if col.startswith('oy_i')]
-                        filter_on_i = [col for col in point_data if col.startswith('on_i')]
+                        filter_oy_i = [col for col in point_data_pct if col.startswith('oy_i')]
+                        filter_on_i = [col for col in point_data_pct if col.startswith('on_i')]
                         # calculate oy_total
-                        oy_total = point_data[filter_oy_i].values.sum()
+                        oy_total = point_data_pct[filter_oy_i].values.sum()
 
                         # calculate T
-                        sum_n_i_orig_T = point_data[filter_on_i].values.sum() + oy_total
+                        sum_n_i_orig_T = point_data_pct[filter_on_i].values.sum() + oy_total
 
                         # calculate o_bar
                         o_bar = oy_total / sum_n_i_orig_T

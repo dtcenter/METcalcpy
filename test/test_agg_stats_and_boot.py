@@ -2,41 +2,163 @@ import numpy as np
 import bootstrapped.stats_functions as bs_stats
 import pytest
 import math
+import statistics
 
 from metcalcpy.agg_stat import AggStat, pd
 from metcalcpy.bootstrap_custom import bootstrap_and_value
+from metcalcpy.util.utils import round_half_up, PRECISION
 
 TEST_LENGTH = 1000
 
 
+def lossdiff_ml(data, ):
+    if len(data.shape) < 3:
+        lossdiff = data[:, 0] - data[:, 1]
+        return [statistics.mean(lossdiff)]
+    else:
+        result = []
+        for i in range(0, data.shape[0]):
+            lossdiff = data[i][:, 0] - data[i][:, 1]
+            result.append(statistics.mean(lossdiff))
+        return result
+
+
+def lossdiff_mal(data):
+    if len(data.shape) < 3:
+        ALlossdiff = abs(data[:, 0]) - abs(data[:, 1])
+        return [statistics.mean(ALlossdiff)]
+    else:
+        result = []
+        for i in range(0, data.shape[0]):
+            ALlossdiff = abs(data[i][:, 0]) - abs(data[i][:, 1])
+            result.append(statistics.mean(ALlossdiff))
+        return result
+
+
+def lossdiff_msl(data):
+    if len(data.shape) < 3:
+        SLlossdiff = data[:, 0] * data[:, 0] - data[:, 1] * data[:, 1]
+        return [statistics.mean(SLlossdiff)]
+    else:
+        result = []
+        for i in range(0, data.shape[0]):
+            SLlossdiff = data[i][:, 0] * data[i][:, 0] - data[i][:, 1] * data[i][:, 1]
+            result.append(statistics.mean(SLlossdiff))
+        return result
+
+@pytest.mark.skip("Not to be run in regression testing, due to extensive "
+                  "number of data points.  This test takes a long time to run.")
+def test_cboot():
+
+    et = np.loadtxt(
+        "./data/et.txt" )
+
+    # create an array for accepted/rejected flags
+    ml_reject = [1] * TEST_LENGTH
+    mal_reject = [1] * TEST_LENGTH
+    msl_reject = [1] * TEST_LENGTH
+    mean_reject = [1] * TEST_LENGTH
+    # run the boot ci TEST_LENGTH times
+    for ind in range(TEST_LENGTH):
+        results_ml = bootstrap_and_value(
+            et,
+            stat_func=lossdiff_ml,
+            num_iterations=500, alpha=0.05,
+            num_threads=1, ci_method='perc', block_length=32)
+
+        # record if 0 in ci bounds (accept) = 0 or not (reject) = 1
+        if results_ml.lower_bound <= 0 and results_ml.upper_bound >= 0:
+            ml_reject[ind] = 0
+
+        results_mal = bootstrap_and_value(
+            et,
+            stat_func=lossdiff_mal,
+            num_iterations=500, alpha=0.05,
+            num_threads=1, ci_method='perc', block_length=32)
+        # record if 0 in ci bounds (accept)=0 or not (reject)=1
+        if results_mal.lower_bound <= 0 and results_mal.upper_bound >= 0:
+            mal_reject[ind] = 0
+
+        results_msl = bootstrap_and_value(
+            et,
+            stat_func=lossdiff_msl,
+            num_iterations=500, alpha=0.05,
+            num_threads=1, ci_method='perc', block_length=32)
+
+        # record if 0 in ci bounds (accept)=0 or not (reject)=1
+        if results_msl.lower_bound <= 0 and results_msl.upper_bound >= 0:
+            msl_reject[ind] = 0
+
+        results_mean = bootstrap_and_value(
+            et[:, 0],
+            stat_func=bs_stats.mean,
+            num_iterations=500, alpha=0.05,
+            num_threads=1, ci_method='perc', block_length=32)
+        if results_mean.lower_bound <= 0 and results_mean.upper_bound >= 0:
+            mean_reject[ind] = 0
+
+    # get the number of rejected
+    ml_number_of_rejected = sum(x == 1 for x in ml_reject)
+    ml_percent_of_rejected = ml_number_of_rejected * 100 / TEST_LENGTH
+    ml_frequencies_of_ml_rejected = ml_number_of_rejected / TEST_LENGTH
+
+    msl_number_of_rejected = sum(x == 1 for x in msl_reject)
+    msl_percent_of_rejected = msl_number_of_rejected * 100 / TEST_LENGTH
+    msl_frequencies_of_rejected = msl_number_of_rejected / TEST_LENGTH
+
+    mal_number_of_rejected = sum(x == 1 for x in mal_reject)
+    mal_percent_of_rejected = mal_number_of_rejected * 100 / TEST_LENGTH
+    mal_frequencies_of_rejected = mal_number_of_rejected / TEST_LENGTH
+
+    mean_number_of_rejected = sum(x == 1 for x in mean_reject)
+    mean_percent_of_rejected = mean_number_of_rejected * 100 / TEST_LENGTH
+    mean_frequencies_of_rejected = mean_number_of_rejected / TEST_LENGTH
+
+    print('for ML   p = {} total rejected = {} frequency = {}'.format(ml_percent_of_rejected, ml_percent_of_rejected,
+                                                                      ml_frequencies_of_ml_rejected))
+    print('for MAL  p = {} total rejected = {} frequency = {}'.format(mal_percent_of_rejected, mal_number_of_rejected,
+                                                                      mal_frequencies_of_rejected))
+    print('for MSL  p = {} total rejected = {} frequency = {}'.format(msl_percent_of_rejected, msl_number_of_rejected,
+                                                                      msl_frequencies_of_rejected))
+    print(
+        'for mean  p = {} total rejected = {} frequency = {}'.format(mean_percent_of_rejected, mean_number_of_rejected,
+                                                                     mean_frequencies_of_rejected))
+
+@pytest.mark.skip("Not to be run in as a regression test, it uses an extensive number of points"
+                  " and takes a long time (well beyond 5 minutes) to run.")
 def test_boot():
+    # size of array
+    n = 100
     for mean in range(6):
-        p = get_rejected(mean)
+        p = get_rejected(mean, n)
         print('for mean = {} p = {}'.format(mean, p))
 
 
-def get_rejected(mean):
+def get_rejected(mean, n):
     """Calculate the percent of rejected values for 0 hypothesis test
         for CI for mean statistic of the normal distribution of 100 values
 
         Args:
             mean - mean value for the normal distribution
+            n - size of array
         Returns:
             percent of rejected values
     """
+
+    block_lenght = int(math.sqrt(n))
 
     # create an array for accepted/rejected flags
     reject = [1] * TEST_LENGTH
     # run the boot ci TEST_LENGTH times
     for ind in range(TEST_LENGTH):
         # create normal distribution
-        data = np.random.normal(loc=mean, size=100, scale=10)
+        data = np.random.normal(loc=mean, size=n, scale=10)
         # get ci for mean stat for this distribution
         results = bootstrap_and_value(
             data,
             stat_func=bs_stats.mean,
-            num_iterations=1000, alpha=0.05,
-            num_threads=1, ci_method='perc')
+            num_iterations=500, alpha=0.05,
+            num_threads=1, ci_method='perc', block_length=block_lenght)
 
         # record if 0 in ci bounds (accept) or not (reject)
         if results.lower_bound <= 0 and results.upper_bound >= 0:
@@ -88,7 +210,7 @@ def test_calc_stats_derived(settings):
     values_both_arrays = np.concatenate((values_both_arrays, operation), axis=1)
     stat_val = agg_stat._calc_stats_derived(values_both_arrays)
 
-    assert np.allclose(np.array([0.00362]), stat_val)
+    assert np.allclose(np.array([0.00362229]), stat_val)
 
 
 def test_get_derived_series(settings):
@@ -118,10 +240,10 @@ def test_calculate_value_and_ci(settings):
     )
     assert result_frame.size == 216
     assert result_frame.shape == (27, 8)
-    assert math.isclose(result_frame['stat_value'][2], 192.13043)
-    assert math.isclose(result_frame['stat_value'][20], 0.00362)
-    assert math.isclose(result_frame['stat_bcl'][9], 192.12478)
-    assert math.isclose(result_frame['stat_bcu'][24], 0.01079)
+    assert np.allclose(result_frame['stat_value'][2], 192.1304275)
+    assert np.allclose(result_frame['stat_value'][20], 0.00362229)
+    assert np.allclose(result_frame['stat_bcl'][9], 192.12478)
+    assert np.allclose(result_frame['stat_bcu'][24], 0.0107868)
 
 
 @pytest.fixture
@@ -149,7 +271,8 @@ def settings():
               'indy_vals': ['0', '30000', '60000', '90000',
                             '120000', '150000', '180000', '210000', '240000'],
               'list_stat_1': ['FBAR'],
-              'list_stat_2': []}
+              'list_stat_2': [],
+              'circular_block_bootstrap': False}
     agg_stat = AggStat(params)
     settings_dict = dict()
     settings_dict['agg_stat'] = agg_stat

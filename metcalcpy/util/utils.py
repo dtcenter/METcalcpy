@@ -1,23 +1,32 @@
 """
-Program Name: statistics.py
+Program Name: met_stats.py
 """
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
 __email__ = 'met_help@ucar.edu'
 
+from typing import Union
 import math
+import sys
 import itertools
+import statistics as st
 import numpy as np
 import pandas as pd
 
+from scipy import stats
+import pingouin as pg
+from scipy.stats import t, nct
+from statsmodels.tsa.arima.model import ARIMA
 from metcalcpy.event_equalize import event_equalize
 
 OPERATION_TO_SIGN = {
     'DIFF': '-',
     'RATIO': '/',
-    'SS': 'and',
-    'DIFF_SIG': '-'
+    'SS': ' and ',
+    'DIFF_SIG': '-',
+    'SINGLE': '-',
+    'ETB': ' and '
 }
 STR_TO_BOOL = {'True': True, 'False': False}
 
@@ -26,6 +35,13 @@ PRECISION = 7
 
 TWO_D_DATA_FILTER = {'object_type': '2d'}
 THREE_D_DATA_FILTER = {'object_type': '3d'}
+
+CODE_TO_OUTCOME_TO_MESSAGE = {
+    'diff_eqv': 'statistically different from zero and statistically equivalent to zero',
+    'diff_no_eqv': 'statistically different from zero and statistically not equivalent to zero',
+    'no_diff_eqv': 'statistically not different from zero and statistically equivalent to zero',
+    'no_diff_no_eqv': 'statistically not different from zero and statistically not equivalent to zero'
+}
 
 
 def represents_int(possible_int):
@@ -65,7 +81,7 @@ def get_derived_curve_name(list_of_names):
              list_of_names: list of series name components
                 1st element - name of 1st series
                 2st element - name of 2st series
-                3st element - operation. Can be 'DIFF','RATIO', 'SS', 'SINGLE'
+                3st element - operation. Can be 'DIFF','RATIO', 'SS', 'SINGLE', 'ETB'
 
         Returns:
             derived series name
@@ -86,6 +102,7 @@ def calc_derived_curve_value(val1, val2, operation):
             'RATIO' - ratio between elements of array 1 and 2
             'SS' - skill score between elements of array 1 and 2
             'SINGLE' - unchanged elements of array 1
+            'ETB' - Equivalence Testing Bounds of array 1 and 2
 
         Args:
             val1:  array of floats
@@ -113,6 +130,16 @@ def calc_derived_curve_value(val1, val2, operation):
             result_val = [(a - b) / a for a, b in zip(val1, val2)]
     elif operation == 'SINGLE':
         result_val = val1
+    elif operation == 'ETB':
+        corr = pg.corr(x=val1, y=val2)['r'].tolist()[0]
+        result_val = tost_paired(len(val1),
+                                 st.mean(val1),
+                                 st.mean(val2),
+                                 st.stdev(val1),
+                                 st.stdev(val2),
+                                 corr,
+                                 -0.001, 0.001
+                                 )
     return result_val
 
 
@@ -542,7 +569,7 @@ def calc_series_sums(input_df, line_type):
         sums_data_frame['rps'] = [np.nansum(input_df["rps"] * input_df.total.astype(np.float))
                                   / total]
         sums_data_frame['rps_comp'] = [np.nansum(input_df["rps_comp"] * input_df.total.astype(np.float))
-                                  / total]
+                                       / total]
         sums_data_frame['rps_climo'] = [np.nansum(d_rps_climo * input_df.total.astype(np.float))
                                         / total]
 
@@ -561,24 +588,36 @@ def equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axi
     output_ee_data = pd.DataFrame()
 
     # for each statistic for the specified axis
-    for fcst_var, fcst_var_stats in params['fcst_var_val_' + axis].items():
+
+    fcst_var_val = params['fcst_var_val_' + axis]
+    if not fcst_var_val:
+        fcst_var_val = {'': ['']}
+
+    for fcst_var, fcst_var_stats in fcst_var_val.items():
         series_data_for_ee = pd.DataFrame()
         for fcst_var_stat in fcst_var_stats:
             # for each series for the specified axis
-            for series_var, series_var_vals in params['series_val_' + axis].items():
-                # ungroup series value if needed
-                series_var_vals_no_group = []
-                for val in series_var_vals:
-                    split_val = val.split(',')
-                    series_var_vals_no_group.extend(split_val)
+            if len(params['series_val_' + axis]) == 0:
+                series_data_for_ee = input_data
+            else:
+                for series_var, series_var_vals in params['series_val_' + axis].items():
+                    # ungroup series value if needed
+                    series_var_vals_no_group = []
+                    for val in series_var_vals:
+                        split_val = val.split(',')
+                        series_var_vals_no_group.extend(split_val)
 
-                # filter input data based on fcst_var, statistic
-                # and all series variables values
-                series_data_for_ee = input_data[
-                    (input_data['fcst_var'] == fcst_var)
-                    & (input_data["stat_name"] == fcst_var_stat)
-                    & (input_data[series_var].isin(series_var_vals_no_group))
-                    ]
+                    # filter input data based on fcst_var, statistic
+                    # and all series variables values
+                    series_data_for_ee = input_data
+                    if series_var in input_data.keys():
+                        series_data_for_ee = series_data_for_ee[
+                            series_data_for_ee[series_var].isin(series_var_vals_no_group)]
+                    if 'fcst_var' in input_data.keys():
+                        series_data_for_ee = series_data_for_ee[series_data_for_ee['fcst_var'] == fcst_var]
+                    if 'stat_name' in input_data.keys():
+                        series_data_for_ee = series_data_for_ee[series_data_for_ee["stat_name"] == fcst_var_stat]
+
             # perform EE on filtered data
             # for SSVAR use equalization of multiple events
             series_data_after_ee = \
@@ -648,47 +687,460 @@ def perform_event_equalization(params, input_data):
 
 
 def create_permutations(input_dict):
-        """
-           Create all permutations (ie cartesian products) between the
-           elements in the lists of dictionaries under the input_dict
-           dictionary:
+    """
+       Create all permutations (ie cartesian products) between the
+       elements in the lists of dictionaries under the input_dict
+       dictionary:
 
-           for example:
+       for example:
 
-           input_dict:
-              model:
-                - GFS_0p25_G193
-              vx_mask:
-                - NH_CMORPH_G193
-                - SH_CMORPH_G193
-                - TROP_CMORPH_G193
+       input_dict:
+          model:
+            - GFS_0p25_G193
+          vx_mask:
+            - NH_CMORPH_G193
+            - SH_CMORPH_G193
+            - TROP_CMORPH_G193
 
 
-            So for the above case, we have two lists in the input_dict dictionary,
-            one for model and another for vx_mask:
-            model_list = ["GFS_0p25_G193"]
-            vx_mask_list = ["NH_CMORPH_G193", "SH_CMORPH_G193", "TROP_CMORPH_G193"]
+        So for the above case, we have two lists in the input_dict dictionary,
+        one for model and another for vx_mask:
+        model_list = ["GFS_0p25_G193"]
+        vx_mask_list = ["NH_CMORPH_G193", "SH_CMORPH_G193", "TROP_CMORPH_G193"]
 
-            and a cartesian product representing all permutations of the lists
-            above results in the following:
+        and a cartesian product representing all permutations of the lists
+        above results in the following:
 
-           ("GFS_0p25_G193", "NH_CMORPH_G193")
-           ("GFS_0p25_G193", "SH_CMORPH_G193")
-           ("GFS_0p25_G193", "TROP_CMORPH_G193")
+       ("GFS_0p25_G193", "NH_CMORPH_G193")
+       ("GFS_0p25_G193", "SH_CMORPH_G193")
+       ("GFS_0p25_G193", "TROP_CMORPH_G193")
 
-           Args:
-                input_dict: an input dictionary containing lists of values to
-                            permute
-           Returns:
-               permutation: a list of tuples that represent the possible
-               permutations of values in all lists
-        """
+       Args:
+            input_dict: an input dictionary containing lists of values to
+                        permute
+       Returns:
+           permutation: a list of tuples that represent the possible
+           permutations of values in all lists
+    """
 
-        # Retrieve the lists from the input_dict dictionary
-        vals_list = input_dict
+    # Retrieve the lists from the input_dict dictionary
+    vals_list = input_dict
 
-        # Utilize itertools' product() to create the cartesian product of all elements
-        # in the lists to produce all permutations of the values in the lists.
-        permutations = [p for p in itertools.product(*vals_list)]
+    # Utilize itertools' product() to create the cartesian product of all elements
+    # in the lists to produce all permutations of the values in the lists.
+    permutations = [p for p in itertools.product(*vals_list)]
 
-        return permutations
+    return permutations
+
+
+def compute_std_err_from_mean(data):
+    """
+    Function to compute the Standard Error of an uncorrelated time series using mean
+    Arg:
+        data: array of values presorted by date/time
+
+    Returns: Standard Error, variance inflation factor flag, AR1 coefficient, the length of data
+    """
+    ratio_flag = 0
+    variance = st.variance(data)
+
+    number_of_none = sum(x is None for x in data)
+    if variance > 0.0 and (len(data) - number_of_none) > 2:
+        # Compute the first order auto-correlation coefficient.
+        arima = ARIMA(data, order=(1, 0, 0))
+        ar_1 = arima.fit().arparams[0]
+
+        # Compute a variance inflation factor
+        # (having removed that portion of the time series that was correlated).
+        ratio = (1 + ar_1) / (1 - ar_1)
+
+        # Check for a zero RATIO, that will then be operated on by SQRT.
+        # If necessary, try a different arima method, or just set RATIO to one.
+        if ratio < 0.0:
+            ratio = 1.0
+            ratio_flag = 1
+
+        variance_inflation_factor = math.sqrt(ratio)
+
+        # If the AR1 coefficient is less than 0.3, then don't even use a vif!  Set vif = 1.0
+        if ar_1 < 0.3 or ar_1 >= 0.99:
+            variance_inflation_factor = 1.0
+
+        # Compute the Standard Error using the variance inflation factor.
+        std_err = variance_inflation_factor * math.sqrt(variance) / math.sqrt(len(data))
+
+    else:
+        std_err = 0.0
+        ar_1 = 0.0
+    return std_err, ratio_flag, ar_1, len(data)
+
+
+def compute_std_err_from_median_no_variance_inflation_factor(data):
+    """
+    Function to compute the Standard Error of an uncorrelated time series.
+    Remove the correlated portion of a time series, using a first order auto-correlation coefficient
+    to help compute an inflated variance factor for the uncorrelated portion of the time series.
+    Originator Rscript:  Eric Gilleland and Andrew Loughe, 08 JUL 2008
+    Arg:
+        data: array of values presorted by date/time
+
+    Returns: Standard Error, variance inflation factor flag, AR1 coefficient, the length of data
+    """
+
+    iqr = stats.iqr(data, interpolation='linear')
+    number_of_none = sum(x is None for x in data)
+    if iqr > 0.0 and (len(data) - number_of_none) > 2:
+        # Compute the Standard Error using the variance inflation factor.
+        std_err = (iqr * math.sqrt(math.pi / 2.)) / (1.349 * math.sqrt(len(data) - number_of_none))
+    else:
+        std_err = 0.0
+    return std_err, 0, 0, len(data) - number_of_none
+
+
+def compute_std_err_from_median_variance_inflation_factor(data):
+    """
+        Function to compute the Standard Error of an uncorrelated time series
+        from median variance inflation factor.
+        Arg:
+            data: array of values presorted by date/time
+
+        Returns: Standard Error, variance inflation factor flag, AR1 coefficient, the length of data
+    """
+    ratio_flag = 0
+    iqr = stats.iqr(data, interpolation='linear')
+    number_of_none = sum(x is None for x in data)
+
+    if iqr > 0.0 and (len(data) - number_of_none) > 2:
+        # Compute the first order auto-correlation coefficient
+        # using a vector that is the same size as "data", but represents
+        # represents excusions from the median of the data.
+
+        # Use excursions from the median to compute the first order auto-correlation coefficient.
+        data_excursions = list()
+        median = st.median(data)
+        for val in data:
+            if val >= median:
+                data_excursions.append(1)
+            else:
+                data_excursions.append(0)
+
+        arima = ARIMA(data_excursions, order=(1, 0, 0))
+        ar_1 = arima.fit().arparams[0]
+
+        # Compute an variance inflation factor
+        # (having removed that portion of the time series that was correlated).
+        ratio = (1 + ar_1) / (1 - ar_1)
+
+        # Check for a zero RATIO, that will then be operated on by SQRT.
+        if ratio < 0.0:
+            ratio = 1.0
+            ratio_flag = 1
+
+        variance_inflation_factor = math.sqrt(ratio)
+
+        # If the AR1 coefficient is less than 0.3, then don't even use a vif!  Set vif = 1.0
+        if ar_1 < 0.3 or ar_1 >= 0.99:
+            variance_inflation_factor = 1.0
+
+        # Compute the Standard Error using the variance inflation factor.
+        iqr = stats.iqr(data, interpolation='linear')
+        std_err = variance_inflation_factor * (iqr * math.sqrt(math.pi / 2.)) / (1.349 * math.sqrt(len(data)))
+
+    else:
+        std_err = 0.0
+        ar_1 = 0
+    return std_err, ratio_flag, ar_1, len(data)
+
+
+def compute_std_err_from_sum(data):
+    """
+        Function to compute the Standard Error of an uncorrelated time series
+        from sum.
+        Arg:
+            data: array of values presorted by date/time
+
+        Returns: Standard Error, variance inflation factor flag, AR1 coefficient, the length of data
+    """
+    std_err = compute_std_err_from_mean(data)
+
+    # multiply Standard Error by data size
+    return std_err[0] * len(data), std_err[1], std_err[2], std_err[3]
+
+
+def convert_lon_360_to_180(longitude):
+    """
+        Convert a list or numpy array of longitudes from 0,360 to -180 to 180 (West-East)
+
+        Args:
+        @params
+
+        longitude: a numpy array or python list containing integer or float values from 0 to 360
+                   to be converted to values from -180 to 180
+
+        Returns:
+            a numpy array containing values that range from -180 to 180 (West to East lons)
+            Maintains the input type, ie if longitudes are int, then the numpy array returned will
+            consist of int64.  If longitudes are float, then the returned numpy array will consist of
+            float.
+    """
+
+    # First, convert lists to numpy array
+    lons = np.asarray(longitude)
+
+    # Use formula ((lons + 180) % 360) - 180 where % is the modulo operator
+    west_east_lons = np.mod((lons + 180), 360) - 180
+    negative_to_positive = np.sort(west_east_lons)
+
+    return negative_to_positive
+
+
+def convert_lons_indices(lons_in, minlon_in, range_in):
+    '''
+
+    Input:
+    @param lons_in: A list of longitudes to convert
+    @param minlon_in: The minimum value/starting value of converted longitudes
+    @param range_in: The number of longitudes to convert
+
+    Returns:
+      reordered_lons:  sorted array of longitudes
+      lonsortlocs:  sorted array indices
+    '''
+
+    minlon = abs(minlon_in)
+
+    # Use formula to convert longitude values based on the starting lon value and
+    # the target number of longitudes
+    newlons = np.mod((lons_in + minlon), range_in) - minlon
+
+    # get the sorted array indices
+    lonsortlocs = np.argsort(newlons)
+
+    # get the sorted, converted array
+    reordered_lons = newlons[lonsortlocs]
+
+    return reordered_lons, lonsortlocs
+
+
+def create_permutations_mv(fields_values: Union[dict, list], index: int) -> list:
+    """
+    Creates a list of all permutations of the dictionary or list values using METviewer logic
+    Input:
+    :param fields_values: dictionary of field-values, where values are lists
+        or a list of lists
+    :param index: the regression index
+    :return: the list of permutations
+    """
+
+    if isinstance(fields_values, dict):
+        keys = list(fields_values.keys())
+        # return an empty list if the dictionary is empty
+        if len(keys) == 0:
+            return []
+
+        values = fields_values[keys[index]]
+        # if the index has reached the end of the list, return the selected values
+        # from the last control
+        if len(keys) == index + 1:
+            return values
+    else:
+        if len(fields_values) == 0:
+            return []
+
+        values = fields_values[index]
+        # if the index has reached the end of the list, return the selected values
+        # from the last control
+        if len(fields_values) == index + 1:
+            return values
+
+    # otherwise, get the list for the next fcst_var and build upon it
+    val_next = create_permutations_mv(fields_values, index + 1)
+
+    if len(values) == 0:
+        return val_next
+
+    result = []
+    for val_next_el in val_next:
+        for listVal_el in values:
+
+            if isinstance(val_next_el, list):
+                # prepend value to the existing list and add it to the result
+                val_next_el_cp = val_next_el.copy()
+                val_next_el_cp.insert(0, listVal_el)
+                result.append(val_next_el_cp)
+            else:
+                # create a new array and add it to the result
+                result.append([listVal_el, val_next_el])
+    return result
+
+
+def pt(q, df, ncp=0, lower_tail=True):
+    """
+    Calculates the cumulative of the t-distribution
+
+    Args:
+        q - vector of quantiles
+        df - degrees of freedom (> 0)
+        ncp - array_like shape parameters
+        lower_tail - if True (default), probabilities are P[X ≤ x], otherwise, P[X > x].
+
+    Returns:
+        the cumulative of the t-distribution
+    """
+
+    if ncp == 0:
+        result = t.cdf(x=q, df=df, loc=0, scale=1)
+    else:
+        result = nct.cdf(x=q, df=df, nc=ncp, loc=0, scale=1)
+    if lower_tail is False:
+        result = 1 - result
+    return result
+
+
+def qt(p, df, ncp=0):
+    """
+    Calculates the quantile function of the t-distribution
+
+     Args:
+        p - array_like quantiles
+        df - array_like shape parameters
+        ncp - array_like shape parameters
+
+    Returns:
+        tquantile function of the t-distribution
+    """
+    if ncp == 0:
+        result = t.ppf(q=p, df=df, loc=0, scale=1)
+    else:
+        result = nct.ppf(q=p, df=df, nc=ncp, loc=0, scale=1)
+    return result
+
+
+def tost_paired(n: int, m1: float, m2: float, sd1: float, sd2: float, r12: float, low_eqbound_dz: float,
+                high_eqbound_dz: float, alpha: float = None) -> dict:
+    """
+    TOST function for a dependent t-test (Cohen's dz). Based on Rscript function TOSTpaired
+
+    Args:
+        n: sample size (pairs)
+        m1: mean of group 1
+        m2: mean of group 2
+        sd1: standard deviation of group 1
+        sd2: standard deviation of group 2
+        r12: correlation of dependent variable between group 1 and group 2
+        low_eqbound_dz: lower equivalence bounds (e.g., -0.5) expressed in standardized mean difference (Cohen's dz)
+        high_eqbound_dz: upper equivalence bounds (e.g., 0.5) expressed in standardized mean difference (Cohen's dz)
+        alpha: alpha level (default = 0.05)
+
+    Returns:
+        Returns a dictionary with calculated TOST values
+                dif - Mean Difference
+                t - TOST t-values 1 and 2 as a tuple
+                p - TOST p-values and 2 as a tuple
+                degrees_of_freedom - degrees of freedom
+                ci_tost - confidence interval TOST Lower and Upper limit as a tuple
+                ci_ttest - confidence interval TTEST Lower and Upper limit as a tuple
+                eqbound - equivalence bound low and high as a tuple
+                xlim - limits for x-axis
+                combined_outcome - outcome
+                test_outcome - pt test outcome
+                tist_outcome - TOST outcome
+
+    """
+    if not alpha:
+        alpha = 0.05
+    if low_eqbound_dz >= high_eqbound_dz:
+        print(
+            'WARNING: The lower bound is equal to or larger than the upper bound.'
+            ' Check the plot and output to see if the bounds are specified as you intended.')
+
+    if n < 2:
+        print("The sample size should be larger than 1.")
+        sys.exit()
+
+    if 1 <= alpha or alpha <= 0:
+        print("The alpha level should be a positive value between 0 and 1.")
+        sys.exit()
+    if sd1 <= 0 or sd2 <= 0:
+        print("The standard deviation should be a positive value.")
+        sys.exit()
+    if 1 < r12 or r12 < -1:
+        print("The correlation should be a value between -1 and 1.")
+        sys.exit()
+
+    sdif = math.sqrt(sd1 * sd1 + sd2 * sd2 - 2 * r12 * sd1 * sd2)
+    low_eqbound = low_eqbound_dz * sdif
+    high_eqbound = high_eqbound_dz * sdif
+    se = sdif / math.sqrt(n)
+    degree_f = n - 1
+
+    if se != 0:
+        t = (m1 - m2) / se
+        pttest = 2 * pt(abs(t), degree_f, lower_tail=False)
+        t1 = ((m1 - m2) - (low_eqbound_dz * sdif)) / se
+        p1 = pt(t1, degree_f, lower_tail=False)
+        t2 = ((m1 - m2) - (high_eqbound_dz * sdif)) / se
+        p2 = pt(t2, degree_f, lower_tail=True)
+        ptost = max(p1, p2)
+    else:
+        pttest = None
+        t1 = None
+        p1 = None
+        t2 = None
+        p2 = None
+        ptost = None
+
+    ll90 = ((m1 - m2) - qt(1 - alpha, degree_f) * se)
+    ul90 = ((m1 - m2) + qt(1 - alpha, degree_f) * se)
+
+    dif = (m1 - m2)
+    ll95 = ((m1 - m2) - qt(1 - (alpha / 2), degree_f) * se)
+    ul95 = ((m1 - m2) + qt(1 - (alpha / 2), degree_f) * se)
+    xlim_l = min(ll90, low_eqbound) - max(ul90 - ll90, high_eqbound - low_eqbound) / 10
+    xlim_u = max(ul90, high_eqbound) + max(ul90 - ll90, high_eqbound - low_eqbound) / 10
+
+    if pttest and ptost:
+        if pttest <= alpha and ptost <= alpha:
+            combined_outcome = 'diff_eqv'
+
+        if pttest < alpha and ptost > alpha:
+            combined_outcome = 'diff_no_eqv'
+
+        if pttest > alpha and ptost <= alpha:
+            combined_outcome = 'no_diff_eqv'
+
+        if pttest > alpha and ptost > alpha:
+            combined_outcome = 'no_diff_no_eqv'
+
+        if pttest < alpha:
+            test_outcome = 'significant'
+        else:
+            test_outcome = 'non-significant'
+
+        if ptost < alpha:
+            tost_outcome = 'significant'
+        else:
+            tost_outcome = 'non-significant'
+
+        t = (round_half_up(t1, PRECISION), round_half_up(t2, PRECISION))
+        p = (round_half_up(p1, PRECISION), round_half_up(p2, PRECISION))
+    else:
+        combined_outcome = 'none'
+        tost_outcome = 'none'
+        test_outcome = 'none'
+        t = (None, None)
+        p = (None, None)
+
+    return {
+        'dif': round_half_up(dif, PRECISION),
+        't': t,
+        'p': p,
+        'degrees_of_freedom': round_half_up(degree_f, PRECISION),
+        'ci_tost': (round_half_up(ll90, PRECISION), round_half_up(ul90, PRECISION)),
+        'ci_ttest': (round_half_up(ll95, PRECISION), round_half_up(ul95, PRECISION)),
+        'eqbound': (round_half_up(low_eqbound, PRECISION), round_half_up(high_eqbound, PRECISION)),
+        'xlim': (round_half_up(xlim_l, PRECISION), round_half_up(xlim_u, PRECISION)),
+        'combined_outcome': combined_outcome,
+        'test_outcome': test_outcome,
+        'tost_outcome': tost_outcome
+    }

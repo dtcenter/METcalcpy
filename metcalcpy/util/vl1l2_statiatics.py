@@ -4,7 +4,7 @@ Program Name: vl1l2_statistics.py
 import warnings
 import numpy as np
 
-from metcalcpy.util.statistics import calc_speed
+from metcalcpy.util.met_stats import calc_speed
 from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION, get_total_values
 
 __author__ = 'Tatiana Burek'
@@ -33,7 +33,7 @@ def calculate_vl1l2_bias(input_data, columns_names, aggregation=False):
         uvoobar = sum_column_data_by_name(input_data, columns_names, 'uvoobar') / total
         bias = np.sqrt(uvffbar) - np.sqrt(uvoobar)
         result = round_half_up(bias, PRECISION)
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -60,7 +60,7 @@ def calculate_vl1l2_fvar(input_data, columns_names, aggregation=False):
         f_speed_bar = sum_column_data_by_name(input_data, columns_names, 'f_speed_bar') / total
         result = uvffbar - f_speed_bar * f_speed_bar
         result = round_half_up(result, PRECISION)
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -87,7 +87,7 @@ def calculate_vl1l2_ovar(input_data, columns_names, aggregation=False):
         o_speed_bar = sum_column_data_by_name(input_data, columns_names, 'o_speed_bar') / total
         result = uvoobar - o_speed_bar * o_speed_bar
         result = round_half_up(result, PRECISION)
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -114,7 +114,7 @@ def calculate_vl1l2_fspd(input_data, columns_names, aggregation=False):
         vfbar = sum_column_data_by_name(input_data, columns_names, 'vfbar') / total
         fspd = calc_speed(ufbar, vfbar)
         result = round_half_up(fspd, PRECISION)
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -141,7 +141,7 @@ def calculate_vl1l2_ospd(input_data, columns_names, aggregation=False):
         vobar = sum_column_data_by_name(input_data, columns_names, 'vobar') / total
         ospd = calc_speed(uobar, vobar)
         result = round_half_up(ospd, PRECISION)
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -166,7 +166,7 @@ def calculate_vl1l2_speed_err(input_data, columns_names, aggregation=False):
         speed_bias = calculate_vl1l2_fspd(input_data, columns_names, aggregation) \
                      - calculate_vl1l2_ospd(input_data, columns_names, aggregation)
         result = round_half_up(speed_bias, PRECISION)
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -197,7 +197,7 @@ def calculate_vl1l2_msve(input_data, columns_names, aggregation=False):
             result = None
         else:
             result = round_half_up(msve, PRECISION)
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -219,7 +219,7 @@ def calculate_vl1l2_rmsve(input_data, columns_names, aggregation=False):
     try:
         rmsve = np.sqrt(calculate_vl1l2_msve(input_data, columns_names, aggregation))
         result = round_half_up(rmsve, PRECISION)
-    except (TypeError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result

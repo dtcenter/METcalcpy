@@ -4,7 +4,7 @@ Program Name: vcnt_statistics.py
 import warnings
 import numpy as np
 
-from metcalcpy.util.statistics import calc_direction, calc_speed
+from metcalcpy.util.met_stats import calc_direction, calc_speed
 from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION, get_total_values
 
 __author__ = 'Tatiana Burek'
@@ -33,7 +33,7 @@ def calculate_vcnt_fbar(input_data, columns_names, aggregation=False):
         total = get_total_values(input_data, columns_names, aggregation)
         result = sum_column_data_by_name(input_data, columns_names, 'f_speed_bar') / total
         result = round_half_up(result, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -58,7 +58,7 @@ def calculate_vcnt_obar(input_data, columns_names, aggregation=False):
         total = get_total_values(input_data, columns_names, aggregation)
         result = sum_column_data_by_name(input_data, columns_names, 'o_speed_bar') / total
         result = round_half_up(result, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -84,7 +84,7 @@ def calculate_vcnt_fs_rms(input_data, columns_names, aggregation=False):
         uvffbar = sum_column_data_by_name(input_data, columns_names, 'uvffbar') / total
         result = np.sqrt(uvffbar)
         result = round_half_up(result, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -110,7 +110,7 @@ def calculate_vcnt_os_rms(input_data, columns_names, aggregation=False):
         uvoobar = sum_column_data_by_name(input_data, columns_names, 'uvoobar') / total
         result = np.sqrt(uvoobar)
         result = round_half_up(result, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -142,7 +142,7 @@ def calculate_vcnt_msve(input_data, columns_names, aggregation=False):
             result = None
         else:
             result = round_half_up(mse, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -166,7 +166,7 @@ def calculate_vcnt_rmsve(input_data, columns_names, aggregation=False):
         msve = calculate_vcnt_msve(input_data, columns_names, aggregation)
         result = np.sqrt(msve)
         result = round_half_up(result, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -189,7 +189,7 @@ def calculate_vcnt_fstdev(input_data, columns_names, aggregation=False):
     try:
         result = np.sqrt(calculate_vl1l2_fvar(input_data, columns_names, aggregation))
         result = round_half_up(result, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -212,7 +212,7 @@ def calculate_vcnt_ostdev(input_data, columns_names, aggregation=False):
     try:
         result = np.sqrt(calculate_vl1l2_ovar(input_data, columns_names, aggregation))
         result = round_half_up(result, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -238,7 +238,7 @@ def calculate_vcnt_fdir(input_data, columns_names, aggregation=False):
         vfbar = sum_column_data_by_name(input_data, columns_names, 'vfbar') / total
         fdir = calc_direction(-ufbar, -vfbar)
         result = round_half_up(fdir, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -264,7 +264,7 @@ def calculate_vcnt_odir(input_data, columns_names, aggregation=False):
         vobar = sum_column_data_by_name(input_data, columns_names, 'vobar') / total
         odir = calc_direction(-uobar, -vobar)
         result = round_half_up(odir, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -290,7 +290,7 @@ def calculate_vcnt_fbar_speed(input_data, columns_names, aggregation=False):
         vfbar = sum_column_data_by_name(input_data, columns_names, 'vfbar') / total
         fspd = calc_speed(ufbar, vfbar)
         result = round_half_up(fspd, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -316,7 +316,7 @@ def calculate_vcnt_obar_speed(input_data, columns_names, aggregation=False):
         vobar = sum_column_data_by_name(input_data, columns_names, 'vobar') / total
         fspd = calc_speed(uobar, vobar)
         result = round_half_up(fspd, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -346,7 +346,7 @@ def calculate_vcnt_vdiff_speed(input_data, columns_names, aggregation=False):
         vobar = sum_column_data_by_name(input_data, columns_names, 'vobar') / total
         vdiff_spd = calc_speed(ufbar - uobar, vfbar - vobar)
         result = round_half_up(vdiff_spd, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -376,7 +376,7 @@ def calculate_vcnt_vdiff_dir(input_data, columns_names, aggregation=False):
         vobar = sum_column_data_by_name(input_data, columns_names, 'vobar') / total
         vdiff_dir = calc_direction(-(ufbar - uobar), -(vfbar - vobar))
         result = round_half_up(vdiff_dir, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -403,7 +403,7 @@ def calculate_vcnt_speed_err(input_data, columns_names, aggregation=False):
         speed_bias = calculate_vcnt_fbar_speed(input_data, columns_names, aggregation) \
                      - calculate_vcnt_obar_speed(input_data, columns_names, aggregation)
         result = round_half_up(speed_bias, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -429,7 +429,7 @@ def calculate_vcnt_speed_abserr(input_data, columns_names, aggregation=False):
     try:
         spd_abserr = abs(calculate_vcnt_speed_err(input_data, columns_names, aggregation))
         result = round_half_up(spd_abserr, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -472,7 +472,7 @@ def calculate_vcnt_dir_err(input_data, columns_names, aggregation=False):
         dir_err = calc_direction(a, b)
 
         result = round_half_up(dir_err, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -499,7 +499,7 @@ def calculate_vcnt_dir_abser(input_data, columns_names, aggregation=False):
     try:
         ang_btw = abs(calculate_vcnt_dir_err(input_data, columns_names, aggregation))
         result = round_half_up(ang_btw, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
