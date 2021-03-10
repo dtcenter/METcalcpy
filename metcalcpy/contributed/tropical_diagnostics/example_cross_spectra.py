@@ -11,7 +11,7 @@ directory name and script name
 """
 from spacetime import mjo_cross
 from spacetime import get_symmasymm
-from spacetime import save_Spectra
+from utils import save_Spectra
 
 """
 Set parameters for the spectra calculation.
