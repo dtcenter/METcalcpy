@@ -63,7 +63,7 @@ explabels = ['trmm', 'erai']
 nexps = len(exps)
 
 print("computing skill")
-skill = ccew.wave_skill(A)
+skill = ccew.wave_skill(B)
 
 
 ##### maybe this next routine needs to be moved to METplotpy? ############
