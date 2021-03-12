@@ -10,7 +10,10 @@ __email__ = 'met_help@ucar.edu'
 
 import numpy as np
 import pandas as pd
-import metdbload as dbload
+import yaml
+from METdatadb import METdbLoad as dbload
+from METdatadb.METdbLoad.ush import read_data_files
+from METdatadb.METdbLoad.ush import constants
 
 class ReadMETOutput:
 
@@ -37,14 +40,15 @@ class ReadMETOutput:
         """
 
         # instantiate a read data files object
-        file_data = dbload.ReadDataFiles()
+        #file_data = dbload.read_data_files.ReadDataFiles
+        file_data = read_data_files.ReadDataFiles()
 
         # read in the data files, with options specified by XML flags
         #set load_flags and line_types as empty so that everything is read
         load_flags = []
         line_types = []
         file_data.read_data(load_flags,
-                            current_files,
+                            file_data,
                             line_types)
 
 
@@ -56,10 +60,10 @@ def main():
     Reads in a default config file that loads sample MET output data and puts it into a pandas
     DataFrame
     """
-    configFile = "./readfiles.yaml"
+    configFile = "./read_files.yaml"
     file_reader = ReadMETOutput()
     file_reader.readConfigFile(configFile)
-    df = file_reader.readData(self)
+    df = file_reader.readData()
 
 
 if __name__ == "__main__":
