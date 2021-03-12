@@ -11,9 +11,11 @@ __email__ = 'met_help@ucar.edu'
 import numpy as np
 import pandas as pd
 import yaml
+#Two PYTHONPATH directories need to be set for the imports to work
+#The parent directory for where METdatadb is installed and
+#The METdbload/METdatadb/ush directory for constants in METdbload
 from METdatadb import METdbLoad as dbload
 from METdatadb.METdbLoad.ush import read_data_files
-from METdatadb.METdbLoad.ush import constants
 
 class ReadMETOutput:
 
