@@ -17,8 +17,6 @@ The Python requirements for METcalcpy are the same as those for METplotpy
 
 * cmocean
 
-* eofs
-
 * imutils 0.5.3
 
 * kaleido 0.0.1
