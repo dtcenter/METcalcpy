@@ -139,8 +139,9 @@ def calculate_pody(input_data, columns_names):
     try:
         #fy_oy = sum_column_data_by_name(input_data, columns_names, 'fy_oy')
 
-        fy_oy = get_column_data_by_name_value(input_data, columns_names, 'fy_oy')
-        oy = fy_oy + get_column_data_by_name(input_data, columns_names, 'fn_oy')
+        fy_oy = sum_column_data_by_name(input_data, columns_names, 'fy_oy')
+        fn_oy = sum_column_data_by_name(input_data, columns_names, 'fn_oy')
+        oy = fy_oy + fn_oy
         result = fy_oy / oy
         result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning, ValueError):
