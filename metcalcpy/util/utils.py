@@ -262,48 +262,6 @@ def sum_column_data_by_name(input_data, columns, column_name, rm_none=True):
 
     return result
 
-def get_column_data_by_name(input_data, columns, column_name, rm_none=True):
-    """Retrieves of all values in the specified column
-
-        Args:
-            input_data: 2-dimensional numpy array with data for the calculation
-                1st dimension - the row of data frame
-                2nd dimension - the column of data frame
-            columns: names of the columns for the 2nd dimension as Numpy array
-            column_name: the name of the column for SUM
-            rm_none: Should missing values (including non) be removed? Default - True
-
-        Returns:
-            calculated SUM as float
-            or None if all of the data values are non
-    """
-    # find the index of specified column
-    index_array = np.where(columns == column_name)[0]
-    if index_array.size == 0:
-        return None
-
-    # get column's data and convert it into float array
-    try:
-        data_array = np.array(input_data[:, index_array[0]], dtype=np.float64)
-    except IndexError:
-        data_array = None
-
-    if data_array is None or np.isnan(data_array).all():
-        return None
-
-    try:
-        if rm_none:
-            result = np.nansum(data_array.astype(np.float))
-        else:
-            if np.isnan(data_array).any():
-                result = None
-            else:
-                result = data_array.astype(np.float)
-    except TypeError:
-        result = None
-
-    return result
-
 
 def column_data_by_name_value(input_data, columns, filters):
     """Filters  the input array by the criteria from the filters array
