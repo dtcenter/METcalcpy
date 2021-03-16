@@ -331,7 +331,7 @@ def perfect_score_adjustment(mean_stats_1, mean_stats_2, statistic, pval):
                            'ORANK_TIES', 'VL1L2_FBAR', 'VL1L2_OBAR',
                            'VL1L2_FSTDEV', 'VL1L2_OSTDEV', 'VL1L2_FOSTDEV', 'PSTD_BASER',
                            'PSTD_RESOLUTION', 'PSTD_UNCERTAINTY',
-                           'PSTD_ROC_AUC', 'NBR_UFSS', 'NBR_F_RATE', 'NBR_O_RATE',
+                            'NBR_UFSS', 'NBR_F_RATE', 'NBR_O_RATE',
                            'NBR_BASER', 'NBR_FMEAN')
 
     zero_perf_score_stats = ('POFD', 'FAR', 'ESTDEV', 'MAE', 'MSE', 'BCMSE',
@@ -349,7 +349,7 @@ def perfect_score_adjustment(mean_stats_1, mean_stats_2, statistic, pval):
                             'VL1L2_BIAS', 'VL1L2_CORR',
                             'PSTD_BSS', 'PSTD_BSS_SMPL', 'NBR_FSS', 'NBR_AFSS',
                             'VAL1L2_ANOM_CORR', 'NBR_ACC',
-                            'NBR_FBIAS', 'NBR_PODY',
+                            'NBR_FBIAS', 'NBR_PODY', 'PSTD_ROC_AUC',
                             'NBR_PODN', 'NBR_CSI', 'NBR_GSS', 'NBR_HK', 'NBR_HSS')
 
     if statistic.upper() in na_perf_score_stats:
