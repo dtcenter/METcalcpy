@@ -15,6 +15,8 @@ The Python requirements for METcalcpy are the same as those for METplotpy
 
 * cartopy 0.17.0 or above
 
+* cmocean
+
 * imutils 0.5.3
 
 * kaleido 0.0.1
