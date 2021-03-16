@@ -11,46 +11,72 @@ __email__ = 'met_help@ucar.edu'
 import numpy as np
 import pandas as pd
 import yaml
+from read_env_vars_in_config import parse_config
 #Two PYTHONPATH directories need to be set for the imports to work
 #The parent directory for where METdatadb is installed and
 #The METdbload/METdatadb/ush directory for constants in METdbload
 from METdatadb import METdbLoad as dbload
 from METdatadb.METdbLoad.ush import read_data_files
+from METdatadb.METdbLoad.ush.read_load_xml import XmlLoadFile
 
 class ReadMETOutput:
 
     def __init__(self):
         """ Creates a output reader with a list of files to read
         """
+        self.flags = {}
+        self.flags['line_type_load'] = False
+        self.flags['load_stat'] = True
+        self.flags['load_mode'] = True
+        self.flags['load_mtd'] = True
+        self.flags['load_mpr'] = False
+        self.flags['load_orank'] = False
+        self.flags['force_dup_file'] = False
+        self.flags['verbose'] = False
+        self.flags['stat_header_db_check'] = True
+        self.flags['tcst_header_db_check'] = True
+        self.flags['mode_header_db_check'] = True
+        self.flags['mtd_header_db_check'] = True
+        self.flags['drop_indexes'] = False
+        self.flags['apply_indexes'] = False
+        self.flags['load_xml'] = True
 
-    def readConfigFile(self,configFile):
+    def readYAMLConfig(self,configFile):
+        """ Returns a file or list of files
+        """
+        # Retrieve the contents of a YAML custom config file to over-ride
+        # or augment settings defined by the default config file.
+        #Use a configure file parser that handles environment variables
+        files_dict = parse_config(configFile)
+
+        #parse_config returns a dictionary, read_data_files wants a list
+        files = files_dict['files']
+        return files
+
+    def readXMLConfig(self,configFile):
         """ Returns a file or list of files
         """
 
-        # Retrieve the contents of the custom config file to over-ride
+        # Retrieve the contents of an XML  custom config file to over-ride
         # or augment settings defined by the default config file.
-        with open(configFile, 'r') as stream:
-            try:
-               files = yaml.load(stream, Loader=yaml.FullLoader)
-            except yaml.YAMLError as exc:
-                print(exc)
+        # Uses XmlLoadFile from METdatadb
 
-        print(files)
+        XML_LOADFILE = XmlLoadFile(configFile)
+        XML_LOADFILE.read_xml()
 
-    def readData(self):
+        return XML_LOADFILE.load_files
+
+    def readData(self,files_from_config):
         """ Returns a pandas DataFrame containing MET output contents
         """
 
-        # instantiate a read data files object
-        #file_data = dbload.read_data_files.ReadDataFiles
         file_data = read_data_files.ReadDataFiles()
 
         # read in the data files, with options specified by XML flags
-        #set load_flags and line_types as empty so that everything is read
-        load_flags = []
+        #set load_flags and line_types empty so that everything is read
         line_types = []
-        file_data.read_data(load_flags,
-                            file_data,
+        file_data.read_data(self.flags,
+                            files_from_config,
                             line_types)
 
 
@@ -62,10 +88,21 @@ def main():
     Reads in a default config file that loads sample MET output data and puts it into a pandas
     DataFrame
     """
-    configFile = "./read_files.yaml"
+
     file_reader = ReadMETOutput()
-    file_reader.readConfigFile(configFile)
-    df = file_reader.readData()
+
+    #Get the files to be loaded either from an XML file
+    #Or a YAML file
+    #xml_config_file = '../../examples/read_files.xml'
+    #load_files = file_reader.readXMLConfig(xml_config_file)
+
+    #The advantage of using YAML is that you can use environment variables to
+    #reference a path to the file
+    yaml_config_file = "../../examples/read_files.yaml"
+    load_files = file_reader.readYAMLConfig(yaml_config_file)
+
+    df = file_reader.readData(load_files)
+    print(df)
 
 
 if __name__ == "__main__":
