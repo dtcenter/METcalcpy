@@ -4,7 +4,7 @@ import pytest
 
 from metcalcpy.util.utils import represents_int, is_string_integer, get_derived_curve_name, calc_derived_curve_value, \
     unique, intersection, is_derived_point, parse_bool, round_half_up, sum_column_data_by_name, \
-    nrow_column_data_by_name_value,  create_permutations_mv
+    nrow_column_data_by_name_value,  create_permutations_mv, column_data_by_name
 
 
 @pytest.fixture
@@ -112,6 +112,34 @@ def test_sum_column_data_by_name(settings):
     column_name = 'fobar'
     assert not sum_column_data_by_name(data_values, settings['columns'], column_name, rm_none=False)
     assert 1425310.4448 == sum_column_data_by_name(data_values, settings['columns'], column_name, rm_none=True)
+
+
+def test_column_data_by_name(settings):
+    data_values = np.array([
+        ['dicast15', '2019-07-03 12:00:00', '2019-07-04 09:00:00', 210000, 'SWS01', 'GHI', 'MAE', 0, 1, 1073.4, 1085.7,
+         1165390.38, 1152187.56, 1178744.49, 12.3],
+        ['dicast15', '2019-07-03 12:00:00', '2019-07-05 13:15:00', 491500, 'SWS01', 'GHI', 'MAE', 0, 1, 518.43, 501.36,
+         259920.0648, 268769.6649, 251361.8496, 17.07]
+    ])
+    column_name = 'fobar'
+    result = column_data_by_name(data_values, settings['columns'], column_name)
+    assert len(result) == 2
+    assert float(data_values[0,11]) == result[0]
+    assert float(data_values[1,11]) == result[1]
+
+    column_name = 'not_in_array'
+    assert not column_data_by_name(data_values, settings['columns'], column_name)
+
+    data_values = np.append(data_values,
+                            [['dicast15', '2019-07-03 12:00:00', '2019-07-04 09:00:00', 210000, 'SWS01', 'GHI', 'MAE',
+                              0, 1, 1073.4, 1085.7, None, 1152187.56, 1178744.49, 12.3]], axis=0)
+    column_name = 'fobar'
+    result = column_data_by_name(data_values, settings['columns'], column_name)
+    assert len(result) == 3
+    assert np.isnan(result[2])
+
+    result = column_data_by_name(data_values, settings['columns'], column_name, rm_none=True)
+    assert len(result) == 2
 
 
 def test_nrow_column_data_by_name_value(settings):
