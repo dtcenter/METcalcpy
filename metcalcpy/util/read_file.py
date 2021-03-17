@@ -43,6 +43,12 @@ class ReadMETOutput:
 
     def readYAMLConfig(self,configFile):
         """ Returns a file or list of files
+
+        Args:
+            configFile: A YAML formatted config file
+
+        Returns: 
+            returns a list containing a single or multiple file names including path
         """
         # Retrieve the contents of a YAML custom config file to over-ride
         # or augment settings defined by the default config file.
@@ -55,6 +61,10 @@ class ReadMETOutput:
 
     def readXMLConfig(self,configFile):
         """ Returns a file or list of files
+            Args:
+                configFile: XML formatted config file
+            Returns: 
+                returns a list containg a single or multiple file names including path
         """
 
         # Retrieve the contents of an XML  custom config file to over-ride
@@ -67,7 +77,11 @@ class ReadMETOutput:
         return XML_LOADFILE.load_files
 
     def readData(self,files_from_config):
-        """ Returns a pandas DataFrame containing MET output contents
+        """ 
+            Args:
+                files_from_config: A list of MET ouptut files grabbed from a config file
+            Returns: 
+                a pandas DataFrame containing MET output contents
         """
 
         file_data = read_data_files.ReadDataFiles()
