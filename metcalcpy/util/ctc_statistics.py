@@ -3,10 +3,12 @@ Program Name: ctc_statistics.py
 """
 import warnings
 import math
+import re
 import numpy as np
 import pandas as pd
 from scipy.special import lambertw
-from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION
+from metcalcpy.util.utils import round_half_up, column_data_by_name,\
+    sum_column_data_by_name, PRECISION
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
@@ -137,10 +139,8 @@ def calculate_pody(input_data, columns_names):
     warnings.filterwarnings('error')
 
     try:
-        #fy_oy = sum_column_data_by_name(input_data, columns_names, 'fy_oy')
-
-        fy_oy = sum_column_data_by_name(input_data, columns_names, 'fy_oy')
-        fn_oy = sum_column_data_by_name(input_data, columns_names, 'fn_oy')
+        fy_oy = column_data_by_name(input_data, columns_names, 'fy_oy')
+        fn_oy = column_data_by_name(input_data, columns_names, 'fn_oy')
         oy = fy_oy + fn_oy
         result = fy_oy / oy
         result = round_half_up(result, PRECISION)
@@ -931,3 +931,73 @@ def calculate_eds(input_data, columns_names):
         result = None
     warnings.filterwarnings('ignore')
     return result
+
+def sort_by_ctc_fcst_thresh(input_dataframe, ascending=True):
+    """
+        Sorts the input pandas dataframe by the fcst_thresh values by first separating
+        the fcst_thresh column into a forecast thresh value column and forecast threshold
+        operator (<,<=, ==, >=, >) column.  Assign a weight to each operator (1 for <,
+        2 for <=, 3 for ==  and no operator, 4 for >=, and 5 for >).  Finally,
+        sort the input dataframe by these two new columns resulting in a new
+        dataframe sorted by fcst_thresh in ascending order (default) or descending
+        order.
+
+        Args:
+
+            :param input_dataframe: A pandas dataframe representing CTC data that is to be
+                               sorted according to the fcst_thresh column.
+            :param ascending: A boolean value, by default is set to True to sort by
+                              ascending value.  Set to False to sort in descending order.
+
+        Returns:
+            sorted_df:  A pandas dataframe that is sorted based on the fcst_thresh values and
+                        in the specified order (ascending or descending, default is ascending).
+
+        Raises: ValueError when the fcst_thresh column has values that do not conform to the
+                expected format (e.g. 3, >=0, <10, etc.)
+    """
+
+    operators = []
+    values = []
+    fcst_thresh = input_dataframe['fcst_thresh']
+
+    for thresh in fcst_thresh:
+        # separate the fcst_thresh into two parts: the operator (ie <, <=, ==, >=, >)
+        # and the numerical value of the threshold (which can be a negative value)
+        match = re.match(r'(\<|\<=|\==|\>=|\>)*((-)*([0-9])(.)*)', thresh)
+        if match:
+            operators.append(match.group(1))
+            value = float(match.group(2))
+            values.append(value)
+        else:
+            raise ValueError("fcst_thresh value does not conform to expected format")
+
+    # apply a numerical weighting to each operator: 1 for <, 2 for <=, etc.
+    wt_maps = {'<':1, '<=':2, '==': 3, '>=':4, '>':5}
+    operator_wts = []
+
+    for operator in operators:
+        # if no operator is found, assign the same
+        # weight as used for the == operator (i.e. assume
+        # that if a bare number is observed, assume that
+        # a == is implied)
+        if operator is None:
+            # no operator, assume ==
+            operator_wts.append(wt_maps['=='])
+        else:
+            operator_wts.append(wt_maps[operator])
+
+    input_dataframe['thresh_values']  = values
+    input_dataframe['op_wts'] = operator_wts
+
+    # a list of the two columns by which will be used in sorting the input dataframe
+    sort_by_cols = ['thresh_values', 'op_wts']
+
+    # sort with ignore_index=True because we don't need to keep the original index values, we
+    # want the rows to be newly indexed to reflect the reordering. inplace=False because
+    # we don't want to modify the input dataframe's order, we want a new dataframe.
+    sorted_dataframe = input_dataframe.sort_values(by=sort_by_cols, inplace=False,
+                                                   ascending=ascending, ignore_index=True)
+
+
+    return sorted_dataframe
