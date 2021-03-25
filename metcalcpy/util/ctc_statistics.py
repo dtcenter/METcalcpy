@@ -175,7 +175,7 @@ def calculate_pofd(input_data, columns_names):
     return result
 
 
-def calculate_ctc_roc(data, ascending=True):
+def calculate_ctc_roc(data, ascending):
     """ Creates a data frame to hold the aggregated contingency table and ROC data
             Args:
                 :param data: pandas data frame with ctc data and column names:
@@ -196,9 +196,14 @@ def calculate_ctc_roc(data, ascending=True):
                 - pofd
     """
     # create a data frame to hold the aggregated contingency table and ROC data
-    sorted_data = sort_by_ctc_fcst_thresh(data)
+    sorted_data = sort_by_ctc_fcst_thresh(data, ascending=ascending)
     list_thresh = np.sort(np.unique(sorted_data['fcst_thresh'].to_numpy()))
 
+    # If descending order was requested for sorting the input dataframe,
+    # reverse the order of the list_thresh to
+    # maintain results in descending order.
+    if not ascending:
+        list_thresh = list_thresh[::-1]
 
     df_roc = pd.DataFrame(
         {'thresh': list_thresh, 'pody': None, 'pofd': None})
