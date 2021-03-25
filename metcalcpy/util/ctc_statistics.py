@@ -139,8 +139,8 @@ def calculate_pody(input_data, columns_names):
     warnings.filterwarnings('error')
 
     try:
-        fy_oy = column_data_by_name(input_data, columns_names, 'fy_oy')
-        fn_oy = column_data_by_name(input_data, columns_names, 'fn_oy')
+        fy_oy = sum_column_data_by_name(input_data, columns_names, 'fy_oy')
+        fn_oy = sum_column_data_by_name(input_data, columns_names, 'fn_oy')
         oy = fy_oy + fn_oy
         result = fy_oy / oy
         result = round_half_up(result, PRECISION)
@@ -175,10 +175,10 @@ def calculate_pofd(input_data, columns_names):
     return result
 
 
-def calculate_ctc_roc(data):
+def calculate_ctc_roc(data, ascending=True):
     """ Creates a data frame to hold the aggregated contingency table and ROC data
             Args:
-                data: pandas data frame with ctc data and column names:
+                :param data: pandas data frame with ctc data and column names:
                     - fcst_thresh
                     - fy_oy
                     - fy_on
@@ -186,6 +186,8 @@ def calculate_ctc_roc(data):
                     - fn_on
                     - fcst_valid_beg
                     - fcst_lead
+                :param ascending: order in which to sort the input data by fcst_thresh. Default is
+                                  True, set to False to sort by descending order.
 
             Returns:
                 pandas data frame with ROC data and columns:
@@ -194,15 +196,25 @@ def calculate_ctc_roc(data):
                 - pofd
     """
     # create a data frame to hold the aggregated contingency table and ROC data
-    list_thresh = np.sort(np.unique(data['fcst_thresh'].to_numpy()))
+    sorted_data = sort_by_ctc_fcst_thresh(data)
+    list_thresh = np.sort(np.unique(sorted_data['fcst_thresh'].to_numpy()))
+
 
     df_roc = pd.DataFrame(
         {'thresh': list_thresh, 'pody': None, 'pofd': None})
 
-    data_np = data.to_numpy()
-    columns = data.columns.values
-    df_roc['pody'] = calculate_pody(data_np, columns)
-    df_roc['pofd'] = calculate_pofd(data_np, columns)
+    index = 0
+    for thresh in list_thresh:
+        # create a subset of the sorted_data that contains only the rows of the unique
+        # threshold values
+        subset_data = sorted_data[sorted_data['fcst_thresh'] == thresh]
+        data_np = subset_data.to_numpy()
+        columns = subset_data.columns.values
+        pody= calculate_pody(data_np, columns)
+        pofd = calculate_pofd(data_np, columns)
+        df_roc.loc[index] = [thresh, pody, pofd]
+        index += 1
+
 
     return df_roc
 
