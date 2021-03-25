@@ -220,7 +220,7 @@ class AggStat:
         'ssvar_spread': ['var_mean'],
 
         'ecnt_crps': ['crps'],
-        'ecnt_crpss': ['crps'],
+        'ecnt_crpss': ['crps','crpscl'],
         'ecnt_ign': ['ign'],
         'ecnt_me': ['me'],
         'ecnt_rmse': [],
@@ -229,6 +229,10 @@ class AggStat:
         'ecnt_rmse_oerr': [],
         'ecnt_spread_oerr': ['spread_oerr'],
         'ecnt_spread_plus_oerr': ['spread_plus_oerr'],
+        'ecnt_crpscl': ['crpscl'],
+        'ecnt_crps_emp': ['crps_emp'],
+        'ecnt_crpscl_emp': ['crpscl_emp'],
+        'ecnt_crpss_emp': ['crpscl_emp', 'crps_emp'],
 
         'nbr_fbs': ['fbs'],
         'nbr_fss': ['fss'],
@@ -458,7 +462,7 @@ class AggStat:
         """
         mse = data_for_prepare['rmse'].values * data_for_prepare['rmse'].values
         mse_oerr = data_for_prepare['rmse_oerr'].values * data_for_prepare['rmse_oerr'].values
-        crps_climo = data_for_prepare['crps'].values * data_for_prepare['crps'].values
+        #crps_climo = data_for_prepare['crps'].values * data_for_prepare['crps'].values
 
         variance = data_for_prepare['spread'].values * data_for_prepare['spread'].values
         variance_oerr = data_for_prepare['spread_oerr'].values * data_for_prepare['spread_oerr'].values
@@ -466,7 +470,7 @@ class AggStat:
 
         data_for_prepare['mse'] = mse * data_for_prepare['total'].values
         data_for_prepare['mse_oerr'] = mse_oerr * data_for_prepare['total'].values
-        data_for_prepare['crps_climo'] = crps_climo * data_for_prepare['total'].values
+        #data_for_prepare['crps_climo'] = crps_climo * data_for_prepare['total'].values
 
         data_for_prepare['variance'] = variance * data_for_prepare['total'].values
         data_for_prepare['variance_oerr'] = variance_oerr * data_for_prepare['total'].values

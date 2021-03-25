@@ -37,8 +37,35 @@ def calculate_ecnt_crps(input_data, columns_names, aggregation=False):
     return result
 
 
+def calculate_ecnt_crpscl(input_data, columns_names, aggregation=False):
+    """Performs calculation of ECNT_CRPSCL - Climatological Continuous Ranked Probability Score
+        (normal distribution)
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
+
+        Returns:
+            calculated ECNT_CRPSCL as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = get_total_values(input_data, columns_names, aggregation)
+        crpscl = sum_column_data_by_name(input_data, columns_names, 'crpscl') / total
+        result = round_half_up(crpscl, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
 def calculate_ecnt_crpss(input_data, columns_names, aggregation=False):
     """Performs calculation of ECNT_CRPSS - The Continuous Ranked Probability Skill Score
+        (normal distribution)
 
         Args:
             input_data: 2-dimensional numpy array with data for the calculation
@@ -54,10 +81,87 @@ def calculate_ecnt_crpss(input_data, columns_names, aggregation=False):
     warnings.filterwarnings('error')
     try:
         total = get_total_values(input_data, columns_names, aggregation)
-        crps_climo = sum_column_data_by_name(input_data, columns_names, 'crps_climo') / total
+        crpscl = sum_column_data_by_name(input_data, columns_names, 'crpscl') / total
         crps = sum_column_data_by_name(input_data, columns_names, 'crps') / total
-        crpss = (crps_climo - crps) / crps_climo
+        crpss = 1 - crps / crpscl
         result = round_half_up(crpss, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+def calculate_ecnt_crps_emp(input_data, columns_names, aggregation=False):
+    """Performs calculation of ECNT_CRPS_EMP - The Continuous Ranked Probability Score
+        (empirical distribution)
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
+
+        Returns:
+            calculated ECNT_CRPS_EMP as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = get_total_values(input_data, columns_names, aggregation)
+        crps_emp = sum_column_data_by_name(input_data, columns_names, 'crps_emp') / total
+        result = round_half_up(crps_emp, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+def calculate_ecnt_crpscl_emp(input_data, columns_names, aggregation=False):
+    """Performs calculation of ECNT_CRPSCL_EMP - Climatological Continuous Ranked Probability Score
+        (empirical distribution)
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
+
+        Returns:
+            calculated ECNT_CRPSCL_EMP as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = get_total_values(input_data, columns_names, aggregation)
+        crpscl_emp = sum_column_data_by_name(input_data, columns_names, 'crpscl_emp') / total
+        result = round_half_up(crpscl_emp, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+def calculate_ecnt_crpss_emp(input_data, columns_names, aggregation=False):
+    """Performs calculation of ECNT_CRPSS_EMP - The Continuous Ranked Probability Skill Score
+        (empirical distribution)
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
+
+        Returns:
+            calculated ECNT_CRPSS_EMP as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = get_total_values(input_data, columns_names, aggregation)
+        crps_emp = sum_column_data_by_name(input_data, columns_names, 'crps_emp') / total
+        crpscl_emp = sum_column_data_by_name(input_data, columns_names, 'crpscl_emp') / total
+        crpss_emp =  1 - crps_emp/crpscl_emp
+        result = round_half_up(crpss_emp, PRECISION)
     except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
@@ -133,7 +237,7 @@ def calculate_ecnt_rmse(input_data, columns_names, aggregation=False):
     warnings.filterwarnings('error')
     try:
         total = get_total_values(input_data, columns_names, aggregation)
-        rmse =  math.sqrt(sum_column_data_by_name(input_data, columns_names, 'mse') / total)
+        rmse = math.sqrt(sum_column_data_by_name(input_data, columns_names, 'mse') / total)
         result = round_half_up(rmse, PRECISION)
     except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
