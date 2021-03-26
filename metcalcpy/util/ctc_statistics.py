@@ -932,11 +932,13 @@ def calculate_eds(input_data, columns_names):
     warnings.filterwarnings('ignore')
     return result
 
-def sort_by_ctc_fcst_thresh(input_dataframe, ascending=True):
+def sort_by_thresh(input_dataframe:pd.DataFrame,sort_column_name:str='fcst_thresh',
+                        ascending:bool=True)->pd.DataFrame:
     """
-        Sorts the input pandas dataframe by the fcst_thresh values by first separating
-        the fcst_thresh column into a forecast thresh value column and forecast threshold
-        operator (<,<=, ==, >=, >) column.  Assign a weight to each operator (1 for <,
+        Sorts the input pandas dataframe by threshold values in the specified column that have
+        format "operator value", ie >=1.  This is done by first separating
+        the fcst_thresh column into a threshold operator (<,<=, ==, >=, >)
+        and thresh value column.  Assign a weight to each operator (1 for <,
         2 for <=, 3 for ==  and no operator, 4 for >=, and 5 for >).  Finally,
         sort the input dataframe by these two new columns resulting in a new
         dataframe sorted by fcst_thresh in ascending order (default) or descending
@@ -944,36 +946,46 @@ def sort_by_ctc_fcst_thresh(input_dataframe, ascending=True):
 
         Args:
 
-            :param input_dataframe: A pandas dataframe representing CTC data that is to be
-                               sorted according to the fcst_thresh column.
+            :param input_dataframe: A pandas dataframe representing data that is to be
+                                   sorted according to the specifiec column name.
+
+
+            :param sort_column_name:  The column to base the sorting.  The default is 'fcst_thresh'
+                                     (which is a colunn in CTC output)
+
             :param ascending: A boolean value, by default is set to True to sort by
                               ascending value.  Set to False to sort in descending order.
 
         Returns:
-            sorted_df:  A pandas dataframe that is sorted based on the fcst_thresh values and
-                        in the specified order (ascending or descending, default is ascending).
+            sorted_df:  A pandas dataframe that is sorted based on the specified column's values and
+                        in the specified order (ascending or descending-default is ascending).
 
-        Raises: ValueError when the fcst_thresh column has values that do not conform to the
-                expected format (e.g. 3, >=0, <10, etc.)
+
     """
 
     operators = []
     values = []
-    fcst_thresh = input_dataframe['fcst_thresh']
+    text_strings = []
+    requested_thresh = input_dataframe[sort_column_name]
 
-    for thresh in fcst_thresh:
+    for thresh in requested_thresh:
+        # for thresholds that are comprised of an operator and value, ie >=3,
         # separate the fcst_thresh into two parts: the operator (ie <, <=, ==, >=, >)
         # and the numerical value of the threshold (which can be a negative value)
         match = re.match(r'(\<|\<=|\==|\>=|\>)*((-)*([0-9])(.)*)', thresh)
+        match_text = re.match(r'(\<|\<=|\==|\>=|\>)*((.)*)', thresh)
+
         if match:
             operators.append(match.group(1))
             value = float(match.group(2))
             values.append(value)
-        else:
-            raise ValueError("fcst_thresh value does not conform to expected format")
+        elif match_text:
+            operators.append(match.group(1))
+            text = match.group(2)
+            text_strings.append(text)
 
     # apply a numerical weighting to each operator: 1 for <, 2 for <=, etc.
-    wt_maps = {'<':1, '<=':2, '==': 3, '>=':4, '>':5}
+    wt_maps = {'<': 1, '<=': 2, '==': 3, '>=': 4, '>': 5}
     operator_wts = []
 
     for operator in operators:
@@ -987,17 +999,23 @@ def sort_by_ctc_fcst_thresh(input_dataframe, ascending=True):
         else:
             operator_wts.append(wt_maps[operator])
 
-    input_dataframe['thresh_values']  = values
+    # Columns to use in pandas dataframe sorting
+    sort_by_cols = ['thresh_values', 'op_wts']
     input_dataframe['op_wts'] = operator_wts
 
-    # a list of the two columns by which will be used in sorting the input dataframe
-    sort_by_cols = ['thresh_values', 'op_wts']
+    # assign new column based on the format of the threshold values
+    if match:
+        input_dataframe['thresh_values'] = values
+    elif match_text:
+        input_dataframe['thresh_values'] = text_strings
+    else:
+        # if the threshold values don't conform to what is expected, then
+        # use the requested threshold column name for sorting.
+        sort_by_cols = [sort_column_name]
 
-    # sort with ignore_index=True because we don't need to keep the original index values, we
-    # want the rows to be newly indexed to reflect the reordering. inplace=False because
+    # sort with ignore_index=True because we don't need to keep the original index values. We
+    # want the rows to be newly indexed to reflect the reordering. Use inplace=False because
     # we don't want to modify the input dataframe's order, we want a new dataframe.
     sorted_dataframe = input_dataframe.sort_values(by=sort_by_cols, inplace=False,
                                                    ascending=ascending, ignore_index=True)
-
-
     return sorted_dataframe
