@@ -196,7 +196,7 @@ def calculate_ctc_roc(data, ascending):
                 - pofd
     """
     # create a data frame to hold the aggregated contingency table and ROC data
-    sorted_data = sort_by_ctc_fcst_thresh(data, ascending=ascending)
+    sorted_data = sort_by_thresh(data, ascending=ascending)
     list_thresh = np.sort(np.unique(sorted_data['fcst_thresh'].to_numpy()))
 
     # If descending order was requested for sorting the input dataframe,
