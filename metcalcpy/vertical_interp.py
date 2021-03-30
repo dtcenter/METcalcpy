@@ -450,7 +450,8 @@ def read_required_fields(config, ds):
         temperature, relative_humidity
 
 
-def write_dataset(ds, ds_nc, coords_interp=None):
+def write_dataset(ds, ds_nc, coords_interp=None,
+    forecast_reference_time=None):
     """
     Write xarray Dataset to NetCDF file
     """
@@ -516,6 +517,10 @@ def write_dataset(ds, ds_nc, coords_interp=None):
         logging.debug((attr, ds.attrs[attr]))
         setattr(ds_nc, attr, ds.attrs[attr])
 
+    if forecast_reference_time is not None:
+        setattr(ds_nc,
+            'forecast_reference_time', forecast_reference_time)
+        
 
 if __name__ == '__main__':
     """
@@ -638,7 +643,9 @@ if __name__ == '__main__':
     try:
         logging.info('Creating with NetCDF4 ' + filename_out)
         ds_nc = nc.Dataset(filename_out, 'w')
-        write_dataset(ds_out, ds_nc, coords_interp=coords_interp)
+        ref_time = filename_out.split('.')[1]
+        write_dataset(ds_out, ds_nc, coords_interp=coords_interp,
+            forecast_reference_time=ref_time)
         ds_nc.close()
     except:
         logging.info('Creating with xarray ' + filename_out)
