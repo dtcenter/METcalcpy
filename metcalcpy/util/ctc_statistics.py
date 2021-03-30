@@ -997,8 +997,8 @@ def sort_by_thresh(input_dataframe:pd.DataFrame,sort_column_name:str='fcst_thres
             value = float(match.group(2))
             values.append(value)
         elif match_text:
-            operators.append(match.group(1))
-            text = match.group(2)
+            operators.append(match_text.group(1))
+            text = match_text.group(2)
             text_strings.append(text)
 
     # apply a numerical weighting to each operator: 1 for <, 2 for <=, etc.
