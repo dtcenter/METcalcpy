@@ -7,4 +7,6 @@
 # sphinx output
 docs/_build
 
+docs/auto_examples
+
 
