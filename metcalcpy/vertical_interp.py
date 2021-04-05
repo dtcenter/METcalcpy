@@ -525,6 +525,7 @@ def write_dataset(ds, ds_nc, coords_interp=None,
             'forecast_reference_time', 'float64',
             ('forecast_reference_time'))
         ref_time_coord.long_name = 'forecast_reference_time'
+        ref_time_coord.standard_name = 'forecast_reference_time'
         ref_time_coord.units = 'seconds since 1970-01-01 00:00'
         yyyymmddhh_str = str(forecast_reference_time)
         yyyy = int(yyyymmddhh_str[0:4])
