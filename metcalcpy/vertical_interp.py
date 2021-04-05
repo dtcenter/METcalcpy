@@ -525,7 +525,14 @@ def write_dataset(ds, ds_nc, coords_interp=None,
             'forecast_reference_time', 'float64',
             ('forecast_reference_time'))
         ref_time_coord.long_name = 'forecast_reference_time'
-        ref_time_coord[:] = forecast_reference_time
+        ref_time_coord.units = 'seconds since 1970-01-01 00:00'
+        yyyymmddhh_str = str(forecast_reference_time)
+        yyyy = int(yyyymmddhh_str[0:4])
+        mm = int(yyyymmddhh_str[4:6])
+        dd = int(yyyymmddhh_str[6:8])
+        hh = int(yyyymmddhh_str[8:10])
+        ref_time_obj = datetime(yyyy, mm, dd, hh)
+        ref_time_coord[:] = ref_time_obj.timestamp()
 
 
 if __name__ == '__main__':
