@@ -518,9 +518,15 @@ def write_dataset(ds, ds_nc, coords_interp=None,
         setattr(ds_nc, attr, ds.attrs[attr])
 
     if forecast_reference_time is not None:
-        setattr(ds_nc,
-            'forecast_reference_time', forecast_reference_time)
-        
+        # setattr(ds_nc,
+        #     'forecast_reference_time', forecast_reference_time)
+        ds_nc.createDimension('forecast_reference_time', 1)
+        ref_time_coord = ds_nc.createVariable(
+            'forecast_reference_time', 'float64',
+            ('forecast_reference_time'))
+        ref_time_coord.long_name = 'forecast_reference_time'
+        ref_time_coord[:] = forecast_reference_time
+
 
 if __name__ == '__main__':
     """
