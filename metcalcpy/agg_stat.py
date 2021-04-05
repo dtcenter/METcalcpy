@@ -853,8 +853,8 @@ class AggStat:
 
         # fill the stats  and CI values placeholders with None
         result['stat_value'] = [None] * row_number
-        result['stat_bcl'] = [None] * row_number
-        result['stat_bcu'] = [None] * row_number
+        result['stat_btcl'] = [None] * row_number
+        result['stat_btcu'] = [None] * row_number
         result['nstats'] = [None] * row_number
         return result
 
@@ -1039,8 +1039,8 @@ class AggStat:
 
                 # save results to the output data frame
                 out_frame['stat_value'][point_ind] = bootstrap_results.value
-                out_frame['stat_bcl'][point_ind] = bootstrap_results.lower_bound
-                out_frame['stat_bcu'][point_ind] = bootstrap_results.upper_bound
+                out_frame['stat_btcl'][point_ind] = bootstrap_results.lower_bound
+                out_frame['stat_btcu'][point_ind] = bootstrap_results.upper_bound
                 out_frame['nstats'][point_ind] = n_stats
 
         else:
