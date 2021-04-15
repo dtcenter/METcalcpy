@@ -41,6 +41,35 @@ Bugfixes:
 
 * Fix the No-Skill reference line on Reliability Plot implemented in Python (`#26 <https://github.com/dtcenter/METcalcpy/issues/26>`_)
 
+* Fix the calculation of ECNT_RMSE statistic so the Python and R implementations are consistent (`#42 <https://github.com/dtcenter/METcalcpy/issues/42>`_)
+
+* Change the default setting of calc_difficulty_index to reproduce results originally generated from Naval Research Lab (`#37 <https://github.com/dtcenter/METcalcpy/issues/37>`_)
+
+New Functionality:
+
+* Add calculation for Difficulty Index from NRL (`#88 <https://github.com/dtcenter/METplotpy/issues/88>`_)
+
+
+Enhancements:
+
+* Series plot to support "group" statistics  (`#88 <https://github.com/dtcenter/METplotpy/issues/88>`_)
+
+* Version selector for documentation (`#60 <https://github.com/dtcenter/METplotpy/issues/60>`_)
+
+Internal:
+
+*  (`#43 <https://github.com/dtcenter/METcalcpy/issues/43>`_)
+
+
+Version 1.0.0_beta3 release notes (20210127)
+
+Bugfixes:
+
+* Fix event equalization and agg_stat logic when the following fixed_vars_vals_input values are 'NA':
+  fcst_thresh, fcst_thresh_1 (`#52 <https://github.com/dtcenter/METcalcpy/issues/52>`_)
+
+* Fix the No-Skill reference line on Reliability Plot implemented in Python (`#26 <https://github.com/dtcenter/METcalcpy/issues/26>`_)
+
 * Fix the calculation of ECNT_RMSE statistic so the Python and R implementations are consistent (`#42 <https://github.com/dtcenter/METcalcpy/issues/42>_`)
 
 * Change the default setting of calc_difficulty_index to reproduce results originally generated from Naval Research Lab (`#37 <https://github.com/dtcenter/METcalcpy/issues/37>`_)

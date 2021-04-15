@@ -450,7 +450,8 @@ def read_required_fields(config, ds):
         temperature, relative_humidity
 
 
-def write_dataset(ds, ds_nc, coords_interp=None):
+def write_dataset(ds, ds_nc, coords_interp=None,
+    forecast_reference_time=None):
     """
     Write xarray Dataset to NetCDF file
     """
@@ -474,15 +475,15 @@ def write_dataset(ds, ds_nc, coords_interp=None):
             coord[:] = t_array
 
     if 'time' not in ds.dims:
-        ds_nc.createDimension('time', 1)
+        ds_nc.createDimension('valid_time', 1)
         time_coord = ds_nc.createVariable(
-            'time', 'float64', ('time'))
+            'valid_time', 'float64', ('valid_time'))
         dt_valid = datetime.utcfromtimestamp(
             ds['valid_time'].astype('O')/1e9)
         dt_init = datetime.utcfromtimestamp(
             ds['init_time'].astype('O')/1e9)
         time_coord[:] = (dt_valid - dt_init).total_seconds()
-        time_coord.long_name = 'time'
+        time_coord.long_name = 'valid_time'
         time_coord.units = 'seconds since ' + str(dt_init)
 
     if coords_interp is not None:
@@ -498,10 +499,11 @@ def write_dataset(ds, ds_nc, coords_interp=None):
             dtype = 'uint64'
         if 'time' not in ds.dims:
             dims_with_time = list(ds[field].dims)
-            dims_with_time.insert(0, 'time')
-            var = ds_nc.createVariable(
-                field, dtype, tuple(dims_with_time))
-            var[:] = ds[field].values
+            dims_with_time.insert(0, 'valid_time')
+            if field != 'valid_time':
+                var = ds_nc.createVariable(
+                    field, dtype, tuple(dims_with_time))
+                var[:] = ds[field].values
         else:
             var = ds_nc.createVariable(
                 field, dtype, ds[field].dims)
@@ -514,6 +516,24 @@ def write_dataset(ds, ds_nc, coords_interp=None):
     for attr in ds.attrs:
         logging.debug((attr, ds.attrs[attr]))
         setattr(ds_nc, attr, ds.attrs[attr])
+
+    if forecast_reference_time is not None:
+        # setattr(ds_nc,
+        #     'forecast_reference_time', forecast_reference_time)
+        ds_nc.createDimension('forecast_reference_time', 1)
+        ref_time_coord = ds_nc.createVariable(
+            'forecast_reference_time', 'float64',
+            ('forecast_reference_time'))
+        ref_time_coord.long_name = 'forecast_reference_time'
+        ref_time_coord.standard_name = 'forecast_reference_time'
+        ref_time_coord.units = 'seconds since 1970-01-01 00:00'
+        yyyymmddhh_str = str(forecast_reference_time)
+        yyyy = int(yyyymmddhh_str[0:4])
+        mm = int(yyyymmddhh_str[4:6])
+        dd = int(yyyymmddhh_str[6:8])
+        hh = int(yyyymmddhh_str[8:10])
+        ref_time_obj = datetime(yyyy, mm, dd, hh)
+        ref_time_coord[:] = ref_time_obj.timestamp()
 
 
 if __name__ == '__main__':
@@ -575,7 +595,7 @@ if __name__ == '__main__':
     Read dataset
     """
     try:
-        if filename_in.split('.')[-1] == 'grb2':
+        if filename_in.split('.')[-1] == 'grb2' or 'pgrb2' in filename_in:
             logging.info('Opening GRIB2 ' + filename_in)
             ds = xr.open_dataset(filename_in, engine='cfgrib',
                 backend_kwargs={'filter_by_keys': {'typeOfLevel': 'isobaricInhPa'}})
@@ -637,7 +657,9 @@ if __name__ == '__main__':
     try:
         logging.info('Creating with NetCDF4 ' + filename_out)
         ds_nc = nc.Dataset(filename_out, 'w')
-        write_dataset(ds_out, ds_nc, coords_interp=coords_interp)
+        ref_time = filename_out.split('.')[1]
+        write_dataset(ds_out, ds_nc, coords_interp=coords_interp,
+            forecast_reference_time=ref_time)
         ds_nc.close()
     except:
         logging.info('Creating with xarray ' + filename_out)
