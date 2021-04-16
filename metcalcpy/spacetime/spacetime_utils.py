@@ -10,14 +10,16 @@ lonFlip:
     Flip longitudes from -180:180 to 0:360 or vice versa.
 
 """
-
+import os
 import numpy as np
 import xarray as xr
 from netCDF4 import Dataset
 
 
 def save_Spectra(STCin, freq_in, wnum_in, filename, filepath, opt=False):
-    nc = Dataset(filepath + filename + '.nc', 'w', format='NETCDF4')
+    fname = filename + '.nc'
+    full_filename = os.path.join(filepath, fname)
+    nc = Dataset(full_filename, 'w', format='NETCDF4')
 
     nvar, nfrq, nwave = STCin.shape
     # dimensions
