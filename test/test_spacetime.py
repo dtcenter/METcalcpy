@@ -8,7 +8,7 @@ import pytest
 local scripts, if loading from a different directory include that with a '.' between
 directory name and script name
 """
-sys.path.append("../metcalcpy/spacetime")
+sys.path.append("../metcalcpy/contributed/spacetime")
 from spacetime import mjo_cross
 from spacetime import get_symmasymm
 from spacetime_utils import save_Spectra
