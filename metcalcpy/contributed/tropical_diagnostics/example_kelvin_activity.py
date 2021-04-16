@@ -63,8 +63,8 @@ explabels = ['trmm', 'erai']
 nexps = len(exps)
 
 print("computing skill")
-skill = ccew.wave_skill(act)
+skill = ccew.wave_skill(B)
 
 
 ##### maybe this next routine needs to be moved to METplotpy? ############
-ccew.plot_skill(skill, wave, explabels, plotpath)
+# ccew.plot_skill(skill, wave, explabels, plotpath)
