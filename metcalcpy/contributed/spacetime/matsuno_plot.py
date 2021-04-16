@@ -34,7 +34,7 @@ import numpy as np
 from scipy.optimize import fsolve
 from functools import reduce
 import pandas as pd
-
+import matplotlib.pyplot as plt
 pi = np.pi
 re    = 6.371008e6 # Earth's radius in meters
 g     = 9.80665 # Gravitational acceleration [m s^{-2}]
