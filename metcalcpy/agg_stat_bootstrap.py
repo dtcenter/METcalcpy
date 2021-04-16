@@ -92,8 +92,8 @@ class AggStatBootstrap:
 
         # fill the stats  and CI values placeholders with None
         result['stat_value'] = [None] * row_number
-        result['stat_bcl'] = [None] * row_number
-        result['stat_bcu'] = [None] * row_number
+        result['stat_btcl'] = [None] * row_number
+        result['stat_btcu'] = [None] * row_number
         result['nstats'] = [None] * row_number
         return result
 
