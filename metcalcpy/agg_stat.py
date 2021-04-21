@@ -220,7 +220,7 @@ class AggStat:
         'ssvar_spread': ['var_mean'],
 
         'ecnt_crps': ['crps'],
-        'ecnt_crpss': ['crps'],
+        'ecnt_crpss': ['crps','crpscl'],
         'ecnt_ign': ['ign'],
         'ecnt_me': ['me'],
         'ecnt_rmse': [],
@@ -229,6 +229,10 @@ class AggStat:
         'ecnt_rmse_oerr': [],
         'ecnt_spread_oerr': ['spread_oerr'],
         'ecnt_spread_plus_oerr': ['spread_plus_oerr'],
+        'ecnt_crpscl': ['crpscl'],
+        'ecnt_crps_emp': ['crps_emp'],
+        'ecnt_crpscl_emp': ['crpscl_emp'],
+        'ecnt_crpss_emp': ['crpscl_emp', 'crps_emp'],
 
         'nbr_fbs': ['fbs'],
         'nbr_fss': ['fss'],
@@ -458,7 +462,7 @@ class AggStat:
         """
         mse = data_for_prepare['rmse'].values * data_for_prepare['rmse'].values
         mse_oerr = data_for_prepare['rmse_oerr'].values * data_for_prepare['rmse_oerr'].values
-        crps_climo = data_for_prepare['crps'].values * data_for_prepare['crps'].values
+        #crps_climo = data_for_prepare['crps'].values * data_for_prepare['crps'].values
 
         variance = data_for_prepare['spread'].values * data_for_prepare['spread'].values
         variance_oerr = data_for_prepare['spread_oerr'].values * data_for_prepare['spread_oerr'].values
@@ -466,7 +470,7 @@ class AggStat:
 
         data_for_prepare['mse'] = mse * data_for_prepare['total'].values
         data_for_prepare['mse_oerr'] = mse_oerr * data_for_prepare['total'].values
-        data_for_prepare['crps_climo'] = crps_climo * data_for_prepare['total'].values
+        #data_for_prepare['crps_climo'] = crps_climo * data_for_prepare['total'].values
 
         data_for_prepare['variance'] = variance * data_for_prepare['total'].values
         data_for_prepare['variance_oerr'] = variance_oerr * data_for_prepare['total'].values
@@ -615,11 +619,27 @@ class AggStat:
             return BootstrapDistributionResults(lower_bound=None,
                                                 value=None,
                                                 upper_bound=None)
+        # calculate the number of values in the group if the series has a group
+        # it is need d for the validation
+        num_diff_vals_first = 0
+        num_diff_vals_second = 0
+        for val in permute_for_first_series:
+            size = len(val.split(','))
+            if size > 1:
+                num_diff_vals_first = num_diff_vals_first + size
+        for val in permute_for_second_series:
+            size = len(val.split(','))
+            if size > 1:
+                num_diff_vals_second = num_diff_vals_second + size
+        if num_diff_vals_first == 0:
+            num_diff_vals_first = 1
+        if num_diff_vals_second == 0:
+            num_diff_vals_second = 1
 
         # validate data
         if derived_curve_component.derived_operation != 'SINGLE':
-            self._validate_series_cases_for_derived_operation(ds_1.values, axis)
-            self._validate_series_cases_for_derived_operation(ds_2.values, axis)
+            self._validate_series_cases_for_derived_operation(ds_1.values, axis, num_diff_vals_first)
+            self._validate_series_cases_for_derived_operation(ds_2.values, axis, num_diff_vals_second)
 
         if self.params['num_iterations'] == 1 or derived_curve_component.derived_operation == 'ETB':
             # don't need bootstrapping and CI calculation -
@@ -660,7 +680,11 @@ class AggStat:
             try:
                 # calculate a block length for the circular temporal block bootstrap if needed
                 block_length = 1
-                is_cbb = parse_bool(self.params['circular_block_bootstrap'])
+
+                # to use circular block bootstrap or not
+                is_cbb = True
+                if 'circular_block_bootstrap' in self.params.keys():
+                    is_cbb = parse_bool(self.params['circular_block_bootstrap'])
 
                 if is_cbb:
                     block_length = int(math.sqrt(len(values_both_arrays)))
@@ -737,7 +761,10 @@ class AggStat:
             # need bootstrapping and CI calculation in addition to statistic
             try:
                 block_length = 1
-                is_cbb = parse_bool(self.params['circular_block_bootstrap'])
+                # to use circular block bootstrap or not
+                is_cbb = True
+                if 'circular_block_bootstrap' in self.params.keys():
+                    is_cbb = parse_bool(self.params['circular_block_bootstrap'])
 
                 if is_cbb:
                     block_length = int(math.sqrt(len(data)))
@@ -755,7 +782,7 @@ class AggStat:
                 print(err)
         return results
 
-    def _validate_series_cases_for_derived_operation(self, series_data, axis="1"):
+    def _validate_series_cases_for_derived_operation(self, series_data, axis="1", num_diff_vals=1):
         """ Checks if the derived curve can be calculated.
             The criteria - input array must have only unique
             (fcst_valid, fcst_lead, stat_name) cases.
@@ -764,6 +791,9 @@ class AggStat:
 
             Args:
                 series_data: 2d numpu array
+                axis: axis of the series
+                num_diff_vals: number of values in the group if the series has a group,
+                    1 - otherwise
             Returns:
                  This method raises an error if this criteria is False
         """
@@ -797,7 +827,8 @@ class AggStat:
 
         # the length of the frame with unique combinations should be the same
         # as the number of unique combinations calculated before
-        if len(series_data) != unique_date_size \
+
+        if len(series_data) / num_diff_vals != unique_date_size \
                 and self.params['list_stat_' + axis] not in self.EXEMPTED_VARS:
             raise NameError("Derived curve can't be calculated."
                             " Multiple values for one valid date/fcst_lead")
@@ -822,8 +853,8 @@ class AggStat:
 
         # fill the stats  and CI values placeholders with None
         result['stat_value'] = [None] * row_number
-        result['stat_bcl'] = [None] * row_number
-        result['stat_bcu'] = [None] * row_number
+        result['stat_btcl'] = [None] * row_number
+        result['stat_btcu'] = [None] * row_number
         result['nstats'] = [None] * row_number
         return result
 
@@ -1003,13 +1034,13 @@ class AggStat:
                     bootstrap_results = self._get_bootstrapped_stats_for_derived(
                         point,
                         point_to_distrib,
-                        axis )
+                        axis)
                     n_stats = 0
 
                 # save results to the output data frame
                 out_frame['stat_value'][point_ind] = bootstrap_results.value
-                out_frame['stat_bcl'][point_ind] = bootstrap_results.lower_bound
-                out_frame['stat_bcu'][point_ind] = bootstrap_results.upper_bound
+                out_frame['stat_btcl'][point_ind] = bootstrap_results.lower_bound
+                out_frame['stat_btcu'][point_ind] = bootstrap_results.upper_bound
                 out_frame['nstats'][point_ind] = n_stats
 
         else:

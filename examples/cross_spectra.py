@@ -2,6 +2,7 @@
 This is an example script for cross-spectral analysis. Computes power and cross-spectra for multiple input
 data sets.
 """
+import argparse
 import xarray as xr
 import numpy as np
 
@@ -11,7 +12,7 @@ directory name and script name
 """
 from spacetime import mjo_cross
 from spacetime import get_symmasymm
-from utils import save_Spectra
+from spacetime_utils import save_Spectra
 
 """
 Set parameters for the spectra calculation.
@@ -33,12 +34,18 @@ latMax = 15.
 datestrt = '2015-12-01'  # plot start date, format: yyyy-mm-dd
 datelast = '2016-03-31'  # plot end date, format: yyyy-mm-dd
 
-# path to the location of the example scripts
+parser = argparse.ArgumentParser()
+parser.add_argument('--datapath', type=str,
+    help='data path')
+parser.add_argument('--pathout', type=str,
+    help='output path')
+args = parser.parse_args()
+
 # datapath = '../data/'
-datapath = '/Volumes/d1/fillmore/Data/TropicalDiagnostics/'
 # path to the location where to save the output spectra
 # pathout = '../data/'
-pathout = '/Users/fillmore/working/'
+datapath = args.datapath
+pathout = args.pathout
 
 print("reading data from file:")
 """ 
