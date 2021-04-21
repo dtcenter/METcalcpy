@@ -7,6 +7,29 @@ describes the bugfix, enhancement, or new feature: `METcalcpy GitHub issues. <ht
 Version |version| release notes (|release_date|)
 ------------------------------------------------
 
+Version 1.0.0_beta5 release notes (20210421)
+
+Bugfixes:
+
+New Functionality:
+
+* Add calculations for Space-time Coherence Spectra from NOAA PSL Diagnostics Package (`#29 <https://github.com/dtcenter/METcalcpy/issues/29>`_)
+
+* Utilize METdbload .stat file reader utilities to allow METcalcpy to read these files (`#31 <https://github.com/dtcenter/METcalcpy/issues/31>`_)
+
+* Create a template for reading in a data file (of raw data) and create a data file reader (`#7 <https://github.com/dtcenter/METcalcpy/issues/7>`_)
+
+* Add new ECNT stats to aggregation logic (`#69 <https://github.com/dtcenter/METcalcpy/issues/69>`_)
+
+* Implement a method that returns specified column values (`#73 <https://github.com/dtcenter/METcalcpy/issues/73>`_)
+
+Enhancements:
+
+Internal:
+
+* Rename boot Confidence Interval's (CI) columns (`#79 <https://github.com/dtcenter/METcalcpy/issues/79>`_)
+
+
 Version 1.0.0_beta4 release notes (20210302)
 
 Bugfixes:
