@@ -242,8 +242,8 @@ def test_calculate_value_and_ci(settings):
     assert result_frame.shape == (27, 8)
     assert np.allclose(result_frame['stat_value'][2], 192.1304275)
     assert np.allclose(result_frame['stat_value'][20], 0.00362229)
-    assert np.allclose(result_frame['stat_bcl'][9], 192.12478)
-    assert np.allclose(result_frame['stat_bcu'][24], 0.0107868)
+    assert np.allclose(result_frame['stat_btcl'][9], 192.12478)
+    assert np.allclose(result_frame['stat_btcu'][24], 0.0107868)
 
 
 @pytest.fixture
