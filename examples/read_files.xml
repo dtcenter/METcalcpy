@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div>
+
+  <load_files>
+
+  <file>/d2/METcalcpy_Data/MET_stat/ensemble_stat_20100101_120000V_orank.txt</file>
+  <file>/d2/METcalcpy_Data/MET_stat/ensemble_stat_20100101_120000V.stat</file>
+
+  </load_files>
+
+  <load_xml>true</load_xml>
+  <load_note>test data for Metviewer</load_note>
+  <stat_header_db_check>false</stat_header_db_check>
+  <insert_size>1</insert_size>
+  <verbose>true</verbose>
+  <mode_header_db_check>false</mode_header_db_check>
+  <mtd_header_db_check>false</mtd_header_db_check>
+  <drop_indexes>false</drop_indexes>
+  <apply_indexes>false</apply_indexes>
+  <group>test</group>
+  <description>h projects</description>
+  <load_stat>true</load_stat>
+  <load_mode>false</load_mode>
+  <load_mtd>false</load_mtd>
+  <load_mpr>true</load_mpr>
+  <load_orank>true</load_orank>
+  <force_dup_file>false</force_dup_file>
+
+</div>
+

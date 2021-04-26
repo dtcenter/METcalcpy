@@ -92,8 +92,8 @@ class AggStatBootstrap:
 
         # fill the stats  and CI values placeholders with None
         result['stat_value'] = [None] * row_number
-        result['stat_bcl'] = [None] * row_number
-        result['stat_bcu'] = [None] * row_number
+        result['stat_btcl'] = [None] * row_number
+        result['stat_btcu'] = [None] * row_number
         result['nstats'] = [None] * row_number
         return result
 
@@ -188,8 +188,8 @@ class AggStatBootstrap:
 
                         # save results to the output data frame
                         out_frame['stat_value'][index] = bootstrap_results.value
-                        out_frame['stat_bcl'][index] = bootstrap_results.lower_bound
-                        out_frame['stat_bcu'][index] = bootstrap_results.upper_bound
+                        out_frame['stat_btcl'][index] = bootstrap_results.lower_bound
+                        out_frame['stat_btcu'][index] = bootstrap_results.upper_bound
                         out_frame['nstats'][index] = n_stats
         else:
             out_frame = pd.DataFrame()

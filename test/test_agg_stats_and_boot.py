@@ -46,7 +46,8 @@ def lossdiff_msl(data):
             result.append(statistics.mean(SLlossdiff))
         return result
 
-
+@pytest.mark.skip("Not to be run in regression testing, due to extensive "
+                  "number of data points.  This test takes a long time to run.")
 def test_cboot():
 
     et = np.loadtxt(
@@ -123,7 +124,8 @@ def test_cboot():
         'for mean  p = {} total rejected = {} frequency = {}'.format(mean_percent_of_rejected, mean_number_of_rejected,
                                                                      mean_frequencies_of_rejected))
 
-
+@pytest.mark.skip("Not to be run in as a regression test, it uses an extensive number of points"
+                  " and takes a long time (well beyond 5 minutes) to run.")
 def test_boot():
     # size of array
     n = 100
@@ -240,8 +242,8 @@ def test_calculate_value_and_ci(settings):
     assert result_frame.shape == (27, 8)
     assert np.allclose(result_frame['stat_value'][2], 192.1304275)
     assert np.allclose(result_frame['stat_value'][20], 0.00362229)
-    assert np.allclose(result_frame['stat_bcl'][9], 192.12478)
-    assert np.allclose(result_frame['stat_bcu'][24], 0.0107868)
+    assert result_frame['stat_btcl'][9] <= result_frame['stat_value'][9] <=result_frame['stat_btcu'][9]
+    assert result_frame['stat_btcl'][24] <= result_frame['stat_value'][24] <=result_frame['stat_btcu'][24]
 
 
 @pytest.fixture
@@ -269,7 +271,8 @@ def settings():
               'indy_vals': ['0', '30000', '60000', '90000',
                             '120000', '150000', '180000', '210000', '240000'],
               'list_stat_1': ['FBAR'],
-              'list_stat_2': []}
+              'list_stat_2': [],
+              'circular_block_bootstrap': False}
     agg_stat = AggStat(params)
     settings_dict = dict()
     settings_dict['agg_stat'] = agg_stat

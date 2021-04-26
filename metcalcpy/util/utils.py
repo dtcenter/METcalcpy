@@ -235,16 +235,8 @@ def sum_column_data_by_name(input_data, columns, column_name, rm_none=True):
             calculated SUM as float
             or None if all of the data values are non
     """
-    # find the index of specified column
-    index_array = np.where(columns == column_name)[0]
-    if index_array.size == 0:
-        return None
 
-    # get column's data and convert it into float array
-    try:
-        data_array = np.array(input_data[:, index_array[0]], dtype=np.float64)
-    except IndexError:
-        data_array = None
+    data_array = column_data_by_name(input_data, columns, column_name)
 
     if data_array is None or np.isnan(data_array).all():
         return None
@@ -261,6 +253,38 @@ def sum_column_data_by_name(input_data, columns, column_name, rm_none=True):
         result = None
 
     return result
+
+
+def column_data_by_name(input_data, columns, column_name, rm_none=False) -> Union[list, None]:
+    """Returns all values in the specified column. Removes None if requested
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns: names of the columns for the 2nd dimension as Numpy array
+            column_name: the name of the column for SUM
+            rm_none: Should missing values (including non) be removed? Default - False
+
+        Returns:
+            values of requested column or None
+    """
+    # find the index of specified column
+    index_array = np.where(columns == column_name)[0]
+    if index_array.size == 0:
+        return None
+
+    # get column's data and convert it into float array
+    try:
+        data_array = np.array(input_data[:, index_array[0]], dtype=np.float64)
+
+        if rm_none:
+            # remove non values
+            data_array = [i for i in data_array if not np.isnan(i)]
+    except IndexError:
+        data_array = None
+
+    return data_array
 
 
 def column_data_by_name_value(input_data, columns, filters):
@@ -331,7 +355,7 @@ def perfect_score_adjustment(mean_stats_1, mean_stats_2, statistic, pval):
                            'ORANK_TIES', 'VL1L2_FBAR', 'VL1L2_OBAR',
                            'VL1L2_FSTDEV', 'VL1L2_OSTDEV', 'VL1L2_FOSTDEV', 'PSTD_BASER',
                            'PSTD_RESOLUTION', 'PSTD_UNCERTAINTY',
-                           'PSTD_ROC_AUC', 'NBR_UFSS', 'NBR_F_RATE', 'NBR_O_RATE',
+                           'NBR_UFSS', 'NBR_F_RATE', 'NBR_O_RATE',
                            'NBR_BASER', 'NBR_FMEAN')
 
     zero_perf_score_stats = ('POFD', 'FAR', 'ESTDEV', 'MAE', 'MSE', 'BCMSE',
@@ -349,7 +373,7 @@ def perfect_score_adjustment(mean_stats_1, mean_stats_2, statistic, pval):
                             'VL1L2_BIAS', 'VL1L2_CORR',
                             'PSTD_BSS', 'PSTD_BSS_SMPL', 'NBR_FSS', 'NBR_AFSS',
                             'VAL1L2_ANOM_CORR', 'NBR_ACC',
-                            'NBR_FBIAS', 'NBR_PODY',
+                            'NBR_FBIAS', 'NBR_PODY', 'PSTD_ROC_AUC',
                             'NBR_PODN', 'NBR_CSI', 'NBR_GSS', 'NBR_HK', 'NBR_HSS')
 
     if statistic.upper() in na_perf_score_stats:
