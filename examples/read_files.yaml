@@ -1,6 +1,6 @@
 #The environment variable CALCPY_DATA needs to point to the directory
 #where your sample METcalcpy data is stored e.g. /d2/METcalcpy_Data
 files:
-- !ENV '${CALCPY_DATA}/MET_stat/ensemble_stat_20100101_120000V_orank.txt'
-- !ENV '${CALCPY_DATA}/MET_stat/ensemble_stat_20100101_120000V.stat'
-
+#- !ENV '${CALCPY_DATA}/MET_stat/ensemble_stat_20100101_120000V_orank.txt'
+#- !ENV '${CALCPY_DATA}/MET_stat/ensemble_stat_20100101_120000V.stat'
+- !ENV '${CALCPY_DATA}/vx_results/NHC_AL_basins/FH01_FH05_FH05_FH10_FH25_FH50_FH75_FH90_FH95_FH99_HWRF_CTCX_ICON_OFCL_water_only_detail_all_leadtimes_ri_time_adeck_24h_bdeck_24h_inten_adeck_30kt_bdeck_30kt.out'

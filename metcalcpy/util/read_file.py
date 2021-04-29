@@ -15,9 +15,13 @@ from read_env_vars_in_config import parse_config
 #Two PYTHONPATH directories need to be set for the imports to work
 #The parent directory for where METdatadb is installed and
 #The METdbload/METdatadb/ush directory for constants in METdbload
-from METdatadb import METdbLoad as dbload
-from METdatadb.METdbLoad.ush import read_data_files
-from METdatadb.METdbLoad.ush.read_load_xml import XmlLoadFile
+#from METdatadb import METdbLoad as dbload
+#from METdatadb.METdbLoad.ush import read_data_files
+#from METdatadb.METdbLoad.ush.read_load_xml import XmlLoadFile
+import METdbLoad as dbload
+import METdbLoad.ush.read_data_files
+from  METdbLoad.ush.read_load_xml import XmlLoadFile
+
 
 class ReadMETOutput:
 
