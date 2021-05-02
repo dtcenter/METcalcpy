@@ -95,7 +95,7 @@ Version 1.0.0_beta2 release notes (20201210)
 New Functionality:
 
 
-* **Enhance bootstrapping** to support circular temporal block bootstrap with overlapping blocks (`#3 <https://github.com/dtcenter/METcalcpy/issues/3>`_)
+* **Enhance bootstrapping to support circular temporal block bootstrap with overlapping blocks** (`#3 <https://github.com/dtcenter/METcalcpy/issues/3>`_)
 
 
 * Add equivalence testing interval bounds to the existing continuous line type.  Two fields are added:
@@ -142,8 +142,9 @@ Bugfixes:
 * Fix event equalization and agg_stat logic (`#52 <https://github.com/dtcenter/METcalcpy/issues/52>`_)
 
 
-
 Version 1.0.0_beta1 release notes (20201023)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 
 New Functionality:
 
@@ -158,4 +159,3 @@ Internal:
 * Move convert_lons_indices() function from plot_blocking.py to utils.py in METcalcpy (`#33 <https://github.com/dtcenter/METcalcpy/issues/33>`_)
 
 Bugfixes:
-
