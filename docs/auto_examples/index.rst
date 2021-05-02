@@ -19,9 +19,29 @@ General Examples
 Some general examples coming soon.
 
 
+
 .. raw:: html
 
-    <div class="sphx-glr-clear"></div>
+    <div class="sphx-glr-thumbcontainer" tooltip="This is an example script for cross">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_cross_spectra_thumb.png
+
+        :ref:`sphx_glr_auto_examples_cross_spectra.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/cross_spectra
+.. raw:: html
+
+    <div style='clear:both'></div>
 
 
 
@@ -31,15 +51,15 @@ Some general examples coming soon.
     :class: sphx-glr-footer-gallery
 
 
-  .. container:: sphx-glr-download sphx-glr-download-python
+  .. container:: sphx-glr-download
 
-    :download:`Download all examples in Python source code: auto_examples_python.zip <//d1/personal/jpresto/METcalcpy/git/METcalcpy/docs/auto_examples/auto_examples_python.zip>`
+    :download:`Download all examples in Python source code: auto_examples_python.zip <//Users/minnawin/feature_6_METcalcpy_docs/METcalcpy/docs/auto_examples/auto_examples_python.zip>`
 
 
 
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
+  .. container:: sphx-glr-download
 
-    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip <//d1/personal/jpresto/METcalcpy/git/METcalcpy/docs/auto_examples/auto_examples_jupyter.zip>`
+    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip <//Users/minnawin/feature_6_METcalcpy_docs/METcalcpy/docs/auto_examples/auto_examples_jupyter.zip>`
 
 
 .. only:: html
