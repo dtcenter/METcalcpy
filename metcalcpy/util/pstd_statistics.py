@@ -29,12 +29,13 @@ def calculate_pstd_brier(input_data, columns_names):
     warnings.filterwarnings('error')
     try:
         df_pct_perm = _calc_common_stats(columns_names, input_data)
-        T = input_data[0, get_column_index_by_name(columns_names, 'T')]
+        t_table = df_pct_perm['n_i'].sum()
+        o_bar_table = df_pct_perm['oy_i'].sum() / t_table
         o_bar = input_data[0, get_column_index_by_name(columns_names, 'o_bar')]
 
-        reliability = calc_reliability(T, df_pct_perm)
-        resolution = calc_resolution(T, df_pct_perm, o_bar)
-        uncertainty = calc_uncertainty(o_bar)
+        reliability = calc_reliability(t_table, df_pct_perm)
+        resolution = calc_resolution(t_table, df_pct_perm, o_bar)
+        uncertainty = calc_uncertainty(o_bar_table)
 
         brier = reliability - resolution + uncertainty
         result = round_half_up(brier, PRECISION)
@@ -60,12 +61,13 @@ def calculate_pstd_bss_smpl(input_data, columns_names):
     warnings.filterwarnings('error')
     try:
         df_pct_perm = _calc_common_stats(columns_names, input_data)
-        T = input_data[0, get_column_index_by_name(columns_names, 'T')]
+        t_table = df_pct_perm['n_i'].sum()
+        o_bar_table = df_pct_perm['oy_i'].sum() / t_table
         o_bar = input_data[0, get_column_index_by_name(columns_names, 'o_bar')]
 
-        reliability = calc_reliability(T, df_pct_perm)
-        resolution = calc_resolution(T, df_pct_perm, o_bar)
-        uncertainty = calc_uncertainty(o_bar)
+        reliability = calc_reliability(t_table, df_pct_perm)
+        resolution = calc_resolution(t_table, df_pct_perm, o_bar)
+        uncertainty = calc_uncertainty(o_bar_table)
 
         bss_smpl = (resolution - reliability) / uncertainty
         result = round_half_up(bss_smpl, PRECISION)
@@ -91,9 +93,9 @@ def calculate_pstd_baser(input_data, columns_names):
     warnings.filterwarnings('error')
     try:
 
-        oy_total = sum(input_data[:, get_column_index_by_name(columns_names, 'oy_i')])
-        T = calculate_pstd_ni(input_data, columns_names)
-        baser = oy_total / T
+        df_pct_perm = _calc_common_stats(columns_names, input_data)
+        t_table = df_pct_perm['n_i'].sum()
+        baser = df_pct_perm['oy_i'].sum() / t_table
         result = round_half_up(baser, PRECISION)
 
     except (TypeError, ZeroDivisionError, Warning, ValueError):
@@ -118,9 +120,9 @@ def calculate_pstd_reliability(input_data, columns_names):
     warnings.filterwarnings('error')
     try:
         df_pct_perm = _calc_common_stats(columns_names, input_data)
-        T = input_data[0, get_column_index_by_name(columns_names, 'T')]
+        t_table = df_pct_perm['n_i'].sum()
 
-        reliability = calc_reliability(T, df_pct_perm)
+        reliability = calc_reliability(t_table, df_pct_perm)
         result = round_half_up(reliability, PRECISION)
 
     except (TypeError, ZeroDivisionError, Warning, ValueError):
@@ -145,10 +147,10 @@ def calculate_pstd_resolution(input_data, columns_names):
     warnings.filterwarnings('error')
     try:
         df_pct_perm = _calc_common_stats(columns_names, input_data)
-        T = input_data[0, get_column_index_by_name(columns_names, 'T')]
         o_bar = input_data[0, get_column_index_by_name(columns_names, 'o_bar')]
+        t_table = df_pct_perm['n_i'].sum()
 
-        resolution = calc_resolution(T, df_pct_perm, o_bar)
+        resolution = calc_resolution(t_table, df_pct_perm, o_bar)
         result = round_half_up(resolution, PRECISION)
     except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
@@ -171,8 +173,11 @@ def calculate_pstd_uncertainty(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     try:
-        o_bar = input_data[0, get_column_index_by_name(columns_names, 'o_bar')]
-        uncertainty = calc_uncertainty(o_bar)
+        df_pct_perm = _calc_common_stats(columns_names, input_data)
+        t_table = df_pct_perm['n_i'].sum()
+        o_bar_table = df_pct_perm['oy_i'].sum() / t_table
+
+        uncertainty = calc_uncertainty(o_bar_table)
         result = round_half_up(uncertainty, PRECISION)
 
     except (TypeError, ZeroDivisionError, Warning, ValueError):
@@ -275,19 +280,18 @@ def calculate_pstd_roc_auc(input_data, columns_names):
     return result
 
 
-def calc_uncertainty(o_bar):
+def calc_uncertainty(o_bar_table):
     """Performs calculation of uncertainty
-         Args: o_bar
+         Args: o_bar_table
          Returns: uncertainty
     """
-    uncertainty = o_bar * (1 - o_bar)
+    uncertainty = o_bar_table * (1 - o_bar_table)
     return uncertainty
 
 
-def calc_resolution(T, df_pct_perm, o_bar):
+def calc_resolution(t_table, df_pct_perm, o_bar):
     """Performs calculation of resolution
-         Args: T
-            T
+         Args: t_table
             df_pct_perm
             o_bar
 
@@ -295,14 +299,13 @@ def calc_resolution(T, df_pct_perm, o_bar):
     """
     resolution = sum([row.n_i * (row.o_bar_i - o_bar) * (row.o_bar_i - o_bar)
                       for index, row in df_pct_perm.iterrows()]) \
-                 / T
+                 / t_table
     return resolution
 
 
-def calc_reliability(T, df_pct_perm):
+def calc_reliability(t_table, df_pct_perm):
     """Performs calculation of reliability
-         Args: T
-            T
+         Args: t_table
             df_pct_perm
             o_bar
 
@@ -310,7 +313,7 @@ def calc_reliability(T, df_pct_perm):
     """
     reliability = sum([row.n_i * (row.thresh_i - row.o_bar_i) * (row.thresh_i - row.o_bar_i)
                        for index, row in df_pct_perm.iterrows()]) \
-                  / T
+                  / t_table
     return reliability
 
 
@@ -350,6 +353,7 @@ def _calc_common_stats(columns_names, input_data):
     # use only records with n_i != 0
     df_pct_perm = df_pct_perm[df_pct_perm['n_i'] != 0]
     o_bar_i = [row.oy_i / row.n_i for index, row in df_pct_perm.iterrows()]
+    calibration_i = [row.oy_i / row.n_i for index, row in df_pct_perm.iterrows()]
     df_pct_perm['o_bar_i'] = o_bar_i
     return df_pct_perm
 
