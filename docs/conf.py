@@ -21,7 +21,7 @@ print(sys.path)
 project = 'METcalcpy'
 copyright = '2019, NCAR'
 author = 'UCAR/NCAR, NOAA, CSU/CIRA, and CU/CIRES'
-author_list = 'Win-Gildenmeister, M., Burek, T., Fillmore, D., Adriaansen, D., Fisher, H.'
+author_list = 'Win-Gildenmeister, M., Burek, T., Fillmore, D., Fisher, H., Kalb, C.'
 version = 'develop'
 verinfo = version
 release = f'{version}'
