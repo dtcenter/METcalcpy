@@ -90,7 +90,30 @@ Acronyms
 * **HIWPP** - High Impact Weather Predication Project
 * **NGGPS** - Next Generation Global Predicatio System
 * **GSD** - Global Systems Division
-	   
+
+
+Authors
+-------
+
+Many authors, listed below in alphabetical order, have contributed to the documentation of METplus.
+To cite this documentation in publications, please refer to the METcalcpy User's Guide :ref:`Citation Instructions<citations>`.
+ 
+* Tatiana Burek [#NCAR]_
+* David Fillmore [#NCAR]_  
+* Hank Fisher [#NCAR]_
+* Christina Kalb [#NCAR]_
+* Minna Win-Gildenmeister [#NCAR]_
+
+.. rubric:: Organization
+
+.. rubric:: Organization
+
+.. [#NCAR] `National Center for Atmospheric Research, Research
+       Applications Laboratory <https://ral.ucar.edu/>`_, `Developmental Testbed Center <https://dtcenter.org/>`_
+.. [#CIRA] `Cooperative Institute for Research in the Atmosphere at
+       National Oceanic and Atmospheric Administration (NOAA) Earth 
+       System Research Laboratory <https://www.esrl.noaa.gov/>`_
+	    
 .. toctree::
    :hidden:
    :caption: METcalcpy 
