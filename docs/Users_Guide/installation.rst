@@ -7,63 +7,55 @@ are used by METviewer, METplotpy, and other applications.
 Python Requirements
 ~~~~~~~~~~~~~~~~~~~
 
-The Python requirements for METcalcpy are the same as those for METplotpy
-
 * Python 3.6.3
 
-* bootstrapped 0.0.2 
+* bootstrapped 0.0.2
 
-* cartopy 0.17.0 or above
+* cartopy 0.17.0
 
 * cmocean
 
+* eofs
+
 * imutils 0.5.3
 
-* kaleido 0.0.1
-
-* kiwisolver 1.0.1
+* imageio
 
 * lxml
 
-* matplotlib 3.3.3 or above
+* matplotlib 3.3.0
 
-* metcalcpy 
+* metcalcpy
 
-* netcdf 1.5.1.2 or above 
+* netcdf4 1.5.1.2
 
-* numpy
+* numpy 1.17.0
 
-* pandas
+* pandas 1.0.1
 
-* pillow
-
-* pingouin 0.3.10 or above
-
-* pint
- 
-* pip
-
-* pyshp
+* pingouin 0.3.8
 
 * plotly 4.9.0
 
-* psutil
+* python-kaleido 0.2.1
+
+* psutil 5.7.2
 
 * pymysql
 
-* pyshp
-
 * pytest 5.2.1
 
-* PyYAML
-
-* requests
-
-* retrying
+* pyyaml 5.3.1
 
 * scikit-image 0.16.2
 
-* scipy
+* scikit-learn 0.23.2
+
+* scipy 1.5.1
+
+* statsmodels 0.11.1
+
+* xarray 0.16.2
 
 
 Retrieve METcalcpy code
