@@ -31,7 +31,7 @@ import numpy as np
 
 from metcalcpy.agg_stat import _sort_data
 from metcalcpy.agg_stat_eqz import AggStatEventEqz
-from metcalcpy.bootstrap_custom import BootstrapDistributionResults, bootstrap_and_value_mode
+from metcalcpy.bootstrap import  bootstrap_and_value_mode, BootstrapResults
 from metcalcpy.util.mode_ratio_statistics import *
 from metcalcpy.util.mode_arearat_statistics import *
 from metcalcpy.util.mode_2d_arearat_statistics import *
@@ -199,7 +199,7 @@ class AggStatBootstrap:
         self.series_data = _sort_data(series_data)
         if self.params['num_iterations'] == 1:
             stat_val = self._calc_stats(cases)[0]
-            results = BootstrapDistributionResults(lower_bound=None,
+            results = BootstrapResults(lower_bound=None,
                                                    value=stat_val,
                                                    upper_bound=None)
         else:
@@ -214,7 +214,7 @@ class AggStatBootstrap:
                     ci_method=self.params['method'])
 
             except KeyError as err:
-                results = BootstrapDistributionResults(None, None, None)
+                results = BootstrapResults(None, None, None)
                 print(err)
         return results
 

@@ -1,30 +1,80 @@
 """
-Program Name: bootstrap_custom.py
+Program Name: bootstrap.py
 """
 
 import numpy as _np
 import multiprocessing as _multiprocessing
 import scipy.sparse as _sparse
 
-from bootstrapped.bootstrap import BootstrapResults, _validate_arrays
-
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
 __email__ = 'met_help@ucar.edu'
 
 
-class BootstrapDistributionResults(BootstrapResults):
-    """A class that extends BootstrapResults.
-        Adds the original numpy array with the data for stat calculation
-        as a 'values' variable
-    """
-
+class BootstrapResults(object):
     def __init__(self, lower_bound, value, upper_bound):
         try:
-            super().__init__(lower_bound, value, upper_bound)
+            self.lower_bound = lower_bound
+            self.upper_bound = upper_bound
+            self.value = value
+            if self.lower_bound > self.upper_bound:
+                self.lower_bound, self.upper_bound = self.upper_bound, self.lower_bound
         except TypeError:
             pass
         self.values = None
+        self.distributions = None
+
+    def __str__(self):
+        return '{1}    ({0}, {2})'.format(self.lower_bound, self.value,
+                                          self.upper_bound)
+
+    def __repr__(self):
+        return self.__str__()
+
+    def _apply(self, other, func):
+        return BootstrapResults(func(self.lower_bound, other),
+                                func(self.value, other),
+                                func(self.upper_bound, other))
+
+    def __add__(self, other):
+        return self._apply(float(other), lambda x, other: other + x)
+
+    def __radd__(self, other):
+        return self._apply(float(other), lambda x, other: other + x)
+
+    def __sub__(self, other):
+        return self._apply(float(other), lambda x, other: x - other)
+
+    def __rsub__(self, other):
+        return self._apply(float(other), lambda x, other: other - x)
+
+    def __mul__(self, other):
+        return self._apply(float(other), lambda x, other: x * other)
+
+    def __rmul__(self, other):
+        return self._apply(float(other), lambda x, other: x * other)
+
+    def error_width(self):
+        '''Returns: upper_bound - lower_bound'''
+        return self.upper_bound - self.lower_bound
+
+    def error_fraction(self):
+        '''Returns the error_width / value'''
+        if self.value == 0:
+            return _np.inf
+        else:
+            return self.error_width() / self.value
+
+    def is_significant(self):
+        return _np.sign(self.upper_bound) == _np.sign(self.lower_bound)
+
+    def get_result(self):
+        '''Returns:
+            -1 if statistically significantly negative
+            +1 if statistically significantly positive
+            0 otherwise
+        '''
+        return int(self.is_significant()) * _np.sign(self.value)
 
     def set_original_values(self, values):
         """Sets values to the original data array
@@ -37,6 +87,8 @@ class BootstrapDistributionResults(BootstrapResults):
             Args: distributions - numpy array
         """
         self.distributions = distributions
+
+
 
 
 def bootstrap_and_value(values, stat_func, alpha=0.05,
@@ -280,7 +332,7 @@ def _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_metho
         low = None
         val = None
         high = None
-    return BootstrapDistributionResults(lower_bound=low,
+    return BootstrapResults(lower_bound=low,
                                         value=val,
                                         upper_bound=high)
 
@@ -388,3 +440,80 @@ def _all_the_same(elements):
     except TypeError:
         result = False
     return result
+
+
+def _validate_arrays(values_lists):
+    t = values_lists[0]
+    t_type = type(t)
+    if not isinstance(t, _sparse.csr_matrix) and not isinstance(t, _np.ndarray):
+        raise ValueError(('The arrays must either be of type '
+                          'scipy.sparse.csr_matrix or numpy.array'))
+
+    for _, values in enumerate(values_lists[1:]):
+        if not isinstance(values, t_type):
+            raise ValueError('The arrays must all be of the same type')
+
+        if t.shape != values.shape:
+            raise ValueError('The arrays must all be of the same shape')
+
+        if isinstance(t, _sparse.csr_matrix):
+            if values.shape[0] > 1:
+                raise ValueError(('The sparse matrix must have shape 1 row X N'
+                                  ' columns'))
+
+    if isinstance(t, _sparse.csr_matrix):
+        if _needs_sparse_unification(values_lists):
+            raise ValueError(('The non-zero entries in the sparse arrays'
+                              ' must be aligned'))
+
+
+def _needs_sparse_unification(values_lists):
+    non_zeros = values_lists[0] != 0
+
+    for v in values_lists:
+        v_nz = v != 0
+        non_zeros = (non_zeros + v_nz) > 0
+
+    non_zero_size = non_zeros.sum()
+
+    for v in values_lists:
+        if non_zero_size != v.data.shape[0]:
+            return True
+
+    return False
+
+
+def mean(values, axis=1):
+    """Returns the mean of each row of a matrix"""
+    if isinstance(values, _sparse.csr_matrix):
+        ret = values.mean(axis=axis)
+        return ret.A1
+    else:
+        return _np.mean(_np.asmatrix(values), axis=axis).A1
+
+
+def sum(values, axis=1):
+    """Returns the sum of each row of a matrix"""
+    if isinstance(values, _sparse.csr_matrix):
+        ret = values.sum(axis=axis)
+        return ret.A1
+    else:
+        return _np.sum(_np.asmatrix(values), axis=axis).A1
+
+
+def median(values, axis=1):
+    """Returns the sum of each row of a matrix"""
+    if isinstance(values, _sparse.csr_matrix):
+        ret = values.median(axis=axis)
+        return ret.A1
+    else:
+        return _np.median(_np.asmatrix(values), axis=axis).A1
+
+
+def std(values, axis=1):
+    """ Returns the std of each row of a matrix"""
+    if isinstance(values, _sparse.csr_matrix):
+        ret = values.std(axis=axis)
+        return ret.A1
+    else:
+        return _np.std(_np.asmatrix(values), axis=axis).A1

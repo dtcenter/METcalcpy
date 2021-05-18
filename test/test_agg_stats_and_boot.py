@@ -1,11 +1,11 @@
 import numpy as np
-import bootstrapped.stats_functions as bs_stats
 import pytest
 import math
 import statistics
 
+from metcalcpy import bootstrap
 from metcalcpy.agg_stat import AggStat, pd
-from metcalcpy.bootstrap_custom import bootstrap_and_value
+from metcalcpy.bootstrap import bootstrap_and_value
 from metcalcpy.util.utils import round_half_up, PRECISION
 
 TEST_LENGTH = 1000
@@ -91,7 +91,7 @@ def test_cboot():
 
         results_mean = bootstrap_and_value(
             et[:, 0],
-            stat_func=bs_stats.mean,
+            stat_func=bootstrap.mean,
             num_iterations=500, alpha=0.05,
             num_threads=1, ci_method='perc', block_length=32)
         if results_mean.lower_bound <= 0 and results_mean.upper_bound >= 0:
@@ -156,7 +156,7 @@ def get_rejected(mean, n):
         # get ci for mean stat for this distribution
         results = bootstrap_and_value(
             data,
-            stat_func=bs_stats.mean,
+            stat_func=bootstrap.mean,
             num_iterations=500, alpha=0.05,
             num_threads=1, ci_method='perc', block_length=block_lenght)
 
