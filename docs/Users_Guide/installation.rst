@@ -9,8 +9,6 @@ Python Requirements
 
 * Python 3.6.3
 
-* bootstrapped 0.0.2
-
 * cartopy 0.17.0
 
 * cmocean

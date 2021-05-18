@@ -27,8 +27,7 @@ import argparse
 from inspect import signature
 import yaml
 import pandas
-import bootstrapped.bootstrap
-from metcalcpy.bootstrap_custom import BootstrapDistributionResults, bootstrap_and_value
+from metcalcpy.bootstrap import  bootstrap_and_value, BootstrapResults
 from metcalcpy.util.ctc_statistics import *
 from metcalcpy.util.grad_statistics import *
 from metcalcpy.util.sl1l2_statistics import *
@@ -616,7 +615,7 @@ class AggStat:
         # or the original series data size is 0 return an empty object
         if ds_1.values is None or ds_2.values is None \
                 or ds_1.values.size == 0 or ds_2.values.size == 0:
-            return BootstrapDistributionResults(lower_bound=None,
+            return BootstrapResults(lower_bound=None,
                                                 value=None,
                                                 upper_bound=None)
         # calculate the number of values in the group if the series has a group
@@ -665,7 +664,7 @@ class AggStat:
                 ds_1_value,
                 ds_2_value,
                 derived_curve_component.derived_operation)
-            results = BootstrapDistributionResults(lower_bound=None,
+            results = BootstrapResults(lower_bound=None,
                                                    value=round_half_up(stat_val[0], 5),
                                                    upper_bound=None)
             results.set_distributions([results.value])
@@ -699,7 +698,7 @@ class AggStat:
                     save_distributions=derived_curve_component.derived_operation == 'DIFF_SIG',
                     block_length=block_length)
             except KeyError as err:
-                results = bootstrapped.bootstrap.BootstrapResults(None, None, None)
+                results = BootstrapResults(None, None, None)
                 print(err)
 
         if derived_curve_component.derived_operation == 'DIFF_SIG':
@@ -727,7 +726,7 @@ class AggStat:
 
         # if the data frame is empty - do nothing and return an empty object
         if series_data.empty:
-            return BootstrapDistributionResults(lower_bound=None,
+            return BootstrapResults(lower_bound=None,
                                                 value=None,
                                                 upper_bound=None)
         # check if derived series are present
@@ -750,7 +749,7 @@ class AggStat:
             # don't need bootstrapping and CI calculation -
             # calculate the statistic and exit
             stat_val = self._calc_stats(data)[0]
-            results = BootstrapDistributionResults(lower_bound=None,
+            results = BootstrapResults(lower_bound=None,
                                                    value=stat_val,
                                                    upper_bound=None)
             # save original data only if we need it in the future
@@ -778,7 +777,7 @@ class AggStat:
                     block_length=block_length)
 
             except KeyError as err:
-                results = BootstrapDistributionResults(None, None, None)
+                results = BootstrapResults(None, None, None)
                 print(err)
         return results
 
