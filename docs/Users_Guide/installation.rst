@@ -31,8 +31,6 @@ Python Requirements
 
 * pandas 1.0.1
 
-* pingouin 0.3.8
-
 * plotly 4.9.0
 
 * python-kaleido 0.2.1
