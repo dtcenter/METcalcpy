@@ -1,6 +1,6 @@
 """Tests the operation of METcalcpy's tost_paired code."""
 import statistics
-import pingouin as pg
+import metcalcpy.util.correlation as pg
 
 from metcalcpy.util.utils import tost_paired
 
