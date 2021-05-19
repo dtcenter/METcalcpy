@@ -15,7 +15,7 @@ import numpy as np
 import pandas as pd
 
 from scipy import stats
-import pingouin as pg
+import metcalcpy.util.correlation as pg
 from scipy.stats import t, nct
 from statsmodels.tsa.arima.model import ARIMA
 from metcalcpy.event_equalize import event_equalize
