@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import xarray as xr
 import datetime
@@ -155,15 +156,18 @@ def read_omi_eofs(eofpath='./data/'):
     return EOF1, EOF2  
 
 
-def read_rmm_eofs(eofpath='./data/'):
+def read_rmm_eofs(eofpath):
     """
     Read the OMI EOFs from file and into a xarray DataArray.
     :param eofpath: filepath to the location of the eof files
     :return: EOF1 and EOF2 2D DataArrays
     """
-    olrfile = eofpath+'rmm_olr_eofs.txt'
-    u850file = eofpath+'rmm_u850_eofs.txt'
-    u200file = eofpath+'rmm_u200_eofs.txt'
+    olrfile = os.path.join(eofpath, 'rmm_olr_eofs.txt')
+    print("*** OLR FILE: ", olrfile)
+    u850file = os.path.join(eofpath, 'rmm_u850_eofs.txt')
+    print("U850 FILE: ", u850file)
+    u200file = os.path.join(eofpath, 'rmm_u200_eofs.txt')
+
 
     # observed EOFs from BOM Australia are saved in individual text files for each variable
     # horizontal resolution of EOFs is 2.5 degree and longitudes go from 0 - 375.5, column1 is eof1
