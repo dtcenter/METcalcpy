@@ -125,14 +125,16 @@ def omi(olr, time, spd, eofpath):
     return pc1, pc2
 
 
-def read_omi_eofs(eofpath='./data/'):
+#def read_omi_eofs(eofpath='./data/'):
+def read_omi_eofs(eofpath):
     """
     Read the OMI EOFs from file and into a xarray DataArray.
     :param eofpath: filepath to the location of the eof files
     :return: EOF1 and EOF2 3D DataArrays
     """
-    eof1path = eofpath+'eof1/'
-    eof2path = eofpath+'eof2/'
+    
+    eof1path = os.path.join(eofpath, 'eof1')
+    eof2path = os.path.join(eofpath, 'eof2/')
 
     # observed EOFs from NOAA PSL are saved in individual text files for each doy
     # horizontal resolution of EOFs is 2.5 degree
@@ -146,8 +148,8 @@ def read_omi_eofs(eofpath='./data/'):
 
     for doy in np.arange(1,367,1):
         doystr = str(doy).zfill(3)  
-        tmp1 = pd.read_csv(eof1path+'eof'+doystr+'.txt', header=None, delim_whitespace=True, names=['eof1'])
-        tmp2 = pd.read_csv(eof2path+'eof'+doystr+'.txt', header=None, delim_whitespace=True, names=['eof2'])
+        tmp1 = pd.read_csv(os.path.join(eof1path, 'eof', doystr, '.txt'), header=None, delim_whitespace=True, names=['eof1'])
+        tmp2 = pd.read_csv(os.path.join(eof2path, 'eof', doystr, '.txt'), header=None, delim_whitespace=True, names=['eof2'])
         eof1 = xr.DataArray(np.reshape(tmp1.eof1.values,(nlat, nlon)),dims=['lat','lon'])
         eof2 = xr.DataArray(np.reshape(tmp2.eof2.values,(nlat, nlon)),dims=['lat','lon'])
         EOF1[doy-1,:,:] = eof1.values
@@ -163,9 +165,7 @@ def read_rmm_eofs(eofpath):
     :return: EOF1 and EOF2 2D DataArrays
     """
     olrfile = os.path.join(eofpath, 'rmm_olr_eofs.txt')
-    print("*** OLR FILE: ", olrfile)
     u850file = os.path.join(eofpath, 'rmm_u850_eofs.txt')
-    print("U850 FILE: ", u850file)
     u200file = os.path.join(eofpath, 'rmm_u200_eofs.txt')
 
 
