@@ -6,7 +6,7 @@ import pandas as pd
 from scipy.fftpack import rfft, irfft, fftfreq
 from scipy.signal import detrend
 
-def rmm(olr, u850, u200, time, spd, eofpath):
+def rmm(olr, u850, u200, time, spd, olr_file, u850_file, u200_file):
     """
     Compute RMM index for given olr, u850 and u200 averaged from 15S - 15N. Use observed RMM EOFs 
     to project the data onto. To match the observed RMM index use ERA Interim wind and observed OLR 
@@ -21,7 +21,7 @@ def rmm(olr, u850, u200, time, spd, eofpath):
     :return: RMM PCs
     """
 
-    EOF1, EOF2 = read_rmm_eofs(eofpath)
+    EOF1, EOF2 = read_rmm_eofs(olr_file, u850_file, u200_file)
     rmm_norm = [15.11623, 1.81355, 4.80978] # normalization factors for OLR, U850, U200  from 1979 - 2001
     pc_norm = [8.618352504159244, 8.40736449709697] # normalization factors for the PCs from 1979 - 2001
 
@@ -125,16 +125,16 @@ def omi(olr, time, spd, eofpath):
     return pc1, pc2
 
 
-#def read_omi_eofs(eofpath='./data/'):
-def read_omi_eofs(eofpath):
+def read_omi_eofs(eof1_path, eof2_path):
     """
     Read the OMI EOFs from file and into a xarray DataArray.
-    :param eofpath: filepath to the location of the eof files
+    :param eof1_path: filepath to the location of the eof1 files
+    :param eof2_path: filepath to the location of the eof2 files
     :return: EOF1 and EOF2 3D DataArrays
     """
     
-    eof1path = os.path.join(eofpath, 'eof1')
-    eof2path = os.path.join(eofpath, 'eof2/')
+    eof1path = eof1_path
+    eof2path = eof2_path
 
     # observed EOFs from NOAA PSL are saved in individual text files for each doy
     # horizontal resolution of EOFs is 2.5 degree
@@ -158,16 +158,19 @@ def read_omi_eofs(eofpath):
     return EOF1, EOF2  
 
 
-def read_rmm_eofs(eofpath):
+def read_rmm_eofs(olr_file, u850_file, u200_file):
     """
     Read the OMI EOFs from file and into a xarray DataArray.
-    :param eofpath: filepath to the location of the eof files
+    :param olr_file: full filename (ie.full path) olr eof file
+    :param u850_file: full filename of u850 eof file
+    :param u200_file: full filename of the u200 eof file
     :return: EOF1 and EOF2 2D DataArrays
     """
-    olrfile = os.path.join(eofpath, 'rmm_olr_eofs.txt')
-    u850file = os.path.join(eofpath, 'rmm_u850_eofs.txt')
-    u200file = os.path.join(eofpath, 'rmm_u200_eofs.txt')
 
+    # the text eof files, for example: rmm_olr_eofs.txt, rmm_u850_eofs.txt, and rmm_u200_eofs.txt 
+    olrfile = olr_file 
+    u850file = u850_file
+    u200file = u200_file
 
     # observed EOFs from BOM Australia are saved in individual text files for each variable
     # horizontal resolution of EOFs is 2.5 degree and longitudes go from 0 - 375.5, column1 is eof1
