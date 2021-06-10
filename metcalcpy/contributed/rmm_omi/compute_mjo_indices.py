@@ -81,7 +81,7 @@ def rmm(olr, u850, u200, time, spd, olr_file, u850_file, u200_file):
     return pc1, pc2
 
 
-def omi(olr, time, spd, eofpath):
+def omi(olr, time, spd, eof1_path, eof2_path):
     """
     Compute OMI index for given input OLR. Use observed OMI EOFs to project the data onto. To reproduce
     the observed OMI use daily OLR from PSL/NOAA at https://psl.noaa.gov/data/gridded/data.interp_OLR.html
@@ -91,10 +91,11 @@ def omi(olr, time, spd, eofpath):
     :param olr: OLR data  (time, lat, lon) DataArray
     :param time: datetime64 time array
     :param spd: number of obs per day
-    :param eofpath: filepath to the location of the eof files
+    :param eof1_path: filepath to the location of the eof1 files
+    :param eof2_path: filepath to the location of the eof2 files
     :return: OMI PCs
     """
-    EOF1, EOF2 = read_omi_eofs(eofpath)
+    EOF1, EOF2 = read_omi_eofs(eof1_path, eof2_path)
 
     # check that all latitudes and longitudes match between EOFs and OLR
     eoflon = EOF1['lon']
@@ -148,8 +149,9 @@ def read_omi_eofs(eof1_path, eof2_path):
 
     for doy in np.arange(1,367,1):
         doystr = str(doy).zfill(3)  
-        tmp1 = pd.read_csv(os.path.join(eof1path, 'eof', doystr, '.txt'), header=None, delim_whitespace=True, names=['eof1'])
-        tmp2 = pd.read_csv(os.path.join(eof2path, 'eof', doystr, '.txt'), header=None, delim_whitespace=True, names=['eof2'])
+        eof_outfilename = 'eof' + doystr + '.txt'
+        tmp1 = pd.read_csv(os.path.join(eof1path, eof_outfilename), header=None, delim_whitespace=True, names=['eof1'])
+        tmp2 = pd.read_csv(os.path.join(eof2path, eof_outfilename), header=None, delim_whitespace=True, names=['eof2'])
         eof1 = xr.DataArray(np.reshape(tmp1.eof1.values,(nlat, nlon)),dims=['lat','lon'])
         eof2 = xr.DataArray(np.reshape(tmp2.eof2.values,(nlat, nlon)),dims=['lat','lon'])
         EOF1[doy-1,:,:] = eof1.values
