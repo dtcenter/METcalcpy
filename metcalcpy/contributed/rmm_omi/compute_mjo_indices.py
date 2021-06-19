@@ -6,7 +6,7 @@ import pandas as pd
 from scipy.fftpack import rfft, irfft, fftfreq
 from scipy.signal import detrend
 
-def rmm(olr, u850, u200, time, spd, olr_file, u850_file, u200_file):
+def rmm(olr, u850, u200, time, spd, EOF1, EOF2):
     """
     Compute RMM index for given olr, u850 and u200 averaged from 15S - 15N. Use observed RMM EOFs 
     to project the data onto. To match the observed RMM index use ERA Interim wind and observed OLR 
@@ -17,11 +17,9 @@ def rmm(olr, u850, u200, time, spd, olr_file, u850_file, u200_file):
     :param u200: zonal wind at 200hPa (time, lon) DataArray
     :param time: time datetime64 array
     :param spd: number of obs per day
-    :param eofpath: file path to eof data files
     :return: RMM PCs
     """
 
-    EOF1, EOF2 = read_rmm_eofs(olr_file, u850_file, u200_file)
     rmm_norm = [15.11623, 1.81355, 4.80978] # normalization factors for OLR, U850, U200  from 1979 - 2001
     pc_norm = [8.618352504159244, 8.40736449709697] # normalization factors for the PCs from 1979 - 2001
 
@@ -81,7 +79,7 @@ def rmm(olr, u850, u200, time, spd, olr_file, u850_file, u200_file):
     return pc1, pc2
 
 
-def omi(olr, time, spd, eof1_path, eof2_path):
+def omi(olr, time, spd, EOF1, EOF2):
     """
     Compute OMI index for given input OLR. Use observed OMI EOFs to project the data onto. To reproduce
     the observed OMI use daily OLR from PSL/NOAA at https://psl.noaa.gov/data/gridded/data.interp_OLR.html
@@ -91,11 +89,11 @@ def omi(olr, time, spd, eof1_path, eof2_path):
     :param olr: OLR data  (time, lat, lon) DataArray
     :param time: datetime64 time array
     :param spd: number of obs per day
-    :param eof1_path: filepath to the location of the eof1 files
-    :param eof2_path: filepath to the location of the eof2 files
+    :param EOF1: filepath to the location of the eof1 files
+    :param EOF2: filepath to the location of the eof2 files
     :return: OMI PCs
     """
-    EOF1, EOF2 = read_omi_eofs(eof1_path, eof2_path)
+    #EOF1, EOF2 = read_omi_eofs(eof1_path, eof2_path)
 
     # check that all latitudes and longitudes match between EOFs and OLR
     eoflon = EOF1['lon']
@@ -126,75 +124,75 @@ def omi(olr, time, spd, eof1_path, eof2_path):
     return pc1, pc2
 
 
-def read_omi_eofs(eof1_path, eof2_path):
-    """
-    Read the OMI EOFs from file and into a xarray DataArray.
-    :param eof1_path: filepath to the location of the eof1 files
-    :param eof2_path: filepath to the location of the eof2 files
-    :return: EOF1 and EOF2 3D DataArrays
-    """
-    
-    eof1path = eof1_path
-    eof2path = eof2_path
-
-    # observed EOFs from NOAA PSL are saved in individual text files for each doy
-    # horizontal resolution of EOFs is 2.5 degree
-
-    EOF1 = xr.DataArray(np.empty([366,17,144]),dims=['doy','lat','lon'],
-    coords={'doy':np.arange(1,367,1), 'lat':np.arange(-20,22.5,2.5), 'lon':np.arange(0,360,2.5)})
-    EOF2 = xr.DataArray(np.empty([366,17,144]),dims=['doy','lat','lon'],
-    coords={'doy':np.arange(1,367,1), 'lat':np.arange(-20,22.5,2.5), 'lon':np.arange(0,360,2.5)})
-    nlat = len(EOF1['lat'])
-    nlon = len(EOF1['lon'])
-
-    for doy in np.arange(1,367,1):
-        doystr = str(doy).zfill(3)  
-        eof_outfilename = 'eof' + doystr + '.txt'
-        tmp1 = pd.read_csv(os.path.join(eof1path, eof_outfilename), header=None, delim_whitespace=True, names=['eof1'])
-        tmp2 = pd.read_csv(os.path.join(eof2path, eof_outfilename), header=None, delim_whitespace=True, names=['eof2'])
-        eof1 = xr.DataArray(np.reshape(tmp1.eof1.values,(nlat, nlon)),dims=['lat','lon'])
-        eof2 = xr.DataArray(np.reshape(tmp2.eof2.values,(nlat, nlon)),dims=['lat','lon'])
-        EOF1[doy-1,:,:] = eof1.values
-        EOF2[doy-1,:,:] = eof2.values
-
-    return EOF1, EOF2  
-
-
-def read_rmm_eofs(olr_file, u850_file, u200_file):
-    """
-    Read the OMI EOFs from file and into a xarray DataArray.
-    :param olr_file: full filename (ie.full path) olr eof file
-    :param u850_file: full filename of u850 eof file
-    :param u200_file: full filename of the u200 eof file
-    :return: EOF1 and EOF2 2D DataArrays
-    """
-
-    # the text eof files, for example: rmm_olr_eofs.txt, rmm_u850_eofs.txt, and rmm_u200_eofs.txt 
-    olrfile = olr_file 
-    u850file = u850_file
-    u200file = u200_file
-
-    # observed EOFs from BOM Australia are saved in individual text files for each variable
-    # horizontal resolution of EOFs is 2.5 degree and longitudes go from 0 - 375.5, column1 is eof1
-    # column 2 is eof2 in each file
-
-    EOF1 = xr.DataArray(np.empty([3,144]),dims=['var','lon'],
-    coords={'var':['olr','u850','u200'], 'lon':np.arange(0,360,2.5)})
-    EOF2 = xr.DataArray(np.empty([3,144]),dims=['var','lon'],
-    coords={'var':['olr','u850','u200'], 'lon':np.arange(0,360,2.5)})
-    nlon = len(EOF1['lon'])
-
-    tmp = pd.read_csv(olrfile, header=None, delim_whitespace=True, names=['eof1','eof2'])
-    EOF1[0,:] = tmp.eof1.values
-    EOF2[0,:] = tmp.eof2.values
-    tmp = pd.read_csv(u850file, header=None, delim_whitespace=True, names=['eof1','eof2'])
-    EOF1[1,:] = tmp.eof1.values
-    EOF2[1,:] = tmp.eof2.values
-    tmp = pd.read_csv(u200file, header=None, delim_whitespace=True, names=['eof1','eof2'])
-    EOF1[2,:] = tmp.eof1.values
-    EOF2[2,:] = tmp.eof2.values
-
-    return EOF1, EOF2               
+#def read_omi_eofs(eof1_path, eof2_path):
+#    """
+#    Read the OMI EOFs from file and into a xarray DataArray.
+#    :param eof1_path: filepath to the location of the eof1 files
+#    :param eof2_path: filepath to the location of the eof2 files
+#    :return: EOF1 and EOF2 3D DataArrays
+#    """
+#    
+#    eof1path = eof1_path
+#    eof2path = eof2_path
+#
+#    # observed EOFs from NOAA PSL are saved in individual text files for each doy
+#    # horizontal resolution of EOFs is 2.5 degree
+#
+#    EOF1 = xr.DataArray(np.empty([366,17,144]),dims=['doy','lat','lon'],
+#    coords={'doy':np.arange(1,367,1), 'lat':np.arange(-20,22.5,2.5), 'lon':np.arange(0,360,2.5)})
+#    EOF2 = xr.DataArray(np.empty([366,17,144]),dims=['doy','lat','lon'],
+#    coords={'doy':np.arange(1,367,1), 'lat':np.arange(-20,22.5,2.5), 'lon':np.arange(0,360,2.5)})
+#    nlat = len(EOF1['lat'])
+#    nlon = len(EOF1['lon'])
+#
+#    for doy in np.arange(1,367,1):
+#        doystr = str(doy).zfill(3)  
+#        eof_outfilename = 'eof' + doystr + '.txt'
+#        tmp1 = pd.read_csv(os.path.join(eof1path, eof_outfilename), header=None, delim_whitespace=True, names=['eof1'])
+#        tmp2 = pd.read_csv(os.path.join(eof2path, eof_outfilename), header=None, delim_whitespace=True, names=['eof2'])
+#        eof1 = xr.DataArray(np.reshape(tmp1.eof1.values,(nlat, nlon)),dims=['lat','lon'])
+#        eof2 = xr.DataArray(np.reshape(tmp2.eof2.values,(nlat, nlon)),dims=['lat','lon'])
+#        EOF1[doy-1,:,:] = eof1.values
+#        EOF2[doy-1,:,:] = eof2.values
+#
+#    return EOF1, EOF2  
+#
+#
+#def read_rmm_eofs(olr_file, u850_file, u200_file):
+#    """
+#    Read the OMI EOFs from file and into a xarray DataArray.
+#    :param olr_file: full filename (ie.full path) olr eof file
+#    :param u850_file: full filename of u850 eof file
+#    :param u200_file: full filename of the u200 eof file
+#    :return: EOF1 and EOF2 2D DataArrays
+#    """
+#
+#    # the text eof files, for example: rmm_olr_eofs.txt, rmm_u850_eofs.txt, and rmm_u200_eofs.txt 
+#    olrfile = olr_file 
+#    u850file = u850_file
+#    u200file = u200_file
+#
+#    # observed EOFs from BOM Australia are saved in individual text files for each variable
+#    # horizontal resolution of EOFs is 2.5 degree and longitudes go from 0 - 375.5, column1 is eof1
+#    # column 2 is eof2 in each file
+#
+#    EOF1 = xr.DataArray(np.empty([3,144]),dims=['var','lon'],
+#    coords={'var':['olr','u850','u200'], 'lon':np.arange(0,360,2.5)})
+#    EOF2 = xr.DataArray(np.empty([3,144]),dims=['var','lon'],
+#    coords={'var':['olr','u850','u200'], 'lon':np.arange(0,360,2.5)})
+#    nlon = len(EOF1['lon'])
+#
+#    tmp = pd.read_csv(olrfile, header=None, delim_whitespace=True, names=['eof1','eof2'])
+#    EOF1[0,:] = tmp.eof1.values
+#    EOF2[0,:] = tmp.eof2.values
+#    tmp = pd.read_csv(u850file, header=None, delim_whitespace=True, names=['eof1','eof2'])
+#    EOF1[1,:] = tmp.eof1.values
+#    EOF2[1,:] = tmp.eof2.values
+#    tmp = pd.read_csv(u200file, header=None, delim_whitespace=True, names=['eof1','eof2'])
+#    EOF1[2,:] = tmp.eof1.values
+#    EOF2[2,:] = tmp.eof2.values
+#
+#    return EOF1, EOF2               
 
 
 def regress_3dim_data_onto_eofs(data, time, EOF1, EOF2):
