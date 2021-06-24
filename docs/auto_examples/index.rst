@@ -1,7 +1,6 @@
 :orphan:
 
 
-
 .. _sphx_glr_auto_examples:
 
 .. _examples-index:
@@ -26,7 +25,7 @@ Some general examples coming soon.
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_cross_spectra_thumb.png
+    .. figure:: ../_static/sphx_glr_cross_spectra_thumb.png
 
         :ref:`sphx_glr_auto_examples_cross_spectra.py`
 
