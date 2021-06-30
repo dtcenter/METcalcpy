@@ -6,7 +6,7 @@ import pandas as pd
 from scipy.fftpack import rfft, irfft, fftfreq
 from scipy.signal import detrend
 
-def rmm(olr, u850, u200, time, spd, EOF1, EOF2):
+def rmm(olr, u850, u200, time, spd, EOF1, EOF2, rmm_norm, pc_norm):
     """
     Compute RMM index for given olr, u850 and u200 averaged from 15S - 15N. Use observed RMM EOFs 
     to project the data onto. To match the observed RMM index use ERA Interim wind and observed OLR 
@@ -17,11 +17,12 @@ def rmm(olr, u850, u200, time, spd, EOF1, EOF2):
     :param u200: zonal wind at 200hPa (time, lon) DataArray
     :param time: time datetime64 array
     :param spd: number of obs per day
+    :parm rmm_norm: normalization factors for OLR, U850, and U200 from 1979-2001
+    :parm pc_norm: normalization factors for PCs from 1979-2001
     :return: RMM PCs
     """
 
-    rmm_norm = [15.11623, 1.81355, 4.80978] # normalization factors for OLR, U850, U200  from 1979 - 2001
-    pc_norm = [8.618352504159244, 8.40736449709697] # normalization factors for the PCs from 1979 - 2001
+
 
     # test that the input data has the same longitude values as the EOFs
     eoflon = EOF1['lon']
