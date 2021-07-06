@@ -7,6 +7,28 @@ describes the bugfix, enhancement, or new feature: `METcalcpy GitHub issues. <ht
 Version |version| release notes (|release_date|)
 ------------------------------------------------
 
+Version 1.1.0 release notes (20210511)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+New Functionality:
+
+* Add OMI and RMM statistics (`#89 <https://github.com/dtcenter/METcalcpy/issues/89>`_)
+
+* Add calculation of CTC statistics (`#77 <https://github.com/dtcenter/METcalcpy/issues/77>`_)
+
+* Add sorting of CTC dataframe by fcst_thresh (`#75 <https://github.com/dtcenter/METcalcpy/issues/75>`_)
+ 
+Enhancements:
+
+Internal:
+
+* Add bootstrap package classes (`#96 <https://github.com/dtcenter/METcalcpy/issues/96>`_)
+
+* Add pingouin package classes (`#98 <https://github.com/dtcenter/METcalcpy/issues/98>`_)
+
+Bugfixes:
+
+* Fixed CTC statistics for the ROC diagram (`#77 <https://github.com/dtcenter/METcalcpy/issues/77>`_)
+
 Version 1.0.0 release notes (20210511)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
