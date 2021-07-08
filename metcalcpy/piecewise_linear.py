@@ -9,7 +9,6 @@ import matplotlib.pyplot as plt
 
 __author__ = 'Bill Campbell (NRL)'
 __version__ = '0.1.0'
-__email__ = 'met_help@ucar.edu'
 
 
 class IncompatibleLengths(Exception):

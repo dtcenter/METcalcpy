@@ -5,7 +5,6 @@ Copyright 2021 UCAR/NCAR/RAL
 
 __author__ = 'Hank Fisher'
 __version__ = '1.0.0'
-__email__ = 'met_help@ucar.edu'
 
 
 import numpy as np
