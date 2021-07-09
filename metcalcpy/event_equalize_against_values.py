@@ -6,7 +6,6 @@ import pandas as pd
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
-__email__ = 'met_help@ucar.edu'
 
 
 def event_equalize_against_values(series_data, input_unique_cases):

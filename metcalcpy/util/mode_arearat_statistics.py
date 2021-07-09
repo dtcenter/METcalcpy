@@ -7,7 +7,6 @@ from metcalcpy.util.utils import round_half_up, PRECISION, \
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
-__email__ = 'met_help@ucar.edu'
 
 
 def calculate_arearat_fsa_asa(input_data, columns_names):

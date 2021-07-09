@@ -9,7 +9,6 @@ from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISI
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
-__email__ = 'met_help@ucar.edu'
 
 
 def calculate_nbr_baser(input_data, columns_names):
