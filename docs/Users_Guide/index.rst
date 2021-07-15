@@ -15,8 +15,10 @@ It is important to note here that METcalcpy is an evolving software package.
 This documentation describes the |release| release dated |release_date|.
 Intermediate releases may include bug fixes. METcalcpy is also able to accept
 new modules contributed by the community. If you have code you would like to
-contribute, we will gladly consider your contribution. Please send an email to:
-`met_help@ucar.edu <mailto:>`__. We will then determine if we will be able to
+contribute, we will gladly consider your contribution. Please create a post
+in the
+`METplus GitHub Discussions Forum <https://github.com/dtcenter/METplus/discussions>`_.
+We will then determine if we will be able to
 include the contribution in a future version.
 
 **Model Evaluation Tools Calc Py (METcalcpy)  TERMS OF USE - IMPORTANT!**

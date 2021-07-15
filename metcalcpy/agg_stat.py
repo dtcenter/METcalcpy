@@ -48,7 +48,6 @@ from metcalcpy.util.utils import is_string_integer, get_derived_curve_name, \
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
-__email__ = 'met_help@ucar.edu'
 
 
 class DerivedCurveComponent:

@@ -6,7 +6,6 @@ import numpy as np
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
-__email__ = 'met_help@ucar.edu'
 
 
 def get_column_index_by_name(columns, column_name):

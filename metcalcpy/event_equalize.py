@@ -10,7 +10,6 @@ import pandas as pd
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
-__email__ = 'met_help@ucar.edu'
 
 
 def event_equalize(series_data, indy_var, series_var_vals, fix_vars,

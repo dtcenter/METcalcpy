@@ -6,7 +6,6 @@ from metcalcpy.util.utils import column_data_by_name_value, TWO_D_DATA_FILTER
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
-__email__ = 'met_help@ucar.edu'
 
 
 def calculate_2d_arearat_fsa_asa(input_data, columns_names):
