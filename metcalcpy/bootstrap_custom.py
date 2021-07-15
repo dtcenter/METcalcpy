@@ -10,7 +10,6 @@ from bootstrapped.bootstrap import BootstrapResults, _validate_arrays
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
-__email__ = 'met_help@ucar.edu'
 
 
 class BootstrapDistributionResults(BootstrapResults):

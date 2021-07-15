@@ -4,7 +4,6 @@ Program Name: met_stats.py
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
-__email__ = 'met_help@ucar.edu'
 
 from typing import Union
 import math
