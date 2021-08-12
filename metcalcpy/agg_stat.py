@@ -27,7 +27,7 @@ import argparse
 from inspect import signature
 import yaml
 import pandas
-from metcalcpy.bootstrap import  bootstrap_and_value, BootstrapResults
+from metcalcpy.bootstrap import bootstrap_and_value, BootstrapResults
 from metcalcpy.util.ctc_statistics import *
 from metcalcpy.util.grad_statistics import *
 from metcalcpy.util.sl1l2_statistics import *
@@ -41,13 +41,13 @@ from metcalcpy.util.nbrcnt_statistics import *
 from metcalcpy.util.nbrctc_statistics import *
 from metcalcpy.util.pstd_statistics import *
 from metcalcpy.util.rps_statistics import *
+from metcalcpy.util.mcts_statistics import *
 
 from metcalcpy.util.utils import is_string_integer, get_derived_curve_name, \
     calc_derived_curve_value, intersection, is_derived_point, parse_bool, \
     OPERATION_TO_SIGN, perfect_score_adjustment, perform_event_equalization, aggregate_field_values
 
 __author__ = 'Tatiana Burek'
-__version__ = '0.1.0'
 
 
 class DerivedCurveComponent:
@@ -218,7 +218,7 @@ class AggStat:
         'ssvar_spread': ['var_mean'],
 
         'ecnt_crps': ['crps'],
-        'ecnt_crpss': ['crps','crpscl'],
+        'ecnt_crpss': ['crps', 'crpscl'],
         'ecnt_ign': ['ign'],
         'ecnt_me': ['me'],
         'ecnt_rmse': [],
@@ -460,7 +460,7 @@ class AggStat:
         """
         mse = data_for_prepare['rmse'].values * data_for_prepare['rmse'].values
         mse_oerr = data_for_prepare['rmse_oerr'].values * data_for_prepare['rmse_oerr'].values
-        #crps_climo = data_for_prepare['crps'].values * data_for_prepare['crps'].values
+        # crps_climo = data_for_prepare['crps'].values * data_for_prepare['crps'].values
 
         variance = data_for_prepare['spread'].values * data_for_prepare['spread'].values
         variance_oerr = data_for_prepare['spread_oerr'].values * data_for_prepare['spread_oerr'].values
@@ -468,7 +468,7 @@ class AggStat:
 
         data_for_prepare['mse'] = mse * data_for_prepare['total'].values
         data_for_prepare['mse_oerr'] = mse_oerr * data_for_prepare['total'].values
-        #data_for_prepare['crps_climo'] = crps_climo * data_for_prepare['total'].values
+        # data_for_prepare['crps_climo'] = crps_climo * data_for_prepare['total'].values
 
         data_for_prepare['variance'] = variance * data_for_prepare['total'].values
         data_for_prepare['variance_oerr'] = variance_oerr * data_for_prepare['total'].values
@@ -529,6 +529,16 @@ class AggStat:
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
+
+    def _prepare_mctc_data(self, data_for_prepare):
+        """Prepares mctc data.
+           Nothing needs to be done
+
+            Args:
+                data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
+        """
+
+
 
     def _prepare_ctc_data(self, data_for_prepare):
         """Prepares CTC data.
@@ -615,8 +625,8 @@ class AggStat:
         if ds_1.values is None or ds_2.values is None \
                 or ds_1.values.size == 0 or ds_2.values.size == 0:
             return BootstrapResults(lower_bound=None,
-                                                value=None,
-                                                upper_bound=None)
+                                    value=None,
+                                    upper_bound=None)
         # calculate the number of values in the group if the series has a group
         # it is need d for the validation
         num_diff_vals_first = 0
@@ -664,8 +674,8 @@ class AggStat:
                 ds_2_value,
                 derived_curve_component.derived_operation)
             results = BootstrapResults(lower_bound=None,
-                                                   value=round_half_up(stat_val[0], 5),
-                                                   upper_bound=None)
+                                       value=round_half_up(stat_val[0], 5),
+                                       upper_bound=None)
             results.set_distributions([results.value])
         else:
             # need bootstrapping and CI calculation in addition to the derived statistic
@@ -726,8 +736,8 @@ class AggStat:
         # if the data frame is empty - do nothing and return an empty object
         if series_data.empty:
             return BootstrapResults(lower_bound=None,
-                                                value=None,
-                                                upper_bound=None)
+                                    value=None,
+                                    upper_bound=None)
         # check if derived series are present
         has_derived_series = False
         if self.params['derived_series_' + axis]:
@@ -749,8 +759,8 @@ class AggStat:
             # calculate the statistic and exit
             stat_val = self._calc_stats(data)[0]
             results = BootstrapResults(lower_bound=None,
-                                                   value=stat_val,
-                                                   upper_bound=None)
+                                       value=stat_val,
+                                       upper_bound=None)
             # save original data only if we need it in the future
             # for derived series calculation
             if has_derived_series:
