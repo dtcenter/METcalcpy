@@ -159,6 +159,7 @@ class AggStat:
         'mse': ['ffbar', 'oobar', 'fobar'],
         'msess': ['ffbar', 'oobar', 'fobar', 'obar'],
         'rmse': ['ffbar', 'oobar', 'fobar'],
+        'si': ['ffbar', 'oobar', 'fobar', 'obar'],
         'estdev': ['ffbar', 'oobar', 'fobar', 'fbar', 'obar'],
         'bcmse': ['ffbar', 'oobar', 'fobar', 'fbar', 'obar'],
         'bcrmse': ['ffbar', 'oobar', 'fobar', 'fbar', 'obar'],
