@@ -418,6 +418,32 @@ def calculate_rmse(input_data, columns_names, aggregation=False):
     return result
 
 
+def calculate_si(input_data, columns_names, aggregation=False):
+    """Performs calculation of SI - Scatter Index
+
+            Args:
+                input_data: 2-dimensional numpy array with data for the calculation
+                    1st dimension - the row of data frame
+                    2nd dimension - the column of data frame
+                columns_names: names of the columns for the 2nd dimension as Numpy array
+                aggregation: if the aggregation on fields was performed
+
+            Returns:
+                calculated SI as float
+                or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        rmse = calculate_rmse(input_data, columns_names, aggregation)
+        obar = calculate_obar(input_data, columns_names, aggregation)
+        result = rmse / obar
+        result = round_half_up(result, PRECISION)
+    except (TypeError, Warning):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
 def calculate_estdev(input_data, columns_names, aggregation=False):
     """Performs calculation of ESTDEV - Standard deviation of the error
 
