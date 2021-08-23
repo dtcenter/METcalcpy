@@ -2,6 +2,8 @@
 Python version of statistics calculation functionality of METviewer, 
 METexpress, plotting packages in METplotpy and as stand-alone package for any other application.
 
+Please see the [METcalcpy User's Guide](https://metcalcpy.readthedocs.io/en/latest) for more information.
+
 Support for the METplus components is provided through the
 [METplus Discussions](https://github.com/dtcenter/METplus/discussions) forum.
 Users are welcome and encouraged to answer or address each other's questions there!  For more
