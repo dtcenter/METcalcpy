@@ -14,6 +14,7 @@ beta2 release
 ^^^^^^^^^^^^^
 
 New Functionality:
+
 * Add calculation of the Scatter Index statistic (`#108 <https://github.com/dtcenter/METcalcpy/issues/108>`_)
 
 
@@ -24,7 +25,8 @@ Enhancements:
 
 
 Internal:
- * Update documentation to reference GitHub Discussions instead of MET Help (`#100 <https://github.com/dtcenter/METcalcpy/issues/100>`_)
+
+* Update documentation to reference GitHub Discussions instead of MET Help (`#100 <https://github.com/dtcenter/METcalcpy/issues/100>`_)
 
 Bugfixes:
 
