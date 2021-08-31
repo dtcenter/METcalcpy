@@ -438,10 +438,15 @@ def read_required_fields(config, ds):
         temperature (DataArray) : temperature
         relative_humidity (DataArray) : relative humidity
     """
-    surface_geopotential \
-        = ds[config['surface_geopotential_name']]
     surface_pressure \
         = ds[config['surface_pressure_name']]
+
+    if config['zero_surface_geopotential']:
+        surface_geopotential = xr.zeros_like(surface_pressure)
+    else:
+        surface_geopotential \
+            = ds[config['surface_geopotential_name']]
+
     temperature \
         = ds[config['temperature_name']]
     relative_humidity \

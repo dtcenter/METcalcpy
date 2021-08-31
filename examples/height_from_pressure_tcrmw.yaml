@@ -19,8 +19,8 @@ height_from_pressure:
 #
 # Required fields
 #
-surface_geopotential_name:
-    'PHIS'
+zero_surface_geopotential:
+    True
 
 surface_pressure_name:
     'PRMSL'
