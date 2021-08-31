@@ -456,7 +456,7 @@ def read_required_fields(config, ds):
 
 
 def write_dataset(ds, ds_nc, coords_interp=None,
-    forecast_reference_time=None):
+    forecast_reference_time=None, create_time_dim=False):
     """
     Write xarray Dataset to NetCDF file
     """
@@ -479,7 +479,7 @@ def write_dataset(ds, ds_nc, coords_interp=None,
                                 for dt in dt_array], dtype=np.float64)
             coord[:] = t_array
 
-    if 'time' not in ds.dims:
+    if create_time_dim:
         ds_nc.createDimension('valid_time', 1)
         time_coord = ds_nc.createVariable(
             'valid_time', 'float64', ('valid_time'))
@@ -502,7 +502,7 @@ def write_dataset(ds, ds_nc, coords_interp=None,
         dtype = ds[field].dtype
         if dtype not in ['uint32', 'uint64', 'int32', 'int64', 'float32', 'float64']:
             dtype = 'uint64'
-        if 'time' not in ds.dims:
+        if create_time_dim:
             dims_with_time = list(ds[field].dims)
             dims_with_time.insert(0, 'valid_time')
             if field != 'valid_time':
@@ -566,6 +566,8 @@ if __name__ == '__main__':
     parser.add_argument('--debugdir', type=str,
         default=os.path.join(os.getenv('DATA_DIR'), 'Debug'),
         help='debug file directory (default $DATA_DIR/Debug)')
+    parser.add_argument('--create_time_dim', action='store_true',
+        help='create time dimension in netcdf output')
     args = parser.parse_args()
 
     """
@@ -613,11 +615,13 @@ if __name__ == '__main__':
         logging.error('Unable to open ' + filename_in)
         logging.error(sys.exc_info()[0])
 
+    """
     if 'valid_time' in ds:
         logging.info(datetime.utcfromtimestamp(
                      ds['valid_time'].astype('O')/1e9))
         logging.info(datetime.utcfromtimestamp(
                      ds['time'].astype('O')/1e9))
+    """
 
     """
     Convert pressure levels to height levels
@@ -644,7 +648,8 @@ if __name__ == '__main__':
     ds_out = xr.Dataset()
     if 'valid_time' in ds:
         ds_out['valid_time'] = ds['valid_time'].values
-        ds_out['init_time'] = ds['time'].values
+        if 'time' in ds:
+            ds_out['init_time'] = ds['time'].values
 
     for attr in ds.attrs:
         ds_out.attrs[attr] = ds.attrs[attr]
@@ -664,7 +669,7 @@ if __name__ == '__main__':
         ds_nc = nc.Dataset(filename_out, 'w')
         ref_time = filename_out.split('.')[1]
         write_dataset(ds_out, ds_nc, coords_interp=coords_interp,
-            forecast_reference_time=ref_time)
+            forecast_reference_time=ref_time, create_time_dim=args.create_time_dim)
         ds_nc.close()
     except:
         logging.info('Creating with xarray ' + filename_out)
