@@ -47,6 +47,7 @@ import pint
 import metpy.calc as calc
 import metpy.constants as constants
 
+ureg = pint.UnitRegistry()
 
 def vertical_interp(fieldname, config,
     coordinate_surfaces, field):
@@ -65,7 +66,6 @@ def vertical_interp(fieldname, config,
     """
     logging.info(fieldname)
     logging.debug(field.attrs)
-    ureg = pint.UnitRegistry()
 
     """
     Vertical coordinates
@@ -255,7 +255,6 @@ def height_from_pressure(config,
         layer_height (DataArray) : layer height
     """
 
-    ureg = pint.UnitRegistry()
     logging.info('pressure to height conversion')
 
     """
@@ -326,8 +325,8 @@ def height_from_pressure(config,
     logging.debug(pressure.attrs['units'])
 
     # pressure unit conversion
-    pressure_convert = (ureg.Quantity(1, surface_pressure.attrs['units'])
-        / ureg.Quantity(1, pressure.attrs['units'])).to_base_units()
+    pressure_convert = float((ureg.Quantity(1, surface_pressure.attrs['units'])
+        / ureg.Quantity(1, pressure.attrs['units'])).to_base_units())
     logging.debug(pressure_convert)
 
     layer_thickness = xr.DataArray(
