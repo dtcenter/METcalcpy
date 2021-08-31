@@ -131,6 +131,8 @@ def vertical_interp(fieldname, config,
 
     # length unit conversion
     try:
+        logging.debug(coordinate_surfaces.attrs['units'])
+        logging.debug(config['vertical_level_units'])
         length_convert = float((ureg.Quantity(1, config['vertical_level_units'])
                        / ureg.Quantity(1, coordinate_surfaces.attrs['units'])).to_base_units())
     except pint.errors.UndefinedUnitError:
@@ -406,7 +408,7 @@ def height_from_pressure(config,
              'surface_height': surface_height,
              'surface_pressure': surface_pressure,
              'surface_mask': surface_mask,
-             'pressure': pressure,
+             'layer_pressure': pressure,
              'mixing_ratio': mixing_ratio,
              'virtual_temperature': virtual_temperature,
              'layer_thickness': layer_thickness,
@@ -567,6 +569,8 @@ if __name__ == '__main__':
         help='debug file directory (default $DATA_DIR/Debug)')
     parser.add_argument('--create_time_dim', action='store_true',
         help='create time dimension in netcdf output')
+    parser.add_argument('--ref_time_from_filename', action='store_true',
+        help='extract forecast reference time from filename')
     args = parser.parse_args()
 
     """
@@ -666,9 +670,13 @@ if __name__ == '__main__':
     try:
         logging.info('Creating with NetCDF4 ' + filename_out)
         ds_nc = nc.Dataset(filename_out, 'w')
-        ref_time = filename_out.split('.')[1]
-        write_dataset(ds_out, ds_nc, coords_interp=coords_interp,
-            forecast_reference_time=ref_time, create_time_dim=args.create_time_dim)
+        if args.ref_time_from_filename: 
+            ref_time = filename_out.split('.')[1]
+            write_dataset(ds_out, ds_nc, coords_interp=coords_interp,
+                forecast_reference_time=ref_time, create_time_dim=args.create_time_dim)
+        else:
+            write_dataset(ds_out, ds_nc, coords_interp=coords_interp,
+                create_time_dim=args.create_time_dim)
         ds_nc.close()
     except:
         logging.info('Creating with xarray ' + filename_out)
