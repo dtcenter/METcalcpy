@@ -7,7 +7,7 @@ describes the bugfix, enhancement, or new feature: `METcalcpy GitHub issues. <ht
 Version |version| release notes (|release_date|)
 ------------------------------------------------
 
-Version 1.1.0 release notes (20210511)
+Version 1.1.0 release notes (20210831)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 beta2 release
