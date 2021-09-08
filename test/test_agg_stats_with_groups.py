@@ -7,7 +7,7 @@ from metcalcpy.agg_stat import AggStat
 def test_groups():
     # prepare parameters
     params = {'random_seed': 1, 'indy_var': 'fcst_lead',
-              'list_static_val': {'fcst_var': 'TMP'}, 'method': 'perc',
+               'method': 'perc',
               'num_iterations': 1, 'event_equal': 'True',
               'derived_series_1': [
                   ['Group_y1_1 TMP ME', 'Group_y1_2 TMP ME', 'DIFF']],

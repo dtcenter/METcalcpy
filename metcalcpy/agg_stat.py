@@ -539,8 +539,6 @@ class AggStat:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
 
-
-
     def _prepare_ctc_data(self, data_for_prepare):
         """Prepares CTC data.
             Nothing needs to be done
@@ -850,17 +848,14 @@ class AggStat:
             Returns:
                 pandas data frame
         """
-        list_static_val = self.params['list_static_val']
         result = pd.DataFrame()
         row_number = len(series)
         # fill series variables and values
-        for static_var in list_static_val:
-            result[static_var] = [list_static_val[static_var]] * row_number
-
         for field_ind, field in enumerate(series_fields):
             result[field] = [row[field_ind] for row in series]
 
         # fill the stats  and CI values placeholders with None
+        result['fcst_var'] = [None] * row_number
         result['stat_value'] = [None] * row_number
         result['stat_btcl'] = [None] * row_number
         result['stat_btcu'] = [None] * row_number
@@ -996,6 +991,12 @@ class AggStat:
                         if field in series_val.keys():
                             all_filters_pct.append((self.input_data[field].isin(filter_list)))
 
+                    # add fcst var
+                    fcst_var = None
+                    if len(self.params['fcst_var_val_' + axis]) > 0 and 'fcst_var' in self.input_data.columns:
+                        fcst_var = list(self.params['fcst_var_val_' + axis].keys())[0]
+                        all_filters.append((self.input_data['fcst_var'].isin([fcst_var])))
+
                     # use numpy to select the rows where any record evaluates to True
                     mask = np.array(all_filters).all(axis=0)
                     point_data = self.input_data.loc[mask]
@@ -1047,6 +1048,7 @@ class AggStat:
                     n_stats = 0
 
                 # save results to the output data frame
+                out_frame['fcst_var'][point_ind] = fcst_var
                 out_frame['stat_value'][point_ind] = bootstrap_results.value
                 out_frame['stat_btcl'][point_ind] = bootstrap_results.lower_bound
                 out_frame['stat_btcu'][point_ind] = bootstrap_results.upper_bound

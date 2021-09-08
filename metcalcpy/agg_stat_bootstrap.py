@@ -80,17 +80,14 @@ class AggStatBootstrap:
             Returns:
                 pandas data frame
         """
-        list_static_val = self.params['list_static_val']
         result = pd.DataFrame()
         row_number = len(series)
         # fill series variables and values
-        for static_var in list_static_val:
-            result[static_var] = [list_static_val[static_var]] * row_number
-
         for field_ind, field in enumerate(series_fields):
             result[field] = [row[field_ind] for row in series]
 
         # fill the stats  and CI values placeholders with None
+        result['fcst_var'] = [None] * row_number
         result['stat_value'] = [None] * row_number
         result['stat_btcl'] = [None] * row_number
         result['stat_btcu'] = [None] * row_number
@@ -107,6 +104,9 @@ class AggStatBootstrap:
             all_fields_values[self.params['indy_var']] = indy_vals
             all_fields_values['stat_name'] = self.params['list_stat_' + axis]
             all_points = list(itertools.product(*all_fields_values.values()))
+            fcst_var = None
+            if len(self.params['fcst_var_val_' + axis]) > 0 and 'fcst_var' in self.input_data.columns:
+                fcst_var = list(self.params['fcst_var_val_' + axis].keys())[0]
 
             cases = []
             out_frame = self._init_out_frame(all_fields_values.keys(), all_points)
@@ -141,6 +141,11 @@ class AggStatBootstrap:
                                 filter_list[i] = int(filter_val)
 
                         all_filters.append((filtered_by_indy_data[field].isin(filter_list)))
+
+                    # add fcst var
+                    if fcst_var is not None:
+                        all_filters.append((self.input_data['fcst_var'].isin([fcst_var])))
+
                     # use numpy to select the rows where any record evaluates to True
                     mask = np.array(all_filters).all(axis=0)
                     point_data = filtered_by_indy_data.loc[mask]
@@ -187,6 +192,7 @@ class AggStatBootstrap:
                         index = rows_with_mask_indy_var.index[0]
 
                         # save results to the output data frame
+                        out_frame['fcst_var'][index] = fcst_var
                         out_frame['stat_value'][index] = bootstrap_results.value
                         out_frame['stat_btcl'][index] = bootstrap_results.lower_bound
                         out_frame['stat_btcu'][index] = bootstrap_results.upper_bound
