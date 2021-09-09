@@ -254,7 +254,7 @@ def settings():
         dictionary with values of different type
     """
     params = {'random_seed': 1, 'indy_var': 'fcst_lead',
-              'list_static_val': {'fcst_var': 'DPT'}, 'method': 'perc',
+               'method': 'perc',
               'num_iterations': 100, 'event_equal': 'True',
               'derived_series_1': [
                   ['ENS001v3.6.1_d01 DPT FBAR', 'ENS001v3.6.1_d02 DPT FBAR', 'DIFF']],

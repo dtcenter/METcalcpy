@@ -21,7 +21,6 @@ def test_event_equalize():
     })
 
     list_stat = ['BASER']
-    list_static_val = dict({'fcst_var': 'APCP_06'})
     fcst_var_val = dict({'TCDC': ["BASER"]})
     input_data_file = 'data/event_equalize_input.data'
     output_data_file = 'data/event_equalize_output_py.data'
