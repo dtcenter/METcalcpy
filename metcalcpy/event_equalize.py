@@ -2,14 +2,14 @@
 Program Name: event_equalize.py
 """
 
+__author__ = 'Tatiana Burek'
+
 import itertools
 from typing import Any
-
 import numpy as np
 import pandas as pd
 
-__author__ = 'Tatiana Burek'
-__version__ = '0.1.0'
+from metcalcpy import GROUP_SEPARATOR
 
 
 def event_equalize(series_data, indy_var, series_var_vals, fix_vars,
@@ -64,7 +64,7 @@ def event_equalize(series_data, indy_var, series_var_vals, fix_vars,
                 if isinstance(series_vals, str):
                     series_vals = [series_vals]
                 for series_val in series_vals:
-                    actual_vals = series_val.split(',')
+                    actual_vals = series_val.split(GROUP_SEPARATOR)
                     series_vals_no_groups.extend(actual_vals)
                 vars_for_ee[series_var] = series_vals_no_groups
 

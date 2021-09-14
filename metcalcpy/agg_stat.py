@@ -27,6 +27,8 @@ import argparse
 from inspect import signature
 import yaml
 import pandas
+
+from metcalcpy import GROUP_SEPARATOR
 from metcalcpy.bootstrap import bootstrap_and_value, BootstrapResults
 from metcalcpy.util.ctc_statistics import *
 from metcalcpy.util.grad_statistics import *
@@ -631,11 +633,11 @@ class AggStat:
         num_diff_vals_first = 0
         num_diff_vals_second = 0
         for val in permute_for_first_series:
-            size = len(val.split(','))
+            size = len(val.split(GROUP_SEPARATOR))
             if size > 1:
                 num_diff_vals_first = num_diff_vals_first + size
         for val in permute_for_second_series:
-            size = len(val.split(','))
+            size = len(val.split(GROUP_SEPARATOR))
             if size > 1:
                 num_diff_vals_second = num_diff_vals_second + size
         if num_diff_vals_first == 0:
@@ -971,8 +973,8 @@ class AggStat:
                     for field_ind, field in enumerate(all_fields_values.keys()):
 
                         filter_value = point[field_ind]
-                        if "," in filter_value:
-                            filter_list = filter_value.split(',')
+                        if GROUP_SEPARATOR in filter_value:
+                            filter_list = filter_value.split(GROUP_SEPARATOR)
                         elif ";" in filter_value:
                             filter_list = filter_value.split(';')
                         else:
@@ -1082,7 +1084,7 @@ class AggStat:
         if series_val:
             for key in series_val.keys():
                 for val in series_val[key]:
-                    if ',' in val:
+                    if GROUP_SEPARATOR in val:
                         new_name = 'Group_y1_' + str(group_to_value_index)
                         self.group_to_value[new_name] = val
                         group_to_value_index = group_to_value_index + 1
@@ -1093,7 +1095,7 @@ class AggStat:
             if series_val:
                 for key in series_val.keys():
                     for val in series_val[key]:
-                        if ',' in val:
+                        if GROUP_SEPARATOR in val:
                             new_name = 'Group_y2_' + str(group_to_value_index)
                             self.group_to_value[new_name] = val
                             group_to_value_index = group_to_value_index + 1

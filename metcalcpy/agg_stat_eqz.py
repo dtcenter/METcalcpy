@@ -27,6 +27,7 @@ import logging
 import pandas as pd
 import yaml
 
+from metcalcpy import GROUP_SEPARATOR
 from metcalcpy.event_equalize_against_values import event_equalize_against_values
 from metcalcpy.util.utils import parse_bool
 
@@ -99,7 +100,7 @@ class AggStatEventEqz:
 
                 series_var_vals_no_group = []
                 for val in series_var_vals:
-                    split_val = val.split(',')
+                    split_val = val.split(GROUP_SEPARATOR)
                     series_var_vals_no_group.extend(split_val)
 
                 # filter input data based on fcst_var, statistic and all series variables values

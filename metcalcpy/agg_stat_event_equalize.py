@@ -28,8 +28,8 @@ import pandas as pd
 import yaml
 import numpy as np
 
+from metcalcpy import GROUP_SEPARATOR
 from metcalcpy.event_equalize import event_equalize
-
 
 class AggStatEventEqualize:
     """A class that performs event equalisation logic on input data
@@ -115,7 +115,7 @@ class AggStatEventEqualize:
             # ungroup series value
             series_var_vals_no_group = []
             for val in series_var_vals:
-                split_val = val.split(',')
+                split_val = val.split(GROUP_SEPARATOR)
                 series_var_vals_no_group.extend(split_val)
 
             # filter input data based on fcst_var, statistic and all series variables values

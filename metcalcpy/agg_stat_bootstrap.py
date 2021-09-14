@@ -29,6 +29,7 @@ import yaml
 import pandas as pd
 import numpy as np
 
+from metcalcpy import GROUP_SEPARATOR
 from metcalcpy.agg_stat import _sort_data
 from metcalcpy.agg_stat_eqz import AggStatEventEqz
 from metcalcpy.bootstrap import  bootstrap_and_value_mode, BootstrapResults
@@ -130,9 +131,9 @@ class AggStatBootstrap:
                     all_filters = []
                     for field_ind, field in enumerate(all_fields_values.keys()):
                         filter_value = point[field_ind]
-                        if "," in filter_value:
-                            filter_list = filter_value.split(',')
-                        elif ";" in filter_value:
+                        if GROUP_SEPARATOR in filter_value:
+                            filter_list = filter_value.split(GROUP_SEPARATOR)
+                        elif ';' in filter_value:
                             filter_list = filter_value.split(';')
                         else:
                             filter_list = [filter_value]
@@ -164,9 +165,9 @@ class AggStatBootstrap:
                         out_frame_filter = []
                         for field_ind, field in enumerate(all_fields_values.keys()):
                             filter_value = point[field_ind]
-                            if "," in filter_value:
-                                filter_list = filter_value.split(',')
-                            elif ";" in filter_value:
+                            if ':' in filter_value:
+                                filter_list = filter_value.split(':')
+                            elif ';' in filter_value:
                                 filter_list = filter_value.split(';')
                             else:
                                 filter_list = [filter_value]
