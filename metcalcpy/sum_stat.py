@@ -28,6 +28,8 @@ import time
 import logging
 import yaml
 from inspect import signature
+
+from metcalcpy import GROUP_SEPARATOR
 from metcalcpy.util.ctc_statistics import *
 from metcalcpy.util.grad_statistics import *
 from metcalcpy.util.sl1l2_statistics import *
@@ -199,7 +201,7 @@ class SumStat:
                         if ';' in point[index]:
                             actual_series_vals = point[index].split(';')
                         else:
-                            actual_series_vals = point[index].split(',')
+                            actual_series_vals = point[index].split(GROUP_SEPARATOR)
                         for ind, val in enumerate(actual_series_vals):
                             if is_string_integer(val):
                                 actual_series_vals[ind] = int(val)

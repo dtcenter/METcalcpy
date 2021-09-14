@@ -17,6 +17,8 @@ from scipy import stats
 import metcalcpy.util.correlation as pg
 from scipy.stats import t, nct
 from statsmodels.tsa.arima.model import ARIMA
+
+from metcalcpy import GROUP_SEPARATOR
 from metcalcpy.event_equalize import event_equalize
 
 OPERATION_TO_SIGN = {
@@ -627,7 +629,7 @@ def equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axi
                     # ungroup series value if needed
                     series_var_vals_no_group = []
                     for val in series_var_vals:
-                        split_val = val.split(',')
+                        split_val = val.split(GROUP_SEPARATOR)
                         series_var_vals_no_group.extend(split_val)
 
                     # filter input data based on fcst_var, statistic

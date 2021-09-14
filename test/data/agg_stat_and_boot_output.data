@@ -1,4 +1,4 @@
-fcst_var	model	fcst_lead	stat_name	stat_value	stat_bcl	stat_bcu	nstats
+fcst_var	model	fcst_lead	stat_name	stat_value	stat_btcl	stat_btcu	nstats
 DPT	ENS001v3.6.1_d01	0	FBAR	192.1303904	192.1263071	192.1363725175	4
 DPT	ENS001v3.6.1_d01	30000	FBAR	NA	NA	NA	0
 DPT	ENS001v3.6.1_d01	60000	FBAR	192.1304275	192.1262001	192.1365529	4
