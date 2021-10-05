@@ -228,7 +228,7 @@ def vertical_interp(fieldname, config,
                 {'distances': distances,
                  'weights': weights,
                  fieldname: field_slice})
-            debugfile = os.path.join(args.debugdir, 'vertical_interp_debug_'
+            debugfile = os.path.join(args.datadir, 'Debug', 'vertical_interp_debug_'
                                      + fieldname + '_' + str(int(eta)) + '.nc')
             try:
                 ds_debug.to_netcdf(debugfile)
@@ -297,7 +297,7 @@ def height_from_pressure(config,
     mixing_ratio \
         = xr.DataArray(
             calc.mixing_ratio_from_relative_humidity(
-                relative_humidity, temperature, pressure),
+                pressure, temperature, relative_humidity),
             dims=temperature.dims,
             coords=temperature.coords,
             attrs={'long_name': 'mixing ratio'})
@@ -413,7 +413,7 @@ def height_from_pressure(config,
              'virtual_temperature': virtual_temperature,
              'layer_thickness': layer_thickness,
              'layer_height': layer_height})
-        debugfile = os.path.join(args.debugdir,
+        debugfile = os.path.join(args.datadir, 'Debug',
             'height_from_pressure_debug.nc')
         try:
             ds_debug.to_netcdf(debugfile)
@@ -564,9 +564,6 @@ if __name__ == '__main__':
         help='log file (default stdout)')
     parser.add_argument('--debug', action='store_true',
         help='set logging level to debug')
-    parser.add_argument('--debugdir', type=str,
-        default=os.path.join(os.getenv('DATA_DIR'), 'Debug'),
-        help='debug file directory (default $DATA_DIR/Debug)')
     parser.add_argument('--create_time_dim', action='store_true',
         help='create time dimension in netcdf output')
     parser.add_argument('--ref_time_from_filename', action='store_true',
