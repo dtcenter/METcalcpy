@@ -46,6 +46,7 @@ import pint
 import metpy.calc as calc
 import metpy.constants as constants
 
+ureg = pint.UnitRegistry()
 
 def vertical_interp(fieldname, config,
     coordinate_surfaces, field):
@@ -64,7 +65,6 @@ def vertical_interp(fieldname, config,
     """
     logging.info(fieldname)
     logging.debug(field.attrs)
-    ureg = pint.UnitRegistry()
 
     """
     Vertical coordinates
@@ -92,11 +92,14 @@ def vertical_interp(fieldname, config,
     shape_interp[i_lev_dim] = nlev_interp
     shape_interp = tuple(shape_interp)
     logging.debug(shape_interp)
-    coord_arrays_interp = [field.coords[dim] for dim in dims_interp]
+    coord_arrays_interp = [field.coords[dim].data for dim in dims_interp]
     dims_interp[i_lev_dim] = 'lev'
+    """
     coord_arrays_interp[i_lev_dim] \
         = xr.DataArray(vertical_levels,
                        attrs={'units': config['vertical_level_units']})
+    """
+    coord_arrays_interp[i_lev_dim] = vertical_levels
     coords_interp = list(zip(dims_interp, coord_arrays_interp))
     logging.debug('\n\n')
     for coord_interp in coords_interp:
@@ -130,6 +133,8 @@ def vertical_interp(fieldname, config,
 
     # length unit conversion
     try:
+        logging.debug(coordinate_surfaces.attrs['units'])
+        logging.debug(config['vertical_level_units'])
         length_convert = float((ureg.Quantity(1, config['vertical_level_units'])
                        / ureg.Quantity(1, coordinate_surfaces.attrs['units'])).to_base_units())
     except pint.errors.UndefinedUnitError:
@@ -225,7 +230,7 @@ def vertical_interp(fieldname, config,
                 {'distances': distances,
                  'weights': weights,
                  fieldname: field_slice})
-            debugfile = os.path.join(args.debugdir, 'vertical_interp_debug_'
+            debugfile = os.path.join(args.datadir, 'Debug', 'vertical_interp_debug_'
                                      + fieldname + '_' + str(int(eta)) + '.nc')
             try:
                 ds_debug.to_netcdf(debugfile)
@@ -254,7 +259,6 @@ def height_from_pressure(config,
         layer_height (DataArray) : layer height
     """
 
-    ureg = pint.UnitRegistry()
     logging.info('pressure to height conversion')
 
     """
@@ -295,7 +299,7 @@ def height_from_pressure(config,
     mixing_ratio \
         = xr.DataArray(
             calc.mixing_ratio_from_relative_humidity(
-                relative_humidity, temperature, pressure),
+                pressure, temperature, relative_humidity),
             dims=temperature.dims,
             coords=temperature.coords,
             attrs={'long_name': 'mixing ratio'})
@@ -325,8 +329,8 @@ def height_from_pressure(config,
     logging.debug(pressure.attrs['units'])
 
     # pressure unit conversion
-    pressure_convert = (ureg.Quantity(1, surface_pressure.attrs['units'])
-        / ureg.Quantity(1, pressure.attrs['units'])).to_base_units()
+    pressure_convert = float((ureg.Quantity(1, surface_pressure.attrs['units'])
+        / ureg.Quantity(1, pressure.attrs['units'])).to_base_units())
     logging.debug(pressure_convert)
 
     layer_thickness = xr.DataArray(
@@ -406,12 +410,12 @@ def height_from_pressure(config,
              'surface_height': surface_height,
              'surface_pressure': surface_pressure,
              'surface_mask': surface_mask,
-             'pressure': pressure,
+             'layer_pressure': pressure,
              'mixing_ratio': mixing_ratio,
              'virtual_temperature': virtual_temperature,
              'layer_thickness': layer_thickness,
              'layer_height': layer_height})
-        debugfile = os.path.join(args.debugdir,
+        debugfile = os.path.join(args.datadir, 'Debug',
             'height_from_pressure_debug.nc')
         try:
             ds_debug.to_netcdf(debugfile)
@@ -437,10 +441,15 @@ def read_required_fields(config, ds):
         temperature (DataArray) : temperature
         relative_humidity (DataArray) : relative humidity
     """
-    surface_geopotential \
-        = ds[config['surface_geopotential_name']]
     surface_pressure \
         = ds[config['surface_pressure_name']]
+
+    if config['zero_surface_geopotential']:
+        surface_geopotential = xr.zeros_like(surface_pressure)
+    else:
+        surface_geopotential \
+            = ds[config['surface_geopotential_name']]
+
     temperature \
         = ds[config['temperature_name']]
     relative_humidity \
@@ -450,7 +459,7 @@ def read_required_fields(config, ds):
 
 
 def write_dataset(ds, ds_nc, coords_interp=None,
-    forecast_reference_time=None):
+    forecast_reference_time=None, create_time_dim=False):
     """
     Write xarray Dataset to NetCDF file
     """
@@ -473,7 +482,7 @@ def write_dataset(ds, ds_nc, coords_interp=None,
                                 for dt in dt_array], dtype=np.float64)
             coord[:] = t_array
 
-    if 'time' not in ds.dims:
+    if create_time_dim:
         ds_nc.createDimension('valid_time', 1)
         time_coord = ds_nc.createVariable(
             'valid_time', 'float64', ('valid_time'))
@@ -488,15 +497,17 @@ def write_dataset(ds, ds_nc, coords_interp=None,
     if coords_interp is not None:
         for dim, coord_array in coords_interp:
             logging.info('Setting coordinate attributes for ' + dim)
+            """
             for attr in coord_array.attrs:
                 setattr(coord_vars[dim], attr, coord_array.attrs[attr])
+            """
 
     for field in ds:
         logging.debug('Creating variable ' + field)
         dtype = ds[field].dtype
         if dtype not in ['uint32', 'uint64', 'int32', 'int64', 'float32', 'float64']:
             dtype = 'uint64'
-        if 'time' not in ds.dims:
+        if create_time_dim:
             dims_with_time = list(ds[field].dims)
             dims_with_time.insert(0, 'valid_time')
             if field != 'valid_time':
@@ -557,9 +568,10 @@ if __name__ == '__main__':
         help='log file (default stdout)')
     parser.add_argument('--debug', action='store_true',
         help='set logging level to debug')
-    parser.add_argument('--debugdir', type=str,
-        default=os.path.join(os.getenv('DATA_DIR'), 'Debug'),
-        help='debug file directory (default $DATA_DIR/Debug)')
+    parser.add_argument('--create_time_dim', action='store_true',
+        help='create time dimension in netcdf output')
+    parser.add_argument('--ref_time_from_filename', action='store_true',
+        help='extract forecast reference time from filename')
     args = parser.parse_args()
 
     """
@@ -607,11 +619,13 @@ if __name__ == '__main__':
         logging.error('Unable to open ' + filename_in)
         logging.error(sys.exc_info()[0])
 
+    """
     if 'valid_time' in ds:
         logging.info(datetime.utcfromtimestamp(
                      ds['valid_time'].astype('O')/1e9))
         logging.info(datetime.utcfromtimestamp(
                      ds['time'].astype('O')/1e9))
+    """
 
     """
     Convert pressure levels to height levels
@@ -638,7 +652,8 @@ if __name__ == '__main__':
     ds_out = xr.Dataset()
     if 'valid_time' in ds:
         ds_out['valid_time'] = ds['valid_time'].values
-        ds_out['init_time'] = ds['time'].values
+        if 'time' in ds:
+            ds_out['init_time'] = ds['time'].values
 
     for attr in ds.attrs:
         ds_out.attrs[attr] = ds.attrs[attr]
@@ -656,9 +671,13 @@ if __name__ == '__main__':
     try:
         logging.info('Creating with NetCDF4 ' + filename_out)
         ds_nc = nc.Dataset(filename_out, 'w')
-        ref_time = filename_out.split('.')[1]
-        write_dataset(ds_out, ds_nc, coords_interp=coords_interp,
-            forecast_reference_time=ref_time)
+        if args.ref_time_from_filename: 
+            ref_time = filename_out.split('.')[1]
+            write_dataset(ds_out, ds_nc, coords_interp=coords_interp,
+                forecast_reference_time=ref_time, create_time_dim=args.create_time_dim)
+        else:
+            write_dataset(ds_out, ds_nc, coords_interp=coords_interp,
+                create_time_dim=args.create_time_dim)
         ds_nc.close()
     except:
         logging.info('Creating with xarray ' + filename_out)
