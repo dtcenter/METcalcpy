@@ -7,8 +7,31 @@ describes the bugfix, enhancement, or new feature: `METcalcpy GitHub issues. <ht
 Version |version| release notes (|release_date|)
 ------------------------------------------------
 
-Version 1.1.0 release notes (20210831)
+Version 1.1.0 release notes (20211006)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+beta2 release
+^^^^^^^^^^^^^
+
+
+New Functionality:
+
+Enhancements:
+
+* Add vertical_interp support for multiple pressure coordinate systems (`#63 <https://github.com/dtcenter/METcalcpy/issues/63>`_)
+
+* Change ',' as a separator for the series group to ':' (`#63 <https://github.com/dtcenter/METcalcpy/issues/117>`_>)
+
+
+Internal:
+
+
+Bugfixes:
+
+* Prepare data for a line plot with different forecast variables plotted on y1 and y2 axis (`#113 <https://github.com/dtcenter/METcalcpy/issues/113>`_)
+
+
 
 beta2 release
 ^^^^^^^^^^^^^
