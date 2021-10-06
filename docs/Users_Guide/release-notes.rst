@@ -11,7 +11,7 @@ Version 1.1.0 release notes (20211006)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-beta2 release
+beta3 release
 ^^^^^^^^^^^^^
 
 
