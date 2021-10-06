@@ -21,7 +21,7 @@ Enhancements:
 
 * Add vertical_interp support for multiple pressure coordinate systems (`#63 <https://github.com/dtcenter/METcalcpy/issues/63>`_)
 
-* Change ',' as a separator for the series group to ':' (`#117 <https://github.com/dtcenter/METcalcpy/issues/117>`_>)
+* Change ',' as a separator for the series group to ':' (`#117 <https://github.com/dtcenter/METcalcpy/issues/117>`_)
 
 
 Internal:
