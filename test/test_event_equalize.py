@@ -1,52 +1,74 @@
 """Tests the operation of METcalcpy's event_equalize code."""
 import itertools
 import time
+import re
 
 import pandas as pd
 import pytest
 
 from metcalcpy.event_equalize import event_equalize
 from metcalcpy.util.utils import represents_int
+from metcalcpy import GROUP_SEPARATOR, DATE_TIME_REGEX
 
 
 def test_event_equalize():
     """Tests event equalization."""
 
     indy_var = "fcst_lead"
-    indy_vals = ["30000", "60000", "90000"]
     series_val = dict({'model': ["GFSDCF", "GFSRAW"]})
     fixed_vars_vals_input = dict({
         'fcst_thresh': dict({'fcst_thresh_4': ["<=20"]}),
 
     })
 
-    list_stat = ['BASER']
     fcst_var_val = dict({'TCDC': ["BASER"]})
     input_data_file = 'data/event_equalize_input.data'
-    output_data_file = 'data/event_equalize_output_py.data'
-    cl_step = 0.05
-    bool_multi = False
 
-    start_all = time.time()
     # read the input data file into a data frame
     input_data = pd.read_csv(input_data_file, header=[0], sep='\t')
 
+    output_data = perform_event_equalize(fcst_var_val, fixed_vars_vals_input,
+                                         indy_var, input_data, series_val)
+
+    assert len(input_data) == 244
+    assert len(output_data) == 164
+
+    # test groups
+
+    indy_var = "fcst_lead"
+    series_val = dict({'model': ["CONTROL:GTS"],
+                       'fcst_valid_beg': ['2010-06-01 00:00:00:2010-06-01 12:00:00:2010-06-02 00:00:00']})
+    fixed_vars_vals_input = dict()
+
+    fcst_var_val = dict({'TMP': ["ME"]})
+    input_data_file = 'data/event_equalize_group_input.data'
+
+    # read the input data file into a data frame
+    input_data = pd.read_csv(input_data_file, header=[0], sep='\t')
+    output_data = perform_event_equalize(fcst_var_val, fixed_vars_vals_input,
+                                         indy_var, input_data, series_val)
+
+    assert len(input_data) == 216
+    assert len(output_data) == 216
+
+
+def perform_event_equalize(fcst_var_val, fixed_vars_vals_input, indy_var, input_data, series_val):
+    cl_step = 0.05
+    bool_multi = False
+    start_all = time.time()
+
     # sort the dataset by init time, lead time and independent variable
     input_data.sort_values(by=['fcst_init_beg', 'fcst_lead', indy_var])
-
     fix_vars = []
     fix_vals = []
     output_data = pd.DataFrame()
-
     # list all fixed variables
     if fixed_vars_vals_input:
         for key, value in fixed_vars_vals_input.items():
             fix_vars.append(key)
             fix_vals.append(list(value.values()))
-
     # permute fix vals
     fix_vals_permuted = list(itertools.chain.from_iterable(fix_vals))
-
     # perform EE for each forecast variable
     for fcst_var, fcst_var_stats in fcst_var_val.items():
         for fcst_var_stat in fcst_var_stats:
@@ -54,7 +76,9 @@ def test_event_equalize():
                 # ungroup series value
                 series_var_vals_no_group = []
                 for val in series_var_vals:
-                    split_val = val.split(',')
+                    split_val = re.findall(DATE_TIME_REGEX, val)
+                    if len(split_val) == 0:
+                        split_val = val.split(GROUP_SEPARATOR)
                     series_var_vals_no_group.extend(split_val)
 
                 series_data = input_data[(input_data['fcst_var'] == fcst_var)
@@ -72,11 +96,9 @@ def test_event_equalize():
                     output_data = series_data
                 else:
                     output_data.append(series_data)
-
-    # save to file
-    output_data.to_csv(index=False, sep='\t', path_or_buf=output_data_file)
     end_all = time.time()
     print("total :" + str(end_all - start_all))
+    return output_data
 
 
 @pytest.fixture
