@@ -28,7 +28,7 @@ from inspect import signature
 import yaml
 import pandas
 
-from metcalcpy import GROUP_SEPARATOR
+from metcalcpy import GROUP_SEPARATOR, DATE_TIME_REGEX
 from metcalcpy.bootstrap import bootstrap_and_value, BootstrapResults
 from metcalcpy.util.ctc_statistics import *
 from metcalcpy.util.grad_statistics import *
@@ -974,7 +974,9 @@ class AggStat:
 
                         filter_value = point[field_ind]
                         if GROUP_SEPARATOR in filter_value:
-                            filter_list = filter_value.split(GROUP_SEPARATOR)
+                            filter_list = re.findall(DATE_TIME_REGEX, filter_value)
+                            if len(filter_list) == 0:
+                                filter_list = filter_value.split(GROUP_SEPARATOR)
                         elif ";" in filter_value:
                             filter_list = filter_value.split(';')
                         else:

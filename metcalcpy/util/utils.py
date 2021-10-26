@@ -3,22 +3,22 @@ Program Name: met_stats.py
 """
 
 __author__ = 'Tatiana Burek'
-__version__ = '0.1.0'
 
 from typing import Union
 import math
 import sys
+import re
 import itertools
 import statistics as st
 import numpy as np
 import pandas as pd
 
 from scipy import stats
-import metcalcpy.util.correlation as pg
 from scipy.stats import t, nct
 from statsmodels.tsa.arima.model import ARIMA
 
-from metcalcpy import GROUP_SEPARATOR
+import metcalcpy.util.correlation as pg
+from metcalcpy import GROUP_SEPARATOR, DATE_TIME_REGEX
 from metcalcpy.event_equalize import event_equalize
 
 OPERATION_TO_SIGN = {
@@ -629,7 +629,9 @@ def equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axi
                     # ungroup series value if needed
                     series_var_vals_no_group = []
                     for val in series_var_vals:
-                        split_val = val.split(GROUP_SEPARATOR)
+                        split_val = re.findall(DATE_TIME_REGEX, val)
+                        if len(split_val) == 0:
+                            split_val = val.split(GROUP_SEPARATOR)
                         series_var_vals_no_group.extend(split_val)
 
                     # filter input data based on fcst_var, statistic
@@ -986,16 +988,16 @@ def create_permutations_mv(fields_values: Union[dict, list], index: int) -> list
 
     result = []
     for val_next_el in val_next:
-        for listVal_el in values:
+        for list_val_el in values:
 
             if isinstance(val_next_el, list):
                 # prepend value to the existing list and add it to the result
                 val_next_el_cp = val_next_el.copy()
-                val_next_el_cp.insert(0, listVal_el)
+                val_next_el_cp.insert(0, list_val_el)
                 result.append(val_next_el_cp)
             else:
                 # create a new array and add it to the result
-                result.append([listVal_el, val_next_el])
+                result.append([list_val_el, val_next_el])
     return result
 
 

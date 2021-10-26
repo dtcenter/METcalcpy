@@ -6,10 +6,11 @@ __author__ = 'Tatiana Burek'
 
 import itertools
 from typing import Any
+import re
 import numpy as np
 import pandas as pd
 
-from metcalcpy import GROUP_SEPARATOR
+from metcalcpy import GROUP_SEPARATOR, DATE_TIME_REGEX
 
 
 def event_equalize(series_data, indy_var, series_var_vals, fix_vars,
@@ -64,7 +65,9 @@ def event_equalize(series_data, indy_var, series_var_vals, fix_vars,
                 if isinstance(series_vals, str):
                     series_vals = [series_vals]
                 for series_val in series_vals:
-                    actual_vals = series_val.split(GROUP_SEPARATOR)
+                    actual_vals = re.findall(DATE_TIME_REGEX, series_val)
+                    if len(actual_vals) == 0:
+                        actual_vals = series_val.split(GROUP_SEPARATOR)
                     series_vals_no_groups.extend(actual_vals)
                 vars_for_ee[series_var] = series_vals_no_groups
 
