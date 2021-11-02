@@ -1,5 +1,5 @@
 """
-Program Name: met_stats.py
+Program Name: utils.py
 """
 
 __author__ = 'Tatiana Burek'
@@ -12,14 +12,16 @@ import itertools
 import statistics as st
 import numpy as np
 import pandas as pd
+from pandas import DataFrame
 
 from scipy import stats
 from scipy.stats import t, nct
 from statsmodels.tsa.arima.model import ARIMA
 
-import metcalcpy.util.correlation as pg
+from metcalcpy.util.correlation import corr, remove_none, acf
 from metcalcpy import GROUP_SEPARATOR, DATE_TIME_REGEX
 from metcalcpy.event_equalize import event_equalize
+from metcalcpy.util.wald_wolfowitz_runs_test import runs_test
 
 OPERATION_TO_SIGN = {
     'DIFF': '-',
@@ -132,13 +134,13 @@ def calc_derived_curve_value(val1, val2, operation):
     elif operation == 'SINGLE':
         result_val = val1
     elif operation == 'ETB':
-        corr = pg.corr(x=val1, y=val2)['r'].tolist()[0]
+        corr_val = corr(x=val1, y=val2)['r'].tolist()[0]
         result_val = tost_paired(len(val1),
                                  st.mean(val1),
                                  st.mean(val2),
                                  st.stdev(val1),
                                  st.stdev(val2),
-                                 corr,
+                                 corr_val,
                                  -0.001, 0.001
                                  )
     return result_val
@@ -1171,3 +1173,63 @@ def tost_paired(n: int, m1: float, m2: float, sd1: float, sd2: float, r12: float
         'test_outcome': test_outcome,
         'tost_outcome': tost_outcome
     }
+
+
+def calculate_mtd_revision_stats(series_data: DataFrame, lag_max: Union[int, None] = None) -> dict:
+    """
+    Calculates Mode-TD revision stats
+    :param series_data - DataFrame with columns 'stat_value' and 'revision_id'
+    :param  lag_max - maximum lag at which to calculate the acf.
+                Can be an integer or None (the default).
+                Default is 10*log10(N/m) where N is the number of
+                observations and m the number of series.
+                Will be automatically limited to one less than the number of
+                observations in the series.
+    :return: a dictionary containing this statistics:
+            ww_run -  p-value of the Wald-Wolfowitz runs test
+            auto_cor_p - p-value of autocorrelation
+            auto_cor_r - estimated  autocorrelation for lag_max
+    """
+    result = {
+        'ww_run': None,
+        'auto_cor_p': None,
+        'auto_cor_r': None
+    }
+    if len(series_data) == 0:
+        return result
+    if not {'stat_value', 'revision_id'}.issubset(series_data.columns):
+        print("DataFrame doesn't have correct columns")
+        return result
+
+    unique_ids = series_data.revision_id.unique()
+
+    data_for_stats = []
+    for revision_id in unique_ids:
+        data_for_id = series_data[series_data['revision_id'] == revision_id]['stat_value'].tolist()
+        data_for_stats.extend(data_for_id)
+        data_for_stats.extend([None])
+
+    data_for_stats.pop()
+
+    # subtract mean from each value
+    mean_val = st.mean(remove_none(data_for_stats))
+
+    def func(a):
+        if a is not None:
+            return a - mean_val
+        return None
+
+    data_for_stats = list(map(func, data_for_stats))
+
+    acf_value = acf(data_for_stats, 'correlation', lag_max)
+    if acf_value is not None:
+        result['auto_cor_r'] = round(acf_value[-1], 2)
+
+    # qnorm((1 + 0.05)/2) = 0.06270678
+    result['auto_cor_p'] = round(0.06270678 / math.sqrt(np.size(data_for_stats)), 2)
+
+    p_value = runs_test(data_for_stats, 'left.sided', 'median')['p_value']
+    if p_value is not None:
+        result['ww_run'] = round(p_value, 2)
+
+    return result
