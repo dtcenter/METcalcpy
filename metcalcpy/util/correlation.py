@@ -1,18 +1,21 @@
 """
-These methods are the part of pingouin package and was moved from it to METcalcpy without changes
+Methods to calculate various correlations
 """
+from typing import Union
+import math
+import warnings
+import numbers
+
+from statistics import mean
+import itertools as it
 import numpy as np
 import pandas as pd
-import itertools as it
-import numbers
-import warnings
 
-from scipy.stats import pearsonr, spearmanr, kendalltau
+from scipy.stats import pearsonr, spearmanr, kendalltau, t, norm
 from scipy.optimize import brenth
 from scipy.integrate import quad
 from scipy import stats
-
-from math import pi, exp, log, lgamma
+from scipy.special import gamma, betaln, hyp2f1
 
 
 def corr(x, y, tail='two-sided', method='pearson', **kwargs):
@@ -37,7 +40,6 @@ def corr(x, y, tail='two-sided', method='pearson', **kwargs):
         * ``'bicor'``: Biweight midcorrelation (robust)
         * ``'percbend'``: Percentage bend correlation (robust)
         * ``'shepherd'``: Shepherd's pi correlation (robust)
-        * ``'skipped'``: Skipped correlation (robust)
     **kwargs : optional
         Optional argument(s) passed to the lower-level functions.
 
@@ -112,12 +114,11 @@ def corr(x, y, tail='two-sided', method='pearson', **kwargs):
     protects against *univariate* outliers by down-weighting observations that
     deviate too much from the median.
 
-    The Shepherd pi [2]_ correlation and skipped [3]_, [4]_ correlation are
+    The Shepherd pi [2]_  correlation is
     both robust methods that returns the Spearman correlation coefficient after
     removing *bivariate* outliers. Briefly, the Shepherd pi uses a
-    bootstrapping of the Mahalanobis distance to identify outliers, while the
-    skipped correlation is based on the minimum covariance determinant
-    (which requires scikit-learn). Note that these two methods are
+    bootstrapping of the Mahalanobis distance to identify outliers.
+     Note that this  method is
     significantly slower than the previous ones.
 
     .. important:: Please note that rows with missing values (NaN) are
@@ -146,7 +147,6 @@ def corr(x, y, tail='two-sided', method='pearson', **kwargs):
     1. Pearson correlation
 
     >>> import numpy as np
-    >>> import pingouin as pg
     >>> # Generate random correlated samples
     >>> np.random.seed(123)
     >>> mean, cov = [4, 6], [(1, .5), (.5, 1)]
@@ -187,11 +187,6 @@ def corr(x, y, tail='two-sided', method='pearson', **kwargs):
                n  outliers      r         CI95%     r2  adj_r2  p-val  power
     shepherd  30         2  0.437  [0.09, 0.69]  0.191   0.131   0.02  0.694
 
-    7. Skipped spearman correlation (robust)
-
-    >>> pg.corr(x, y, method='skipped').round(3)
-              n  outliers      r         CI95%     r2  adj_r2  p-val  power
-    skipped  30         2  0.437  [0.09, 0.69]  0.191   0.131   0.02  0.694
 
     8. One-tailed Pearson correlation
 
@@ -232,8 +227,6 @@ def corr(x, y, tail='two-sided', method='pearson', **kwargs):
         r, pval = percbend(x, y, **kwargs)
     elif method == 'shepherd':
         r, pval, outliers = shepherd(x, y, **kwargs)
-    elif method == 'skipped':
-        r, pval, outliers = skipped(x, y, **kwargs)
     else:
         raise ValueError(f'Method "{method}" not recognized.')
 
@@ -251,136 +244,96 @@ def corr(x, y, tail='two-sided', method='pearson', **kwargs):
 
     # Compute the parametric 95% confidence interval and power
     ci = compute_esci(stat=r, nx=nx, ny=nx, eftype='r', decimals=6)
-    pr = power_corr(r=r, n=nx, power=None, alpha=0.05, tail=tail),
+    pr = power_corr(r=r, n=nx, power=None, alpha=0.05, tail=tail)
 
-    # Create dictionnary
-    stats = {'n': nx,
-             'r': r,
-             'r2': r2,
-             'adj_r2': adj_r2,
-             'CI95%': [ci],
-             'p-val': pval if tail == 'two-sided' else .5 * pval,
-             'power': pr
-             }
-
-    if method in ['shepherd', 'skipped']:
-        stats['outliers'] = sum(outliers)
+    # Create dictionary
+    stats_dict = \
+        {'n': nx,
+         'r': r,
+         'r2': r2,
+         'adj_r2': adj_r2,
+         'CI95%': [ci],
+         'p-val': pval if tail == 'two-sided' else .5 * pval,
+         'power': pr
+         }
 
     # Compute the BF10 for Pearson correlation only
     if method == 'pearson':
-        stats['BF10'] = bayesfactor_pearson(r, nx, tail=tail)
+        stats_dict['BF10'] = bayesfactor_pearson(r, nx, tail=tail)
 
     # Convert to DataFrame
-    stats = pd.DataFrame.from_records(stats, index=[method])
+    stats_df = pd.DataFrame.from_records(stats_dict, index=[method])
 
     # Define order
     col_keep = ['n', 'outliers', 'r', 'CI95%', 'r2', 'adj_r2', 'p-val',
                 'BF10', 'power']
-    col_order = [k for k in col_keep if k in stats.keys().tolist()]
-    return _postprocess_dataframe(stats)[col_order]
+    col_order = [k for k in col_keep if k in stats_df.keys().tolist()]
+    return _postprocess_dataframe(stats_df)[col_order]
 
 
-def remove_na(x, y=None, paired=False, axis='rows'):
-    """Remove missing values along a given axis in one or more (paired) numpy
-    arrays.
-
-    Parameters
-    ----------
-    x, y : 1D or 2D arrays
-        Data. ``x`` and ``y`` must have the same number of dimensions.
-        ``y`` can be None to only remove missing values in ``x``.
-    paired : bool
-        Indicates if the measurements are paired or not.
-    axis : str
-        Axis or axes along which missing values are removed.
-        Can be 'rows' or 'columns'. This has no effect if ``x`` and ``y`` are
-        one-dimensional arrays.
-
-    Returns
-    -------
-    x, y : np.ndarray
-        Data without missing values
-
-    Examples
-    --------
-    Single 1D array
-
-    >>> import numpy as np
-    >>> from pingouin import remove_na
-    >>> x = [6.4, 3.2, 4.5, np.nan]
-    >>> remove_na(x)
-    array([6.4, 3.2, 4.5])
-
-    With two paired 1D arrays
-
-    >>> y = [2.3, np.nan, 5.2, 4.6]
-    >>> remove_na(x, y, paired=True)
-    (array([6.4, 4.5]), array([2.3, 5.2]))
-
-    With two independent 2D arrays
-
-    >>> x = np.array([[4, 2], [4, np.nan], [7, 6]])
-    >>> y = np.array([[6, np.nan], [3, 2], [2, 2]])
-    >>> x_no_nan, y_no_nan = remove_na(x, y, paired=False)
+def acf(x: Union[list, np.array], acf_type: str = 'correlation', lag_max: Union[int, None] = None) \
+        -> Union[list, None]:
     """
-    # Safety checks
-    x = np.asarray(x)
-    assert x.size > 1, 'x must have more than one element.'
-    assert axis in ['rows', 'columns'], 'axis must be rows or columns.'
+    The function acf computes estimates of the autocovariance or autocorrelation function.
+    Similar to Rscript function
 
-    if y is None:
-        return _remove_na_single(x, axis=axis)
-    elif isinstance(y, (int, float, str)):
-        return _remove_na_single(x, axis=axis), y
-    else:  # y is list, np.array, pd.Series
-        y = np.asarray(y)
-        # Make sure that we just pass-through if y have only 1 element
-        if y.size == 1:
-            return _remove_na_single(x, axis=axis), y
-        if x.ndim != y.ndim or paired is False:
-            # x and y do not have the same dimension
-            x_no_nan = _remove_na_single(x, axis=axis)
-            y_no_nan = _remove_na_single(y, axis=axis)
-            return x_no_nan, y_no_nan
+    Args:
+        x - numeric array.
+        acf_type - character string giving the type of acf to be computed.
+                Allowed values are "correlation" (the default), "covariance".
+        lag_max - maximum lag at which to calculate the acf.
+                Can be an integer or None (the default).
+                Default is 10*log10(N/m) where N is the number of
+                observations and m the number of series.
+                Will be automatically limited to one less than the number of
+                observations in the series.
 
-    # At this point, we assume that x and y are paired and have same dimensions
-    if x.ndim == 1:
-        # 1D arrays
-        x_mask = ~np.isnan(x)
-        y_mask = ~np.isnan(y)
-    else:
-        # 2D arrays
-        ax = 1 if axis == 'rows' else 0
-        x_mask = ~np.any(np.isnan(x), axis=ax)
-        y_mask = ~np.any(np.isnan(y), axis=ax)
-
-    # Check if missing values are present
-    if ~x_mask.all() or ~y_mask.all():
-        ax = 0 if axis == 'rows' else 1
-        ax = 0 if x.ndim == 1 else ax
-        both = np.logical_and(x_mask, y_mask)
-        x = x.compress(both, axis=ax)
-        y = y.compress(both, axis=ax)
-    return x, y
-
-
-def _remove_na_single(x, axis='rows'):
-    """Remove NaN in a single array.
-    This is an internal Pingouin function.
+        :return: - An array with the same dimensions as lag_max containing the estimated acf
     """
-    if x.ndim == 1:
-        # 1D arrays
-        x_mask = ~np.isnan(x)
-    else:
-        # 2D arrays
-        ax = 1 if axis == 'rows' else 0
-        x_mask = ~np.any(np.isnan(x), axis=ax)
-    # Check if missing values are present
-    if ~x_mask.all():
-        ax = 0 if axis == 'rows' else 1
-        ax = 0 if x.ndim == 1 else ax
-        x = x.compress(x_mask, axis=ax)
-    return x
+    # validate acf type
+    if acf_type not in ['covariance', 'correlation']:
+        print('ERROR  incorrect acf_type')
+        return None
+    if x is None or len(x) == 0:
+        return None
+
+    acf_result = []
+    size = np.size(x)
+
+    # calculate mean of the array excluding None
+    mean_val = mean(remove_none(x))
+
+    # calculate lag if not provided
+    if lag_max is None:
+        lag_max = math.floor(10 * (math.log10(size) - math.log10(1)))
+    lag_max = int(min(lag_max, size - 1))
+
+    cov_0 = autocovariance(x, size, 0, mean_val)
+    for i in range(lag_max+1):
+        cov = autocovariance(x, size, i, mean_val)
+        if acf_type == 'covariance':
+            acf_result.append(cov)
+        elif acf_type == 'correlation':
+            acf_result.append(cov / cov_0)
+    return acf_result
+
+
+def autocovariance(x, list_size, n_lag, mean_val):
+    """
+    The function that computes  autocovariance for the first n_lag elements of the list
+    :param x: numeric array
+    :param list_size: size of list
+    :param n_lag: lag at which to calculate the autocovariance
+    :param mean_val:  mean value of the array
+    :return:  autocovariance
+    """
+    total_autocov = 0
+    count_autocov = 0
+    for i in np.arange(0, list_size - n_lag):
+        if x[i + n_lag] is not None and x[i] is not None:
+            total_autocov += ((x[i + n_lag]) - mean_val) * (x[i] - mean_val)
+            count_autocov = count_autocov + 1
+    return (1 / (count_autocov + n_lag)) * total_autocov
 
 
 def bicor(x, y, c=9):
@@ -415,7 +368,7 @@ def bicor(x, y, c=9):
     Correlations and Hierarchical Clustering. Journal of Statistical Software,
     46(11). https://www.ncbi.nlm.nih.gov/pubmed/23050260
     """
-    from scipy.stats import t
+
     # Calculate median
     nx = x.size
     x_median = np.median(x)
@@ -476,7 +429,6 @@ def percbend(x, y, beta=.2):
        Toolbox. Frontiers in Psychology. 2012;3:606.
        doi:10.3389/fpsyg.2012.00606.
     """
-    from scipy.stats import t
     X = np.column_stack((x, y))
     nx = X.shape[0]
     M = np.tile(np.median(X, axis=0), nx).reshape(X.shape)
@@ -552,95 +504,6 @@ def shepherd(x, y, n_boot=200):
     return r, pval, outliers
 
 
-def skipped(x, y, corr_type='spearman'):
-    """Skipped correlation (Rousselet and Pernet 2012).
-
-    Parameters
-    ----------
-    x, y : array_like
-        First and second set of observations. x and y must be independent.
-    corr_type : str
-        Method used to compute the correlation after outlier removal. Can be
-        either 'spearman' (default) or 'pearson'.
-
-    Returns
-    -------
-    r : float
-        Skipped correlation coefficient.
-    pval : float
-        Two-tailed p-value.
-    outliers : array of bool
-        Indicate if value is an outlier or not
-
-    Notes
-    -----
-    The skipped correlation involves multivariate outlier detection using a
-    projection technique (Wilcox, 2004, 2005). First, a robust estimator of
-    multivariate location and scatter, for instance the minimum covariance
-    determinant estimator (MCD; Rousseeuw, 1984; Rousseeuw and van Driessen,
-    1999; Hubert et al., 2008) is computed. Second, data points are
-    orthogonally projected on lines joining each of the data point to the
-    location estimator. Third, outliers are detected using a robust technique.
-    Finally, Spearman correlations are computed on the remaining data points
-    and calculations are adjusted by taking into account the dependency among
-    the remaining data points.
-
-    Code inspired by Matlab code from Cyril Pernet and Guillaume
-    Rousselet [1]_.
-
-    Requires scikit-learn.
-
-    References
-    ----------
-    .. [1] Pernet CR, Wilcox R, Rousselet GA. Robust Correlation Analyses:
-       False Positive and Power Validation Using a New Open Source Matlab
-       Toolbox. Frontiers in Psychology. 2012;3:606.
-       doi:10.3389/fpsyg.2012.00606.
-    """
-    # Check that sklearn is installed
-    _is_sklearn_installed(raise_error=True)
-    from scipy.stats import chi2
-    from sklearn.covariance import MinCovDet
-    X = np.column_stack((x, y))
-    nrows, ncols = X.shape
-    gval = np.sqrt(chi2.ppf(0.975, 2))
-    # Compute center and distance to center
-    center = MinCovDet(random_state=42).fit(X).location_
-    B = X - center
-    bot = (B ** 2).sum(axis=1)
-    # Loop over rows
-    dis = np.zeros(shape=(nrows, nrows))
-    for i in np.arange(nrows):
-        if bot[i] != 0:  # Avoid division by zero error
-            dis[i, :] = np.linalg.norm(
-                B.dot(B[i, :, None]) * B[i, :] / bot[i], axis=1)
-
-    # Detect outliers
-    def idealf(x):
-        """Compute the ideal fourths IQR (Wilcox 2012).
-        """
-        n = len(x)
-        j = int(np.floor(n / 4 + 5 / 12))
-        y = np.sort(x)
-        g = (n / 4) - j + (5 / 12)
-        low = (1 - g) * y[j - 1] + g * y[j]
-        k = n - j + 1
-        up = (1 - g) * y[k - 1] + g * y[k - 2]
-        return up - low
-
-    # One can either use the MAD or the IQR (see Wilcox 2012)
-    # MAD = mad(dis, axis=1)
-    iqr = np.apply_along_axis(idealf, 1, dis)
-    thresh = (np.median(dis, axis=1) + gval * iqr)
-    outliers = np.apply_along_axis(np.greater, 0, dis, thresh).any(axis=0)
-    # Compute correlation on remaining data
-    if corr_type == 'spearman':
-        r, pval = spearmanr(X[~outliers, 0], X[~outliers, 1])
-    else:
-        r, pval = pearsonr(X[~outliers, 0], X[~outliers, 1])
-    return r, pval, outliers
-
-
 def bsmahal(a, b, n_boot=200):
     """
     Bootstraps Mahalanobis distances for Shepherd's pi correlation.
@@ -688,11 +551,7 @@ def bayesfactor_pearson(r, n, tail='two-sided', method='ly', kappa=1.):
     n : int
         Sample size.
     tail : float
-        Tail of the alternative hypothesis. Can be *'two-sided'*,
-        *'one-sided'*, *'greater'* or *'less'*. *'greater'* corresponds to a
-        positive correlation, *'less'* to a negative correlation.
-        If *'one-sided'*, the directionality is inferred based on the ``r``
-        value (= *'greater'* if ``r`` > 0, *'less'* if ``r`` < 0).
+        Tail of the alternative hypothesis. Can be *'two-sided'*
     method : str
         Method to compute the Bayes Factor. Can be *'ly'* (default) or
         *'wetzels'*. The former has an exact analytical solution, while the
@@ -765,7 +624,6 @@ def bayesfactor_pearson(r, n, tail='two-sided', method='ly', kappa=1.):
     --------
     Bayes Factor of a Pearson correlation
 
-    >>> from pingouin import bayesfactor_pearson
     >>> r, n = 0.6, 20
     >>> bf = bayesfactor_pearson(r, n)
     >>> print("Bayes Factor: %.3f" % bf)
@@ -777,20 +635,8 @@ def bayesfactor_pearson(r, n, tail='two-sided', method='ly', kappa=1.):
     >>> print("Bayes Factor: %.3f" % bf)
     Bayes Factor: 8.221
 
-    One-sided test
 
-    >>> bf10pos = bayesfactor_pearson(r, n, tail='greater')
-    >>> bf10neg = bayesfactor_pearson(r, n, tail='less')
-    >>> print("BF-pos: %.3f, BF-neg: %.3f" % (bf10pos, bf10neg))
-    BF-pos: 21.185, BF-neg: 0.082
-
-    We can also only pass ``tail='one-sided'`` and Pingouin will automatically
-    infer the directionality of the test based on the ``r`` value.
-
-    >>> print("BF: %.3f" % bayesfactor_pearson(r, n, tail='one-sided'))
-    BF: 21.185
     """
-    from scipy.special import gamma, betaln, hyp2f1
     assert method.lower() in ['ly', 'wetzels'], 'Method not recognized.'
     assert tail.lower() in ['two-sided', 'one-sided', 'greater', 'less',
                             'g', 'l', 'positive', 'negative', 'pos', 'neg']
@@ -809,9 +655,9 @@ def bayesfactor_pearson(r, n, tail='two-sided', method='ly', kappa=1.):
         # Wetzels & Wagenmakers, 2012. Integral solving
 
         def fun(g, r, n):
-            return exp(((n - 2) / 2) * log(1 + g) + (-(n - 1) / 2)
-                       * log(1 + (1 - r ** 2) * g) + (-3 / 2)
-                       * log(g) + - n / (2 * g))
+            return math.exp(((n - 2) / 2) * math.log(1 + g) + (-(n - 1) / 2)
+                            * math.log(1 + (1 - r ** 2) * g) + (-3 / 2)
+                            * math.log(g) + - n / (2 * g))
 
         integr = quad(fun, 0, np.inf, args=(r, n))[0]
         bf10 = np.sqrt((n / 2)) / gamma(1 / 2) * integr
@@ -820,36 +666,11 @@ def bayesfactor_pearson(r, n, tail='two-sided', method='ly', kappa=1.):
         # Ly et al, 2016. Analytical solution.
         k = kappa
         lbeta = betaln(1 / k, 1 / k)
-        log_hyperterm = log(hyp2f1(((n - 1) / 2), ((n - 1) / 2),
-                                   ((n + 2 / k) / 2), r ** 2))
-        bf10 = exp((1 - 2 / k) * log(2) + 0.5 * log(pi) - lbeta
-                   + lgamma((n + 2 / k - 1) / 2) - lgamma((n + 2 / k) / 2) +
-                   log_hyperterm)
-
-        if tail.lower() != 'two-sided':
-            # Directional test.
-            # We need mpmath for the generalized hypergeometric function
-            from .utils import _is_mpmath_installed
-            _is_mpmath_installed(raise_error=True)
-            from mpmath import hyp3f2
-            hyper_term = float(hyp3f2(1, n / 2, n / 2, 3 / 2,
-                                      (2 + k * (n + 1)) / (2 * k),
-                                      r ** 2))
-            log_term = 2 * (lgamma(n / 2) - lgamma((n - 1) / 2)) - lbeta
-            C = 2 ** ((3 * k - 2) / k) * k * r / (2 + (n - 1) * k) * \
-                exp(log_term) * hyper_term
-
-            bf10neg = bf10 - C
-            bf10pos = 2 * bf10 - bf10neg
-            if tail.lower() in ['one-sided']:
-                # Automatically find the directionality of the test based on r
-                bf10 = bf10pos if r >= 0 else bf10neg
-            elif tail.lower() in ['greater', 'g', 'positive', 'pos']:
-                # We expect the correlation to be positive
-                bf10 = bf10pos
-            else:
-                # We expect the correlation to be negative
-                bf10 = bf10neg
+        log_hyperterm = math.log(hyp2f1(((n - 1) / 2), ((n - 1) / 2),
+                                        ((n + 2 / k) / 2), r ** 2))
+        bf10 = math.exp((1 - 2 / k) * math.log(2) + 0.5 * math.log(math.pi) - lbeta
+                        + math.lgamma((n + 2 / k - 1) / 2) - math.lgamma((n + 2 / k) / 2) +
+                        log_hyperterm)
 
     return bf10
 
@@ -952,7 +773,6 @@ def compute_esci(stat=None, nx=None, ny=None, paired=False, eftype='cohen',
     --------
     1. Confidence interval of a Pearson correlation coefficient
 
-    >>> import pingouin as pg
     >>> x = [3, 4, 6, 7, 5, 6, 7, 3, 5, 4, 2]
     >>> y = [4, 6, 6, 7, 6, 5, 5, 2, 3, 4, 1]
     >>> nx, ny = len(x), len(y)
@@ -968,7 +788,6 @@ def compute_esci(stat=None, nx=None, ny=None, paired=False, eftype='cohen',
     >>> print(round(stat, 4), ci)
     0.1538 [-0.737  1.045]
     """
-    from scipy.stats import norm, t
     assert eftype.lower() in ['r', 'pearson', 'spearman', 'cohen',
                               'd', 'g', 'hedges']
     assert stat is not None and nx is not None
@@ -1043,7 +862,6 @@ def power_corr(r=None, n=None, power=None, alpha=0.05, tail='two-sided'):
     --------
     1. Compute achieved power given ``r``, ``n`` and ``alpha``
 
-    >>> from pingouin import power_corr
     >>> print('power: %.4f' % power_corr(r=0.5, n=20))
     power: 0.6379
 
@@ -1236,15 +1054,115 @@ def _get_round_setting_for(row, col):
             pass
     return options['round']
 
-def _is_sklearn_installed(raise_error=False):
-    """Check if sklearn is installed."""
-    try:
-        import sklearn  # noqa
-        is_installed = True
-    except IOError:  # pragma: no cover
-        is_installed = False
-    # Raise error (if needed) :
-    if raise_error and not is_installed:  # pragma: no cover
-        raise IOError("sklearn needs to be installed. Please use `pip "
-                      "install scikit-learn`.")
-    return is_installed
+
+def remove_na(x, y=None, paired=False, axis='rows'):
+    """Remove missing values along a given axis in one or more (paired) numpy
+    arrays.
+
+    Parameters
+    ----------
+    x, y : 1D or 2D np.ndarray arrays
+        Data. ``x`` and ``y`` must have the same number of dimensions.
+        ``y`` can be None to only remove missing values in ``x``.
+    paired : bool
+        Indicates if the measurements are paired or not.
+    axis : str
+        Axis or axes along which missing values are removed.
+        Can be 'rows' or 'columns'. This has no effect if ``x`` and ``y`` are
+        one-dimensional arrays.
+
+    Returns
+    -------
+    x, y : np.ndarray
+        Data without missing values
+
+    Examples
+    --------
+    Single 1D array
+
+    >>> import numpy as np
+    >>> x = [6.4, 3.2, 4.5, np.nan]
+    >>> remove_na(x)
+    array([6.4, 3.2, 4.5])
+
+    With two paired 1D arrays
+
+    >>> y = [2.3, np.nan, 5.2, 4.6]
+    >>> remove_na(x, y, paired=True)
+    (array([6.4, 4.5]), array([2.3, 5.2]))
+
+    With two independent 2D arrays
+
+    >>> x = np.array([[4, 2], [4, np.nan], [7, 6]])
+    >>> y = np.array([[6, np.nan], [3, 2], [2, 2]])
+    >>> x_no_nan, y_no_nan = remove_na(x, y, paired=False)
+    """
+    # Safety checks
+    x = np.asarray(x)
+    assert x.size > 1, 'x must have more than one element.'
+    assert axis in ['rows', 'columns'], 'axis must be rows or columns.'
+
+    if y is None:
+        return _remove_na_single(x, axis=axis)
+    elif isinstance(y, (int, float, str)):
+        return _remove_na_single(x, axis=axis), y
+    else:  # y is list, np.array, pd.Series
+        y = np.asarray(y)
+        # Make sure that we just pass-through if y have only 1 element
+        if y.size == 1:
+            return _remove_na_single(x, axis=axis), y
+        if x.ndim != y.ndim or paired is False:
+            # x and y do not have the same dimension
+            x_no_nan = _remove_na_single(x, axis=axis)
+            y_no_nan = _remove_na_single(y, axis=axis)
+            return x_no_nan, y_no_nan
+
+    # At this point, we assume that x and y are paired and have same dimensions
+    if x.ndim == 1:
+        # 1D arrays
+        x_mask = ~np.isnan(x)
+        y_mask = ~np.isnan(y)
+    else:
+        # 2D arrays
+        ax = 1 if axis == 'rows' else 0
+        x_mask = ~np.any(np.isnan(x), axis=ax)
+        y_mask = ~np.any(np.isnan(y), axis=ax)
+
+    # Check if missing values are present
+    if ~x_mask.all() or ~y_mask.all():
+        ax = 0 if axis == 'rows' else 1
+        ax = 0 if x.ndim == 1 else ax
+        both = np.logical_and(x_mask, y_mask)
+        x = x.compress(both, axis=ax)
+        y = y.compress(both, axis=ax)
+    return x, y
+
+
+def _remove_na_single(x, axis='rows'):
+    """Remove NaN in a single np.ndarray numpy array.
+    This is an internal Pingouin function.
+    """
+    if x.ndim == 1:
+        # 1D arrays
+        x_mask = ~np.isnan(x)
+    else:
+        # 2D arrays
+        ax = 1 if axis == 'rows' else 0
+        x_mask = ~np.any(np.isnan(x), axis=ax)
+    # Check if missing values are present
+    if ~x_mask.all():
+        ax = 0 if axis == 'rows' else 1
+        ax = 0 if x.ndim == 1 else ax
+        x = x.compress(x_mask, axis=ax)
+    return x
+
+
+def remove_none(x):
+    """ Remove missing (None) values from the list
+    :param x: numeric list
+    :return: a list without None  or empty array
+    """
+    if x is None:
+        return []
+
+    return [elem for elem in x if elem is not None]

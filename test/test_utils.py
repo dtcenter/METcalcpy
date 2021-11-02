@@ -1,10 +1,11 @@
 """Tests the operation of METcalcpy's utils code."""
 import numpy as np
+import pandas as pd
 import pytest
 
 from metcalcpy.util.utils import represents_int, is_string_integer, get_derived_curve_name, calc_derived_curve_value, \
     unique, intersection, is_derived_point, parse_bool, round_half_up, sum_column_data_by_name, \
-    nrow_column_data_by_name_value,  create_permutations_mv, column_data_by_name
+    nrow_column_data_by_name_value, create_permutations_mv, column_data_by_name, calculate_mtd_revision_stats
 
 
 @pytest.fixture
@@ -124,8 +125,8 @@ def test_column_data_by_name(settings):
     column_name = 'fobar'
     result = column_data_by_name(data_values, settings['columns'], column_name)
     assert len(result) == 2
-    assert float(data_values[0,11]) == result[0]
-    assert float(data_values[1,11]) == result[1]
+    assert float(data_values[0, 11]) == result[0]
+    assert float(data_values[1, 11]) == result[1]
 
     column_name = 'not_in_array'
     assert not column_data_by_name(data_values, settings['columns'], column_name)
@@ -167,11 +168,21 @@ def test_create_permutations_mv_dict():
 
 
 def test_create_permutations_mv_list():
-    fields_values = [['FULL'],  ['HREF', 'HREFV3'],  ['HGT'], ['ECNT_RMSE', 'ECNT_SPREAD']]
+    fields_values = [['FULL'], ['HREF', 'HREFV3'], ['HGT'], ['ECNT_RMSE', 'ECNT_SPREAD']]
     expected_result = [['FULL', 'HREF', 'HGT', 'ECNT_RMSE'], ['FULL', 'HREFV3', 'HGT', 'ECNT_RMSE'],
                        ['FULL', 'HREF', 'HGT', 'ECNT_SPREAD'], ['FULL', 'HREFV3', 'HGT', 'ECNT_SPREAD']]
     result = create_permutations_mv(fields_values, 0)
     assert expected_result == result
+
+
+def test_calculate_mtd_revision_stats():
+    df = pd.read_csv('data/mtd_revision.data', index_col=0)
+    stats = calculate_mtd_revision_stats(df)
+    assert stats.get("ww_run") == 0
+    assert stats.get("auto_cor_p") == 0
+    assert stats.get("auto_cor_r") == 0.01
+    stats = calculate_mtd_revision_stats(df, 1)
+    assert stats.get("auto_cor_r") == 0.15
 
 
 if __name__ == "__main__":
@@ -185,3 +196,4 @@ if __name__ == "__main__":
     test_parse_bool()
     test_round_half_up()
     test_sum_column_data_by_name()
+    test_calculate_mtd_revision_stats()
