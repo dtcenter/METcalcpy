@@ -1,5 +1,5 @@
 # METcalcpy
-Python version of statistics calculation functionality of METviewer, 
+Python version of statistics, pre-processing and diagnostics calculation functionality of METviewer, 
 METexpress, plotting packages in METplotpy and as stand-alone package for any other application.
 
 Please see the [METcalcpy User's Guide](https://metcalcpy.readthedocs.io/en/latest) for more information.
