@@ -3,7 +3,7 @@ METcalcpy package.
 
 For each new module, create a new sub-directory under the METcalcpy/src directory.
 
-The METcalcpy/src/util directory contains modules that provide common functionality across multiple modules.
+The METcalcpy/util directory contains modules that provide common functionality across multiple modules.
 The METcalcpy/pre_processing directory contains modules that provide common functionality for pre-processing data.
 The METcalcpy/diagnostics directory contains those modules useful for calculating diagnostics.
 
