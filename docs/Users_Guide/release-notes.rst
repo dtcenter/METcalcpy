@@ -7,9 +7,26 @@ describes the bugfix, enhancement, or new feature: `METcalcpy GitHub issues. <ht
 Version |version| release notes (|release_date|)
 ------------------------------------------------
 
-Version 1.1.0 release notes (20211006)
+Version 1.1.0 release notes (20211116)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+beta4 release
+^^^^^^^^^^^^^
+
+New Functionality:
+
+Enhancements:
+
+
+Internal:
+
+
+* Implement Auto- and Cross- Covariance and -Correlation Function Estimation function for Revision series for MODE-TD.
+related issue (`#121 <https://github.com/dtcenter/METcalcpy/issues/121>`_)
+
+Bugfixes:
+
+* plots with groups with date values don't get created (`#122<https://github.com/dtcenter/METcalcpy/issues/122>`_)
 
 beta3 release
 ^^^^^^^^^^^^^
