@@ -25,7 +25,7 @@ Internal:
 
 Bugfixes:
 
-* plots with groups with date values don't get created (`#122<https://github.com/dtcenter/METcalcpy/issues/122>`_)
+* plots with groups with date values don't get created (`#122 <https://github.com/dtcenter/METcalcpy/issues/122>`_)
 
 
 beta3 release
