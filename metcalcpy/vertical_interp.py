@@ -655,6 +655,9 @@ if __name__ == '__main__':
         if 'time' in ds:
             ds_out['init_time'] = ds['time'].values
 
+    ds_out['lat'] = ds['lat']
+    ds_out['lon'] = ds['lon']
+
     for attr in ds.attrs:
         ds_out.attrs[attr] = ds.attrs[attr]
 
