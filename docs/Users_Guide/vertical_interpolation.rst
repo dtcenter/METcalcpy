@@ -4,7 +4,7 @@ Vertical Interpolation
 Description
 ~~~~~~~~~~~
 
-The vertical interpolation module is used to perform pressure to height conversion in TC-RMW
+This module is used to perform pressure to height conversion in TC-RMW
 data (netCDF or grb2) by vertically interpolating fields
 between grids with pressure vertical coordinates.  The pressure to height conversion is
 implemented with linear interpolation.
@@ -108,7 +108,7 @@ To perform the conversion, do the following:
 
 * cd to the $METCALCPY_SOURCE_DIR/METcalcpy/examples directory
 
-* enter the following command:
+* run the script, enter the following command:
 
 ``sh height_from_pressure_tcrmw.sh``
 
