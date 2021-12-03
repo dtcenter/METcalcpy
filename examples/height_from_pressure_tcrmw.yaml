@@ -38,6 +38,7 @@ relative_humidity_name:
 fields:
     - 'UGRD'
     - 'VGRD'
+    - 'TMP'
 
 #
 # Vertical coordinate information
