@@ -101,7 +101,7 @@ To perform the conversion, do the following:
 
   * xarray 0.20.1
 
-  * yaml 0.25
+  * yaml 0.2.5
 
 * If running in a conda environment, verify that you are running in a conda environment that
   has the above Python packages installed.
