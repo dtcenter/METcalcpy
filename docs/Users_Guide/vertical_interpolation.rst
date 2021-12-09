@@ -95,6 +95,8 @@ To perform the conversion, do the following:
 
   * Python 3.7
 
+  * metpy 1.1.0
+
   * netcdf4 1.5.7
 
   * numpy 1.21.2
