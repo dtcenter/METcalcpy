@@ -98,6 +98,8 @@ To perform the conversion, do the following:
   * netcdf4 1.5.7
 
   * numpy 1.21.2
+
+  * pint 0.18
  
   * pyyaml 5.4.1
 
