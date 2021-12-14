@@ -417,12 +417,17 @@ def height_from_pressure(config,
              'layer_height': layer_height})
         debugfile = os.path.join(args.datadir, 'Debug',
             'height_from_pressure_debug.nc')
+        
+        # create the Debug directory if it doesn't already exist
+        debug_path = os.path.join(args.datadir, 'Debug')
+        if not os.path.exists(debug_path):
+            os.makedirs(debug_path)
         try:
             ds_debug.to_netcdf(debugfile)
         except:
             ds_nc = nc.Dataset(debugfile, 'w')
             write_dataset(ds_debug, ds_nc)
-            ds_nc.close()
+            ds_nc.close() 
 
     return layer_height
 
