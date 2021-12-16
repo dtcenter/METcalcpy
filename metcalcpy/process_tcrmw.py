@@ -43,6 +43,11 @@ if __name__ == '__main__':
     """
     Construct input and output filenames
     """
+    if os.path.isdir(args.datadir):
+        logging.info(args.datadir)
+    else:
+        logging.error(args.datadir + ' datadir not found')
+        sys.exit(1)
     filename_in = os.path.join(args.datadir, args.input)
     filename_out = os.path.join(args.datadir, args.output)
 
