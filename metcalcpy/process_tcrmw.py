@@ -2,6 +2,15 @@ import os
 import sys
 import argparse
 import logging
+import xarray as xr
+
+
+def read_tcrmw(filename):
+    ds = xr.open_dataset(filename)
+    # range, azimuth, pressure, track_point
+    for var in ds.keys():
+        logging.info((var, ds[var].dims))
+    return ds
 
 
 if __name__ == '__main__':
@@ -36,3 +45,8 @@ if __name__ == '__main__':
     """
     filename_in = os.path.join(args.datadir, args.input)
     filename_out = os.path.join(args.datadir, args.output)
+
+    """
+    Open dataset
+    """
+    ds = read_tcrmw(filename_in)
