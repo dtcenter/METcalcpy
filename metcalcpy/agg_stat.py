@@ -1122,7 +1122,7 @@ class AggStat:
 
         export_csv = out_frame.to_csv(self.params['agg_stat_output'],
                                       index=None, header=header, mode=mode,
-                                      sep="\t", na_rep="NA")
+                                      sep="\t", na_rep="NA", float_format='%.'+ str(PRECISION) +'f')
 
 
 if __name__ == "__main__":
