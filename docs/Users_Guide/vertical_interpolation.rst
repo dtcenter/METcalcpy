@@ -87,6 +87,11 @@ e.g.
 
 ``export OUTPUT_DIR=/users/mydir/tcrmw/output``
 
+
+Uncomment the `--debug` if additional debug information is desired.  This will result in the generation of intermediate netCDF files in the directory specified by the $DATA_DIR 
+environment variable in the `height_from_pressure_tcrmw.sh` shell script.  Create a 'Debug' subdirectory in the $DATA_DIR directory.  After running the
+`height_from_pressure_tcrmw.sh` shell script, numerous netCDF files will be created: a height_from_pressure_debug.nc and numerous files beginning with `vertical_interp_debug`
+ 	   
 Save and close the file.
 
 To perform the conversion, do the following:
