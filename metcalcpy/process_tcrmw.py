@@ -2,6 +2,7 @@ import os
 import sys
 import argparse
 import logging
+import numpy as np
 import xarray as xr
 
 
@@ -11,7 +12,7 @@ def read_tcrmw(filename):
     for var in ds.keys():
         logging.info((var, ds[var].dims))
     for coord in ds.coords:
-        logging.info((coord, ds[coord].values))
+        logging.debug((coord, ds[coord].values))
     return ds
 
 
@@ -34,6 +35,9 @@ if __name__ == '__main__':
                         help='log file (default stdout)')
     parser.add_argument('--debug', action='store_true',
                         help='set logging level to debug')
+    parser.add_argument('--levels', type=str,
+                        help='vertical height levels',
+                        default='100,200,500,1000,1500,2000,3000,4000,5000')
     args = parser.parse_args()
 
     """
@@ -52,6 +56,12 @@ if __name__ == '__main__':
         sys.exit(1)
     filename_in = os.path.join(args.datadir, args.input)
     filename_out = os.path.join(args.datadir, args.output)
+
+    """
+    Height levels
+    """
+    levels = np.array([float(lev) for lev in args.levels.split(',')])
+    logging.info(('levels', levels))
 
     """
     Open dataset
