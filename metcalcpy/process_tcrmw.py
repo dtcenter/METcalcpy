@@ -10,6 +10,8 @@ def read_tcrmw(filename):
     # range, azimuth, pressure, track_point
     for var in ds.keys():
         logging.info((var, ds[var].dims))
+    for coord in ds.coords:
+        logging.info((coord, ds[coord].values))
     return ds
 
 
