@@ -35,6 +35,9 @@ if __name__ == '__main__':
                         help='log file (default stdout)')
     parser.add_argument('--debug', action='store_true',
                         help='set logging level to debug')
+    parser.add_argument('--vars', type=str,
+                        help='variables',
+                        default='UGRD,VGRD,TMP')
     parser.add_argument('--levels', type=str,
                         help='vertical height levels',
                         default='100,200,500,1000,1500,2000,3000,4000,5000')
@@ -62,6 +65,12 @@ if __name__ == '__main__':
     """
     levels = np.array([float(lev) for lev in args.levels.split(',')])
     logging.info(('levels', levels))
+
+    """
+    Height levels
+    """
+    var_list = args.vars.split(',')
+    logging.info(('vars', var_list))
 
     """
     Open dataset
