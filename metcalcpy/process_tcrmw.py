@@ -16,6 +16,11 @@ def read_tcrmw(filename):
     return ds
 
 
+def compute_interpolation_weights(ds, levels):
+    dims = ds.dims
+    logging.info(dims)
+
+
 if __name__ == '__main__':
     """
     Parse command line arguments
@@ -67,7 +72,7 @@ if __name__ == '__main__':
     logging.info(('levels', levels))
 
     """
-    Height levels
+    Variable list
     """
     var_list = args.vars.split(',')
     logging.info(('vars', var_list))
@@ -76,3 +81,8 @@ if __name__ == '__main__':
     Open dataset
     """
     ds = read_tcrmw(filename_in)
+
+    """
+    Compute interpolation weights
+    """
+    compute_interpolation_weights(ds, levels)
