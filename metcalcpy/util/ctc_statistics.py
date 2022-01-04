@@ -2,12 +2,13 @@
 Program Name: ctc_statistics.py
 """
 import warnings
+from typing import Union
 import math
 import re
 import numpy as np
 import pandas as pd
 from scipy.special import lambertw
-from metcalcpy.util.utils import round_half_up, column_data_by_name,\
+from metcalcpy.util.utils import round_half_up, column_data_by_name, \
     sum_column_data_by_name, PRECISION
 
 __author__ = 'Tatiana Burek'
@@ -214,11 +215,10 @@ def calculate_ctc_roc(data, ascending):
         subset_data = sorted_data[sorted_data['fcst_thresh'] == thresh]
         data_np = subset_data.to_numpy()
         columns = subset_data.columns.values
-        pody= calculate_pody(data_np, columns)
+        pody = calculate_pody(data_np, columns)
         pofd = calculate_pofd(data_np, columns)
         df_roc.loc[index] = [thresh, pody, pofd]
         index += 1
-
 
     return df_roc
 
@@ -516,8 +516,10 @@ def calculate_eclv(input_data, columns_names):
     return v
 
 
-def calculate_economic_value(values, cost_lost_ratio=np.arange(start=0.05, stop=0.95, step=0.05)):
+def calculate_economic_value(values, cost_lost_ratio=np.arange(start=0.05, stop=0.95, step=0.05),
+                             add_base_rate: bool = False) -> Union[dict, None]:
     """Calculates the economic value of a forecast based on a cost/loss ratio.
+       Similar to R script function 'value' from  the 'verification' package
 
         Args:
             values: An array vector of a contingency table summary of values in the form
@@ -526,9 +528,16 @@ def calculate_economic_value(values, cost_lost_ratio=np.arange(start=0.05, stop=
                 and taking a loss to that of un-necessarily preparing. For example,
                 cl = 0.1 indicates it would cost $ 1 to prevent a $10 loss.
                 This defaults to the sequence 0.05 to 0.95 by 0.05.
+            add_base_rate: add Base rate point to cl or not
 
         Returns:
-            calculated economic_value as float
+            If assigned to an object, the following values are reported in the dictionary :
+                vmax - Maximum value
+                V    - Vector of values for each cl value
+                F    - Conditional false alarm rate.
+                H    - Conditional hit rate
+                cl   - Vector of cost loss ratios.
+                s    - Base rate
             or None if some of the data values are missing or invalid
     """
     warnings.filterwarnings('error')
@@ -539,7 +548,10 @@ def calculate_economic_value(values, cost_lost_ratio=np.arange(start=0.05, stop=
             h = values[0] / (values[0] + values[2])
             s = (values[0] + values[2]) / n
 
-            cl_local = np.append(cost_lost_ratio, s)
+            if add_base_rate is True:
+                cl_local = np.append(cost_lost_ratio, s)
+            else:
+                cl_local = np.copy(cost_lost_ratio)
             cl_local.sort()
 
             v_1 = (1 - f) - s / (1 - s) * (1 - cl_local) / cl_local * (1 - h)
@@ -552,8 +564,13 @@ def calculate_economic_value(values, cost_lost_ratio=np.arange(start=0.05, stop=
             v[indexes] = v_2[indexes]
 
             v_max = h - f
-            result = {'vmax': v_max, 'V': v, 'F': f, 'H': h, 'cl': cl_local, 's': s, 'n': n}
-            result = round_half_up(result, PRECISION)
+            result = {'vmax': round_half_up(v_max, PRECISION),
+                      'V': v,
+                      'F': round_half_up(f, PRECISION),
+                      'H': round_half_up(h, PRECISION),
+                      'cl': cl_local,
+                      's': round_half_up(s, PRECISION),
+                      'n': n}
         else:
             result = None
     except (TypeError, ZeroDivisionError, Warning, ValueError):
@@ -948,8 +965,9 @@ def calculate_eds(input_data, columns_names):
     warnings.filterwarnings('ignore')
     return result
 
-def sort_by_thresh(input_dataframe:pd.DataFrame,sort_column_name:str='fcst_thresh',
-                        ascending:bool=True)->pd.DataFrame:
+
+def sort_by_thresh(input_dataframe: pd.DataFrame, sort_column_name: str = 'fcst_thresh',
+                   ascending: bool = True) -> pd.DataFrame:
     """
         Sorts the input pandas dataframe by threshold values in the specified column that have
         format "operator value", ie >=1.  This is done by first separating
