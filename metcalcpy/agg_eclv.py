@@ -30,6 +30,7 @@ import pandas as pd
 
 from metcalcpy.bootstrap import bootstrap_and_value, BootstrapResults
 from metcalcpy.event_equalize import event_equalize
+from metcalcpy.util.utils import PRECISION
 from metcalcpy.util.eclv_statistics import *
 
 from metcalcpy.util.utils import is_string_integer, parse_bool
