@@ -29,6 +29,7 @@ jobs:
                 repository: '${{ github.repository }}',
                 ref: '${{ github.ref }}',
                 actor: '${{ github.actor }}',
-                sha: '${{ github.sha }}'
+                sha: '${{ github.sha }}',
+                pusher_email: '${{ github.event.pusher.email }}'
               },
             });
