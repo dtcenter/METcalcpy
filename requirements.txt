@@ -116,5 +116,5 @@ webencodings==0.5.1
 wheel==0.35.1
 widgetsnbextension==3.5.1
 wrapt==1.12.1
-xarray==0.17
+xarray==0.16
 zipp==3.7.0
