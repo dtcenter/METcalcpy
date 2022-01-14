@@ -9,6 +9,7 @@ backcall==0.2.0
 backports.functools-lru-cache==1.6.4
 bleach==4.1.0
 brotlipy==0.7.0
+numpy==1.19.5
 Cartopy==0.18.0
 certifi==2021.5.30
 cffi==1.14.6
@@ -66,7 +67,6 @@ nest-asyncio==1.5.4
 netCDF4==1.5.7
 networkx==2.6.3
 notebook==6.3.0
-numpy==1.19.5
 olefile==0.46
 packaging==21.3
 pandas==1.1.5
