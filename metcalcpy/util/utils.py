@@ -968,14 +968,13 @@ def create_permutations_mv(fields_values: Union[dict, list], index: int) -> list
     :return: the list of permutations
     """
 
-    # remove all values with len = 0
-    fields_values_clean = {}
     if isinstance(fields_values, dict):
+        # remove all values with len = 0
+        fields_values_clean = {}
         for key, value in fields_values.items():
             if len(value) > 0:
                 fields_values_clean[key] = value
 
-    if isinstance(fields_values_clean, dict):
         keys = list(fields_values_clean.keys())
         # return an empty list if the dictionary is empty
         if len(keys) == 0:
@@ -986,18 +985,20 @@ def create_permutations_mv(fields_values: Union[dict, list], index: int) -> list
         # from the last control
         if len(keys) == index + 1:
             return values
+        # otherwise, get the list for the next fcst_var and build upon it
+        val_next = create_permutations_mv(fields_values_clean, index + 1)
     else:
-        if len(fields_values_clean) == 0:
+        if len(fields_values) == 0:
             return []
 
-        values = fields_values_clean[index]
+        values = fields_values[index]
         # if the index has reached the end of the list, return the selected values
         # from the last control
-        if len(fields_values_clean) == index + 1:
+        if len(fields_values) == index + 1:
             return values
 
-    # otherwise, get the list for the next fcst_var and build upon it
-    val_next = create_permutations_mv(fields_values_clean, index + 1)
+        # otherwise, get the list for the next fcst_var and build upon it
+        val_next = create_permutations_mv(fields_values, index + 1)
 
     if len(values) == 0:
         return val_next
