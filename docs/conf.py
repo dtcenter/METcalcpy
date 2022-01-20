@@ -25,8 +25,8 @@ author_list = 'Win-Gildenmeister, M., T. Burek, H. Fisher, C. Kalb, D. Adriaanse
 version = 'develop'
 verinfo = version
 release = f'{version}'
-release_year = '2021'
-release_date = f'{release_year}-05-10'
+release_year = '2022'
+release_date = f'{release_year}-01-19'
 copyright = f'{release_year}, {author}'
 
 # if set, adds "Last updated on " followed by
