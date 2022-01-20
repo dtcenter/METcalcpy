@@ -10,6 +10,33 @@ Version |version| release notes (|release_date|)
 Version 1.1.0 release notes (20211116)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+beta5 release
+^^^^^^^^^^^^^
+
+
+New Functionality:
+
+* **Add Zonal and Meridional mean calculation from basic.py** (`#126 <https://github.com/dtcenter/METcalcpy/issues/126>`_)
+
+* **Add supporting functionality for ECLV plot** (`#128 <https://github.com/dtcenter/METcalcpy/issues/128>`_)
+
+
+Enhancements:
+
+
+
+Internal:
+
+
+
+Bugfixes:
+
+* **update input parameters for test_agg_stats_with_groups script with GROUP_SEPARATOR** (`#138 <https://github.com/dtcenter/METcalcpy/issues/138>`_)
+
+
+* **permutations are not created if the list is passed as a parameter** (`#136 <https://github.com/dtcenter/METcalcpy/issues/136>`_)
+
+
 beta4 release
 ^^^^^^^^^^^^^
 
