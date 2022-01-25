@@ -6,7 +6,8 @@ from scipy import stats
 from scipy.signal import argrelextrema
 #from metplus.util import config_metplus, get_start_end_interval_times, get_lead_sequence
 #from metplus.util import get_skip_times, skip_time, is_loop_by_init, ti_calculate
-from Blocking_WeatherRegime_util import read_nc_met
+from metcalcpy.contributed.blocking_weather_regime.Blocking_WeatherRegime_util import read_nc_met
+
 
 class BlockingCalculation():
     """Contains the programs to calculate Blocking via the Pelly-Hoskins Method
