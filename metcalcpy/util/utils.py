@@ -715,15 +715,15 @@ def perform_event_equalization(params, input_data):
     return output_ee_data
 
 
-def create_permutations(input_dict):
+def create_permutations(input_list):
     """
        Create all permutations (ie cartesian products) between the
-       elements in the lists of dictionaries under the input_dict
-       dictionary:
+       elements in the lists of list under the input_list
+       of lists:
 
        for example:
 
-       input_dict:
+       input:
           model:
             - GFS_0p25_G193
           vx_mask:
@@ -745,7 +745,7 @@ def create_permutations(input_dict):
        ("GFS_0p25_G193", "TROP_CMORPH_G193")
 
        Args:
-            input_dict: an input dictionary containing lists of values to
+            input_list: an input list containing lists of values to
                         permute
        Returns:
            permutation: a list of tuples that represent the possible
@@ -753,7 +753,7 @@ def create_permutations(input_dict):
     """
 
     # Retrieve the lists from the input_dict dictionary
-    vals_list = input_dict
+    vals_list = input_list
 
     # Utilize itertools' product() to create the cartesian product of all elements
     # in the lists to produce all permutations of the values in the lists.
