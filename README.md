@@ -1,6 +1,6 @@
 # METcalcpy
-Python version of statistics, pre-processing and diagnostics calculation functionality of METviewer, 
-METexpress, plotting packages in METplotpy and as stand-alone package for any other application.
+Provides support for the following: calculation of statistics, pre-processing input, and performing diagnostics for METviewer, 
+METexpress, and the plotting scripts in METplotpy.
 
 Please see the [METcalcpy User's Guide](https://metcalcpy.readthedocs.io/en/latest) for more information.
 
