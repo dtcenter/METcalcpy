@@ -1,5 +1,5 @@
 # METcalcpy
-Provides support for the following: calculation of statistics, pre-processing input, and performing diagnostics for METviewer, 
+Provides libraries for the following: calculation of statistics, pre-processing input, and performing diagnostics for METviewer, 
 METexpress, and the plotting scripts in METplotpy.
 
 Please see the [METcalcpy User's Guide](https://metcalcpy.readthedocs.io/en/latest) for more information.
