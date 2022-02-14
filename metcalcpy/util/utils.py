@@ -648,7 +648,7 @@ def equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axi
                         series_data_for_ee = series_data_for_ee[series_data_for_ee["stat_name"] == fcst_var_stat]
 
             # perform EE on filtered data
-            # for SSVAR use equalization of multiple events
+            # for SSVAR line_type use equalization of multiple events
             series_data_after_ee = \
                 event_equalize(series_data_for_ee, params['indy_var'],
                                params['series_val_' + axis],
@@ -715,15 +715,15 @@ def perform_event_equalization(params, input_data):
     return output_ee_data
 
 
-def create_permutations(input_dict):
+def create_permutations(input_list):
     """
        Create all permutations (ie cartesian products) between the
-       elements in the lists of dictionaries under the input_dict
-       dictionary:
+       elements in the lists of list under the input_list
+       of lists:
 
        for example:
 
-       input_dict:
+       input:
           model:
             - GFS_0p25_G193
           vx_mask:
@@ -745,7 +745,7 @@ def create_permutations(input_dict):
        ("GFS_0p25_G193", "TROP_CMORPH_G193")
 
        Args:
-            input_dict: an input dictionary containing lists of values to
+            input_list: an input list containing lists of values to
                         permute
        Returns:
            permutation: a list of tuples that represent the possible
@@ -753,7 +753,7 @@ def create_permutations(input_dict):
     """
 
     # Retrieve the lists from the input_dict dictionary
-    vals_list = input_dict
+    vals_list = input_list
 
     # Utilize itertools' product() to create the cartesian product of all elements
     # in the lists to produce all permutations of the values in the lists.
@@ -815,9 +815,12 @@ def compute_std_err_from_median_no_variance_inflation_factor(data):
 
     Returns: Standard Error, variance inflation factor flag, AR1 coefficient, the length of data
     """
-
-    iqr = stats.iqr(data, interpolation='linear')
-    number_of_none = sum(x is None for x in data)
+    data_without_non = []
+    for val in data:
+        if val is not None and not np.isnan(val):
+            data_without_non.append(val)
+    iqr = stats.iqr(data_without_non, interpolation='linear')
+    number_of_none = sum(x is None or np.isnan(x) for x in data)
     if iqr > 0.0 and (len(data) - number_of_none) > 2:
         # Compute the Standard Error using the variance inflation factor.
         std_err = (iqr * math.sqrt(math.pi / 2.)) / (1.349 * math.sqrt(len(data) - number_of_none))
@@ -835,9 +838,13 @@ def compute_std_err_from_median_variance_inflation_factor(data):
 
         Returns: Standard Error, variance inflation factor flag, AR1 coefficient, the length of data
     """
+    data_without_non = []
+    for val in data:
+        if val is not None and not np.isnan(val):
+            data_without_non.append(val)
     ratio_flag = 0
-    iqr = stats.iqr(data, interpolation='linear')
-    number_of_none = sum(x is None for x in data)
+    iqr = stats.iqr(data_without_non, interpolation='linear')
+    number_of_none = sum(x is None or np.isnan(x) for x in data)
 
     if iqr > 0.0 and (len(data) - number_of_none) > 2:
         # Compute the first order auto-correlation coefficient
@@ -962,16 +969,24 @@ def create_permutations_mv(fields_values: Union[dict, list], index: int) -> list
     """
 
     if isinstance(fields_values, dict):
-        keys = list(fields_values.keys())
+        # remove all values with len = 0
+        fields_values_clean = {}
+        for key, value in fields_values.items():
+            if len(value) > 0:
+                fields_values_clean[key] = value
+
+        keys = list(fields_values_clean.keys())
         # return an empty list if the dictionary is empty
         if len(keys) == 0:
             return []
 
-        values = fields_values[keys[index]]
+        values = fields_values_clean[keys[index]]
         # if the index has reached the end of the list, return the selected values
         # from the last control
         if len(keys) == index + 1:
             return values
+        # otherwise, get the list for the next fcst_var and build upon it
+        val_next = create_permutations_mv(fields_values_clean, index + 1)
     else:
         if len(fields_values) == 0:
             return []
@@ -982,8 +997,8 @@ def create_permutations_mv(fields_values: Union[dict, list], index: int) -> list
         if len(fields_values) == index + 1:
             return values
 
-    # otherwise, get the list for the next fcst_var and build upon it
-    val_next = create_permutations_mv(fields_values, index + 1)
+        # otherwise, get the list for the next fcst_var and build upon it
+        val_next = create_permutations_mv(fields_values, index + 1)
 
     if len(values) == 0:
         return val_next
