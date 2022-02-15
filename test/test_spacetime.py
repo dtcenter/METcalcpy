@@ -147,7 +147,7 @@ def cross_spectral(datapath, pathout):
     save_Spectra(STC, freq, wnum, fileout, pathout)
 
 
-
+@pytest.mark.skip("test data is too large to save in repository")
 def test_nc_files_created():
     '''
        Check that the three expected
