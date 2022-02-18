@@ -17,7 +17,7 @@ New Functionality:
 
 Enhancements:
  
-* **Reorganize the METcalcpy directory structure to separate the statistics modules from the pre-processing, diagnostics, and util modules ('#125 <https://github.com/dtcenter/METcalcpy/issues/125>'_) **
+* **Reorganize the METcalcpy directory structure to separate the statistics modules from the pre-processing, diagnostics, and util modules ('#125 <https://github.com/dtcenter/METcalcpy/issues/125>'_)** 
 
 
 Internal:
