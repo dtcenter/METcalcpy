@@ -37,6 +37,8 @@ You should now have a file: *tc_rmw_example.nc*
 A configuration file (YAML, with a .yaml extension) is used to define which variables in the
 input data file (netCDF or grib2) are to be converted from pressure levels to height:
 
+**height_from_pressure_tcrmw.yaml**:
+
 .. literalinclude:: ../../examples/height_from_pressure_tcrmw.yaml
 
 This configuration file is located in the $METCALCPY_SOURCE_DIR/examples/ directory, where
