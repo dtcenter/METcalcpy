@@ -87,8 +87,10 @@ Replace the `/path/to/output` to the directory where you want to save your outpu
 
 e.g.
 
-``export OUTPUT_DIR=/users/mydir/tcrmw/output``
+``--output /users/mydir/tcrmw/output``
 
+Where in this example, the /users/mydir/tcrmw/output is the directory where the output should be directed.  Replace this with the full path to
+the desired location for output files.
 
 Uncomment the `--debug` if additional debug information is desired.  This will result in the generation of intermediate netCDF files in the directory specified by the $DATA_DIR 
 environment variable in the `height_from_pressure_tcrmw.sh` shell script.  Create a 'Debug' subdirectory in the $DATA_DIR directory.  After running the
