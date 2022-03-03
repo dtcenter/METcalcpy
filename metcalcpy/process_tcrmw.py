@@ -43,6 +43,58 @@ def compute_wind_components(args, ds):
     return u_radial, u_tangential
 
 
+def test_plot(args, ds, track_index=0):
+    # Plot setup
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    # Set for dark PyCharm theme
+    # plt.style.use('dark_background')
+    # textcolor = (175 / 255, 177 / 255, 179 / 255)
+    # facecolor = (60 / 255, 63 / 255, 65 / 255)
+    textcolor = (0, 0, 0)
+    facecolor = (1, 1, 1)
+    sns.set_context('notebook')
+    plt.rcParams['figure.dpi'] = 300
+    plt.rcParams['text.color'] = textcolor
+    plt.rcParams['axes.edgecolor'] = textcolor
+    plt.rcParams['axes.labelcolor'] = textcolor
+    plt.rcParams['xtick.color'] = textcolor
+    plt.rcParams['ytick.color'] = textcolor
+    fig = plt.figure(figsize=(10, 5))
+    fig.patch.set_facecolor(facecolor)
+    ax = fig.add_subplot()
+    ax.set_facecolor(facecolor)
+    ax.annotate('Tangential Wind (m s-1)', xy=(14, 350), color='darkgreen')
+    ax.annotate('Temperature (K)', xy=(14, 370), color='darkblue')
+    ax.set_xlabel(
+        'Range (RMW = %4.1f km)' % ds['RMW'][track_index])
+    ax.set_xticks(np.arange(1, 20))
+    ax.set_ylabel('Pressure (mb)')
+    ax.set_yscale('symlog')
+    ax.set_ylim(1000, 250)
+    ax.set_yticks(np.arange(1000, 250, -100))
+    ax.set_yticklabels(np.arange(1000, 250, -100))
+
+    # Azimuthal averages
+    u_radial_azi_mean = np.mean(ds['u_radial'].values, axis=1)
+    u_tangential_azi_mean = np.mean(ds['u_tangential'].values, axis=1)
+    T_azi_mean = np.mean(ds[args.T].values, axis=1)
+
+    # Contour plots
+    u_contour = ax.contour(ds['range'].values, ds['pressure'].values,
+        u_tangential_azi_mean[:, :, track_index].transpose(),
+        levels=np.arange(5, 40, 5), colors='darkgreen', linewidths=1)
+    ax.clabel(u_contour, colors='darkgreen', fmt='%1.0f')
+    T_contour = ax.contour(ds['range'].values, ds['pressure'].values,
+        T_azi_mean[:, :, track_index].transpose(),
+        levels=np.arange(250, 300, 10), colors='darkblue', linewidths=1)
+    ax.clabel(T_contour, colors='darkblue', fmt='%1.0f')
+
+    plt.savefig(os.path.join(args.datadir, 'test.pdf'))
+    plt.savefig(os.path.join(args.datadir, 'test.png'), dpi=300)
+    # plt.show()
+
+
 if __name__ == '__main__':
     """
     Parse command line arguments
@@ -132,3 +184,8 @@ if __name__ == '__main__':
     ds['u_radial'] = xr.DataArray(u_radial, coords=ds[args.T].coords)
     ds['u_tangential'] = xr.DataArray(u_tangential, coords=ds[args.T].coords)
     ds.to_netcdf(filename_out)
+
+    """
+    Test plot
+    """
+    test_plot(args, ds)
