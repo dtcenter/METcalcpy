@@ -13,6 +13,7 @@ def read_tcrmw(filename):
         logging.info((var, ds[var].dims))
     for coord in ds.coords:
         logging.debug((coord, ds[coord].values))
+
     return ds
 
 
@@ -43,16 +44,16 @@ def compute_wind_components(args, ds):
     return u_radial, u_tangential
 
 
-def test_plot(args, ds, track_index=0):
+def test_plot_pressure_lev(args, ds, track_index=0):
     # Plot setup
     import matplotlib.pyplot as plt
     import seaborn as sns
     # Set for dark PyCharm theme
-    # plt.style.use('dark_background')
-    # textcolor = (175 / 255, 177 / 255, 179 / 255)
-    # facecolor = (60 / 255, 63 / 255, 65 / 255)
-    textcolor = (0, 0, 0)
-    facecolor = (1, 1, 1)
+    plt.style.use('dark_background')
+    textcolor = (175 / 255, 177 / 255, 179 / 255)
+    facecolor = (60 / 255, 63 / 255, 65 / 255)
+    # textcolor = (0, 0, 0)
+    # facecolor = (1, 1, 1)
     sns.set_context('notebook')
     plt.rcParams['figure.dpi'] = 300
     plt.rcParams['text.color'] = textcolor
@@ -66,8 +67,10 @@ def test_plot(args, ds, track_index=0):
     ax.set_facecolor(facecolor)
     ax.annotate('Tangential Wind (m s-1)', xy=(14, 350), color='darkgreen')
     ax.annotate('Temperature (K)', xy=(14, 370), color='darkblue')
+    # nautical miles to kilometers conversion factor
+    nm_to_km = 1.852
     ax.set_xlabel(
-        'Range (RMW = %4.1f km)' % ds['RMW'][track_index])
+        'Range (RMW = %4.1f km)' % (nm_to_km * ds['RMW'][track_index]))
     ax.set_xticks(np.arange(1, 20))
     ax.set_ylabel('Pressure (mb)')
     ax.set_yscale('symlog')
@@ -90,9 +93,9 @@ def test_plot(args, ds, track_index=0):
         levels=np.arange(250, 300, 10), colors='darkblue', linewidths=1)
     ax.clabel(T_contour, colors='darkblue', fmt='%1.0f')
 
-    plt.savefig(os.path.join(args.datadir, 'test.pdf'))
-    plt.savefig(os.path.join(args.datadir, 'test.png'), dpi=300)
-    # plt.show()
+    # plt.savefig(os.path.join(args.datadir, 'test.pdf'))
+    # plt.savefig(os.path.join(args.datadir, 'test.png'), dpi=300)
+    plt.show()
 
 
 if __name__ == '__main__':
@@ -186,6 +189,6 @@ if __name__ == '__main__':
     ds.to_netcdf(filename_out)
 
     """
-    Test plot
+    Test plots
     """
-    test_plot(args, ds)
+    test_plot_pressure_lev(args, ds)
