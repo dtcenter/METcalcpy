@@ -17,8 +17,30 @@ def read_tcrmw(filename):
 
 
 def compute_interpolation_weights(ds, levels):
-    dims = ds.dims
+    dims = ds['TMP'].dims
     logging.info(dims)
+    nr, na, nl, nt = ds['TMP'].shape
+    logging.info((nr, na, nl, nt))
+
+
+def compute_wind_components(ds):
+    """
+    e_r = cos(theta) e_x + sin(theta) e_y
+    e_theta = - sin(theta) e_x + cos(theta) e_y
+    """
+    nr, na, nl, nt = ds['TMP'].shape
+    logging.info((nr, na, nl, nt))
+    theta = np.empty((nr, na, nl, nt), dtype=np.float32)
+    for i in range(nr):
+        for k in range(nl):
+            for t in range(nt):
+                theta[i, :, k, t] \
+                    = (np.pi / 180) * ds['azimuth'].values + np.pi / 2
+    mask = np.greater(theta, 2 * np.pi)
+    theta[mask] = theta[mask] - 2 * np.pi
+    u_radial = np.cos(theta) * ds['UGRD'].values + np.sin(theta) * ds['VGRD'].values
+    u_tangential = - np.sin(theta) * ds['UGRD'].values + np.cos(theta) * ds['VGRD'].values
+    return u_radial, u_tangential
 
 
 if __name__ == '__main__':
@@ -86,3 +108,13 @@ if __name__ == '__main__':
     Compute interpolation weights
     """
     compute_interpolation_weights(ds, levels)
+
+    """
+    Compute tangential and radial wind components
+    """
+    u_radial, u_tangential = compute_wind_components(ds)
+
+    """
+    Write dataset
+    """
+    ds.to_netcdf(filename_out)
