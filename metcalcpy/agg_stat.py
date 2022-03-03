@@ -1,3 +1,13 @@
+# ============================*
+ # ** Copyright UCAR (c) 2020
+ # ** University Corporation for Atmospheric Research (UCAR)
+ # ** National Center for Atmospheric Research (NCAR)
+ # ** Research Applications Lab (RAL)
+ # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+ # ============================*
+ 
+ 
+ 
 """
 Program Name: agg_stat.py
 
@@ -1122,7 +1132,7 @@ class AggStat:
 
         export_csv = out_frame.to_csv(self.params['agg_stat_output'],
                                       index=None, header=header, mode=mode,
-                                      sep="\t", na_rep="NA")
+                                      sep="\t", na_rep="NA", float_format='%.'+ str(PRECISION) +'f')
 
 
 if __name__ == "__main__":

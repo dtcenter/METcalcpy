@@ -167,6 +167,15 @@ def test_create_permutations_mv_dict():
     assert expected_result == result
 
 
+def test_create_permutations_mv_dict_empty():
+    fields_values = {'vx_mask': ['FULL'], 'model': ['HREF', 'HREFV3'], 'fcst_var': [],
+                     'stat_name': ['ECNT_RMSE', 'ECNT_SPREAD']}
+    expected_result = [['FULL', 'HREF', 'ECNT_RMSE'], ['FULL', 'HREFV3', 'ECNT_RMSE'],
+                       ['FULL', 'HREF', 'ECNT_SPREAD'], ['FULL', 'HREFV3', 'ECNT_SPREAD']]
+    result = create_permutations_mv(fields_values, 0)
+    assert expected_result == result
+
+
 def test_create_permutations_mv_list():
     fields_values = [['FULL'], ['HREF', 'HREFV3'], ['HGT'], ['ECNT_RMSE', 'ECNT_SPREAD']]
     expected_result = [['FULL', 'HREF', 'HGT', 'ECNT_RMSE'], ['FULL', 'HREFV3', 'HGT', 'ECNT_RMSE'],

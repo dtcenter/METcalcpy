@@ -37,6 +37,8 @@ You should now have a file: *tc_rmw_example.nc*
 A configuration file (YAML, with a .yaml extension) is used to define which variables in the
 input data file (netCDF or grib2) are to be converted from pressure levels to height:
 
+**height_from_pressure_tcrmw.yaml**:
+
 .. literalinclude:: ../../examples/height_from_pressure_tcrmw.yaml
 
 This configuration file is located in the $METCALCPY_SOURCE_DIR/examples/ directory, where
@@ -85,8 +87,10 @@ Replace the `/path/to/output` to the directory where you want to save your outpu
 
 e.g.
 
-``export OUTPUT_DIR=/users/mydir/tcrmw/output``
+``--output /users/mydir/tcrmw/output``
 
+Where in this example, the /users/mydir/tcrmw/output is the directory where the output should be directed.  Replace this with the full path to
+the desired location for output files.
 
 Uncomment the `--debug` if additional debug information is desired.  This will result in the generation of intermediate netCDF files in the directory specified by the $DATA_DIR 
 environment variable in the `height_from_pressure_tcrmw.sh` shell script.  Create a 'Debug' subdirectory in the $DATA_DIR directory.  After running the

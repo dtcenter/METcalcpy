@@ -1,8 +1,19 @@
+# ============================*
+ # ** Copyright UCAR (c) 2020
+ # ** University Corporation for Atmospheric Research (UCAR)
+ # ** National Center for Atmospheric Research (NCAR)
+ # ** Research Applications Lab (RAL)
+ # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+ # ============================*
+ 
+ 
+ 
 """
 Program Name: bootstrap.py
 """
 
 import numpy as _np
+from collections import Iterable
 import multiprocessing as _multiprocessing
 import scipy.sparse as _sparse
 
@@ -88,12 +99,10 @@ class BootstrapResults(object):
         self.distributions = distributions
 
 
-
-
 def bootstrap_and_value(values, stat_func, alpha=0.05,
                         num_iterations=1000, iteration_batch_size=None,
                         num_threads=1, ci_method='perc',
-                        save_data=True, save_distributions=False, block_length: int = 1):
+                        save_data=True, save_distributions=False, block_length: int = 1, eclv: bool = False):
     """Returns bootstrap estimate. Can do the independent and identically distributed (IID)
         or Circular Block Bootstrap (CBB) methods depending on the block_length
         Args:
@@ -128,6 +137,8 @@ def bootstrap_and_value(values, stat_func, alpha=0.05,
                 Should be longer than the length of dependence in the data,
                 but much shorter than the size of the data. Generally, the square
                 root of the sample size is a good choice
+             eclv: indicates if this bootstrap estimate is for the Economic Cost Loss Relative Value or not
+                Default (eclv = false)
         Returns:
             BootstrapDistributionResults representing CI, stat value and the original distribution.
     """
@@ -147,7 +158,10 @@ def bootstrap_and_value(values, stat_func, alpha=0.05,
                                                 num_threads, block_length)
 
     bootstrap_dist = do_division(*distributions)
-    result = _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_method)
+    if eclv:
+        result = _get_confidence_interval_and_value_eclv(bootstrap_dist, stat_val, alpha, ci_method)
+    else:
+        result = _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_method)
     if save_data:
         result.set_original_values(values)
     if save_distributions:
@@ -332,8 +346,78 @@ def _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_metho
         val = None
         high = None
     return BootstrapResults(lower_bound=low,
-                                        value=val,
-                                        upper_bound=high)
+                            value=val,
+                            upper_bound=high)
+
+
+def _get_confidence_interval_and_value_eclv(bootstrap_dist, stat_val, alpha, ci_method):
+    """Get the bootstrap confidence interval for a given distribution for the Economic Cost Loss Relative Value
+        Args:
+            bootstrap_dist: numpy array of bootstrap results from
+                bootstrap_distribution() or  bootstrap_distribution_cbb()
+                or bootstrap_ab_distribution()
+            stat_val: The overall statistic that this method is attempting to
+                calculate error bars for.
+            alpha: The alpha value for the confidence intervals.
+            ci_method: if true, use the pivotal method. if false, use the
+                percentile method.
+    """
+
+    # TODO Only percentile method for the confident intervals is implemented
+
+    if stat_val is None:
+        val = None
+        low = None
+        high = None
+
+    else:
+        bd = bootstrap_dist[bootstrap_dist != _np.array([None])]
+        all_values = []
+        for dist_member in bd:
+            all_values.append(dist_member['V'].tolist())
+
+        all_values_np = _np.array(all_values)
+        steps_len = len(stat_val['cl'])
+        none_in_values = len(stat_val['V']) != sum(x is not None for x in stat_val['V'])
+        stat_btcl = [None] * steps_len
+        stat_btcu = [None] * steps_len
+
+        for ind in range(steps_len):
+            low = None
+            high = None
+            column = all_values_np[:, ind]
+            if ci_method == 'pivotal':
+                low = 2 * stat_val - _np.percentile(column, 100 * (1 - alpha / 2.))
+                high = 2 * stat_val - _np.percentile(column, 100 * (alpha / 2.))
+
+            elif ci_method == 'perc':
+                if _all_the_same(column):
+                    print(f'All values of t are equal to {column[0]}. Cannot calculate confidence intervals')
+                    low = None
+                    high = None
+                else:
+                    if none_in_values:
+                        low = _np.percentile(column, 100 * (alpha / 2.), interpolation='linear')
+                        high = _np.percentile(column, 100 * (1 - alpha / 2.), interpolation='linear')
+            stat_btcl[ind] = low
+            stat_btcu[ind] = high
+
+        val = stat_val
+        low = stat_btcl
+        high = stat_btcu
+
+    return BootstrapResults(lower_bound=low,
+                            value=val,
+                            upper_bound=high)
+
+
+def flatten(lis):
+    for item in lis:
+        if isinstance(item, Iterable) and not isinstance(item, float):
+            for x in flatten(item):
+                yield x
+        else:
+            yield item
 
 
 def _bootstrap_sim_cbb(values_lists, stat_func_lists, num_iterations,

@@ -5,6 +5,7 @@ from metcalcpy.util.met_stats import get_column_index_by_name
 from metcalcpy.util.correlation import corr, acf
 from metcalcpy.util.utils import round_half_up
 from metcalcpy.util.wald_wolfowitz_runs_test import runs_test
+from metcalcpy.util.eclv_statistics import calculate_eclv
 
 
 def test_get_column_index_by_name(settings):
@@ -49,6 +50,23 @@ def test_acf():
     assert 0.151 == round_half_up(acf_val[16], 3)
 
 
+def test_eclv():
+    x = np.array([[666, 112, 25, 33, 496], [350, 73, 9, 22, 246], [316, 39, 16, 11, 250]])
+    columns_names = np.array(['total', 'fy_oy', 'fy_on', 'fn_oy', 'fn_on'])
+    cl_pts = [0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
+    thresh = 0
+    line_type = 'ctc'
+    add_base_rate = 1
+    eclv = calculate_eclv(x, columns_names, thresh, line_type, cl_pts, add_base_rate)
+    assert 0.7244291 == eclv['vmax']
+    assert 0.0479846 == eclv['F']
+    assert 0.7724138 == eclv['H']
+    assert 0.2177177 == eclv['s']
+    assert 20 == len(eclv['V'])
+    assert -0.2514395393474087 == eclv['V'][0]
+
+
+
 def test_runs_test():
     x = [2.4, 2.4, 2.4, 2.2, 2.1, 1.5, 2.3, 2.3, 2.5, 2.0, 1.9, 1.7, 2.2, 1.8, 3.2, 3.2, 2.7, 2.2, 2.2, 1.9, 1.9, 1.8,
          2.7, 3.0, 2.3, 2.0, 2.0, 2.9, 2.9, 2.7, 2.7, 2.3, 2.6, 2.4, 1.8, 1.7, 1.5, 1.4, 2.1, 3.3, 3.5, 3.5, 3.1, 2.6,
@@ -63,3 +81,4 @@ if __name__ == "__main__":
     test_corr()
     test_acf()
     test_runs_test()
+    test_eclv()
