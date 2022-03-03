@@ -16,19 +16,19 @@ def read_tcrmw(filename):
     return ds
 
 
-def compute_interpolation_weights(ds, levels):
-    dims = ds['TMP'].dims
+def compute_interpolation_weights(args, ds, levels):
+    dims = ds[args.T].dims
     logging.info(dims)
-    nr, na, nl, nt = ds['TMP'].shape
+    nr, na, nl, nt = ds[args.T].shape
     logging.info((nr, na, nl, nt))
 
 
-def compute_wind_components(ds):
+def compute_wind_components(args, ds):
     """
     e_r = cos(theta) e_x + sin(theta) e_y
     e_theta = - sin(theta) e_x + cos(theta) e_y
     """
-    nr, na, nl, nt = ds['TMP'].shape
+    nr, na, nl, nt = ds[args.T].shape
     logging.info((nr, na, nl, nt))
     theta = np.empty((nr, na, nl, nt), dtype=np.float32)
     for i in range(nr):
@@ -38,8 +38,8 @@ def compute_wind_components(ds):
                     = (np.pi / 180) * ds['azimuth'].values + np.pi / 2
     mask = np.greater(theta, 2 * np.pi)
     theta[mask] = theta[mask] - 2 * np.pi
-    u_radial = np.cos(theta) * ds['UGRD'].values + np.sin(theta) * ds['VGRD'].values
-    u_tangential = - np.sin(theta) * ds['UGRD'].values + np.cos(theta) * ds['VGRD'].values
+    u_radial = np.cos(theta) * ds[args.u].values + np.sin(theta) * ds[args.v].values
+    u_tangential = - np.sin(theta) * ds[args.u].values + np.cos(theta) * ds[args.v].values
     return u_radial, u_tangential
 
 
@@ -62,9 +62,21 @@ if __name__ == '__main__':
                         help='log file (default stdout)')
     parser.add_argument('--debug', action='store_true',
                         help='set logging level to debug')
+    parser.add_argument('--u', type=str,
+                        help='zonal wind field',
+                        default='UGRD')
+    parser.add_argument('--v', type=str,
+                        help='meridional wind field',
+                        default='VGRD')
+    parser.add_argument('--T', type=str,
+                        help='temperature field',
+                        default='TMP')
+    parser.add_argument('--RH', type=str,
+                        help='relative humidity field',
+                        default='RH')
     parser.add_argument('--vars', type=str,
-                        help='variables',
-                        default='UGRD,VGRD,TMP')
+                        help='additional variables to process',
+                        default=',')
     parser.add_argument('--levels', type=str,
                         help='vertical height levels',
                         default='100,200,500,1000,1500,2000,3000,4000,5000')
@@ -107,14 +119,16 @@ if __name__ == '__main__':
     """
     Compute interpolation weights
     """
-    compute_interpolation_weights(ds, levels)
+    compute_interpolation_weights(args, ds, levels)
 
     """
     Compute tangential and radial wind components
     """
-    u_radial, u_tangential = compute_wind_components(ds)
+    u_radial, u_tangential = compute_wind_components(args, ds)
 
     """
     Write dataset
     """
+    ds['u_radial'] = xr.DataArray(u_radial, coords=ds[args.T].coords)
+    ds['u_tangential'] = xr.DataArray(u_tangential, coords=ds[args.T].coords)
     ds.to_netcdf(filename_out)
