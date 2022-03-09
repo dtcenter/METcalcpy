@@ -47,14 +47,14 @@ def compute_wind_components(args, ds):
 def test_plot_pressure_lev(args, ds, track_index=0):
     # Plot setup
     import matplotlib.pyplot as plt
-    import seaborn as sns
+    #import seaborn as sns
     # Set for dark PyCharm theme
-    plt.style.use('dark_background')
+    #plt.style.use('dark_background')
     textcolor = (175 / 255, 177 / 255, 179 / 255)
-    facecolor = (60 / 255, 63 / 255, 65 / 255)
+#    facecolor = (60 / 255, 63 / 255, 65 / 255)
     # textcolor = (0, 0, 0)
     # facecolor = (1, 1, 1)
-    sns.set_context('notebook')
+    #sns.set_context('notebook')
     plt.rcParams['figure.dpi'] = 300
     plt.rcParams['text.color'] = textcolor
     plt.rcParams['axes.edgecolor'] = textcolor
@@ -62,9 +62,9 @@ def test_plot_pressure_lev(args, ds, track_index=0):
     plt.rcParams['xtick.color'] = textcolor
     plt.rcParams['ytick.color'] = textcolor
     fig = plt.figure(figsize=(10, 5))
-    fig.patch.set_facecolor(facecolor)
+    #fig.patch.set_facecolor(facecolor)
     ax = fig.add_subplot()
-    ax.set_facecolor(facecolor)
+    #ax.set_facecolor(facecolor)
     ax.annotate('Tangential Wind (m s-1)', xy=(14, 350), color='darkgreen')
     ax.annotate('Temperature (K)', xy=(14, 370), color='darkblue')
     # nautical miles to kilometers conversion factor
