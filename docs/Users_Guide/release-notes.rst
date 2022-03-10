@@ -45,7 +45,7 @@ Internal:
 
 * Implement Auto- and Cross- Covariance and -Correlation Function Estimation function for Revision series for MODE-TD (`#121 <https://github.com/dtcenter/METcalcpy/issues/121>`_)
 
-* Add copyright information to all Python source code (`#204 <https://github.com/dtcenter/METcalcpy/issues/204>`_)
+* Add copyright information to all Python source code (`#150 <https://github.com/dtcenter/METcalcpy/issues/150>`_)
 
 
 Bugfixes:
