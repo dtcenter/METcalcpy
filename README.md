@@ -29,4 +29,4 @@ Instructions for installing the metcalcpy package from PyPI
 
 - activate your Python 3.8+ conda environment
 - run the following from the command line:
-   -  pip install metcalcpy=x.y.z  where x.y.z is the version number of interest
+   -  pip install metcalcpy==x.y.z  where x.y.z is the version number of interest
