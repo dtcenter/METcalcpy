@@ -32,7 +32,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        if [ -f requirements_36.txt ]; then pip install -r requirements_36.txt; fi
         pip install opencv-python
     - name: Test with pytest
       # these are tests that don't have external dependencies (i.e. need to run on Linux test hosts where large datasets reside or require exact machine type for 
