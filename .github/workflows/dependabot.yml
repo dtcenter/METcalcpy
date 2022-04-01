@@ -4,3 +4,13 @@ updates:
      directory: "/"
      schedule:
        interval: "daily"
+on:
+  push:
+    branches: 
+      - develop
+      - develop-ref
+      - feature_*
+      - main_*
+      - bugfix_*
+  pull_request:
+    types: [opened, reopened, synchronize]
