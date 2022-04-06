@@ -135,9 +135,9 @@ def reorder_fcst_regimes(kmeans_fcst,perc_fcst,wrc_fcst,wrnum_fcst,fcst_order):
 
     # Reorder the data so that the weather regime patterns match between
     # the forecast and observations, is needed
-    kmeans_fcst_new = np.zeros(kmeans_fcst.shape)
-    perc_fcst_new = np.zeros(perc_fcst.shape)
-    wrc_fcst_new = np.zeros(wrc_fcst.shape)
+    kmeans_fcst_new = np.empty(kmeans_fcst.shape,dtype=float)
+    perc_fcst_new = np.empty(perc_fcst.shape,dtype=float)
+    wrc_fcst_new = np.empty(wrc_fcst.shape,dtype=float)
     for wrn in np.arange(wrnum_fcst):
         perc_fcst_new[wrn] = perc_fcst[fcst_order[wrn]-1]
         kmeans_fcst_new[wrn,:,:] = kmeans_fcst[fcst_order[wrn]-1,:,:]
@@ -151,14 +151,15 @@ def reorder_fcst_regimes_correlate(kmeans_obs,kmeans_fcst,perc_fcst,wrc_fcst,wrn
 
     # Correlate between the forecast and obs weather regimes to find the max correlation
     # Use the max correlation in reordering the forecast to match the observations
-    matching_order = np.zeros(wrnum_fcst,dtype=int)
+    matching_order = np.empty(wrnum_fcst,dtype=int)
     for wrr in np.arange(wrnum_fcst):
-        corr_arr = np.zeros(wrnum_fcst)
+        corr_arr = np.empty(wrnum_fcst,dtype=float)
         for owr in np.arange(wrnum_fcst):
             curcorr = stats.pearsonr(kmeans_obs[wrr,:,:].flatten(),kmeans_fcst[owr,:,:].flatten())
             corr_arr[owr] = curcorr[0]
         matching_order[wrr] = corr_arr.argmax()+1
 
+    # Call the reorder_fcst_regimes to reorder
     matching_order = list(matching_order)
     kmeans_fcst_new,perc_fcst_new,wrc_fcst_new = reorder_fcst_regimes(kmeans_fcst,perc_fcst,wrc_fcst,wrnum_fcst,matching_order)
 
