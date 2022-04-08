@@ -256,12 +256,12 @@ def sum_column_data_by_name(input_data, columns, column_name, rm_none=True):
 
     try:
         if rm_none:
-            result = np.nansum(data_array.astype(np.float))
+            result = np.nansum(data_array.astype(float))
         else:
             if np.isnan(data_array).any():
                 result = None
             else:
-                result = sum(data_array.astype(np.float))
+                result = sum(data_array.astype(float))
     except TypeError:
         result = None
 
@@ -536,48 +536,48 @@ def calc_series_sums(input_df, line_type):
     elif line_type == 'sl1l2':
         column_names = ['fbar', 'obar', 'fobar', 'ffbar', 'oobar']
         for column in column_names:
-            sums_data_frame[column] = [np.nansum(input_df[column] * input_df.total.astype(np.float))
+            sums_data_frame[column] = [np.nansum(input_df[column] * input_df.total.astype(float))
                                        / total]
 
     elif line_type == 'sal1l2':
-        sums_data_frame['fbar'] = [np.nansum(input_df['fabar'] * input_df.total.astype(np.float))
+        sums_data_frame['fbar'] = [np.nansum(input_df['fabar'] * input_df.total.astype(float))
                                    / total]
-        sums_data_frame['obar'] = [np.nansum(input_df['oabar'] * input_df.total.astype(np.float))
+        sums_data_frame['obar'] = [np.nansum(input_df['oabar'] * input_df.total.astype(float))
                                    / total]
-        sums_data_frame['fobar'] = [np.nansum(input_df['foabar'] * input_df.total.astype(np.float))
+        sums_data_frame['fobar'] = [np.nansum(input_df['foabar'] * input_df.total.astype(float))
                                     / total]
-        sums_data_frame['ffbar'] = [np.nansum(input_df['ffabar'] * input_df.total.astype(np.float))
+        sums_data_frame['ffbar'] = [np.nansum(input_df['ffabar'] * input_df.total.astype(float))
                                     / total]
-        sums_data_frame['oobar'] = [np.nansum(input_df['ooabar'] * input_df.total.astype(np.float))
+        sums_data_frame['oobar'] = [np.nansum(input_df['ooabar'] * input_df.total.astype(float))
                                     / total]
 
     elif line_type == 'vl1l2':
         column_names = ['ufbar', 'vfbar', 'uobar', 'vobar', 'uvfobar',
                         'uvffbar', 'uvoobar', 'f_speed_bar', 'o_speed_bar']
         for column in column_names:
-            sums_data_frame[column] = [np.nansum(input_df[column] * input_df.total.astype(np.float))
+            sums_data_frame[column] = [np.nansum(input_df[column] * input_df.total.astype(float))
                                        / total]
 
     elif line_type == 'val1l2':
         column_names = ['ufabar', 'vfabar', 'uoabar', 'voabar', 'uvfoabar', 'uvffabar', 'uvooabar']
         for column in column_names:
-            sums_data_frame[column] = [np.nansum(input_df[column] * input_df.total.astype(np.float))
+            sums_data_frame[column] = [np.nansum(input_df[column] * input_df.total.astype(float))
                                        / total]
 
     elif line_type == 'grad':
         column_names = ['fgbar', 'ogbar', 'mgbar', 'egbar']
         for column in column_names:
-            sums_data_frame[column] = [np.nansum(input_df[column] * input_df.total.astype(np.float))
+            sums_data_frame[column] = [np.nansum(input_df[column] * input_df.total.astype(float))
                                        / total]
 
     elif line_type == 'nbrcnt':
-        dbl_fbs = np.nansum(input_df['fbs'] * input_df.total.astype(np.float)) / total
+        dbl_fbs = np.nansum(input_df['fbs'] * input_df.total.astype(float)) / total
         dbl_fss_den = np.nansum(
-            (input_df['fbs'] / (1.0 - input_df['fss'])) * input_df.total.astype(np.float)) \
+            (input_df['fbs'] / (1.0 - input_df['fss'])) * input_df.total.astype(float)) \
                       / total
         dbl_fss = 1.0 - dbl_fbs / dbl_fss_den
-        dbl_f_rate = np.nansum(input_df['f_rate'] * input_df.total.astype(np.float)) / total
-        dbl_o_rate = np.nansum(input_df['o_rate'] * input_df.total.astype(np.float)) / total
+        dbl_f_rate = np.nansum(input_df['f_rate'] * input_df.total.astype(float)) / total
+        dbl_o_rate = np.nansum(input_df['o_rate'] * input_df.total.astype(float)) / total
         dbl_a_fss_num = 2.0 * dbl_f_rate * dbl_o_rate
         dbl_a_fss_den = dbl_f_rate * dbl_f_rate + dbl_o_rate * dbl_o_rate
         dbl_a_fss = dbl_a_fss_num / dbl_a_fss_den
@@ -599,15 +599,15 @@ def calc_series_sums(input_df, line_type):
         sums_data_frame['crps_climo'] = [np.nansum(input_df['total'] * crps_climo) / total]
         column_names = ['me', 'crps', 'ign', 'spread', 'me_oerr', 'spread_oerr', 'spread_plus_oerr']
         for column in column_names:
-            sums_data_frame[column] = [np.nansum(input_df[column] * input_df.total.astype(np.float))
+            sums_data_frame[column] = [np.nansum(input_df[column] * input_df.total.astype(float))
                                        / total]
     elif line_type == 'rps':
         d_rps_climo = input_df['rps'] / (1 - input_df['rpss'])
-        sums_data_frame['rps'] = [np.nansum(input_df["rps"] * input_df.total.astype(np.float))
+        sums_data_frame['rps'] = [np.nansum(input_df["rps"] * input_df.total.astype(float))
                                   / total]
-        sums_data_frame['rps_comp'] = [np.nansum(input_df["rps_comp"] * input_df.total.astype(np.float))
+        sums_data_frame['rps_comp'] = [np.nansum(input_df["rps_comp"] * input_df.total.astype(float))
                                        / total]
-        sums_data_frame['rps_climo'] = [np.nansum(d_rps_climo * input_df.total.astype(np.float))
+        sums_data_frame['rps_climo'] = [np.nansum(d_rps_climo * input_df.total.astype(float))
                                         / total]
 
     return sums_data_frame
