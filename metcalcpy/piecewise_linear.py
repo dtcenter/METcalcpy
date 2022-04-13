@@ -15,7 +15,6 @@ Piecewise linear function class.
 """
 
 import numpy as np
-import matplotlib.pyplot as plt
 
 __author__ = 'Bill Campbell (NRL)'
 __version__ = '0.1.0'
