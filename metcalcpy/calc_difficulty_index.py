@@ -20,7 +20,6 @@ definite quantities such as wind speed and wave height.
 """
 
 import numpy as np
-import matplotlib.pyplot as plt
 from metcalcpy.piecewise_linear import PiecewiseLinear as plin
 
 __author__ = 'Bill Campbell (NRL) and Lindsay Blank (NCAR)'
