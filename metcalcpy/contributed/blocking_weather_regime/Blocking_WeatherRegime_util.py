@@ -13,6 +13,7 @@ import os
 import netCDF4
 import numpy as np
 import datetime
+from scipy import stats
 
 
 def parse_steps():
@@ -132,19 +133,34 @@ def read_nc_met(infiles,invar,nseasons,dseasons):
 
 def reorder_fcst_regimes(kmeans_fcst,perc_fcst,wrc_fcst,wrnum_fcst,fcst_order):
 
-    # Check to see if reordering the data so that the weather regime patterns match between
+    # Reorder the data so that the weather regime patterns match between
     # the forecast and observations, is needed
-    #TODO:  make this automated based on spatial correlations
-    kmeans_fcst_new = np.zeros(kmeans_fcst.shape)
-    perc_fcst_new = np.zeros(perc_fcst.shape)
-    wrc_fcst_new = np.zeros(wrc_fcst.shape)
-    for wrr in np.arange(wrnum_fcst):
-        perc_fcst_new[wrr] = perc_fcst[fcst_order[wrr]-1]
-        kmeans_fcst_new[wrr,:,:] = kmeans_fcst[fcst_order[wrr]-1,:,:]
-        wrc_cur = np.where(wrc_fcst == fcst_order[wrr])
-        wrc_fcst_new[wrc_cur] = wrr + 1
-    kmeans_fcst = kmeans_fcst_new
-    perc_fcst = perc_fcst_new
-    wrc_fcst = wrc_fcst_new
+    kmeans_fcst_new = np.empty(kmeans_fcst.shape,dtype=float)
+    perc_fcst_new = np.empty(perc_fcst.shape,dtype=float)
+    wrc_fcst_new = np.empty(wrc_fcst.shape,dtype=float)
+    for wrn in np.arange(wrnum_fcst):
+        perc_fcst_new[wrn] = perc_fcst[fcst_order[wrn]-1]
+        kmeans_fcst_new[wrn,:,:] = kmeans_fcst[fcst_order[wrn]-1,:,:]
+        wrc_cur = np.where(wrc_fcst == fcst_order[wrn])
+        wrc_fcst_new[wrc_cur] = wrn + 1
 
-    return kmeans_fcst,perc_fcst,wrc_fcst
+    return kmeans_fcst_new,perc_fcst_new,wrc_fcst_new
+
+
+def reorder_fcst_regimes_correlate(kmeans_obs,kmeans_fcst,perc_fcst,wrc_fcst,wrnum_fcst):
+
+    # Correlate between the forecast and obs weather regimes to find the max correlation
+    # Use the max correlation in reordering the forecast to match the observations
+    matching_order = np.empty(wrnum_fcst,dtype=int)
+    for wrr in np.arange(wrnum_fcst):
+        corr_arr = np.empty(wrnum_fcst,dtype=float)
+        for owr in np.arange(wrnum_fcst):
+            curcorr = stats.pearsonr(kmeans_obs[wrr,:,:].flatten(),kmeans_fcst[owr,:,:].flatten())
+            corr_arr[owr] = curcorr[0]
+        matching_order[wrr] = corr_arr.argmax()+1
+
+    # Call the reorder_fcst_regimes to reorder
+    matching_order = list(matching_order)
+    kmeans_fcst_new,perc_fcst_new,wrc_fcst_new = reorder_fcst_regimes(kmeans_fcst,perc_fcst,wrc_fcst,wrnum_fcst,matching_order)
+
+    return kmeans_fcst_new,perc_fcst_new,wrc_fcst_new 
