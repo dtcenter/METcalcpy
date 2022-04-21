@@ -180,6 +180,10 @@ class WeatherRegimeCalculation():
         perc = perc[::-1]
         input = input[::-1]
 
+        return input, self.wrnum, perc, wrc
+
+
+    def write_K_means_file(self,timedict,wrc):
         #Save Label data [YR,DAY]
         # Make some conversions first
         wrc_shape = wrc.shape
@@ -246,8 +250,6 @@ class WeatherRegimeCalculation():
 
            with open(wr_full_outfile, 'w+') as datafile_id:
                np.savetxt(datafile_id, otdata, fmt=['%6s','%3s','%4s','%6s'], header='Year Month Day WeatherRegime')
-
-        return input, self.wrnum, perc, wrc
 
 
     def compute_wr_freq(self, WR):
