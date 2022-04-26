@@ -37,7 +37,7 @@ PyWavelets==1.1.1
 PyYAML==5.4.1
 requests==2.27.1
 scikit-image==0.18.1
-scipy @ file:///home/conda/feedstock_root/build_artifacts/scipy_1644357257999/work
+scipy==1.8.0
 six==1.16.0
 statsmodels==0.12.2
 tifffile==2019.7.26.2
