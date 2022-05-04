@@ -707,7 +707,7 @@ def perform_event_equalization(params, input_data):
             equalize_axis_data(fix_vals_keys, fix_vals_permuted_list, params, input_data, axis='2')
 
         # append and reindex output from both axis
-        all_ee_records = output_ee_data.append(output_ee_data_2).reindex()
+        all_ee_records = pd.concat([output_ee_data, output_ee_data_2]).reindex()
 
         # create a single unique dictionary from series for Y1 and Y2 to us in EE
         all_series = {**params['series_val_1'], **params['series_val_2']}
