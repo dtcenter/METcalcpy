@@ -125,7 +125,7 @@ def event_equalize(series_data, indy_var, series_var_vals, fix_vars,
 
             # find indexes of common cases that are on the current cases list
             common_cases_ind = \
-                pd.Series(equalization_cases, dtype=np.str).isin(set(permutation_data['equalize']))
+                pd.Series(equalization_cases, dtype=str).isin(set(permutation_data['equalize']))
 
             # identify discarded cases for this permutation
             discarded_cases: list = equalization_cases[~common_cases_ind]
@@ -133,7 +133,7 @@ def event_equalize(series_data, indy_var, series_var_vals, fix_vars,
             # add cases that are in current permutation
             # but not in the common cases and add them to the discarded list
             permutation_cases_not_in_common_cases_ind = \
-                pd.Series(permutation_data['equalize'], dtype=np.str).isin(equalization_cases)
+                pd.Series(permutation_data['equalize'], dtype=str).isin(equalization_cases)
             permutation_cases_not_in_common_cases: Any = \
                 permutation_data['equalize'][~permutation_cases_not_in_common_cases_ind]
 
@@ -149,7 +149,7 @@ def event_equalize(series_data, indy_var, series_var_vals, fix_vars,
 
     # remove data with discarded cases from the main frame
     equalization_cases_ind = \
-        pd.Series(series_data['equalize'], dtype=np.str).isin(equalization_cases)
+        pd.Series(series_data['equalize'], dtype=str).isin(equalization_cases)
     series_data_ee = series_data[equalization_cases_ind]
 
     if len(series_data_ee) != len(series_data):
