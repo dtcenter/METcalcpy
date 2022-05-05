@@ -19,6 +19,7 @@ locket==0.2.0
 netCDF4==1.5.7
 networkx==2.7.1
 numpy==1.22.3
+opencv-python>=4.5.3
 packaging==21.3
 pandas==1.2.3
 partd==1.2.0
