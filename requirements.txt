@@ -16,6 +16,7 @@ importlib-metadata==4.11.3
 imutils==0.5.4
 iniconfig==1.1.1
 locket==0.2.0
+metpy==1.1.0
 netCDF4==1.5.7
 networkx==2.7.1
 numpy==1.22.3
@@ -24,6 +25,7 @@ packaging==21.3
 pandas==1.2.3
 partd==1.2.0
 patsy==0.5.2
+pint==0.18
 Pillow==9.1.0
 pluggy==1.0.0
 pooch==1.6.0
