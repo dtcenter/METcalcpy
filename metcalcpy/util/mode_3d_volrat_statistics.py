@@ -109,7 +109,7 @@ def calculate_3d_volrat_fsm_fsa(input_data, columns_names):
     return calculate_arearat_fsm_fsa(filtered_data, columns_names_new)
 
 
-def calculate_3d_valrat_fsu_fsa(input_data, columns_names):
+def calculate_3d_volrat_fsu_fsa(input_data, columns_names):
     """Performs calculation of Volume-weighted % of 3d simple forecast objects that are unmatched
 
         Args:
@@ -127,7 +127,7 @@ def calculate_3d_valrat_fsu_fsa(input_data, columns_names):
     return calculate_arearat_fsu_fsa(filtered_data, columns_names_new)
 
 
-def calculate_3d_valrat_osm_osa(input_data, columns_names):
+def calculate_3d_volrat_osm_osa(input_data, columns_names):
     """Performs calculation of Volume-weighted % of 3d simple observation objects that are matched
 
         Args:
