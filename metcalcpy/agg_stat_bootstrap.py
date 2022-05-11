@@ -155,7 +155,7 @@ class AggStatBootstrap:
 
                     # add fcst var
                     if fcst_var is not None:
-                        all_filters.append((self.input_data['fcst_var'].isin([fcst_var])))
+                        all_filters.append((filtered_by_indy_data['fcst_var'].isin([fcst_var])))
 
                     # use numpy to select the rows where any record evaluates to True
                     mask = np.array(all_filters).all(axis=0)
