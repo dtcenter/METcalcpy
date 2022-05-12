@@ -636,7 +636,7 @@ def rename_column(columns_names):
     columns_names_new = []
     for index, name in enumerate(columns_names):
         if name == 'volume':
-            columns_names_new[index] = 'area'
+            columns_names_new.insert(index, 'area')
         else:
-            columns_names_new[index] = name
+            columns_names_new.insert(index, name)
     return columns_names_new
