@@ -757,10 +757,10 @@ class AggStat:
         # sort data by dates
         series_data = _sort_data(series_data)
 
-        # find the function that prepares data and execute it
-
-        func = getattr(self, f"_prepare_{self.params['line_type']}_data")
-        func(series_data)
+        if 'line_type' in self.params.keys() and self.params['line_type'] is not None and self.params['line_type'] != 'None':
+            # find the function that prepares data and execute it
+            func = getattr(self, f"_prepare_{self.params['line_type']}_data")
+            func(series_data)
 
         # input data has to be in numpy format for bootstrapping
         data = series_data.to_numpy()

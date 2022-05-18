@@ -689,7 +689,11 @@ def perform_event_equalization(params, input_data):
     fix_vals_keys = []
     if 'fixed_vars_vals_input' in params:
         for key in params['fixed_vars_vals_input']:
-            vals_permuted = list(itertools.product(*params['fixed_vars_vals_input'][key].values()))
+            if type(params['fixed_vars_vals_input'][key]) is dict:
+                list_for_permut = params['fixed_vars_vals_input'][key].values()
+            else:
+                list_for_permut = [params['fixed_vars_vals_input'][key]]
+            vals_permuted = list(itertools.product(*list_for_permut))
             vals_permuted_list = [item for sublist in vals_permuted for item in sublist]
             fix_vals_permuted_list.append(vals_permuted_list)
 
