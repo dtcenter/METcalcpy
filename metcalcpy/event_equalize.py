@@ -137,7 +137,7 @@ def event_equalize(series_data, indy_var, series_var_vals, fix_vars,
             permutation_cases_not_in_common_cases: Any = \
                 permutation_data['equalize'][~permutation_cases_not_in_common_cases_ind]
 
-            discarded_cases = discarded_cases.append(permutation_cases_not_in_common_cases)
+            discarded_cases = pd.concat([discarded_cases, permutation_cases_not_in_common_cases])
             # report the discarded records
             for discarded_case in discarded_cases:
                 print(f"WARNING: discarding series member with case {discarded_case}"

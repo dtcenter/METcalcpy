@@ -14,6 +14,11 @@ Program Name: utils.py
 
 __author__ = 'Tatiana Burek'
 
+
+import warnings
+# To deal with third-party warnings
+warnings.filterwarnings("ignore", category=FutureWarning, module='statsmodels')
+warnings.filterwarnings("ignore", category=DeprecationWarning, module='statsmodels')
 from typing import Union
 import math
 import sys
@@ -27,7 +32,6 @@ from pandas import DataFrame
 from scipy import stats
 from scipy.stats import t, nct
 from statsmodels.tsa.arima.model import ARIMA
-
 from metcalcpy.util.correlation import corr, remove_none, acf
 from metcalcpy import GROUP_SEPARATOR, DATE_TIME_REGEX
 from metcalcpy.event_equalize import event_equalize
@@ -711,7 +715,7 @@ def perform_event_equalization(params, input_data):
             equalize_axis_data(fix_vals_keys, fix_vals_permuted_list, params, input_data, axis='2')
 
         # append and reindex output from both axis
-        all_ee_records = output_ee_data.append(output_ee_data_2).reindex()
+        all_ee_records = pd.concat([output_ee_data, output_ee_data_2]).reindex()
 
         # create a single unique dictionary from series for Y1 and Y2 to us in EE
         all_series = {**params['series_val_1'], **params['series_val_2']}
