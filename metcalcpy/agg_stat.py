@@ -552,7 +552,7 @@ class AggStat:
                 1st element - derived series title,
                     ex. 'DIFF(ENS001v3.6.1_d01 DPT FBAR-ENS001v3.6.1_d02 DPT FBAR)'
                 others  - additional values like indy val and statistic
-                series_to_data - dictionary of the series title
+                distributions - dictionary of the series title
                     to it's BootstrapDistributionResult object
 
             Returns:
@@ -692,7 +692,7 @@ class AggStat:
                 print(err)
 
         if derived_curve_component.derived_operation == 'DIFF_SIG':
-            # remove None values in series_to_data
+            # remove None values in distributions
             distributions = [i for i in results.distributions if i is not None]
             diff_sig = None
             if distributions and results.value is not None:
