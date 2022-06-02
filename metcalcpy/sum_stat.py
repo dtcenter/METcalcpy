@@ -59,11 +59,11 @@ from metcalcpy.util.utils import is_string_integer, parse_bool, \
 class SumStat:
     """A class that performs event equalisation if needed and statistics calculation
         on each row of the input data frame.
-        if one of the field values contain ';' (EAST;NMT) this class aggregate the values
+        if one of the field values contain ':' (EAST:NMT) this class aggregate the values
         for these fields first and than calculate statistics on the aggregated values
-           All parameters including data description and location is in the parameters dictionary
+           All parameters including data description and location is in the parameters' dictionary
         Usage:
-            initialise this call with the parameters dictionary and than
+            initialise this call with the parameters dictionary and then
             call calculate_stats method
             This method will crate and save to the file aggregation statistics
                 sum_stat = SumStat(params)
@@ -182,11 +182,11 @@ class SumStat:
         """
 
         # check if indy_vals have a field that need to be aggregated - the field with ';'
-        has_agg_indy_field = any(any(';' in i for i in item) for item in self.params['indy_vals'])
+        has_agg_indy_field = any(any(GROUP_SEPARATOR in i for i in item) for item in self.params['indy_vals'])
 
         # look if there is a field that need to be aggregated first - the field with ';'
         series_var_val = self.params['series_val_' + axis]
-        has_agg_series_field = any(any(';' in i for i in item) for item in series_var_val)
+        has_agg_series_field = any(any(GROUP_SEPARATOR in i for i in item) for item in series_var_val)
 
         if series_var_val and (has_agg_indy_field or has_agg_series_field):
             # the special field was detected
