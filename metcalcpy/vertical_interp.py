@@ -351,7 +351,7 @@ def height_from_pressure(config,
                'units': 'meter'})
 
     surface_mask = xr.DataArray(
-        np.empty(temperature.shape, dtype=np.bool),
+        np.empty(temperature.shape, dtype=bool),
         dims=temperature.dims,
         coords=temperature.coords,
         attrs={'long_name': 'surface mask'})

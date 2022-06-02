@@ -22,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8"]
+        python-version: ["3.8.6", "3.8.12"]
 
     steps:
     - uses: actions/checkout@v2
@@ -33,7 +33,6 @@ jobs:
     - name: Install dependencies
       run: |
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        pip install opencv-python
     - name: Test with pytest
       # these are tests that don't have external dependencies (i.e. need to run on Linux test hosts where large datasets reside or require exact machine type for 
       # image comparisons to work, etc.)
