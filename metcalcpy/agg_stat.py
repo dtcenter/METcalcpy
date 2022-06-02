@@ -57,40 +57,10 @@ from metcalcpy.util.mcts_statistics import *
 
 from metcalcpy.util.utils import is_string_integer, get_derived_curve_name, \
     calc_derived_curve_value, intersection, is_derived_point, parse_bool, \
-    OPERATION_TO_SIGN, perfect_score_adjustment, perform_event_equalization, aggregate_field_values
+    OPERATION_TO_SIGN, perfect_score_adjustment, perform_event_equalization,\
+    aggregate_field_values, sort_data, DerivedCurveComponent
 
 __author__ = 'Tatiana Burek'
-
-
-class DerivedCurveComponent:
-    """ Holds components and the operation for a derived series
-    """
-
-    def __init__(self, first_component, second_component, derived_operation):
-        self.first_component = first_component
-        self.second_component = second_component
-        self.derived_operation = derived_operation
-
-
-def _sort_data(series_data):
-    """ Sorts input data frame by fcst_valid, fcst_lead and stat_name
-
-        Args:
-            input pandas data frame
-    """
-    fields = series_data.keys()
-    if "fcst_valid_beg" in fields:
-        by_fields = ["fcst_valid_beg", "fcst_lead"]
-    elif "fcst_valid" in fields:
-        by_fields = ["fcst_valid", "fcst_lead"]
-    elif "fcst_init_beg" in fields:
-        by_fields = ["fcst_init_beg", "fcst_lead"]
-    else:
-        by_fields = ["fcst_init", "fcst_lead"]
-    if "stat_name" in fields:
-        by_fields.append("stat_name")
-    series_data = series_data.sort_values(by=by_fields)
-    return series_data
 
 
 class AggStat:
@@ -582,7 +552,7 @@ class AggStat:
                 1st element - derived series title,
                     ex. 'DIFF(ENS001v3.6.1_d01 DPT FBAR-ENS001v3.6.1_d02 DPT FBAR)'
                 others  - additional values like indy val and statistic
-                distributions - dictionary of the series title
+                series_to_data - dictionary of the series title
                     to it's BootstrapDistributionResult object
 
             Returns:
@@ -722,7 +692,7 @@ class AggStat:
                 print(err)
 
         if derived_curve_component.derived_operation == 'DIFF_SIG':
-            # remove None values in distributions
+            # remove None values in series_to_data
             distributions = [i for i in results.distributions if i is not None]
             diff_sig = None
             if distributions and results.value is not None:
@@ -755,7 +725,7 @@ class AggStat:
             has_derived_series = True
 
         # sort data by dates
-        series_data = _sort_data(series_data)
+        series_data = sort_data(series_data)
 
         if 'line_type' in self.params.keys() and self.params['line_type'] is not None and self.params['line_type'] != 'None':
             # find the function that prepares data and execute it
@@ -833,7 +803,7 @@ class AggStat:
             # filter columns of interest
             date_lead_stat = series_data[:, [fcst_valid_ind, fcst_lead_index, stat_name_index]]
             # find the number of unique combinations
-            unique_date_size = len(np.vstack({tuple(e) for e in date_lead_stat}))
+            unique_date_size = len(np.vstack([tuple(e) for e in date_lead_stat]))
         except TypeError as err:
             print(err)
             unique_date_size = []
