@@ -40,7 +40,6 @@ import pandas as pd
 import numpy as np
 
 from metcalcpy import GROUP_SEPARATOR
-from metcalcpy.agg_stat import _sort_data
 from metcalcpy.agg_stat_eqz import AggStatEventEqz
 from metcalcpy.bootstrap import  bootstrap_and_value_mode, BootstrapResults
 from metcalcpy.util.mode_ratio_statistics import *
@@ -49,7 +48,7 @@ from metcalcpy.util.mode_2d_arearat_statistics import *
 from metcalcpy.util.mode_2d_ratio_statistics import *
 from metcalcpy.util.mode_3d_volrat_statistics import *
 from metcalcpy.util.mode_3d_ratio_statistics import *
-from metcalcpy.util.utils import is_string_integer, parse_bool
+from metcalcpy.util.utils import is_string_integer, parse_bool, sort_data
 
 
 class AggStatBootstrap:
@@ -213,7 +212,7 @@ class AggStatBootstrap:
         return out_frame
 
     def _get_bootstrapped_stats(self, series_data, cases):
-        self.series_data = _sort_data(series_data)
+        self.series_data = sort_data(series_data)
         if self.params['num_iterations'] == 1:
             stat_val = self._calc_stats(cases)[0]
             results = BootstrapResults(lower_bound=None,
