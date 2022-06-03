@@ -803,7 +803,7 @@ class AggStat:
             # filter columns of interest
             date_lead_stat = series_data[:, [fcst_valid_ind, fcst_lead_index, stat_name_index]]
             # find the number of unique combinations
-            unique_date_size = len(np.vstack([tuple(e) for e in date_lead_stat]))
+            unique_date_size = len(set(map(tuple, date_lead_stat)))
         except TypeError as err:
             print(err)
             unique_date_size = []
