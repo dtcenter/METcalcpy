@@ -159,10 +159,10 @@ class Scorecard:
                     if field in series_val.keys():
                         all_filters_pct.append((self.input_data[field].isin(filter_list)))
 
-                    # use numpy to select the rows where any record evaluates to True
-                    mask = np.array(all_filters).all(axis=0)
-                    point_data = self.input_data.loc[mask]
-                    point_to_distrib[point] = point_data
+                # use numpy to select the rows where any record evaluates to True
+                mask = np.array(all_filters).all(axis=0)
+                point_data = self.input_data.loc[mask]
+                point_to_distrib[point] = point_data
 
             else:
                 # perform statistics calculation
@@ -174,8 +174,14 @@ class Scorecard:
                         derived_frame = pd.concat([derived_frame, results], axis=0)
 
         # print the result to file
-        export_csv = derived_frame.to_csv(self.params['sum_stat_output'],
-                                          index=None, header=True, mode='w',
+        if derived_frame is not None:
+            header = True
+            mode = 'w'
+            if 'append_to_file' in self.params.keys() and self.params['append_to_file'] == 'True':
+                header = False
+                mode = 'a'
+            export_csv = derived_frame.to_csv(self.params['sum_stat_output'],
+                                          index=None, header=header, mode=mode,
                                           sep="\t", na_rep="NA", float_format='%.' + str(PRECISION) + 'f')
 
     def _get_stats_for_derived(self, series, series_to_data) -> Union[DataFrame, None]:
@@ -257,7 +263,7 @@ class Scorecard:
                 # filter columns of interest
                 date_lead_stat = ds_1.values[:, [fcst_valid_ind, fcst_lead_index, stat_name_index]]
                 # find the number of unique combinations
-                unique_date_size = len(np.vstack([tuple(e) for e in date_lead_stat]))
+                unique_date_size = len(set(map(tuple, date_lead_stat)))
             except TypeError as err:
                 print(err)
                 unique_date_size = []
@@ -301,6 +307,7 @@ class Scorecard:
 
         # set statistic value
         df.at[0, 'stat_value'] = derived_stat
+        df = df.astype({"fcst_lead": str})
 
         # set fcst_lead
         for fcst_lead in self.params["series_val_1"]['fcst_lead']:
