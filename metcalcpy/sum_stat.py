@@ -159,7 +159,9 @@ class SumStat:
             logging.error('Parameter with key %s is missing. The empty output file is created', ex)
 
         # remove the original fields to save the space
-        self.input_data = self.input_data.drop(labels=fields, axis=1)
+        for column in fields:
+            if column in self.column_names:
+                self.input_data = self.input_data.drop(column, axis=1)
 
         # remove 'equalize' to save the space
         if 'equalize' in self.input_data.columns:
