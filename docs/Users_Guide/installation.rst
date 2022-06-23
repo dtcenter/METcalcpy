@@ -7,51 +7,45 @@ are used by METviewer, METplotpy, and other applications.
 Python Requirements
 ~~~~~~~~~~~~~~~~~~~
 
-* Python 3.6.3
+* Python 3.8.6
 
-* cartopy 0.17.0
+* cartopy 0.20.2
 
 * cmocean
 
 * eofs
 
-* imutils 0.5.3
+* imutils 0.5.4
 
-* imageio
+* imageio 2.19.2
 
 * lxml
 
-* matplotlib 3.3.0
+* matplotlib 3.5.1
 
 * metcalcpy
 
-* netcdf4 1.5.1.2
+* metpy
 
-* numpy 1.17.0
+* netcdf4 1.5.8
 
-* pandas 1.0.1
+* numpy 1.22.3
 
-* plotly 4.9.0
+* pandas 1.4.2
 
-* python-kaleido 0.2.1
+* pytest 7.1.2
 
-* psutil 5.7.2
+* pyyaml 5.3.1 or above
 
-* pymysql
-
-* pytest 5.2.1
-
-* pyyaml 5.3.1
-
-* scikit-image 0.16.2
+* scikit-image 0.18.1 or above
 
 * scikit-learn 0.23.2
 
-* scipy 1.5.1
+* scipy 1.8.0
 
-* statsmodels 0.11.1
+* statsmodels 0.12.2 or above
 
-* xarray 0.16.2
+* xarray 2022.3.0
 
 
 Retrieve METcalcpy code
