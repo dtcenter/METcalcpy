@@ -737,6 +737,7 @@ def perform_event_equalization(params, input_data):
                                         fix_vals_keys,
                                         fix_vals_permuted_list, True,
                                         params['line_type'] == "ssvar")
+
         output_ee_data = output_ee_data.drop('equalize', axis=1)
 
     return output_ee_data
