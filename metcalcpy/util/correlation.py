@@ -340,7 +340,7 @@ def autocovariance(x, list_size, n_lag, mean_val):
     total_autocov = 0
     count_autocov = 0
     for i in np.arange(0, list_size - n_lag):
-        if x[i + n_lag] is not None and x[i] is not None:
+        if x[i + n_lag] is not None and x[i] is not None and not math.isnan(x[i + n_lag]) and not math.isnan(x[i]):
             total_autocov += ((x[i + n_lag]) - mean_val) * (x[i] - mean_val)
             count_autocov = count_autocov + 1
     return (1 / (count_autocov + n_lag)) * total_autocov
@@ -1168,11 +1168,11 @@ def _remove_na_single(x, axis='rows'):
 
 
 def remove_none(x):
-    """ Remove missing (None) values from the list
+    """ Remove missing (None, nan) values from the list
     :param x: numeric list
     :return: a list without None  or empty array
     """
     if x is None:
         return []
 
-    return [elem for elem in x if elem is not None]
+    return [elem for elem in x if elem is not None and not pd.isna(elem)]
