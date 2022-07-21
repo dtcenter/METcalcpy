@@ -718,7 +718,7 @@ def perform_event_equalization(params, input_data):
 
     # if the second Y axis is present - run event equalizer on Y1
     # and then run event equalizer on Y1 and Y2 equalized data
-    if params['series_val_2']:
+    if 'series_val_2' in params.keys() and params['series_val_2']:
         # perform EE for each forecast variable on the axis 2
         output_ee_data_2 = \
             equalize_axis_data(fix_vals_keys, fix_vals_permuted_list, params, input_data, axis='2')
@@ -737,6 +737,7 @@ def perform_event_equalization(params, input_data):
                                         fix_vals_keys,
                                         fix_vals_permuted_list, True,
                                         params['line_type'] == "ssvar")
+
         output_ee_data = output_ee_data.drop('equalize', axis=1)
 
     return output_ee_data
