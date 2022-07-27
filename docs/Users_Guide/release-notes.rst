@@ -7,6 +7,12 @@ describes the bugfix, enhancement, or new feature: `METcalcpy GitHub issues. <ht
 Version |version| release notes (|release_date|)
 ------------------------------------------------
 
+Version 1.1.1 release notes (20220727)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Bug Fix:
+
+* Automatically reorder the data so regimes match between forecast and observations
+
 Version 1.1.0 release notes (20220311)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
