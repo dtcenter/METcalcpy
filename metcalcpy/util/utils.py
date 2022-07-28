@@ -1,13 +1,12 @@
 # ============================*
- # ** Copyright UCAR (c) 2020
- # ** University Corporation for Atmospheric Research (UCAR)
- # ** National Center for Atmospheric Research (NCAR)
- # ** Research Applications Lab (RAL)
- # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
- # ============================*
- 
- 
- 
+# ** Copyright UCAR (c) 2020
+# ** University Corporation for Atmospheric Research (UCAR)
+# ** National Center for Atmospheric Research (NCAR)
+# ** Research Applications Lab (RAL)
+# ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+# ============================*
+
+
 """
 Program Name: utils.py
 """
@@ -59,6 +58,16 @@ CODE_TO_OUTCOME_TO_MESSAGE = {
     'no_diff_eqv': 'statistically not different from zero and statistically equivalent to zero',
     'no_diff_no_eqv': 'statistically not different from zero and statistically not equivalent to zero'
 }
+
+
+class DerivedCurveComponent:
+    """ Holds components and the operation for a derived series
+    """
+
+    def __init__(self, first_component, second_component, derived_operation):
+        self.first_component = first_component
+        self.second_component = second_component
+        self.derived_operation = derived_operation
 
 
 def represents_int(possible_int):
@@ -709,7 +718,7 @@ def perform_event_equalization(params, input_data):
 
     # if the second Y axis is present - run event equalizer on Y1
     # and then run event equalizer on Y1 and Y2 equalized data
-    if params['series_val_2']:
+    if 'series_val_2' in params.keys() and params['series_val_2']:
         # perform EE for each forecast variable on the axis 2
         output_ee_data_2 = \
             equalize_axis_data(fix_vals_keys, fix_vals_permuted_list, params, input_data, axis='2')
@@ -728,6 +737,7 @@ def perform_event_equalization(params, input_data):
                                         fix_vals_keys,
                                         fix_vals_permuted_list, True,
                                         params['line_type'] == "ssvar")
+
         output_ee_data = output_ee_data.drop('equalize', axis=1)
 
     return output_ee_data
@@ -1266,3 +1276,24 @@ def calculate_mtd_revision_stats(series_data: DataFrame, lag_max: Union[int, Non
         result['ww_run'] = round(p_value, 2)
 
     return result
+
+
+def sort_data(series_data):
+    """ Sorts input data frame by fcst_valid, fcst_lead and stat_name
+
+        Args:
+            input pandas data frame
+    """
+    fields = series_data.keys()
+    if "fcst_valid_beg" in fields:
+        by_fields = ["fcst_valid_beg", "fcst_lead"]
+    elif "fcst_valid" in fields:
+        by_fields = ["fcst_valid", "fcst_lead"]
+    elif "fcst_init_beg" in fields:
+        by_fields = ["fcst_init_beg", "fcst_lead"]
+    else:
+        by_fields = ["fcst_init", "fcst_lead"]
+    if "stat_name" in fields:
+        by_fields.append("stat_name")
+    series_data = series_data.sort_values(by=by_fields)
+    return series_data
