@@ -124,15 +124,16 @@ Retrieve METcalcpy code
 
 * Change directory to the METcalcpy directory you created::
 
-   cd /home/my_dir/feature_123_xyz/METcalcpy
+   cd /home/my_dir/feature_123_xyz/
 
-* You should see a *metcalcpy* directory created under the METcalcpy directory::
+* Clone the METcalcpy repository from the command line into this directory::
 
-   ls -l
+    HTTP
+    git clone https://github.com/dtcenter/METcalcpy
 
-* Change directory to the *metcalcpy* directory::
+* Change directory to the *METcalcpy* directory::
 
-    cd /home/my_dir/feature_123_xyz/METcalcpy/metcalcpy
+    cd /home/my_dir/feature_123_xyz/METcalcpy
 
 * The latest major release is the default branch.
 
