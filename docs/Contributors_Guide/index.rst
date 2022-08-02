@@ -126,10 +126,11 @@ Retrieve METcalcpy code
 
    cd /home/my_dir/feature_123_xyz/
 
-* Clone the METcalcpy repository from the command line into this directory::
+* Clone the METcalcpy repository from the command line into this directory
 
-    HTTP
-    git clone https://github.com/dtcenter/METcalcpy
+    HTTP::
+
+       git clone https://github.com/dtcenter/METcalcpy
 
 * Change directory to the *METcalcpy* directory::
 
