@@ -2,7 +2,8 @@ Contributor's Guide
 ====================
 
 METcalcpy is written entirely in Python to provide statistics calculations and other utilities that
-are used by METviewer, METplotpy, and other applications.
+are used by METviewer, METplotpy, and other applications.  The modules and packages can be imported into
+other scripts.
 
 Python Requirements
 ~~~~~~~~~~~~~~~~~~~
@@ -48,20 +49,6 @@ Python Requirements
 * xarray 2022.3.0
 
 
-Retrieve METcalcpy code
-~~~~~~~~~~~~~~~~~~~~~~~
-
-You can retrieve the METcalcpy source code using the web browser. Begin by entering
-https://github.com/dtcenter/METcalcpy in
-the web browser's navigation bar.  On the right-hand side of the web page for the METcalcpy repository, click on 
-the `Releases` link.  This leads to a page where all available releases are available.  The latest release will be
-located at the top of the page.  Scroll to the release of interest and below it's title is an `Assets` link in small
-text.  Click on the inverted triangle to the left of the `Assets` text to access the menu. To download the source code,
-click on either the zip or tar.gz version of the source code and save it to a directory where the METcalcpy source code
-will reside (e.g. /home/someuser/).
-
-Uncompress the compressed code using unzip <code> for the zip version or tar -xvfz <code> for the tar.gz version.
-
 Coding Standards
 ~~~~~~~~~~~~~~~~
 
@@ -73,7 +60,6 @@ Organization of Code in the Github Repository
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The source code for METcalcpy resides in a public GitHub repository:
 https://github.com/dtcenter/METcalcpy
-
 
 Contributed code will reside in one of the following directories:
 
@@ -89,18 +75,27 @@ Contributed code will reside in one of the following directories:
 
 The *METcalcpy/metcalcpy/contributed* directory is where contributed code (from outside contributors) is initially saved.
 
-The *METcalcpy/metcalcpy/diagnostics* directory is where any code that is involved with performing diagnostics is to be saved.
+The *METcalcpy/metcalcpy/diagnostics* directory is for code that is involved with performing diagnostics.
 
-The  *METcalcpy/metcalpy/pre-processing* directory is for code that is involved with doing any data pre-processing.
+The *METcalcpy/metcalpy/pre-processing* directory is for code that is involved with any data pre-processing.
 
-Finally, the *METcalcpy/metcalcpy/util* directory contains code that can be re-used by other Python modules.  In the METcalcpy/metcalcpy directory, there are statistics scripts that are mainly used by METviewer but can be imported by other Python scripts for use.
+The *METcalcpy/metcalcpy/util* directory contains code that can be re-used by other Python modules.
 
+Finally, the *METcalcpy/metcalcpy* directory contains statistics scripts that are mainly used by METviewer but can be imported by other Python scripts for use.
 
 
 Tasks to Perform Before Contributing Code
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+* You will need a Github account and be included into the METcalcpy Developer's group
+
 * Create a Github issue describing what the contribute code will do
+
+* Employ the naming convention ‘feature_<github feature number>_<brief description>’ such as:
+
+     *feature_123_calculate_xyz*
+
+   for GitHub feature number *123* with description *xyz*.
 
 * Select  either an **Enhancement request**  or **New feature request**
 
@@ -112,22 +107,63 @@ Tasks to Perform Before Contributing Code
 
 * **NOTE**: The METplus development team and management can assist in filling out some of this information
 
+* Set up your conda/virtual environment or have your system administrator install the necessary Python version and third-party packages defined above
+
+Retrieve METcalcpy code
+~~~~~~~~~~~~~~~~~~~~~~~
+
+* Create a METcalcpy directory on your host machine (<path-to-METcalcpy>) where you have read/write/execute privileges
+
+  This is where the METcalcpy code will be saved.
+
+   e.g.::
+
+   mkdir /home/my_dir/feature_123_xyz
+
+  * In this example, the directory is named after the corresponding Github issue.  This makes it easier to identify which branch is being used.
+
+    *Use a naming convention and directory structure that conforms to your own work flow*
+
+* Change directory to the METcalcpy directory you created
+
+   following our example above::
+
+   cd /home/my_dir/feature_123_xyz/METcalcpy
+
+* You should see a *metcalcpy* directory created under the METcalcpy directory::
+
+   ls -l
+
+* Change directory to the *metcalcpy* directory::
+
+  cd /home/my_dir/feature_123_xyz/METcalcpy/metcalcpy
+
+* The latest major release is the default branch.
+
+   Enter the following at the command line to view the default branch::
+
+   git branch
+
+   You will see something like this:
+   *main_vn.m
+
+   where *n* and *m* are major and minor version numbers, respectively
+
+* Check out the *develop* branch::
+
+   git checkout develop
+
+* Create a feature branch corresponding to your Github issue::
+
+   git checkout -b feature_123_xyz
+
+   *at this point, the code you have in the feature_123_xyz branch is identical to the code in the develop branch*
 
 
 Contributing Your Code
 ~~~~~~~~~~~~~~~~~~~~~~
 
-* Clone the METcalcpy repository and checkout the ‘develop’ branch.
-
-* Create a feature branch based on the ‘develop’ branch.
-
-* Employ the naming convention ‘feature_<github feature number>_<brief description>’ such as:
-
-     *feature_123_calculate_xyz*
-
-   for GitHub feature number *123* and that does *xyz*.
-
-* Begin work in this feature branch that you created in the previous step.
+* Begin working in the feature branch that you created in the previous step.  From this point on, your code will deviate from the code in the *develop* branch.
 
 * If you are incorporating existing code, copy your code to the *METcalcpy/metcalcpy/contributed* directory.
 
@@ -135,7 +171,7 @@ Otherwise work in one of the appropriate METcalcpy directories.
 
 * Make any necessary changes to your code to conform to the coding conventions
 
-* Migrate it to the code to one of the other, more applicable directories (if you are incorporating pre-existing code).
+* Migrate it to the code to one of the other, more applicable directories (**if you are incorporating pre-existing code**).
 
 
 Testing Your Code
@@ -143,15 +179,19 @@ Testing Your Code
 
 * Use the pytest framework to create tests to ensure that your code works
 
- * Refer to *METcalcpy/test* for examples
+ * Refer to *<path-to-METcalcpy-dir-base>/METcalcpy/test* for examples::
+
+    e.g.
+    */home/my_dir/feature_123_xyz/METcalcpy/test*
 
 * Include any sample test data
 
 * If your sample data is large ( >100 MB), contact one of the METcalcpy developers for an alternate (other than Github) storage location
 
-* For sample data <100 MB, save your data in the *METcalcpy/test/data* directory
+* For sample data <100 MB, save your data in the *<path-to-METcalcpy-dir-base>/METcalcpy/test/data* directory::
 
-* Save your test code and any sample data  in the METcalcpy/test directory
+  e.g.
+  */home/my_dir/feature_123_xyz/METcalcpy/test/data*
 
 
 Create User Documentation
@@ -177,10 +217,11 @@ Create User Documentation
 
   * cd to *METcalcpy/docs/*
 
-* from the command line, run the following commands:
-   *build clean*
+* from the command line, run the following commands::
 
-   *build_html*
+   build clean
+
+   build_html
 
 * Verify that there aren’t any error messages in the output
 
