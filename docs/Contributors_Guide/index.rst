@@ -116,17 +116,13 @@ Retrieve METcalcpy code
 
   This is where the METcalcpy code will be saved.
 
-   e.g.::
-
    mkdir /home/my_dir/feature_123_xyz
 
   * In this example, the directory is named after the corresponding Github issue.  This makes it easier to identify which branch is being used.
 
     *Use a naming convention and directory structure that conforms to your own work flow*
 
-* Change directory to the METcalcpy directory you created
-
-   following our example above::
+* Change directory to the METcalcpy directory you created::
 
    cd /home/my_dir/feature_123_xyz/METcalcpy
 
@@ -136,16 +132,16 @@ Retrieve METcalcpy code
 
 * Change directory to the *metcalcpy* directory::
 
-  cd /home/my_dir/feature_123_xyz/METcalcpy/metcalcpy
+    cd /home/my_dir/feature_123_xyz/METcalcpy/metcalcpy
 
 * The latest major release is the default branch.
 
    Enter the following at the command line to view the default branch::
 
-   git branch
+     git branch
 
    You will see something like this:
-   *main_vn.m
+   main_vn.m
 
    where *n* and *m* are major and minor version numbers, respectively
 
@@ -181,8 +177,7 @@ Testing Your Code
 
  * Refer to *<path-to-METcalcpy-dir-base>/METcalcpy/test* for examples::
 
-    e.g.
-    */home/my_dir/feature_123_xyz/METcalcpy/test*
+    /home/my_dir/feature_123_xyz/METcalcpy/test
 
 * Include any sample test data
 
@@ -190,8 +185,7 @@ Testing Your Code
 
 * For sample data <100 MB, save your data in the *<path-to-METcalcpy-dir-base>/METcalcpy/test/data* directory::
 
-  e.g.
-  */home/my_dir/feature_123_xyz/METcalcpy/test/data*
+  /home/my_dir/feature_123_xyz/METcalcpy/test/data
 
 
 Create User Documentation
@@ -215,7 +209,7 @@ Create User Documentation
 
 * Verify that your documentation is correct by building it:
 
-  * cd to *METcalcpy/docs/*
+  * cd to */home/my_dir/feature_123_xyz/METcalcpy/docs/*
 
 * from the command line, run the following commands::
 
@@ -223,7 +217,7 @@ Create User Documentation
 
    build_html
 
-* Verify that there aren’t any error messages in the output
+* Verify that there aren’t any warnings or error messages in the output
 
 * Newly build documentation resides in the *METcalcpy/docs/_build/html/docs* directory
 
@@ -233,7 +227,7 @@ Create User Documentation
 
    where *<path/to/METcalcpy_source_code>* is the directory where you cloned the METcalcpy source code
 
-   and *feature_123_xyz* is the feature branch you created
+   (e.g. /home/my_dir) and *feature_123_xyz* is the feature branch you created
 
 Incorporate Your Code Into the Repository
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
