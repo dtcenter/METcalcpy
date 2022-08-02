@@ -1,5 +1,5 @@
-Contributor's guide for METcalcpy
-===========================================
+Contributor's Guide
+====================
 
 METcalcpy is written entirely in Python to provide statistics calculations and other utilities that
 are used by METviewer, METplotpy, and other applications.
