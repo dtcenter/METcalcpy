@@ -128,9 +128,9 @@ Retrieve METcalcpy code
 
 * Clone the METcalcpy repository from the command line into this directory
 
-    HTTP::
+    via HTTP::
 
-       git clone https://github.com/dtcenter/METcalcpy
+     git clone https://github.com/dtcenter/METcalcpy
 
 * Change directory to the *METcalcpy* directory::
 
