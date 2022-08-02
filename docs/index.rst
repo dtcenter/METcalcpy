@@ -98,11 +98,11 @@ Authors
 Many authors, listed below in alphabetical order, have contributed to the documentation of METplus.
 To cite this documentation in publications, please refer to the METcalcpy User's Guide :ref:`Citation Instructions<citations>`.
  
-* David Fillmore [#NCAR]_  
 * Hank Fisher [#NCAR]_
 * Christina Kalb [#NCAR]_
 * Minna Win-Gildenmeister [#NCAR]_
 * Tatiana Burek [#NCAR]_
+* David Fillmore [#NCAR]_
 
 .. rubric:: Organization
 
@@ -116,6 +116,7 @@ To cite this documentation in publications, please refer to the METcalcpy User's
    :caption: METcalcpy 
 
    Users_Guide/index
+   Contributors_Guide/index
 
 
 
