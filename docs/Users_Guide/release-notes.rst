@@ -10,6 +10,32 @@ Version |version| release notes (|release_date|)
 Version 2.0.0 release notes (20220622)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+beta2 release
+^^^^^^^^^^^^^
+
+New Functionality:
+
+
+Enhancements:
+
+* **Support calculation of Revision Series Data  (`#181 <https://github.com/dtcenter/METcalcpy/issues/181>`_)**
+
+* **Create a Contributor's Guide (`#178 <https://github.com/dtcenter/METcalcpy/issues/178>`_)**
+
+* **Setup SonarQube(`#37 <https://github.com/dtcenter/METcalcpy/issues/37>`_)**
+
+Internal:
+
+Bugfixes:
+
+* Address Github Dependabot Issues (`#193 <https://github.com/dtcenter/METcalcpy/issues/193>`_)
+
+
+
+
+
+beta1 release
+^^^^^^^^^^^^^
 
 New Functionality:
 
