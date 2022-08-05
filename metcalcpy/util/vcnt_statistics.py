@@ -1,13 +1,12 @@
 # ============================*
- # ** Copyright UCAR (c) 2020
- # ** University Corporation for Atmospheric Research (UCAR)
- # ** National Center for Atmospheric Research (NCAR)
- # ** Research Applications Lab (RAL)
- # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
- # ============================*
- 
- 
- 
+# ** Copyright UCAR (c) 2020
+# ** University Corporation for Atmospheric Research (UCAR)
+# ** National Center for Atmospheric Research (NCAR)
+# ** Research Applications Lab (RAL)
+# ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+# ============================*
+
+
 """
 Program Name: vcnt_statistics.py
 """
@@ -508,6 +507,54 @@ def calculate_vcnt_dir_abser(input_data, columns_names, aggregation=False):
     try:
         ang_btw = abs(calculate_vcnt_dir_err(input_data, columns_names, aggregation))
         result = round_half_up(ang_btw, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_vcnt_anom_corr(input_data, columns_names, aggregation=False):
+    warnings.filterwarnings('error')
+    try:
+        total = get_total_values(input_data, columns_names, aggregation)  # n
+        f_speed_bar = sum_column_data_by_name(input_data, columns_names, 'f_speed_bar') / total  # f
+        o_speed_bar = sum_column_data_by_name(input_data, columns_names, 'o_speed_bar') / total  # o
+        uvffbar = sum_column_data_by_name(input_data, columns_names, 'uvffbar') / total  # ff
+        uvfobar = sum_column_data_by_name(input_data, columns_names, 'uvfobar') / total  # fo
+        uvoobar = sum_column_data_by_name(input_data, columns_names, 'uvoobar') / total  # oo
+
+        v = (total * uvffbar - f_speed_bar * f_speed_bar) * (total * uvoobar - o_speed_bar * o_speed_bar)
+        result = ((total * uvfobar) - (f_speed_bar * o_speed_bar)) / np.sqrt(v)
+
+        # Check the computed range
+        if result > 1:
+            result = 1.0
+        elif result < -1:
+            result = -1.0
+
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_vcnt_anom_corr_uncntr(input_data, columns_names, aggregation=False):
+    warnings.filterwarnings('error')
+    try:
+        total = get_total_values(input_data, columns_names, aggregation)  # n
+        uvffbar = sum_column_data_by_name(input_data, columns_names, 'uvffbar') / total  # ff
+        uvoobar = sum_column_data_by_name(input_data, columns_names, 'uvoobar') / total  # oo
+        uvfobar = sum_column_data_by_name(input_data, columns_names, 'uvfobar') / total  # fo
+
+        v = uvffbar * uvoobar
+        result = uvfobar / np.sqrt(v)
+
+        # Check the computed range
+        if result > 1:
+            result = 1.0
+        elif result < -1:
+            result = -1.0
+
     except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
