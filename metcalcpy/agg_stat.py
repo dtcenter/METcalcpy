@@ -523,11 +523,16 @@ class AggStat:
 
     def _prepare_ctc_data(self, data_for_prepare):
         """Prepares CTC data.
-            Nothing needs to be done
+            Checks if all values from ec_value column are the same and if not - throws an error
 
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
+
+        if 'ec_value' in data_for_prepare.columns:
+            if not (data_for_prepare['ec_value'] == data_for_prepare['ec_value'][0]).all():
+                raise ValueError('EC_VALUE is NOT constant across  CTC lines')
+
 
     def _prepare_cts_data(self, data_for_prepare):
         """Prepares cts data.
