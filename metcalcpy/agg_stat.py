@@ -173,6 +173,8 @@ class AggStat:
         'vcnt_speed_abserr': ['ufbar', 'vfbar', 'uobar', 'vobar'],
         'vcnt_dir_err': ['ufbar', 'vfbar', 'uobar', 'vobar'],
         'vcnt_dir_abser': ['ufbar', 'vfbar', 'uobar', 'vobar'],
+        'vcnt_anom_corr': ['uvffabar', 'uvfoabar', 'uvooabar', 'fa_speed_bar', 'oa_speed_bar'],
+        'vcnt_anom_corr_uncntr': ['uvffabar', 'uvfoabar', 'uvooabar'],
 
         'vl1l2_bias': ['uvffbar', 'uvoobar'],
         'vl1l2_fvar': ['uvffbar', 'f_speed_bar'],
@@ -520,6 +522,9 @@ class AggStat:
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
+        if 'ec_value' in data_for_prepare.columns:
+            if not (data_for_prepare['ec_value'] == data_for_prepare['ec_value'][0]).all():
+                raise ValueError('EC_VALUE is NOT constant across  MCTC lines')
 
     def _prepare_ctc_data(self, data_for_prepare):
         """Prepares CTC data.
