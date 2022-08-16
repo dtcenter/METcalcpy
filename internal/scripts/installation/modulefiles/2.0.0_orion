@@ -1,0 +1,15 @@
+#%Module######################################################################
+##
+##      METcalcpy
+##
+proc ModulesHelp { } {
+  puts stderr "Sets up the paths and environment variables to use the METcalcpy-2.0.0.
+     *** For help see the official MET webpage at http://www.dtcenter.org/met/users ***"
+}
+
+module load contrib
+module load intel/2020.2
+module load intelpython3/2020.2
+
+#setenv METCALCPY_PATH /apps/contrib/MET/METcalcpy/METcalcpy-2.0.0
+prepend-path PYTHONPATH /apps/contrib/MET/METcalcpy/METcalcpy-2.0.0

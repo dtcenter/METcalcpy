@@ -1,0 +1,22 @@
+#%Module######################################################################
+##
+##      METcalcpy
+##
+proc ModulesHelp { } {
+  puts stderr "Sets up the paths and environment variables to use the METcalcpy-1.0.0.
+     *** For help see the official MET webpage at http://www.dtcenter.org/met/users ***"
+}
+
+module load ips/18.0.1.163
+module load python/3.6.3
+setenv METCALPY_PATH /gpfs/dell2/emc/verification/noscrub/emc.metplus/METcalcpy/METcalcpy-1.0.0
+prepend-path PATH ${METCALCPY_PATH}/metcalcpy/contributed
+prepend-path PATH ${METCALCPY_PATH}/metcalcpy/util
+prepend-path PATH ${METCALCPY_PATH}/metcalcpy
+prepend-path PATH ${METCALCPY_PATH}
+prepend-path PYTHON_PATH ${METCALCPY_PATH}/metcalcpy/contributed
+prepend-path PYTHON_PATH ${METCALCPY_PATH}/metcalcpy/util
+prepend-path PYTHON_PATH ${METCALCPY_PATH}/metcalcpy
+prepend-path PYTHON_PATH ${METCALCPY_PATH}
+
+
