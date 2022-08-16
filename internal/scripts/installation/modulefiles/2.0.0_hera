@@ -1,0 +1,13 @@
+#%Module######################################################################
+##
+##      METcalcpy
+##
+proc ModulesHelp { } {
+  puts stderr "Sets up the paths and environment variables to use the METcalcpy-2.0.0.
+     *** For help see the official MET webpage at http://www.dtcenter.org/met/users ***"
+}
+
+prereq intel
+
+prepend-path PATH /scratch1/BMC/dtc/miniconda/miniconda3/envs/metplus_v5.0_py3.8/bin
+prepend-path PYTHONPATH	/contrib/METcalcpy/METcalcpy-2.0.0
