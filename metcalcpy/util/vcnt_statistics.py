@@ -516,15 +516,16 @@ def calculate_vcnt_dir_abser(input_data, columns_names, aggregation=False):
 def calculate_vcnt_anom_corr(input_data, columns_names, aggregation=False):
     warnings.filterwarnings('error')
     try:
-        total = get_total_values(input_data, columns_names, aggregation)  # n
+        total = get_total_values(input_data, columns_names, aggregation)
+        n = len(input_data)# n
         fa_speed_bar = sum_column_data_by_name(input_data, columns_names, 'fa_speed_bar') / total  # f
         oa_speed_bar = sum_column_data_by_name(input_data, columns_names, 'oa_speed_bar') / total  # o
         uvffabar = sum_column_data_by_name(input_data, columns_names, 'uvffabar') / total  # ff
         uvfoabar = sum_column_data_by_name(input_data, columns_names, 'uvfoabar') / total  # fo
         uvooabar = sum_column_data_by_name(input_data, columns_names, 'uvooabar') / total  # oo
 
-        v = (total * uvffabar - fa_speed_bar * fa_speed_bar) * (total * uvooabar - oa_speed_bar * oa_speed_bar)
-        result = ((total * uvfoabar) - (fa_speed_bar * oa_speed_bar)) / np.sqrt(v)
+        v = (n * uvffabar - fa_speed_bar * fa_speed_bar) * (n * uvooabar - oa_speed_bar * oa_speed_bar)
+        result = ((n * uvfoabar) - (fa_speed_bar * oa_speed_bar)) / np.sqrt(v)
 
         # Check the computed range
         if result > 1:
@@ -541,7 +542,7 @@ def calculate_vcnt_anom_corr(input_data, columns_names, aggregation=False):
 def calculate_vcnt_anom_corr_uncntr(input_data, columns_names, aggregation=False):
     warnings.filterwarnings('error')
     try:
-        total = get_total_values(input_data, columns_names, aggregation)  # n
+        total = get_total_values(input_data, columns_names, aggregation)
         uvffabar = sum_column_data_by_name(input_data, columns_names, 'uvffabar') / total  # ff
         uvooabar = sum_column_data_by_name(input_data, columns_names, 'uvooabar') / total  # oo
         uvfoabar = sum_column_data_by_name(input_data, columns_names, 'uvfoabar') / total  # fo
