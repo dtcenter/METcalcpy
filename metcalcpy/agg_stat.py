@@ -668,9 +668,14 @@ class AggStat:
                 ds_1_value,
                 ds_2_value,
                 derived_curve_component.derived_operation)
-            results = BootstrapResults(lower_bound=None,
+            if stat_val is not None:
+                results = BootstrapResults(lower_bound=None,
                                        value=round_half_up(stat_val[0], 5),
                                        upper_bound=None)
+            else:
+                results = BootstrapResults(lower_bound=None,
+                                           value=None,
+                                           upper_bound=None)
             results.set_distributions([results.value])
         else:
             # need bootstrapping and CI calculation in addition to the derived statistic
@@ -740,6 +745,7 @@ class AggStat:
 
         # sort data by dates
         series_data = sort_data(series_data)
+        series_data.reset_index(inplace=True, drop=True)
 
         if 'line_type' in self.params.keys() and self.params['line_type'] is not None and self.params['line_type'] != 'None':
             # find the function that prepares data and execute it
