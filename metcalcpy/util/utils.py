@@ -236,7 +236,7 @@ def round_half_up(num, decimals=0):
         with the specified precision,
      and breaks ties by rounding up.
         Args:
-            n: a number
+            n:  number
             decimals: decimal place
         Returns:
             rounded number
@@ -639,8 +639,9 @@ def equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axi
 
     # for each statistic for the specified axis
 
-    fcst_var_val = params['fcst_var_val_' + axis]
-    if not fcst_var_val:
+    if 'fcst_var_val_' + axis in params:
+        fcst_var_val = params['fcst_var_val_' + axis]
+    else:
         fcst_var_val = {'': ['']}
 
     for fcst_var, fcst_var_stats in fcst_var_val.items():
