@@ -7,16 +7,8 @@ on:
 
 jobs:
   add-checksum:
-     name: Create a checksum for the release code
      runs-on: ubuntu-latest
      steps:
-      - name: Checkout sources
-        uses: actions/checkout@v2
-      - name: Github values
-        env:
-           GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
-      - name: Generate checksum 
-        uses: dtcenter/metplus-action-release-checksum@v1
-        with:
-          token: ${{ secrets.METPLUS_BOT_TOKEN }}
+        - uses: dtcenter/metplus-action-release-checksum@v1
+          with:
+             token: ${{ secrets.METPLUS_BOT_TOKEN }}
