@@ -10,13 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
-        uses: actions/checkou@v2
+        uses: actions/checkout@v2
       - name: Download releaseartifacts
         uses: actions/download-artifact@v2
         with: 
            name: release-artifacts
            path: release
       - name: Generate checksum 
-      - uses: dtcenter/metplus-action-release-checksum@v1
+        uses: dtcenter/metplus-action-release-checksum@v1
         with:
           token: ${{ secrets.METPLUS_BOT_TOKEN }}
