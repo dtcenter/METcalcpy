@@ -6,9 +6,10 @@ on:
       - published
 
 jobs:
-  add-checksum:
-    runs-on: ubuntu-latest
-    steps:
+  release:
+     name: Create release
+     runs-on: ubuntu-latest
+     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
       - name: Download releaseartifacts
