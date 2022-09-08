@@ -13,6 +13,6 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
            upload_url:  ${{ github.event.release.upload_url }}
-           asset_path:  ./path/file.ext
+           asset_path:  ./metcalcpy/refs/tags/t2.zip
            asset_name:  AssetName
            asset_content_type: application/octet-stream
