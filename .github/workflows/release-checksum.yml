@@ -3,7 +3,7 @@ name: Add checksum to release
 on:
   release:
     types:
-      - published
+      - created
 
 jobs:
   add-checksum:
