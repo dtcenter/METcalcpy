@@ -34,6 +34,8 @@ Needed Enhancements:
 __author__ = 'David Fillmore'
 __version__ = '0.1.0'
 
+import metpy.units
+
 """
 Import standard modules
 """
@@ -44,7 +46,6 @@ import logging
 import yaml
 from datetime import datetime
 import numpy as np
-import pandas as pd
 import xarray as xr  # http://xarray.pydata.org/
 import netCDF4 as nc
 
@@ -275,11 +276,11 @@ def height_from_pressure(config,
     Compute surface geopotential height from geopotential
     """
     surface_height = xr.DataArray(
-        surface_geopotential / constants.earth_gravity.to_base_units(),
+        surface_geopotential / constants.earth_gravity.to_base_units().magnitude,
         dims=surface_geopotential.dims,
         coords=surface_geopotential.coords,
         attrs={'long_name': 'surface geopotential height',
-                 'units': 'meter'})
+               'units': 'meter'})
 
     """
     Get pressure coordinates
@@ -388,11 +389,10 @@ def height_from_pressure(config,
     surface_mask.loc[{lev_dim: pressure_coord[0]}] \
         = pressure.loc[{lev_dim: pressure_coord[0]}] \
         < pressure_convert * surface_pressure
-
     layer_height.loc[{lev_dim: pressure_coord[0]}] \
         = xr.where(surface_mask.loc[{lev_dim: pressure_coord[0]}],
-            surface_height + layer_thickness.loc[{lev_dim: pressure_coord[0]}],
-            np.nan)
+                   surface_height + layer_thickness.loc[{lev_dim: pressure_coord[0]}],
+                   np.nan)
 
     for k in pressure_indices[1:]:
 
