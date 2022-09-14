@@ -31,7 +31,7 @@ Python Requirements
 
 * numpy 1.22.3
 
-* pandas 1.4.2
+* pandas 1.2.3
 
 * pytest 7.1.2
 

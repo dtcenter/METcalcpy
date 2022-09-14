@@ -7,8 +7,35 @@ describes the bugfix, enhancement, or new feature: `METcalcpy GitHub issues. <ht
 Version |version| release notes (|release_date|)
 ------------------------------------------------
 
-Version 2.0.0 release notes (20220622)
+Version 2.0.0 release notes (20220914)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+beta3 release
+^^^^^^^^^^^^^
+
+New Functionality:
+
+* **Add EC_VALUE to aggregation of CTC and CTS values** (`#198 <https://github.com/dtcenter/METcalcpy/issues/198>`_)
+* **Add in the new scripts for the MJO ENSO use case** (`#207 <https://github.com/dtcenter/METcalcpy/issues/207>`_)
+
+* **Add summary and aggregation logic for calculating VCNT ANOM_CORR_UNCNTR and ANOM_CORR** (`#200 <https://github.com/dtcenter/METcalcpy/issues/200>`_)
+
+
+Enhancements:
+
+
+Internal:
+
+
+* **Create checksum for released code** (`#209 <https://github.com/dtcenter/METcalcpy/issues/209>`_)
+
+
+* Add modulefiles used for installation on various machines (`#204 <https://github.com/dtcenter/METcalcpy/issues/204>`_)
+
+Bugfixes:
+
+* Vertical Interpolation DimensionalityError in migrating from Python 3.7.10 to Python 3.8.6 (`#180 <https://github.com/dtcenter/METcalcpy/issues/180>`_)
+
 
 beta2 release
 ^^^^^^^^^^^^^
@@ -18,19 +45,17 @@ New Functionality:
 
 Enhancements:
 
-* **Support calculation of Revision Series Data  (`#181 <https://github.com/dtcenter/METcalcpy/issues/181>`_)**
+* **Support calculation of Revision Series Data**  (`#181 <https://github.com/dtcenter/METcalcpy/issues/181>`_)
 
-* **Create a Contributor's Guide (`#178 <https://github.com/dtcenter/METcalcpy/issues/178>`_)**
+* **Create a Contributor's Guide** (`#178 <https://github.com/dtcenter/METcalcpy/issues/178>`_)
 
-* **Setup SonarQube(`#37 <https://github.com/dtcenter/METcalcpy/issues/37>`_)**
+* **Setup SonarQube** (`#37 <https://github.com/dtcenter/METcalcpy/issues/37>`_)
 
 Internal:
 
 Bugfixes:
 
 * Address Github Dependabot Issues (`#193 <https://github.com/dtcenter/METcalcpy/issues/193>`_)
-
-
 
 
 
