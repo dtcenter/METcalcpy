@@ -173,6 +173,8 @@ class AggStat:
         'vcnt_speed_abserr': ['ufbar', 'vfbar', 'uobar', 'vobar'],
         'vcnt_dir_err': ['ufbar', 'vfbar', 'uobar', 'vobar'],
         'vcnt_dir_abser': ['ufbar', 'vfbar', 'uobar', 'vobar'],
+        'vcnt_anom_corr': ['uvffabar', 'uvfoabar', 'uvooabar', 'fa_speed_bar', 'oa_speed_bar'],
+        'vcnt_anom_corr_uncntr': ['uvffabar', 'uvfoabar', 'uvooabar'],
 
         'vl1l2_bias': ['uvffbar', 'uvoobar'],
         'vl1l2_fvar': ['uvffbar', 'f_speed_bar'],
@@ -520,6 +522,9 @@ class AggStat:
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
+        if 'ec_value' in data_for_prepare.columns:
+            if not (data_for_prepare['ec_value'] == data_for_prepare['ec_value'][0]).all():
+                raise ValueError('EC_VALUE is NOT constant across  MCTC lines')
 
     def _prepare_ctc_data(self, data_for_prepare):
         """Prepares CTC data.
@@ -663,9 +668,14 @@ class AggStat:
                 ds_1_value,
                 ds_2_value,
                 derived_curve_component.derived_operation)
-            results = BootstrapResults(lower_bound=None,
+            if stat_val is not None:
+                results = BootstrapResults(lower_bound=None,
                                        value=round_half_up(stat_val[0], 5),
                                        upper_bound=None)
+            else:
+                results = BootstrapResults(lower_bound=None,
+                                           value=None,
+                                           upper_bound=None)
             results.set_distributions([results.value])
         else:
             # need bootstrapping and CI calculation in addition to the derived statistic
@@ -735,6 +745,7 @@ class AggStat:
 
         # sort data by dates
         series_data = sort_data(series_data)
+        series_data.reset_index(inplace=True, drop=True)
 
         if 'line_type' in self.params.keys() and self.params['line_type'] is not None and self.params['line_type'] != 'None':
             # find the function that prepares data and execute it
