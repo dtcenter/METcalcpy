@@ -77,3 +77,6 @@ Bugfixes:
 
 METcalcpy Upgrade Instructions
 ==============================
+
+Upgrade instructions will be listed here if they are applicable
+for this release.
