@@ -1,17 +1,15 @@
-METcalcpy |version| Release Notes
-_________________________________
+*****************************
+METcalcpy Release Information
+*****************************
 
 When applicable, release notes are followed by the GitHub issue number which
 describes the bugfix, enhancement, or new feature: `METcalcpy GitHub issues. <https://github.com/dtcenter/METcalcpy/issues>`_
 
-Version |version| release notes (|release_date|)
-------------------------------------------------
+METcalcpy Release Notes
+=======================
 
-Version 2.0.0 release notes (20220914)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-beta3 release
-^^^^^^^^^^^^^
+METcalcpy Version 2.0.0-beta3 release notes (20220914)
+------------------------------------------------------
 
 New Functionality:
 
@@ -37,8 +35,8 @@ Bugfixes:
 * Vertical Interpolation DimensionalityError in migrating from Python 3.7.10 to Python 3.8.6 (`#180 <https://github.com/dtcenter/METcalcpy/issues/180>`_)
 
 
-beta2 release
-^^^^^^^^^^^^^
+METcalcpy Version 2.0.0-beta2 release notes (20220803)
+------------------------------------------------------
 
 New Functionality:
 
@@ -58,9 +56,8 @@ Bugfixes:
 * Address Github Dependabot Issues (`#193 <https://github.com/dtcenter/METcalcpy/issues/193>`_)
 
 
-
-beta1 release
-^^^^^^^^^^^^^
+METcalcpy Version 2.0.0-beta1 release notes (20220623)
+------------------------------------------------------
 
 New Functionality:
 
@@ -78,3 +75,5 @@ Bugfixes:
 * Deprecation and other warnings in event_equalize.py and other modules (`#153 <https://github.com/dtcenter/METcalcpy/issues/153>`_)
 * Some METcalcpy tests fail with Python 3.8 and upgraded packages (`#154 <https://github.com/dtcenter/METcalcpy/issues/154>`_)
 
+METcalcpy Upgrade Instructions
+==============================
