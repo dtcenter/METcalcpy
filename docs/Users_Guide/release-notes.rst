@@ -8,6 +8,22 @@ describes the bugfix, enhancement, or new feature: `METcalcpy GitHub issues. <ht
 METcalcpy Release Notes
 =======================
 
+METcalcpy Version 2.0.0-beta4 release notes (20220914)
+------------------------------------------------------
+
+New Functionality:
+
+
+Enhancements:
+
+
+Internal:
+
+* **Fix github Actions warnings** (`#218 <https://github.com/dtcenter/METcalcpy/issues/218>`_)
+
+Bugfixes:
+
+
 METcalcpy Version 2.0.0-beta3 release notes (20220914)
 ------------------------------------------------------
 
