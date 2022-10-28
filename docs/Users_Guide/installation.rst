@@ -11,8 +11,6 @@ Python Requirements
 
 * cartopy 0.20.2
 
-* cmocean
-
 * eofs
 
 * imutils 0.5.4

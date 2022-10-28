@@ -8,7 +8,7 @@ describes the bugfix, enhancement, or new feature: `METcalcpy GitHub issues. <ht
 METcalcpy Release Notes
 =======================
 
-METcalcpy Version 2.0.0-beta4 release notes (20220914)
+METcalcpy Version 2.0.0-beta4 release notes (20221028)
 ------------------------------------------------------
 
 New Functionality:
