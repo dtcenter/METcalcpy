@@ -1300,13 +1300,19 @@ def sort_data(series_data):
 def autocor_coef(data: list) -> Union[None, float]:
     """ Calculate the least-squares estimate of the lag-1 regression
          or autocorrelation coefficient
-         :param input data array
+         :param data: input data array
          :return: am autocorrelation coefficient or None
     """
 
-    x_i = data[0: len(data) - 1]
-    y_i = data[1: len(data)]
-    data_mean = st.mean(data)
+    # remove None and nan
+    data_valid = [i for i in data if i is not None and not np.isnan(i)]
+    # if the list is too short - return None
+    if len(data_valid) < 2:
+        return None
+
+    x_i = data_valid[0: len(data_valid) - 1]
+    y_i = data_valid[1: len(data_valid)]
+    data_mean = st.mean(data_valid)
 
     x = [x - data_mean for x in x_i]
     y = [x - data_mean for x in y_i]
@@ -1321,5 +1327,5 @@ def autocor_coef(data: list) -> Union[None, float]:
     sxx = sum(xx)
     sxy = sum(xy)
 
-    n = len(data)
+    n = len(data_valid)
     return sx * sy / (sx - (n - 1) * sxx) + sxy / (sxx - sx * sx / (n - 1))
