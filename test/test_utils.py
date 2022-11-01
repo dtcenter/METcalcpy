@@ -5,7 +5,8 @@ import pytest
 
 from metcalcpy.util.utils import represents_int, is_string_integer, get_derived_curve_name, calc_derived_curve_value, \
     unique, intersection, is_derived_point, parse_bool, round_half_up, sum_column_data_by_name, \
-    nrow_column_data_by_name_value, create_permutations_mv, column_data_by_name, calculate_mtd_revision_stats
+    nrow_column_data_by_name_value, create_permutations_mv, column_data_by_name, calculate_mtd_revision_stats, \
+    autocor_coef
 
 
 @pytest.fixture
@@ -193,6 +194,10 @@ def test_calculate_mtd_revision_stats():
     stats = calculate_mtd_revision_stats(df, 1)
     assert stats.get("auto_cor_r") == 0.15
 
+def test_autocor_coef():
+    z = [28, 28, 26, 19, 16, 24, 26, 24, 24, 29, 29, 27, 31, 26, 38, 23, 13, 14, 28, 19, 19, 17, 22, 2, 4, 5, 7, 8, 14, 14, 23]
+    result = autocor_coef(z)
+    assert round_half_up(result, 7) == 0.6635721
 
 if __name__ == "__main__":
     test_represents_int()
@@ -206,3 +211,4 @@ if __name__ == "__main__":
     test_round_half_up()
     test_sum_column_data_by_name()
     test_calculate_mtd_revision_stats()
+    test_autocor_coef()

@@ -16,8 +16,6 @@ __author__ = 'Tatiana Burek'
 
 import warnings
 # To deal with third-party warnings
-warnings.filterwarnings("ignore", category=FutureWarning, module='statsmodels')
-warnings.filterwarnings("ignore", category=DeprecationWarning, module='statsmodels')
 from typing import Union
 import math
 import sys
@@ -30,7 +28,6 @@ from pandas import DataFrame
 
 from scipy import stats
 from scipy.stats import t, nct
-from statsmodels.tsa.arima.model import ARIMA
 from metcalcpy.util.correlation import corr, remove_none, acf
 from metcalcpy import GROUP_SEPARATOR, DATE_TIME_REGEX
 from metcalcpy.event_equalize import event_equalize
@@ -806,8 +803,7 @@ def compute_std_err_from_mean(data):
     number_of_none = sum(x is None for x in data)
     if variance > 0.0 and (len(data) - number_of_none) > 2:
         # Compute the first order auto-correlation coefficient.
-        arima = ARIMA(data, order=(1, 0, 0))
-        ar_1 = arima.fit().arparams[0]
+        ar_1 = autocor_coef(data)
 
         # Compute a variance inflation factor
         # (having removed that portion of the time series that was correlated).
@@ -1299,3 +1295,37 @@ def sort_data(series_data):
         by_fields.append("stat_name")
     series_data = series_data.sort_values(by=by_fields)
     return series_data
+
+
+def autocor_coef(data: list) -> Union[None, float]:
+    """ Calculate the least-squares estimate of the lag-1 regression
+         or autocorrelation coefficient
+         :param data: input data array
+         :return: am autocorrelation coefficient or None
+    """
+
+    # remove None and nan
+    data_valid = [i for i in data if i is not None and not np.isnan(i)]
+    # if the list is too short - return None
+    if len(data_valid) < 2:
+        return None
+
+    x_i = data_valid[0: len(data_valid) - 1]
+    y_i = data_valid[1: len(data_valid)]
+    data_mean = st.mean(data_valid)
+
+    x = [x - data_mean for x in x_i]
+    y = [x - data_mean for x in y_i]
+
+    xx = [m ** 2 for m in x]
+    xy = []
+    for item_x, item_y in zip(x, y):
+        xy.append(item_x * item_y)
+
+    sx = sum(x)
+    sy = sum(y)
+    sxx = sum(xx)
+    sxy = sum(xy)
+
+    n = len(data_valid)
+    return sx * sy / (sx - (n - 1) * sxx) + sxy / (sxx - sx * sx / (n - 1))

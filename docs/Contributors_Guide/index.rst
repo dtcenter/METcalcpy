@@ -42,8 +42,6 @@ Python Requirements
 
 * scipy 1.8.0
 
-* statsmodels 0.12.2 or above
-
 * xarray 2022.3.0
 
 

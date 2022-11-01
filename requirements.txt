@@ -24,7 +24,6 @@ opencv-python>=4.5.3
 packaging==21.3
 pandas==1.2.3
 partd==1.2.0
-patsy==0.5.2
 pint==0.18
 Pillow==9.1.0
 pluggy==1.0.0
@@ -41,7 +40,6 @@ requests==2.27.1
 scikit-image==0.18.1
 scipy==1.8.0
 six==1.16.0
-statsmodels==0.12.2
 tifffile==2019.7.26.2
 tomli==2.0.1
 toolz==0.11.2
