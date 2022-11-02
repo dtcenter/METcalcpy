@@ -17,10 +17,6 @@ import math
 
 from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION, get_total_values
 
-__author__ = 'Tatiana Burek'
-__version__ = '0.1.0'
-
-
 def calculate_ecnt_crps(input_data, columns_names, aggregation=False):
     """Performs calculation of ECNT_CRPS - The Continuous Ranked Probability Score
 
@@ -119,6 +115,33 @@ def calculate_ecnt_crps_emp(input_data, columns_names, aggregation=False):
         total = get_total_values(input_data, columns_names, aggregation)
         crps_emp = sum_column_data_by_name(input_data, columns_names, 'crps_emp') / total
         result = round_half_up(crps_emp, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_ecnt_crps_emp_fair(input_data, columns_names, aggregation=False):
+    """Performs calculation of ECNT_CRPS_EMP_FAIR - The Continuous Ranked Probability  Score
+        (empirical distribution) adjusted by subtracting 1/2(m) times the mean absolute
+        difference of the ensemble members (m is the ensemble size)
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
+
+        Returns:
+            calculated ECNT_CRPS_EMP_FAIR as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = get_total_values(input_data, columns_names, aggregation)
+        crps_emp_fair = sum_column_data_by_name(input_data, columns_names, 'crps_emp_fair') / total
+        result = round_half_up(crps_emp_fair, PRECISION)
     except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
