@@ -123,7 +123,7 @@ def calculate_ecnt_crps_emp(input_data, columns_names, aggregation=False):
 
 def calculate_ecnt_crps_emp_fair(input_data, columns_names, aggregation=False):
     """Performs calculation of ECNT_CRPS_EMP_FAIR - The Continuous Ranked Probability Score
-        (empirical distribution) adjusted by subtracting 1/2(m) times the mean absolute
+        (empirical distribution) adjusted by the mean absolute difference of the ensemble members 
         difference of the ensemble members (m is the ensemble size)
 
         Args:
