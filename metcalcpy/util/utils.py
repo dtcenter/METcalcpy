@@ -388,7 +388,7 @@ def perfect_score_adjustment(mean_stats_1, mean_stats_2, statistic, pval):
                              'VL1L2_RMSVE', 'PSTD_BRIER', 'PSTD_RELIABILITY',
                              'NBR_FBS', 'VL1L2_SPEED_ERR',
                              'NBR_POFD', 'NBR_FAR', 'NBR_ODDS', 'BCRMSE', 'ECNT_ME',
-                             'ECNT_RMSE', 'CRPS', 'ECNT_CRPS')
+                             'ECNT_RMSE', 'CRPS', 'ECNT_CRPS', 'ECNT_MAE', 'ECNT_MAE_OERR')
 
     one_perf_score_stats = ('ACC', 'FBIAS', 'PODY', 'PODN', 'CSI', 'GSS',
                             'HK', 'HSS', 'ORSS', 'EDS', 'SEDS',
