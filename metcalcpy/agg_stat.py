@@ -218,6 +218,8 @@ class AggStat:
         'ecnt_crpss_emp': ['crpscl_emp', 'crps_emp'],
         'ecnt_crps_emp_fair': ['crps_emp_fair'],
         'ecnt_spread_md': ['spread_md'],
+        'ecnt_mae': ['mae'],
+        'ecnt_mae_oerr': ['mae_oerr'],
 
         'nbr_fbs': ['fbs'],
         'nbr_fss': ['fss'],

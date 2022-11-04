@@ -241,6 +241,42 @@ def calculate_ecnt_me(input_data, columns_names, aggregation=False):
 
     return weighted_average(input_data, columns_names, 'me', aggregation)
 
+def calculate_ecnt_mae(input_data, columns_names, aggregation=False):
+    """Performs calculation of ECNT_MAE - The Mean Absolute Error of the ensemble mean
+        (unperturbed or supplied)
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
+
+        Returns:
+            calculated ECNT_MAE as float
+            or None if some data values are missing or invalid
+    """
+
+    return weighted_average(input_data, columns_names, 'mae', aggregation)
+
+def calculate_ecnt_mae_oerr(input_data, columns_names, aggregation=False):
+    """Performs calculation of MAE_OERR - The Mean Absolute Error of the PERTURBED
+        ensemble mean (e.g. with Observation Error)
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
+
+        Returns:
+            calculated MAE_OERR as float
+            or None if some data values are missing or invalid
+    """
+
+    return weighted_average(input_data, columns_names, 'mae_oerr', aggregation)
+
 
 def calculate_ecnt_rmse(input_data, columns_names, aggregation=False):
     """Performs calculation of ECNT_RMSE - The Root Mean Square Error of the ensemble mean
