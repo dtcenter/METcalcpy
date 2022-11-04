@@ -411,6 +411,7 @@ def perfect_score_adjustment(mean_stats_1, mean_stats_2, statistic, pval):
             and abs(mean_stats_1 - 1) > abs(mean_stats_2 - 1):
         result = pval * -1
     else:
+        print(f"WARNING: statistic {statistic} doesn't belong to any of the perfect score groups. Returning unprocessed p-value")
         result = pval
 
     return result
