@@ -387,7 +387,7 @@ def calculate_ecnt_spread_oerr(input_data, columns_names, aggregation=False):
 
 
 def calculate_ecnt_spread_plus_oerr(input_data, columns_names, aggregation=False):
-    """Performs calculation of ECNT_SPREAD_PLUS_OERR - The square root of the sum of
+    """Performs calculation of SPREAD_PLUS_OERR - The square root of the sum of
         unperturbed ensemble variance and the observation error variance
         Args:
             input_data: 2-dimensional numpy array with data for the calculation
@@ -397,7 +397,7 @@ def calculate_ecnt_spread_plus_oerr(input_data, columns_names, aggregation=False
             aggregation: if the aggregation on fields was performed
 
         Returns:
-            calculated ECNT_SPREAD_PLUS_OERR as float
+            calculated SPREAD_PLUS_OERR as float
             or None if some data values are missing or invalid
     """
     warnings.filterwarnings('error')
@@ -405,6 +405,124 @@ def calculate_ecnt_spread_plus_oerr(input_data, columns_names, aggregation=False
         total = get_total_values(input_data, columns_names, aggregation)
         spread_plus_oerr = math.sqrt(sum_column_data_by_name(input_data, columns_names, 'variance_plus_oerr') / total)
         result = round_half_up(spread_plus_oerr, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+def calculate_ecnt_n_ge_obs(input_data, columns_names, aggregation=False):
+    """Performs calculation of N_GE_OBS - The number of ensemble values greater
+        than or equal to their observations
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
+
+        Returns:
+            calculated N_GE_OBS as float
+            or None if some data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        n_ge_obs = sum_column_data_by_name(input_data, columns_names, 'n_ge_obs')
+        result = round_half_up(n_ge_obs, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+def calculate_ecnt_n_lt_obs(input_data, columns_names, aggregation=False):
+    """Performs calculation of N_LT_OBS - The number of ensemble values less
+        than their observations
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
+
+        Returns:
+            calculated N_LT_OBS as float
+            or None if some data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        n_lt_obs = sum_column_data_by_name(input_data, columns_names, 'n_lt_obs')
+        result = round_half_up(n_lt_obs, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+def calculate_ecnt_me_ge_obs(input_data, columns_names, aggregation=False):
+    """Performs calculation of ME_GE_OBS - The Mean Error of the ensemble values
+        greater than or equal to their observations
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
+
+        Returns:
+            calculated ME_GE_OBS as float
+            or None if some data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        n_ge_obs = sum_column_data_by_name(input_data, columns_names, 'n_ge_obs')
+        me_ge_obs = sum_column_data_by_name(input_data, columns_names, 'me_ge_obs')/n_ge_obs
+        result = round_half_up(me_ge_obs, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+def calculate_ecnt_me_lt_obs(input_data, columns_names, aggregation=False):
+    """Performs calculation of ME_GE_OBS - The Mean Error of the ensemble values
+        greater than or equal to their observations
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
+
+        Returns:
+            calculated ME_GE_OBS as float
+            or None if some data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        n_lt_obs = sum_column_data_by_name(input_data, columns_names, 'n_lt_obs')
+        me_lt_obs = sum_column_data_by_name(input_data, columns_names, 'me_lt_obs')/n_lt_obs
+        result = round_half_up(me_lt_obs, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+def calculate_ecnt_bias_ratio(input_data, columns_names, aggregation=False):
+    """Performs calculation of BIAS_RATIO - The Bias Ratio
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
+
+        Returns:
+            calculated BIAS_RATIO as float
+            or None if some data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        me_ge_obs = calculate_ecnt_me_ge_obs(input_data, columns_names)
+        me_lt_obs = calculate_ecnt_me_lt_obs(input_data, columns_names)
+        bias_ratio = me_ge_obs/abs(me_lt_obs)
+        result = round_half_up(bias_ratio, PRECISION)
     except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')

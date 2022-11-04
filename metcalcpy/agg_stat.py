@@ -220,6 +220,11 @@ class AggStat:
         'ecnt_spread_md': ['spread_md'],
         'ecnt_mae': ['mae'],
         'ecnt_mae_oerr': ['mae_oerr'],
+        'ecnt_n_ge_obs': [],
+        'ecnt_me_ge_obs': ['me_ge_obs'],
+        'ecnt_n_lt_obs': [],
+        'ecnt_me_lt_obs': ['me_lt_obs'],
+        'ecnt_bias_ratio': ['me_ge_obs','me_lt_obs'],
 
         'nbr_fbs': ['fbs'],
         'nbr_fss': ['fss'],
@@ -467,8 +472,15 @@ class AggStat:
 
         if self.statistic in self.STATISTIC_TO_FIELDS.keys():
             for column in self.STATISTIC_TO_FIELDS[self.statistic]:
-                data_for_prepare[column] \
-                    = data_for_prepare[column].values * data_for_prepare['total'].values
+                if column == 'me_ge_obs':
+                    data_for_prepare[column] \
+                        = data_for_prepare[column].values * data_for_prepare['n_ge_obs'].values
+                elif column == 'me_lt_obs':
+                    data_for_prepare[column] \
+                        = data_for_prepare[column].values * data_for_prepare['n_lt_obs'].values
+                else:
+                    data_for_prepare[column] \
+                        = data_for_prepare[column].values * data_for_prepare['total'].values
 
     def _prepare_rps_data(self, data_for_prepare):
         total = data_for_prepare['total'].values

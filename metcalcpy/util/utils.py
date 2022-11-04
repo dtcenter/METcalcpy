@@ -388,7 +388,8 @@ def perfect_score_adjustment(mean_stats_1, mean_stats_2, statistic, pval):
                              'VL1L2_RMSVE', 'PSTD_BRIER', 'PSTD_RELIABILITY',
                              'NBR_FBS', 'VL1L2_SPEED_ERR',
                              'NBR_POFD', 'NBR_FAR', 'NBR_ODDS', 'BCRMSE', 'ECNT_ME',
-                             'ECNT_RMSE', 'CRPS', 'ECNT_CRPS', 'ECNT_MAE', 'ECNT_MAE_OERR')
+                             'ECNT_RMSE', 'CRPS', 'ECNT_CRPS', 'ECNT_MAE', 'ECNT_MAE_OERR',
+                             'ECNT_ME_GE_OBS', 'ECNT_ME_LT_OBS')
 
     one_perf_score_stats = ('ACC', 'FBIAS', 'PODY', 'PODN', 'CSI', 'GSS',
                             'HK', 'HSS', 'ORSS', 'EDS', 'SEDS',
@@ -398,7 +399,8 @@ def perfect_score_adjustment(mean_stats_1, mean_stats_2, statistic, pval):
                             'PSTD_BSS', 'PSTD_BSS_SMPL', 'NBR_FSS', 'NBR_AFSS',
                             'VAL1L2_ANOM_CORR', 'NBR_ACC',
                             'NBR_FBIAS', 'NBR_PODY', 'PSTD_ROC_AUC',
-                            'NBR_PODN', 'NBR_CSI', 'NBR_GSS', 'NBR_HK', 'NBR_HSS')
+                            'NBR_PODN', 'NBR_CSI', 'NBR_GSS', 'NBR_HK', 'NBR_HSS',
+                            'ECNT_BIAS_RATIO')
 
     if statistic.upper() in na_perf_score_stats:
         result = None
