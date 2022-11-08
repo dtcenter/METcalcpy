@@ -312,10 +312,11 @@ def calculate_ecnt_spread(input_data, columns_names, aggregation=False):
             calculated ECNT_SPREAD as float
             or None if some data values are missing or invalid
     """
+
     warnings.filterwarnings('error')
     try:
-        total = get_total_values(input_data, columns_names, aggregation)
-        spread = math.sqrt(sum_column_data_by_name(input_data, columns_names, 'variance') / total)
+        wa = weighted_average(input_data, columns_names, 'variance', aggregation)
+        spread = math.sqrt(wa)
         result = round_half_up(spread, PRECISION)
     except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
@@ -377,8 +378,8 @@ def calculate_ecnt_spread_oerr(input_data, columns_names, aggregation=False):
     """
     warnings.filterwarnings('error')
     try:
-        total = get_total_values(input_data, columns_names, aggregation)
-        spread_oerr = math.sqrt(sum_column_data_by_name(input_data, columns_names, 'variance_oerr') / total)
+        wa = weighted_average(input_data, columns_names, 'variance_oerr', aggregation)
+        spread_oerr = math.sqrt(wa)
         result = round_half_up(spread_oerr, PRECISION)
     except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
@@ -402,8 +403,8 @@ def calculate_ecnt_spread_plus_oerr(input_data, columns_names, aggregation=False
     """
     warnings.filterwarnings('error')
     try:
-        total = get_total_values(input_data, columns_names, aggregation)
-        spread_plus_oerr = math.sqrt(sum_column_data_by_name(input_data, columns_names, 'variance_plus_oerr') / total)
+        wa = weighted_average(input_data, columns_names, 'variance_plus_oerr', aggregation)
+        spread_plus_oerr = math.sqrt(wa)
         result = round_half_up(spread_plus_oerr, PRECISION)
     except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
