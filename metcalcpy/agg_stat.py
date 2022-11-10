@@ -47,7 +47,7 @@ from metcalcpy.util.sal1l2_statistics import *
 from metcalcpy.util.ssvar_statistics import *
 from metcalcpy.util.val1l2_statistics import *
 from metcalcpy.util.vcnt_statistics import *
-from metcalcpy.util.vl1l2_statiatics import *
+from metcalcpy.util.vl1l2_statistics import *
 from metcalcpy.util.ecnt_statistics import *
 from metcalcpy.util.nbrcnt_statistics import *
 from metcalcpy.util.nbrctc_statistics import *
