@@ -298,6 +298,33 @@ def calculate_pr_corr(input_data, columns_names, aggregation=False):
     return pr_corr
 
 
+def calculate_fe(input_data, columns_names, aggregation=False):
+    """Performs calculation of FE - Fractional error
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
+
+        Returns:
+            calculated FE as float
+            or None if some of the data values are missing or invalid
+    """
+    warnings.filterwarnings('error')
+    try:
+        total = get_total_values(input_data, columns_names, aggregation)
+        fbar = sum_column_data_by_name(input_data, columns_names, 'fbar') / total
+        obar = sum_column_data_by_name(input_data, columns_names, 'obar') / total
+        result = (fbar - obar) / fbar
+        result = round_half_up(result, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
 def calculate_me(input_data, columns_names, aggregation=False):
     """Performs calculation of ME - Mean error, aka Additive bias
 
@@ -457,20 +484,20 @@ def calculate_si(input_data, columns_names, aggregation=False):
 def calculate_estdev(input_data, columns_names, aggregation=False):
     """Performs calculation of ESTDEV - Standard deviation of the error
 
-            Args:
-                input_data: 2-dimensional numpy array with data for the calculation
-                    1st dimension - the row of data frame
-                    2nd dimension - the column of data frame
-                columns_names: names of the columns for the 2nd dimension as Numpy array
-                aggregation: if the aggregation on fields was performed
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
 
-            Returns:
-                calculated ESTDEV as float
-                or None if some of the data values are missing or invalid
+        Returns:
+            calculated ESTDEV as float
+            or None if some of the data values are missing or invalid
     """
     warnings.filterwarnings('error')
     try:
-        total = get_total_values(input_data, columns_names, aggregation)
+        total = sum_column_data_by_name(input_data, columns_names, 'total')
         me = calculate_me(input_data, columns_names)
         mse = calculate_mse(input_data, columns_names)
         result = calculate_stddev(me * total, mse * total, total)

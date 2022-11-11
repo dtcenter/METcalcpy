@@ -19,7 +19,7 @@ from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISI
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
 
-from metcalcpy.util.vl1l2_statiatics import calculate_vl1l2_fvar, calculate_vl1l2_ovar
+from metcalcpy.util.vl1l2_statistics import calculate_vl1l2_fvar, calculate_vl1l2_ovar
 
 
 def calculate_vcnt_fbar(input_data, columns_names, aggregation=False):
