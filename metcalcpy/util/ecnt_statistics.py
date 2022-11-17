@@ -294,7 +294,15 @@ def calculate_ecnt_rmse(input_data, columns_names, aggregation=False):
             or None if some data values are missing or invalid
     """
 
-    return weighted_average(input_data, columns_names, 'mse', aggregation)
+    warnings.filterwarnings('error')
+    try:
+        wa = weighted_average(input_data, columns_names, 'mse', aggregation)
+        rmse = math.sqrt(wa)
+        result = round_half_up(rmse, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
 
 
 def calculate_ecnt_spread(input_data, columns_names, aggregation=False):
@@ -343,7 +351,7 @@ def calculate_ecnt_me_oerr(input_data, columns_names, aggregation=False):
 
 
 def calculate_ecnt_rmse_oerr(input_data, columns_names, aggregation=False):
-    """Performs calculation of ECNT_RMSE_OERR - TheRoot Mean Square Error of the PERTURBED
+    """Performs calculation of ECNT_RMSE_OERR - The Root Mean Square Error of the PERTURBED
         ensemble mean (e.g.with Observation Error)
         Args:
             input_data: 2-dimensional numpy array with data for the calculation
@@ -357,7 +365,15 @@ def calculate_ecnt_rmse_oerr(input_data, columns_names, aggregation=False):
             or None if some data values are missing or invalid
     """
 
-    return weighted_average(input_data, columns_names, 'mse_oerr', aggregation)
+    warnings.filterwarnings('error')
+    try:
+        wa = weighted_average(input_data, columns_names, 'mse_oerr', aggregation)
+        mse_oerr = math.sqrt(wa)
+        result = round_half_up(mse_oerr, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
 
 
 def calculate_ecnt_spread_oerr(input_data, columns_names, aggregation=False):
