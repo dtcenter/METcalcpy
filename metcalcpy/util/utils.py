@@ -686,7 +686,23 @@ def equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axi
                 output_ee_data = series_data_after_ee
             else:
                 output_ee_data = output_ee_data.append(series_data_after_ee)
-    return output_ee_data.drop('equalize', axis=1)
+
+    try:
+            output_ee_data_valid = output_ee_data.drop('equalize', axis=1)
+
+            # It is possible to produce an empty data frame after applying event equalization. Print an informational
+            # message before returning the data frame.
+            if output_ee_data_valid.empty:
+                print(f"\nINFO: Event equalization has produced no results.  Data frame is empty.")
+
+            return output_ee_data_valid
+    except (KeyError, AttributeError):
+            # Two possible exceptions are raised when the data frame is empty *and* is missing the 'equalize' column
+            # following event equalization. Return the empty dataframe
+            # without dropping the 'equalize' column, and print an informational message.
+            print(f"\nINFO: No resulting data after performing event equalization of axis.", axis)
+
+    return output_ee_data
 
 
 def perform_event_equalization(params, input_data):
