@@ -8,6 +8,7 @@ import pytest
 
 from metcalcpy.event_equalize import event_equalize
 from metcalcpy.util.utils import represents_int
+from metcalcpy.util.utils import equalize_axis_data
 from metcalcpy import GROUP_SEPARATOR, DATE_TIME_REGEX
 
 
@@ -127,6 +128,42 @@ def test_represents_int_not_int(settings):
     assert represents_int(settings['int_n'])
     assert not represents_int(settings['double'])
     assert not represents_int(settings['date'])
+
+@pytest.fixture
+def settings_no_fix_vals():
+    """
+
+     Returns:
+          settings_dict: a dictionary corresponding to the params arg for equalize_axis_data()
+    """
+    settings_dict = dict()
+    settings_dict['fix_val_keys'] = []
+    settings_dict['fcst_var_val_1'] = {}
+    settings_dict['fcst_var_val_2'] = {}
+    settings_dict['fix_vals_permuted'] = {}
+    settings_dict['series_val_1'] = {}
+    settings_dict['indy_var'] = {}
+    settings_dict['line_type'] = None
+
+    return settings_dict
+
+
+def test_equalize_axis_data(settings_no_fix_vals):
+    '''
+       conditions that lead to an empty data frame from event equalization should
+       return an empty data frame instead of an error due to trying to clean up the 'equalize' column before
+       returning the event equalization data frame.
+    '''
+
+    input_file_list = ["data/ROC_CTC_thresh.data", "data/ROC_CTC.data"]
+    for input_file in input_file_list:
+        cur_df = pd.read_csv(input_file, sep='\t')
+        fix_vals_keys = []
+        fix_vals_permuted_list = []
+
+        ee_df = equalize_axis_data(fix_vals_keys, fix_vals_permuted_list, settings_no_fix_vals, cur_df, axis='1')
+        assert ee_df.shape[0] == 0
+
 
 
 if __name__ == "__main__":
