@@ -387,10 +387,11 @@ def calculate_hss(input_data, columns_names):
         if total == 0:
             return None
         fy_oy = sum_column_data_by_name(input_data, columns_names, 'fy_oy')
-        dbl_c = ((fy_oy + sum_column_data_by_name(input_data, columns_names, 'fy_on')) / total) \
-                * (fy_oy + sum_column_data_by_name(input_data, columns_names, 'fn_oy'))
-        hss = ((fy_oy + sum_column_data_by_name(input_data, columns_names, 'fn_on') - dbl_c)
-               / (total - dbl_c))
+        fy_on = sum_column_data_by_name(input_data, columns_names, 'fy_on')
+        fn_oy = sum_column_data_by_name(input_data, columns_names, 'fn_oy')
+        fn_on = sum_column_data_by_name(input_data, columns_names, 'fn_on')
+        dbl_c = ((fy_oy + fy_on) / total) * (fy_oy + fn_oy) + ((fn_oy + fn_on) / total) * (fy_on + fn_on)
+        hss = ((fy_oy + fn_on - dbl_c) / (total - dbl_c))
         hss = round_half_up(hss, PRECISION)
     except (TypeError, ZeroDivisionError, Warning, ValueError):
         hss = None
