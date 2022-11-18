@@ -7,6 +7,12 @@ describes the bugfix, enhancement, or new feature: `METcalcpy GitHub issues. <ht
 Version |version| release notes (|release_date|)
 ------------------------------------------------
 
+Version 1.1.2 release notes (20221118)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Bug Fix:
+
+* Fixed Heidke Skill Score Calculation Discrepancy (`#239 <https://github.com/dtcenter/METcalcpy/issues/239>`_)
+
 Version 1.1.1 release notes (20220727)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Bug Fix:
