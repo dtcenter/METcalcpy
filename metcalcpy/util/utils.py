@@ -702,7 +702,7 @@ def equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axi
             # Two possible exceptions are raised when the data frame is empty *and* is missing the 'equalize' column
             # following event equalization. Return the empty dataframe
             # without dropping the 'equalize' column, and print an informational message.
-            print(f"\nINFO: No resulting data after performing event equalization of axis.", axis)
+            print(f"\nINFO: No resulting data after performing event equalization of axis", axis)
 
     return output_ee_data
 
