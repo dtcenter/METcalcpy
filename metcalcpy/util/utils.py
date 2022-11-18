@@ -642,6 +642,8 @@ def equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axi
 
     if 'fcst_var_val_' + axis in params:
         fcst_var_val = params['fcst_var_val_' + axis]
+        if fcst_var_val is None:
+            fcst_var_val = {}
     else:
         fcst_var_val = {'': ['']}
 
