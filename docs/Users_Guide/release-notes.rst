@@ -8,6 +8,30 @@ describes the bugfix, enhancement, or new feature: `METcalcpy GitHub issues. <ht
 METcalcpy Release Notes
 =======================
 
+METcalcpy Version 2.0.0-beta5 release notes (20221121)
+------------------------------------------------------
+* New Functionality:
+
+   * **Add Zonal and Meridional Mean calculations** 
+     (`#133 <https://github.com/dtcenter/METcalcpy/issues/133>`_)
+
+   * **Implement aggregation of CRPS_EMP_FAIR across multiple cases** 
+     (`#215 <https://github.com/dtcenter/METcalcpy/issues/215>`_)
+
+   * **Implement aggregation of ECNT statistics** 
+     (`#229 <https://github.com/dtcenter/METcalcpy/issues/229>`_)
+
+* Enhancements:
+
+
+* Internal:
+
+   * **Remove statsmodels and patsy from METplus and analysis tools** 
+     (`#219 <https://github.com/dtcenter/METcalcpy/issues/219>`_)
+
+
+* Bugfixes:
+
 METcalcpy Version 2.0.0-beta4 release notes (20221028)
 ------------------------------------------------------
 
