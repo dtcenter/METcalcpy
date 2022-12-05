@@ -48,7 +48,7 @@ from metcalcpy.util.mode_2d_arearat_statistics import *
 from metcalcpy.util.mode_2d_ratio_statistics import *
 from metcalcpy.util.mode_3d_volrat_statistics import *
 from metcalcpy.util.mode_3d_ratio_statistics import *
-from metcalcpy.util.utils import is_string_integer, parse_bool, sort_data
+from metcalcpy.util.utils import is_string_integer, parse_bool, sort_data, is_string_strictly_float
 
 
 class AggStatBootstrap:
@@ -128,6 +128,9 @@ class AggStatBootstrap:
                 if is_string_integer(indy_val):
                     filtered_by_indy_data = \
                         self.input_data[self.input_data[self.params['indy_var']] == int(indy_val)]
+                elif is_string_strictly_float(indy_val):
+                    filtered_by_indy_data = \
+                        self.input_data[self.input_data[self.params['indy_var']] == float(indy_val)]
                 else:
                     filtered_by_indy_data = \
                         self.input_data[self.input_data[self.params['indy_var']] == indy_val]
@@ -149,6 +152,8 @@ class AggStatBootstrap:
                         for i, filter_val in enumerate(filter_list):
                             if is_string_integer(filter_val):
                                 filter_list[i] = int(filter_val)
+                            elif is_string_strictly_float(filter_val):
+                                filter_list[i] = float(filter_val)
 
                         all_filters.append((filtered_by_indy_data[field].isin(filter_list)))
 
@@ -183,6 +188,8 @@ class AggStatBootstrap:
                             for i, filter_val in enumerate(filter_list):
                                 if is_string_integer(filter_val):
                                     filter_list[i] = int(filter_val)
+                                elif is_string_strictly_float(filter_val):
+                                    filter_list[i] = float(filter_val)
 
                             all_filters.append((filtered_by_indy_data[field].isin(filter_list)))
                             out_frame_filter.append((out_frame[field].isin(filter_list)))

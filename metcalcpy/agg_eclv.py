@@ -40,7 +40,7 @@ import pandas as pd
 
 from metcalcpy.bootstrap import bootstrap_and_value, BootstrapResults
 from metcalcpy.event_equalize import event_equalize
-from metcalcpy.util.utils import PRECISION
+from metcalcpy.util.utils import PRECISION, is_string_strictly_float
 from metcalcpy.util.eclv_statistics import *
 
 from metcalcpy.util.utils import is_string_integer, parse_bool
@@ -239,6 +239,8 @@ class AggEclv:
                 for i, filter_val in enumerate(filter_list):
                     if is_string_integer(filter_val):
                         filter_list[i] = int(filter_val)
+                    elif is_string_strictly_float(filter_val):
+                        filter_list[i] = float(filter_val)
                 if field in self.input_data.keys():
                     all_filters.append((self.input_data[field].isin(filter_list)))
 

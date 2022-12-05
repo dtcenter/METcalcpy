@@ -13,7 +13,6 @@ Program Name: utils.py
 
 __author__ = 'Tatiana Burek'
 
-
 import warnings
 # To deal with third-party warnings
 from typing import Union
@@ -95,6 +94,23 @@ def is_string_integer(str_int):
         return True
     except (ValueError, TypeError):
         return False
+
+
+def is_string_strictly_float(str_float) -> bool:
+    """Checks if the input string is strictly float.
+
+         Args:
+             str_float: string value to check
+
+        Returns:
+            True - if the input value is strictly float
+            False - if the input value is not strictly float
+    """
+    if str_float is None:
+        return False
+    if str_float.startswith('-'):
+        str_float = str_float[1:]
+    return '.' in str_float and str_float.replace('.', '', 1).isdecimal()
 
 
 def get_derived_curve_name(list_of_names):
@@ -411,7 +427,8 @@ def perfect_score_adjustment(mean_stats_1, mean_stats_2, statistic, pval):
             and abs(mean_stats_1 - 1) > abs(mean_stats_2 - 1):
         result = pval * -1
     else:
-        print(f"WARNING: statistic {statistic} doesn't belong to any of the perfect score groups. Returning unprocessed p-value")
+        print(
+            f"WARNING: statistic {statistic} doesn't belong to any of the perfect score groups. Returning unprocessed p-value")
         result = pval
 
     return result
@@ -690,19 +707,19 @@ def equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axi
                 output_ee_data = output_ee_data.append(series_data_after_ee)
 
     try:
-            output_ee_data_valid = output_ee_data.drop('equalize', axis=1)
+        output_ee_data_valid = output_ee_data.drop('equalize', axis=1)
 
-            # It is possible to produce an empty data frame after applying event equalization. Print an informational
-            # message before returning the data frame.
-            if output_ee_data_valid.empty:
-                print(f"\nINFO: Event equalization has produced no results.  Data frame is empty.")
+        # It is possible to produce an empty data frame after applying event equalization. Print an informational
+        # message before returning the data frame.
+        if output_ee_data_valid.empty:
+            print(f"\nINFO: Event equalization has produced no results.  Data frame is empty.")
 
-            return output_ee_data_valid
+        return output_ee_data_valid
     except (KeyError, AttributeError):
-            # Two possible exceptions are raised when the data frame is empty *and* is missing the 'equalize' column
-            # following event equalization. Return the empty dataframe
-            # without dropping the 'equalize' column, and print an informational message.
-            print(f"\nINFO: No resulting data after performing event equalization of axis", axis)
+        # Two possible exceptions are raised when the data frame is empty *and* is missing the 'equalize' column
+        # following event equalization. Return the empty dataframe
+        # without dropping the 'equalize' column, and print an informational message.
+        print(f"\nINFO: No resulting data after performing event equalization of axis", axis)
 
     return output_ee_data
 

@@ -6,7 +6,7 @@ import pytest
 from metcalcpy.util.utils import represents_int, is_string_integer, get_derived_curve_name, calc_derived_curve_value, \
     unique, intersection, is_derived_point, parse_bool, round_half_up, sum_column_data_by_name, \
     nrow_column_data_by_name_value, create_permutations_mv, column_data_by_name, calculate_mtd_revision_stats, \
-    autocor_coef
+    autocor_coef, is_string_strictly_float
 
 
 @pytest.fixture
@@ -37,6 +37,14 @@ def test_is_string_integer():
     assert not is_string_integer("1.5")
     assert not is_string_integer("not_int")
     assert not is_string_integer(None)
+
+
+def test_is_string_float():
+    assert not is_string_strictly_float("1")
+    assert is_string_strictly_float("1.5")
+    assert not is_string_strictly_float("not_float")
+    assert not is_string_strictly_float("not.float")
+    assert not is_string_strictly_float(None)
 
 
 def test_get_derived_curve_name():
@@ -202,6 +210,7 @@ def test_autocor_coef():
 if __name__ == "__main__":
     test_represents_int()
     test_is_string_integer()
+    test_is_string_float()
     test_get_derived_curve_name()
     test_calc_derived_curve_value()
     test_unique()

@@ -53,7 +53,7 @@ from metcalcpy.util.nbrctc_statistics import *
 from metcalcpy.util.rps_statistics import *
 
 from metcalcpy.util.utils import is_string_integer, parse_bool, \
-    aggregate_field_values, perform_event_equalization
+    aggregate_field_values, perform_event_equalization, is_string_strictly_float
 
 
 class SumStat:
@@ -217,6 +217,8 @@ class SumStat:
                         for ind, val in enumerate(actual_series_vals):
                             if is_string_integer(val):
                                 actual_series_vals[ind] = int(val)
+                            elif is_string_strictly_float(val):
+                                actual_series_vals[ind] = float(val)
                         point_data = \
                             point_data[point_data[series_vars[index]].isin(actual_series_vals)]
 
