@@ -57,8 +57,8 @@ from metcalcpy.util.mcts_statistics import *
 
 from metcalcpy.util.utils import is_string_integer, get_derived_curve_name, \
     calc_derived_curve_value, intersection, is_derived_point, parse_bool, \
-    OPERATION_TO_SIGN, perfect_score_adjustment, perform_event_equalization,\
-    aggregate_field_values, sort_data, DerivedCurveComponent
+    OPERATION_TO_SIGN, perfect_score_adjustment, perform_event_equalization, \
+    aggregate_field_values, sort_data, DerivedCurveComponent, is_string_strictly_float
 
 __author__ = 'Tatiana Burek'
 
@@ -1000,6 +1000,8 @@ class AggStat:
                         for i, filter_val in enumerate(filter_list):
                             if is_string_integer(filter_val):
                                 filter_list[i] = int(filter_val)
+                            elif is_string_strictly_float(filter_val):
+                                filter_list[i] = float(filter_val)
                         if field in self.input_data.keys():
                             if field != self.params['indy_var']:  #
                                 filters_wihtout_indy. \
@@ -1007,15 +1009,16 @@ class AggStat:
                             else:
                                 indy_val = filter_value
 
-                            all_filters.append((self.input_data[field].isin(filter_list)))
+                            all_filters.append(self.input_data[field].isin(filter_list))
                         if field in series_val.keys():
                             all_filters_pct.append((self.input_data[field].isin(filter_list)))
 
                     # add fcst var
                     fcst_var = None
-                    if len(self.params['fcst_var_val_' + axis]) > 0 and 'fcst_var' in self.input_data.columns:
+                    if len(self.params['fcst_var_val_' + axis]) > 0:
                         fcst_var = list(self.params['fcst_var_val_' + axis].keys())[0]
-                        all_filters.append((self.input_data['fcst_var'].isin([fcst_var])))
+                        if 'fcst_var' in self.input_data.columns:
+                            all_filters.append((self.input_data['fcst_var'].isin([fcst_var])))
 
                     # use numpy to select the rows where any record evaluates to True
                     mask = np.array(all_filters).all(axis=0)

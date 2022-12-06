@@ -51,7 +51,7 @@ from metcalcpy.util.tost_paired import pt
 
 from metcalcpy.util.utils import intersection, get_derived_curve_name, \
     is_derived_point, is_string_integer, OPERATION_TO_SIGN, calc_derived_curve_value, \
-    perfect_score_adjustment, sort_data, PRECISION, DerivedCurveComponent
+    perfect_score_adjustment, sort_data, PRECISION, DerivedCurveComponent, is_string_strictly_float
 
 COLUMNS_TO_REMOVE = ['equalize', 'stat_ncl', 'stat_ncu', 'stat_bcl', 'stat_bcu', 'fcst_valid_beg', 'fcst_init_beg']
 
@@ -151,6 +151,8 @@ class Scorecard:
                     for i, filter_val in enumerate(filter_list):
                         if is_string_integer(filter_val):
                             filter_list[i] = int(filter_val)
+                        elif is_string_strictly_float(filter_val):
+                            filter_list[i] = float(filter_val)
                     if field in self.input_data.keys():
                         if field != self.params['indy_var']:
                             filters_wihtout_indy.append((self.input_data[field].isin(filter_list)))
