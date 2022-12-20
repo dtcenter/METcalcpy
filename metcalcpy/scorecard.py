@@ -44,7 +44,6 @@ import warnings
 import math
 import numpy as np
 from pandas import DataFrame
-from pandas.core.common import SettingWithCopyWarning
 
 from metcalcpy import GROUP_SEPARATOR, DATE_TIME_REGEX
 from metcalcpy.util.tost_paired import pt
@@ -316,7 +315,7 @@ class Scorecard:
             for component in derived_curve_component.first_component:
                 if component == fcst_lead:
                     with warnings.catch_warnings():
-                        warnings.simplefilter(action="ignore", category=SettingWithCopyWarning)
+                        warnings.simplefilter(action="ignore", category=Warning)
                         df.at[0, 'fcst_lead'] = fcst_lead
                     break
 
