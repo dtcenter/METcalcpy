@@ -29,7 +29,6 @@ def settings():
 
     return settings_dict
 
-@pytest.mark.skip()
 def test_equalize_axis_data(settings):
     '''
         Test that the FutureWarning is no longer generated when invoking the util.utils.equalize_axis_data() function
@@ -82,7 +81,7 @@ def settings_agg_stat():
     return settings_dict
 
 
-def test_agg_stat_event_equalize(settings_agg_stat):
+def test_calculate_values(settings_agg_stat):
     '''
 
        Test that FutureWarning is no longer being raised in the agg_stat_event_equalize module at ~line 710 in
@@ -96,5 +95,24 @@ def test_agg_stat_event_equalize(settings_agg_stat):
     try:
         asee =  settings_agg_stat['agg_stat_input']
         asee.calculate_values()
+    except FutureWarning:
+        assert False
+
+
+def test_run_ee_on_axis(settings_agg_stat):
+    '''
+
+       Test that FutureWarning is no longer being raised in the agg_stat_event_equalize module at ~line 148 in
+       the run_ee_on_axis() function.
+    '''
+    print("Testing run_ee_on_axis in agg_stat_event_equalize with agg_stat_and_boot data for FutureWarning...")
+
+
+    # This test fails if the some_dataframe.append(extra_df) wasn't replaced with pd.concat(some_dataframe, extra_df)
+    # Around line 708 of util.utils module's equalize_axis_data function.
+    try:
+        asee =  settings_agg_stat['agg_stat_input']
+        fix_vals_permuted = [('P100',)]
+        asee.run_ee_on_axis(fix_vals_permuted)
     except FutureWarning:
         assert False
