@@ -13,8 +13,6 @@ Program Name: utils.py
 
 __author__ = 'Tatiana Burek'
 
-import warnings
-# To deal with third-party warnings
 from typing import Union
 import math
 import sys
