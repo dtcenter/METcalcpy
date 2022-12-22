@@ -24,6 +24,7 @@ import statistics as st
 import numpy as np
 import pandas as pd
 from pandas import DataFrame
+import warnings
 
 from scipy import stats
 from scipy.stats import t, nct
@@ -31,6 +32,7 @@ from metcalcpy.util.correlation import corr, remove_none, acf
 from metcalcpy import GROUP_SEPARATOR, DATE_TIME_REGEX
 from metcalcpy.event_equalize import event_equalize
 from metcalcpy.util.wald_wolfowitz_runs_test import runs_test
+
 
 OPERATION_TO_SIGN = {
     'DIFF': '-',
@@ -704,7 +706,8 @@ def equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axi
             if output_ee_data.empty:
                 output_ee_data = series_data_after_ee
             else:
-                output_ee_data = output_ee_data.append(series_data_after_ee)
+                warnings.simplefilter(action="error", category=FutureWarning)
+                output_ee_data = pd.concat([output_ee_data, series_data_after_ee])
 
     try:
         output_ee_data_valid = output_ee_data.drop('equalize', axis=1)
