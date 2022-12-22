@@ -1,8 +1,8 @@
 import pytest
 import pandas as pd
 import numpy as np
-import warnings
 from metcalcpy.util.utils import equalize_axis_data
+from metcalcpy.agg_stat_event_equalize import AggStatEventEqualize
 
 @pytest.fixture
 def settings():
@@ -22,17 +22,19 @@ def settings():
     settings_dict['fcst_var_val_2'] = {}
     settings_dict['fix_vals_permuted'] = {}
     settings_dict['series_val_1'] = dict({'model': ["GFSDCF"]})
+    settings_dict['series_val_2'] = {}
     settings_dict['indy_var'] = 'fcst_lead'
     settings_dict['line_type'] = None
 
 
     return settings_dict
 
+@pytest.mark.skip()
 def test_equalize_axis_data(settings):
     '''
         Test that the FutureWarning is no longer generated when invoking the util.utils.equalize_axis_data() function
     '''
-    print("Testing equalize_axis_data with event equalize data for FutureWarning...")
+    print("Testing equalize_axis_data with 'dummy' event equalize data for FutureWarning...")
     input_file = "data/event_equalize_dummy.data"
     cur_df = pd.read_csv(input_file, sep='\t')
     fix_vals_keys = []
@@ -46,3 +48,53 @@ def test_equalize_axis_data(settings):
         assert False
 
 
+@pytest.fixture
+def settings_agg_stat():
+    """Initialise values for testing agg_stat_ee.
+
+    Returns:
+        dictionary with values of different type
+    """
+    params = {'random_seed': 1, 'indy_var': 'fcst_lead',
+              'method': 'perc',
+              'num_iterations': 100, 'event_equal': 'True',
+              'derived_series_1': [
+                  ['ENS001v3.6.1_d01 DPT FBAR', 'ENS001v3.6.1_d02 DPT FBAR', 'DIFF']],
+              'derived_series_2': [],
+              'agg_stat_input': 'data/agg_stat_and_boot_data.data',
+              'fcst_var_val_1': {'DPT': ['FBAR']},
+              'fcst_var_val_2': {},
+              'agg_stat_output': 'data/agg_stat_and_boot_output.data',
+              'fixed_vars_vals_input': {'fcst_lev': {'fcst_lev_0': ['P100']}},
+              'series_val_1': {'model': ['ENS001v3.6.1_d01', 'ENS001v3.6.1_d02']},
+              'series_val_2': {'model': ['ENS001v3.6.1_d01', 'ENS001v3.6.1_d02']},
+              'alpha': 0.05, 'line_type': 'sl1l2',
+              'num_threads': -1,
+              'indy_vals': ['0', '30000', '60000', '90000',
+                            '120000', '150000', '180000', '210000', '240000'],
+              'list_stat_1': ['FBAR'],
+              'list_stat_2': [],
+              'circular_block_bootstrap': False}
+    agg_stat_ee = AggStatEventEqualize(params)
+    settings_dict = dict()
+    settings_dict['agg_stat_input'] = agg_stat_ee
+
+    return settings_dict
+
+
+def test_agg_stat_event_equalize(settings_agg_stat):
+    '''
+
+       Test that FutureWarning is no longer being raised in the agg_stat_event_equalize module at ~line 710 in
+       the calculate_values() function.
+    '''
+    print("Testing calculate_values in agg_stat_event_equalize with agg_stat_and_boot data for FutureWarning...")
+
+
+    # This test fails if the some_dataframe.append(extra_df) wasn't replaced with pd.concat(some_dataframe, extra_df)
+    # Around line 708 of util.utils module's equalize_axis_data function.
+    try:
+        asee =  settings_agg_stat['agg_stat_input']
+        asee.calculate_values()
+    except FutureWarning:
+        assert False
