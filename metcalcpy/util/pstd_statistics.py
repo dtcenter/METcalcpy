@@ -19,7 +19,7 @@ from metcalcpy.util.met_stats import get_column_index_by_name
 from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION
 
 __author__ = 'Tatiana Burek'
-__version__ = '0.1.0'
+__version__ = '2.0.1'
 
 
 def calculate_pstd_brier(input_data, columns_names):
@@ -268,12 +268,18 @@ def calculate_pstd_roc_auc(input_data, columns_names):
         final_roc = pd.DataFrame(
             {'thresh': 0, 'n11': 0, 'n10': 0, 'n01': 0, 'n00': 0, 'pody': 1, 'pofd': 1},
             index=[0])
+        warnings.simplefilter(action='error', category=FutureWarning)
         final_roc = final_roc.append(roc, ignore_index=True)
+        # final_roc = pd.concat([final_roc, roc])
         final_roc = final_roc.append(
             pd.DataFrame(
                 {'thresh': 0, 'n11': 0, 'n10': 0, 'n01': 0, 'n00': 0, 'pody': 0, 'pofd': 0},
                 index=[0]),
             ignore_index=True)
+        # final_roc = pd.concat([final_roc,
+        #     pd.DataFrame(
+        #         {'thresh': 0, 'n11': 0, 'n10': 0, 'n01': 0, 'n00': 0, 'pody': 0, 'pofd': 0},
+        #         index=[0]) ])
 
         roc_auc = 0
         for index, row in final_roc.iterrows():
@@ -396,12 +402,14 @@ def _calc_pct_roc(data):
     # build the ROC contingency data table
     for thresh in list_thresh:
         is_bigger = data['thresh_i'] > thresh
-        df_roc.at[df_roc.index[df_roc["thresh"] == thresh], 'n11'] = sum(data[is_bigger]['oy_i'])
-        df_roc.at[df_roc.index[df_roc["thresh"] == thresh], 'n10'] = sum(data[is_bigger]['on_i'])
+        # use df_roc.loc rather than df_roc.at in pandas versions above 1.2.3
+        df_roc.loc[df_roc.index[df_roc["thresh"] == thresh], 'n11'] = sum(data[is_bigger]['oy_i'])
+        df_roc.loc[df_roc.index[df_roc["thresh"] == thresh], 'n10'] = sum(data[is_bigger]['on_i'])
 
         is_less = data['thresh_i'] <= thresh
-        df_roc.at[df_roc.index[df_roc["thresh"] == thresh], 'n01'] = sum(data[is_less]['oy_i'])
-        df_roc.at[df_roc.index[df_roc["thresh"] == thresh], 'n00'] = sum(data[is_less]['on_i'])
+        # use df_roc.loc rather than df_roc.at in pandas versions above 1.2.3
+        df_roc.loc[df_roc.index[df_roc["thresh"] == thresh], 'n01'] = sum(data[is_less]['oy_i'])
+        df_roc.loc[df_roc.index[df_roc["thresh"] == thresh], 'n00'] = sum(data[is_less]['on_i'])
 
     # generate the pody and pofd scores from the contingency tables
     df_roc['pody'] = [row.n11 / (row.n11 + row.n01) for index, row in df_roc.iterrows()]
