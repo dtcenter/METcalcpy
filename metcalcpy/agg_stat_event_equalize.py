@@ -37,6 +37,7 @@ import itertools
 import pandas as pd
 import yaml
 import numpy as np
+import warnings
 
 from metcalcpy import GROUP_SEPARATOR
 from metcalcpy.event_equalize import event_equalize
@@ -93,7 +94,8 @@ class AggStatEventEqualize:
 
                 output_ee_data = output_ee_data.drop('equalize', axis=1)
                 output_ee_data_2 = output_ee_data_2.drop('equalize', axis=1)
-                all_ee_records = output_ee_data.append(output_ee_data_2).reindex()
+                warnings.simplefilter(action='error', category=FutureWarning)
+                all_ee_records = pd.concat([output_ee_data, output_ee_data_2]).reindex()
                 all_series_vars = {}
                 for key in self.params['series_val_2']:
                     all_series_vars[key] = np.unique(self.params['series_val_2'][key]
@@ -143,7 +145,9 @@ class AggStatEventEqualize:
             if output_ee_data.empty:
                 output_ee_data = series_data_after_ee
             else:
-                output_ee_data = output_ee_data.append(series_data_after_ee)
+                warnings.simplefilter(action="error", category=FutureWarning)
+                output_ee_data = pd.concat([output_ee_data, series_data_after_ee])
+
         return output_ee_data
 
 
