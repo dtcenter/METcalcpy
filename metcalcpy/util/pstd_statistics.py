@@ -261,37 +261,27 @@ def calculate_pstd_roc_auc(input_data, columns_names):
             or None if some of the data values are missing or invalid
     """
     warnings.filterwarnings('error')
-    try:
-        df_pct_perm = _calc_common_stats(columns_names, input_data)
-        roc = _calc_pct_roc(df_pct_perm)
-        # add 1st and last rows
-        final_roc = pd.DataFrame(
-            {'thresh': 0, 'n11': 0, 'n10': 0, 'n01': 0, 'n00': 0, 'pody': 1, 'pofd': 1},
-            index=[0])
-        warnings.simplefilter(action='error', category=FutureWarning)
-        final_roc = final_roc.append(roc, ignore_index=True)
-        # final_roc = pd.concat([final_roc, roc])
-        final_roc = final_roc.append(
-            pd.DataFrame(
-                {'thresh': 0, 'n11': 0, 'n10': 0, 'n01': 0, 'n00': 0, 'pody': 0, 'pofd': 0},
-                index=[0]),
-            ignore_index=True)
-        # final_roc = pd.concat([final_roc,
-        #     pd.DataFrame(
-        #         {'thresh': 0, 'n11': 0, 'n10': 0, 'n01': 0, 'n00': 0, 'pody': 0, 'pofd': 0},
-        #         index=[0]) ])
 
-        roc_auc = 0
-        for index, row in final_roc.iterrows():
-            if index != 0:
-                roc_auc = roc_auc + 0.5 * (final_roc.iloc[index - 1]['pody'] + row.pody) \
-                          * (final_roc.iloc[index - 1]['pofd'] - row.pofd)
+    df_pct_perm = _calc_common_stats(columns_names, input_data)
+    roc = _calc_pct_roc(df_pct_perm)
+    # add 1st and last rows
+    final_roc = pd.DataFrame(
+        {'thresh': 0, 'n11': 0, 'n10': 0, 'n01': 0, 'n00': 0, 'pody': 1, 'pofd': 1},
+        index=[0])
+    final_roc = pd.concat([final_roc, roc])
+    final_roc = pd.concat([final_roc,
+        pd.DataFrame(
+            {'thresh': 0, 'n11': 0, 'n10': 0, 'n01': 0, 'n00': 0, 'pody': 0, 'pofd': 0},
+            index=[0]) ])
 
-        result = round_half_up(roc_auc, PRECISION)
+    roc_auc = 0
+    for index, row in final_roc.iterrows():
+        if index != 0:
+            roc_auc = roc_auc + 0.5 * (final_roc.iloc[index - 1]['pody'] + row.pody) \
+                      * (final_roc.iloc[index - 1]['pofd'] - row.pofd)
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
-        result = None
-    warnings.filterwarnings('ignore')
+    result = round_half_up(roc_auc, PRECISION)
+
     return result
 
 
