@@ -1,8 +1,10 @@
 import pytest
 import pandas as pd
 import numpy as np
-from metcalcpy.util.utils import equalize_axis_data
+
+from metcalcpy.util.utils import equalize_axis_data, aggregate_field_values
 from metcalcpy.agg_stat_event_equalize import AggStatEventEqualize
+from metcalcpy.util import pstd_statistics as pstd
 
 @pytest.fixture
 def settings():
@@ -114,5 +116,86 @@ def test_run_ee_on_axis(settings_agg_stat):
         asee =  settings_agg_stat['agg_stat_input']
         fix_vals_permuted = [('P100',)]
         asee.run_ee_on_axis(fix_vals_permuted)
+    except FutureWarning:
+        assert False
+
+
+def test_calculate_pstd_roc_auc():
+    '''
+
+       Test the calculate_pstd_roc_auc to ensure no FutureWarnings are present
+    '''
+    columns = np.array(['fcst_var','thresh_i','on_i', 'oy_i'])
+    # 'thresh_i': [], 'oy_i': [], 'on_i': []
+    # input_file = "data/reliability.data"
+    input_file = "data/roc_sample.data"
+    cur_df = pd.read_csv(input_file, sep='\t')
+    input_data = np.array(cur_df)
+    try:
+       pstd.calculate_pstd_roc_auc(input_data, columns)
+    except FutureWarning:
+        assert False
+
+@pytest.fixture
+def settings_ee_dummy():
+    settings_dict = dict()
+    settings_dict['fix_val_keys'] = []
+    settings_dict['fcst_var_val_1'] = dict({'TC': ["BASER", "CTC"]})
+    settings_dict['fcst_var_val_2'] = {}
+    settings_dict['fix_vals_permuted'] = {}
+    settings_dict['series_val_1'] = dict({'model': ["GFSDCF;"]})
+    settings_dict['series_val_2'] = {}
+    settings_dict['indy_var'] = 'fcst_lead'
+    settings_dict['line_type'] = None
+
+    return settings_dict
+
+
+def test_aggregate_field_values(settings_ee_dummy):
+    '''
+       Test aggregation on field value that is NOT fcst_lead (to exercise one branch of the "if")
+       to ensure no FutureWarnings are present (~line 513)
+    '''
+    input_file = "data/event_equalize_dummy.data"
+    cur_df = pd.read_csv(input_file, sep='\t')
+    series_var_val = {}
+    series_var_val['series_val_1'] = settings_ee_dummy['series_val_1']
+    series_var_val['series_val_2'] = settings_ee_dummy['series_val_2']
+    line_type = settings_ee_dummy['line_type']
+    try:
+        aggregate_field_values(settings_ee_dummy['series_val_1'], cur_df, line_type)
+        assert True
+    except FutureWarning:
+        assert False
+
+@pytest.fixture
+def settings_ee_dummy2():
+    settings_dict = dict()
+    settings_dict['fix_val_keys'] = []
+    settings_dict['fcst_var_val_1'] = dict({'TC': ["BASER", "CTC"]})
+    settings_dict['fcst_var_val_2'] = {}
+    settings_dict['fix_vals_permuted'] = {}
+    settings_dict['series_val_1'] = dict({'fcst_lead': ['240000;']})
+    settings_dict['series_val_2'] = {}
+    settings_dict['indy_var'] = 'fcst_lead'
+    settings_dict['line_type'] = ''
+
+    return settings_dict
+
+
+def test_aggregate_field_values_agg_by_fcst_lead(settings_ee_dummy2):
+    '''
+        Test with aggregation based on fcst_lead to exercise the "else"
+        to ensure no FutureWarnings are present (~line 562)
+    '''
+    input_file = "data/event_equalize_group_input.data"
+    cur_df = pd.read_csv(input_file, sep='\t')
+    series_var_val = {}
+    series_var_val['series_val_1'] = settings_ee_dummy2['series_val_1']
+    series_var_val['series_val_2'] = settings_ee_dummy2['series_val_2']
+    line_type = settings_ee_dummy2['line_type']
+    try:
+        aggregate_field_values(settings_ee_dummy2['series_val_1'], cur_df, line_type)
+        assert True
     except FutureWarning:
         assert False
