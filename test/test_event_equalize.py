@@ -178,16 +178,14 @@ def settings_no_fcst_var_vals():
     # settings_dict['fcst_var_val_2'] = {}
     settings_dict['fix_vals_permuted'] = {}
     settings_dict['series_val_1'] = {}
-    settings_dict['indy_var'] = {}
+    settings_dict['indy_var'] = ''
     settings_dict['line_type'] = None
 
     return settings_dict
 
 def test_equalize_axis_data_no_fcst_var(settings_no_fcst_var_vals):
     '''
-       conditions that lead to an empty data frame from event equalization should
-       return an empty data frame instead of an error due to trying to clean up the 'equalize' column before
-       returning the event equalization data frame.
+       Event equalization returns a data frame with no removed rows.
     '''
 
     print("Testing equalize_axis_data with ROC CTC threshold data...")
@@ -198,7 +196,7 @@ def test_equalize_axis_data_no_fcst_var(settings_no_fcst_var_vals):
         fix_vals_permuted_list = []
 
         ee_df = equalize_axis_data(fix_vals_keys, fix_vals_permuted_list, settings_no_fcst_var_vals, cur_df, axis='1')
-        assert ee_df.shape[0] == 0
+        assert ee_df.shape[0] == cur_df.shape[0]
 
 
 if __name__ == "__main__":
