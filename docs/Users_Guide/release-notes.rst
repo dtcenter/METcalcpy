@@ -49,21 +49,21 @@ METcalcpy Version 2.0.0 release notes (20221207)
 
    * **Create checksum for released code** (`#209 <https://github.com/dtcenter/METcalcpy/issues/209>`_)
 
-   * **Add modulefiles used for installation on various machines (`#204 <https://github.com/dtcenter/METcalcpy/issues/204>`_)
+   * **Add modulefiles used for installation on various machines** (`#204 <https://github.com/dtcenter/METcalcpy/issues/204>`_)
 
-   * **Identify minimal "bare-bones" Python packages to inform operational installation (`#152 <https://github.com/dtcenter/METcalcpy/issues/152>`_)
+   * **Identify minimal "bare-bones" Python packages to inform operational installation** (`#152 <https://github.com/dtcenter/METcalcpy/issues/152>`_)
 
-   * **Convert scorecard.R_tmp to Python (`#179 <https://github.com/dtcenter/METcalcpy/issues/179>`_)
+   * **Convert scorecard.R_tmp to Python** (`#179 <https://github.com/dtcenter/METcalcpy/issues/179>`_)
 
 * Bugfixes:
 
-   * **Vertical Interpolation DimensionalityError in migrating from Python 3.7.10 to Python 3.8.6 (`#180 <https://github.com/dtcenter/METcalcpy/issues/180>`_)
+   * **Vertical Interpolation DimensionalityError in migrating from Python 3.7.10 to Python 3.8.6** (`#180 <https://github.com/dtcenter/METcalcpy/issues/180>`_)
 
-   * **Address Github Dependabot Issues (`#193 <https://github.com/dtcenter/METcalcpy/issues/193>`_)
+   * **Address Github Dependabot Issues** (`#193 <https://github.com/dtcenter/METcalcpy/issues/193>`_)
 
-   * **Deprecation and other warnings in event_equalize.py and other modules (`#153 <https://github.com/dtcenter/METcalcpy/issues/153>`_)
+   * **Deprecation and other warnings in event_equalize.py and other modules** (`#153 <https://github.com/dtcenter/METcalcpy/issues/153>`_)
 
-   * **Some METcalcpy tests fail with Python 3.8 and upgraded packages (`#154 <https://github.com/dtcenter/METcalcpy/issues/154>`_)
+   * **Some METcalcpy tests fail with Python 3.8 and upgraded packages** (`#154 <https://github.com/dtcenter/METcalcpy/issues/154>`_)
     
 METcalcpy Upgrade Instructions
 ==============================
