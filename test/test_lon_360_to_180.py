@@ -17,7 +17,6 @@ def test_lon_from_360_to_180():
     if ( isinstance(i_west_east[0], int) or isinstance(i_west_east[0], np.int64) or isinstance(i_west_east[0], np.int32) ) and (isinstance(np_west_east[0], np.float64) or not isinstance(np_west_east[0], float)):
        assert True
     
-
     # Verify that some values were correctly converted
     # and that the ordering in the array is from negative to positive
     assert np_west_east[0] == -180.0
