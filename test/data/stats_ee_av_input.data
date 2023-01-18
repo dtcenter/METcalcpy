@@ -1,3 +1,4 @@
+
 model	fcst_init	fcst_valid	fcst_lead	fcst_thr	fcst_var	object_id	object_cat	area	total	fcst_flag	simple_flag	matched_flag
 AFWAOCv3.5.1_d01	2011-07-01 00:00:00	2011-07-01 09:00:00	90000	>=0.254	APCP_03	F001	CF002	4	45710	1	1	1
 AFWAOCv3.5.1_d01	2011-07-01 00:00:00	2011-07-01 09:00:00	90000	>=0.254	APCP_03	F002	CF000	22	45710	1	1	0
