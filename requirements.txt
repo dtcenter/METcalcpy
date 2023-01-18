@@ -25,14 +25,14 @@ packaging==21.3
 pandas==1.2.3
 partd==1.2.0
 pint==0.18
-Pillow==9.3.0
+Pillow>=9.2.0
 pluggy==1.0.0
 pooch==1.6.0
 py==1.11.0
 pycparser==2.21
 pyOpenSSL==22.0.0
 pyparsing==3.0.7
-pytest==7.1.1
+pytest==7.2.0
 pytz==2022.1
 PyWavelets==1.1.1
 PyYAML==5.4.1
