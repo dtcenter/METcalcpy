@@ -235,7 +235,7 @@ class SumStat:
                                                             point_data,
                                                             self.params['line_type'])
 
-                    aggregated_values = aggregated_values.append(point_data)
+                    aggregated_values = pd.concat([aggregated_values, point_data])
             self.input_data = aggregated_values
             self.input_data.reset_index(inplace=True, drop=True)
 
