@@ -9,7 +9,6 @@ proc ModulesHelp { } {
 
 module load contrib
 module load intel/2020.2
-module load intelpython3/2020.2
 
-#setenv METCALCPY_PATH /apps/contrib/MET/METcalcpy/METcalcpy-2.0.0
+prepend-path PATH /work/noaa/ovp/miniconda/miniconda3/envs/metplus_v5.0_py3.8/bin
 prepend-path PYTHONPATH /apps/contrib/MET/METcalcpy/METcalcpy-2.0.0
