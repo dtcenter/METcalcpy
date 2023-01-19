@@ -1,4 +1,4 @@
- # ============================*
+# ============================*
  # ** Copyright UCAR (c) 2020
  # ** University Corporation for Atmospheric Research (UCAR)
  # ** National Center for Atmospheric Research (NCAR)
@@ -36,7 +36,6 @@ import sys
 import logging
 import pandas as pd
 import yaml
-import warnings
 
 from metcalcpy import GROUP_SEPARATOR
 from metcalcpy.event_equalize_against_values import event_equalize_against_values
@@ -88,7 +87,7 @@ class AggStatEventEqz:
 
             # perform for axis 2
             if self.params['series_val_2']:
-                output_ee_data = pd.concat([output_ee_data, self.perform_ee_on_axis(prev_cases, '2')])
+                output_ee_data = output_ee_data.append(self.perform_ee_on_axis(prev_cases, '2'))
         else:
             output_ee_data = self.input_data
             if self.input_data.empty:
@@ -105,8 +104,6 @@ class AggStatEventEqz:
             Returns:
                 A data frame that contains equalized records
         """
-        warnings.filterwarnings('error')
-
         output_ee_data = pd.DataFrame()
         for fcst_var, fcst_var_stats in self.params['fcst_var_val_' + axis].items():
             for series_var, series_var_vals in self.params['series_val_' + axis].items():
@@ -128,7 +125,6 @@ class AggStatEventEqz:
                     & (prev_cases[series_var].isin(series_var_vals_no_group))
                     ]
                 # get unique cases from filtered previous cases
-
                 series_data_for_prev_cases_unique = series_data_for_prev_cases['equalize'].unique()
 
                 # perform ee
@@ -140,7 +136,7 @@ class AggStatEventEqz:
                 if output_ee_data.empty:
                     output_ee_data = series_data_after_ee
                 else:
-                    output_ee_data = pd.concat([output_ee_data, series_data_after_ee])
+                    output_ee_data = output_ee_data.append(series_data_after_ee)
         return output_ee_data
 
 
