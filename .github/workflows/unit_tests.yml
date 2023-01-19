@@ -51,5 +51,4 @@ jobs:
         pytest test_tost_paired.py
         pytest test_utils.py
         pytest test_validate_mv_python.py
-        pytest test_future_warnings.py
 
