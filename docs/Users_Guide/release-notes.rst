@@ -8,6 +8,26 @@ describes the bugfix, enhancement, or new feature: `METcalcpy GitHub issues. <ht
 METcalcpy Release Notes
 =======================
 
+METcalcpy Version 2.0.1 release notes (20230125)
+------------------------------------------------
+* New Functionality:
+
+* Enhancements:
+
+* Internal:
+
+* Bugfixes:
+
+   * **Add nco_requirements.txt file** 
+     (`#263 <https://github.com/dtcenter/METcalcpy/issues/263>`_)
+
+   * **Fix test_scorecard.py with pandas-1.5.1** 
+     (`#251 <https://github.com/dtcenter/METcalcpy/issues/251>`_)
+
+   * **Fix test_event_equalize.py** 
+     (`#250 <https://github.com/dtcenter/METcalcpy/issues/250>`_)
+
+
 METcalcpy Version 2.0.0 release notes (20221207)
 ------------------------------------------------
 * New Functionality:
