@@ -15,6 +15,7 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
 
+
 env:
   DEP_PATH: ./requirements.txt
 
