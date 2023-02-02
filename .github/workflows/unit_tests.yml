@@ -11,6 +11,7 @@ on:
       - feature_*
       - main_*
       - bugfix_*
+      - test_*
   pull_request:
     types: [opened, reopened, synchronize]
 
