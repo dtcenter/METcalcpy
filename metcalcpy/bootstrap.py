@@ -13,7 +13,7 @@ Program Name: bootstrap.py
 """
 
 import numpy as _np
-from collections import Iterable
+from collections.abc import Iterable
 import multiprocessing as _multiprocessing
 import scipy.sparse as _sparse
 
