@@ -1,7 +1,7 @@
 imageio==2.6.1
 imutils==0.5.4
 metpy==1.1.0
-netCDF4==1.5.7
+netCDF4==1.6.2
 numpy==1.22.3
 opencv-python>=4.5.3
 pandas==1.5.1
