@@ -91,7 +91,7 @@ Verify that this console's version of Python is consistent with the version requ
 section by looking at the output::
 
     % python
-    Python 3.6.3 | packaged by conda-forge | (default, Dec  9 2017, 16:20:51)
+    Python 3.10.4+ | packaged by conda-forge | (default, Dec  9 2017, 16:20:51)
     [GCC 4.2.1 Compatible Apple LLVM 6.1.0 (clang-602.0.53)] on darwin
     Type "help", "copyright", "credits" or "license" for more information.
     >>>
