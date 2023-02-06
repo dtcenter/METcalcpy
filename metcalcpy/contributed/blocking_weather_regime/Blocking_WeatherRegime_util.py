@@ -110,7 +110,7 @@ def read_nc_met(infiles,invar,nseasons,dseasons):
             lead_str = str(int(leadhr)).zfill(2)+str(int(leadmin)).zfill(2)+str(int(leadsec)).zfill(2)
             indata.close()
         else:
-            new_invar = np.empty((1,len(var_3d[0,:,0]),len(var_3d[0,0,:])),dtype=np.float)
+            new_invar = np.empty((1,len(var_3d[0,:,0]),len(var_3d[0,0,:])),dtype=np.float64)
             init_time_str = ''
             valid_time_str = ''
             lead_str = ''
