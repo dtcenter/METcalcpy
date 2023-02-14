@@ -8,41 +8,31 @@ other scripts.
 Python Requirements
 ~~~~~~~~~~~~~~~~~~~
 
-* Python 3.8.6
-
-* cartopy 0.20.2
-
-* eofs
+* Python 3.10.4
 
 * imutils 0.5.4
 
-* imageio 2.19.2
+* imageio 2.25.0
 
-* lxml
+* metpy 1.4.0
 
-* matplotlib 3.5.1
+* netcdf4 1.6.2
 
-* metcalcpy
+* numpy 1.24.1
 
-* metpy
-
-* netcdf4 1.5.8
-
-* numpy 1.22.3
+* opencv-python 4.7.0.68
 
 * pandas 1.4.2
 
 * pytest 7.1.2
 
-* pyyaml 5.3.1 or above
+* pyyaml 6.0
 
-* scikit-image 0.18.1 or above
+* scikit-image 0.19.3 
 
-* scikit-learn 0.23.2
+* scipy 1.10.0
 
-* scipy 1.8.0
-
-* xarray 2022.3.0
+* xarray 2023.1.0
 
 
 Coding Standards
