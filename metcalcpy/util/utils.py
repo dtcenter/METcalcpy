@@ -13,8 +13,6 @@ Program Name: utils.py
 
 __author__ = 'Tatiana Burek'
 
-import warnings
-# To deal with third-party warnings
 from typing import Union
 import math
 import sys
@@ -24,6 +22,7 @@ import statistics as st
 import numpy as np
 import pandas as pd
 from pandas import DataFrame
+import warnings
 
 from scipy import stats
 from scipy.stats import t, nct
@@ -31,6 +30,7 @@ from metcalcpy.util.correlation import corr, remove_none, acf
 from metcalcpy import GROUP_SEPARATOR, DATE_TIME_REGEX
 from metcalcpy.event_equalize import event_equalize
 from metcalcpy.util.wald_wolfowitz_runs_test import runs_test
+
 
 OPERATION_TO_SIGN = {
     'DIFF': '-',
@@ -469,6 +469,9 @@ def aggregate_field_values(series_var_val, input_data_frame, line_type):
             Returns:
                 Pandas DataFrame with aggregates statistics
             """
+
+    warnings.filterwarnings('error')
+
     # get unique values for valid date/time and lead time
     unique_valid = input_data_frame.fcst_valid_beg.unique()
     unique_lead = input_data_frame.fcst_lead.unique()
@@ -507,16 +510,27 @@ def aggregate_field_values(series_var_val, input_data_frame, line_type):
                             rows_for_agg.at[0, series_var] = series_val
 
                             # add it to the result
-                            input_data_frame = input_data_frame.append(rows_for_agg.iloc[:1])
+                            input_data_frame = pd.concat([input_data_frame, rows_for_agg.iloc[:1]])
+
                     else:
                         # if the aggregated field is 'fcst_lead'
+
+                        # pandas treats the fcst_lead values as dtype int64, therefore convert
+                        # the single_values to int type so the pd.isin() properly matches
+                        # the input_data_frame[series_var].
+                        single_values_int = []
+                        for val in single_values:
+                            if val != '':
+                                single_values_int.append((int(val)))
 
                         # find rows for the aggregation and their indexes
                         rows_for_agg = input_data_frame[
                             (input_data_frame.fcst_valid_beg == valid)
-                            & (input_data_frame[series_var].isin(single_values))
+                            & (input_data_frame[series_var].isin(single_values_int))
                             ]
+
                         rows_indexes = rows_for_agg.index.values
+
                         # reset indexes
                         rows_for_agg.reset_index(inplace=True, drop=True)
 
@@ -531,10 +545,21 @@ def aggregate_field_values(series_var_val, input_data_frame, line_type):
                                 rows_for_agg.at[0, field] = aggregated_result[field][0]
 
                         # replace the aggregated field name
-                        rows_for_agg.at[0, series_var] = series_val
+
+                        # some versions of pandas will generate an error when assigning a numerical value with a ';'
+                        # strip off the ';' to make this "version-independent"
+                        if ';' in series_val:
+                            sep_val = series_val.split(';')
+
+                        # different versions of pandas may generate a SettingWithCopy Warning
+                        # For pandas 1.2, 1.3, and 1.5, use the df.at, but for pandas 1.4, use the df.loc.
+                        try:
+                            rows_for_agg.at[0, series_var] = sep_val[0]
+                        except:
+                            rows_for_agg.loc[0, series_var] = sep_val[0]
 
                         # add it to the result
-                        input_data_frame = input_data_frame.append(rows_for_agg.iloc[:1])
+                        input_data_frame = pd.concat([input_data_frame,(rows_for_agg.iloc[:1])])
 
     return input_data_frame
 
@@ -704,7 +729,8 @@ def equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axi
             if output_ee_data.empty:
                 output_ee_data = series_data_after_ee
             else:
-                output_ee_data = output_ee_data.append(series_data_after_ee)
+                warnings.simplefilter(action="error", category=FutureWarning)
+                output_ee_data = pd.concat([output_ee_data, series_data_after_ee])
 
     try:
         output_ee_data_valid = output_ee_data.drop('equalize', axis=1)
