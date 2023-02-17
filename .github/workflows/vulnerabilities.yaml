@@ -1,0 +1,38 @@
+# This workflow will check third-party Python packages for vulnerabilities using pip-audit.
+# pip-audit finds vulnerabilities from packages that are dependencies of
+# the packages in the requirements.txt file. A summary is generated at the end of the action.
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-githu
+
+name: Python vulnerability check
+
+on:
+  push:
+    branches:
+      - develop
+      - develop-ref
+      - feature_*
+      - main_*
+      - bugfix_*
+      - test_*
+      - issue_*
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  selftest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: install
+        run: |
+          python -m venv env/
+          source env/bin/activate
+          python -m pip install .
+      - uses: pypa/gh-action-pip-audit@v1.0.5
+        with:
+          inputs: requirements.txt
+          virtual-environment: env/
+          local: true
+          summary: true
+
+
