@@ -37,6 +37,8 @@ import argparse
 import time
 import logging
 import yaml
+import pandas as pd
+import warnings
 from inspect import signature
 
 from metcalcpy import GROUP_SEPARATOR
@@ -182,6 +184,7 @@ class SumStat:
         Args:
             axis - y1 or y1 axis
         """
+        warnings.filterwarnings('error')
 
         # check if indy_vals have a field that need to be aggregated - the field with ';'
         has_agg_indy_field = any(any(GROUP_SEPARATOR in i for i in item) for item in self.params['indy_vals'])
@@ -235,7 +238,7 @@ class SumStat:
                                                             point_data,
                                                             self.params['line_type'])
 
-                    aggregated_values = aggregated_values.append(point_data)
+                    aggregated_values = pd.concat([aggregated_values, point_data])
             self.input_data = aggregated_values
             self.input_data.reset_index(inplace=True, drop=True)
 
