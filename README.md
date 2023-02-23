@@ -27,6 +27,6 @@ Instructions for installing the metcalcpy package locally
 Instructions for installing the metcalcpy package from PyPI
 -----------------------------------------------------------
 
-- activate your Python 3.10.4+ conda environment
+- activate your Python 3.8.6+ conda environment
 - run the following from the command line:
    -  pip install metcalcpy==x.y.z  where x.y.z is the version number of interest
