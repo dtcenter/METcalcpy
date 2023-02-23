@@ -294,7 +294,7 @@ class AggStatBootstrap:
             # get results for axis1
             out_frame = self._proceed_with_axis("1")
             if self.params['series_val_2']:
-                out_frame = out_frame.append(self._proceed_with_axis("2"))
+                out_frame = pd.concat([out_frame, self._proceed_with_axis("2")])
 
         else:
             out_frame = pd.DataFrame()
