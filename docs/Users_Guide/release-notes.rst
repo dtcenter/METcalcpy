@@ -8,6 +8,15 @@ describes the bugfix, enhancement, or new feature: `METcalcpy GitHub issues. <ht
 METcalcpy Release Notes
 =======================
 
+METcalcpy Version 2.0.2 release notes (20230223)
+------------------------------------------------
+
+* Bugfixes:
+
+
+   * **Address Warnings from pandas in METcalcpy code** 
+     (`#249 <https://github.com/dtcenter/METcalcpy/issues/249>`_)
+
 METcalcpy Version 2.0.1 release notes (20230125)
 ------------------------------------------------
 * New Functionality:

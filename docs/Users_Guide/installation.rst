@@ -11,35 +11,35 @@ Python Requirements
 
 * cartopy 0.20.2
 
-* eofs
+* eofs 1.4.0
 
 * imutils 0.5.4
 
-* imageio 2.19.2
+* imageio 2.19.3
 
-* lxml
+* lxml 4.9.1
 
-* matplotlib 3.5.1
+* matplotlib 3.5.2
 
 * metcalcpy
 
-* metpy
+* metpy 1.3.1  
 
-* netcdf4 1.5.8
+* netcdf4 1.6.2
 
-* numpy 1.22.3
+* numpy 1.24.2
 
-* pandas 1.2.3
+* pandas 1.5.1
 
-* pytest 7.1.2
+* pytest 7.2.1
 
-* pyyaml 5.3.1 or above
+* pyyaml 6.0           
 
-* scikit-image 0.18.1 or above
+* scikit-image 0.19.3
 
 * scikit-learn 0.23.2
 
-* scipy 1.8.0
+* scipy 1.8.1
 
 * xarray 2022.3.0
 

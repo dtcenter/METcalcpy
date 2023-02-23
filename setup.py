@@ -14,7 +14,6 @@ setuptools.setup(
     name="metcalcpy",
     version=main_ns['__version__'],
     author="METplus",
-    author_email="met-help@ucar.edu",
     description="statistics and util package for METplus",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -25,5 +24,5 @@ setuptools.setup(
          "License :: OSI Approved :: Apache Software License",
          "Operating System :: OS Independent",
     ],
-    python_requires='>=3.6',
+    python_requires='>=3.8',
 )
