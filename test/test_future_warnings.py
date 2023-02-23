@@ -8,7 +8,7 @@ import numpy as np
 from metcalcpy.util.utils import equalize_axis_data, aggregate_field_values, event_equalize
 from metcalcpy.agg_stat_event_equalize import AggStatEventEqualize
 from metcalcpy.util import pstd_statistics as pstd
-from metcalcpy.sum_stat import SumStat
+from metcalcpy.agg_stat_eqz import AggStatEventEqz
 from metcalcpy import GROUP_SEPARATOR, DATE_TIME_REGEX
 
 @pytest.fixture
@@ -204,6 +204,4 @@ def test_aggregate_field_values_agg_by_fcst_lead(settings_ee_dummy2):
         assert True
     except FutureWarning:
         assert False
-
-
 
