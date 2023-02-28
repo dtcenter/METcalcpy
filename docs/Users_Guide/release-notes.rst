@@ -9,7 +9,7 @@ METcalcpy Release Notes
 =======================
 
 METcalcpy Version 2.1.0-beta1 release notes (20230228)
-------------------------------------------------
+------------------------------------------------------
 
 * New Functionality:
 
