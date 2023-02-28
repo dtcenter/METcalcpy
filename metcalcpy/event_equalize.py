@@ -50,20 +50,23 @@ def event_equalize(series_data, indy_var, series_var_vals, fix_vars,
     """
     pd.options.mode.chained_assignment = None
     column_names = list(series_data)
-    exception_columns = ["", "fcst_valid_beg", 'fcst_lead', 'fcst_valid', 'fcst_init', 'fcst_init_beg']
+    exception_columns = ["", "fcst_valid_beg", 'fcst_lead', 'fcst_valid', 'fcst_init', 'fcst_init_beg', 'VALID', 'LEAD']
     if isinstance(fix_vars, str):
         fix_vars = [fix_vars]
-    if 'fcst_valid_beg' in column_names:
-        series_data['equalize'] = series_data.loc[:, 'fcst_valid_beg'].astype(str) \
-                                  + ' ' + series_data.loc[:, 'fcst_lead'].astype(str)
-    elif 'fcst_valid' in column_names:
-        series_data['equalize'] = series_data.loc[:, 'fcst_valid'].astype(str) + ' ' \
-                                  + series_data.loc[:, 'fcst_lead'].astype(str)
+
+    if 'equalize' not  in  series_data.columns:
+        if 'fcst_valid_beg' in column_names:
+            series_data['equalize'] = series_data.loc[:, 'fcst_valid_beg'].astype(str) \
+                                          + ' ' + series_data.loc[:, 'fcst_lead'].astype(str)
+        elif 'fcst_valid' in column_names:
+            series_data['equalize'] = series_data.loc[:, 'fcst_valid'].astype(str) + ' ' \
+                                          + series_data.loc[:, 'fcst_lead'].astype(str)
+
 
     # add independent variable if needed
     if equalize_by_indep and indy_var not in exception_columns:
         series_data['equalize'] = series_data.loc[:, 'equalize'].astype(str) + " " \
-                                  + series_data.loc[:, indy_var].astype(str)
+                                      + series_data.loc[:, indy_var].astype(str)
 
     vars_for_ee = dict()
 
