@@ -941,17 +941,7 @@ def compute_std_err_from_median_variance_inflation_factor(data):
         # using a vector that is the same size as "data", but represents
         # represents excusions from the median of the data.
 
-        # Use excursions from the median to compute the first order auto-correlation coefficient.
-        data_excursions = list()
-        median = st.median(data)
-        for val in data:
-            if val >= median:
-                data_excursions.append(1)
-            else:
-                data_excursions.append(0)
-
-        arima = ARIMA(data_excursions, order=(1, 0, 0))
-        ar_1 = arima.fit().arparams[0]
+        ar_1 = autocor_coef(data)
 
         # Compute an variance inflation factor
         # (having removed that portion of the time series that was correlated).
