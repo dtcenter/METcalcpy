@@ -40,7 +40,8 @@ html_last_updated_fmt = '%c'
 # ones.
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.intersphinx',
-              'sphinx_gallery.gen_gallery']
+              'sphinx_gallery.gen_gallery',
+              'sphinx_design']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
