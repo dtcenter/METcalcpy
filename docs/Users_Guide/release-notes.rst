@@ -13,13 +13,14 @@ METcalcpy Version 2.0.2 release notes (20230223)
 
   .. dropdown:: Bugfixes
 
-     * **Address Warnings from pandas in METcalcpy code** 
-     (`#249 <https://github.com/dtcenter/METcalcpy/issues/249>`_)
+     * **Address Warnings from pandas in METcalcpy code** (`#249 <https://github.com/dtcenter/METcalcpy/issues/249>`_)
 
 METcalcpy Version 2.0.1 release notes (20230125)
 ------------------------------------------------
 
   .. dropdown:: New Functionality
+  
+     None
 
   .. dropdown:: Enhancements
      
@@ -32,13 +33,13 @@ METcalcpy Version 2.0.1 release notes (20230125)
   .. dropdown:: Bugfixes
 
      * **Add nco_requirements.txt file** 
-     (`#263 <https://github.com/dtcenter/METcalcpy/issues/263>`_)
+       (`#263 <https://github.com/dtcenter/METcalcpy/issues/263>`_)
 
      * **Fix test_scorecard.py with pandas-1.5.1** 
-     (`#251 <https://github.com/dtcenter/METcalcpy/issues/251>`_)
+       (`#251 <https://github.com/dtcenter/METcalcpy/issues/251>`_)
 
      * **Fix test_event_equalize.py** 
-     (`#250 <https://github.com/dtcenter/METcalcpy/issues/250>`_)
+       (`#250 <https://github.com/dtcenter/METcalcpy/issues/250>`_)
 
 
 METcalcpy Version 2.0.0 release notes (20221207)
