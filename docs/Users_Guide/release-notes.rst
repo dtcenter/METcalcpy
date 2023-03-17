@@ -11,19 +11,21 @@ METcalcpy Release Notes
 METcalcpy Version 2.1.0-beta1 release notes (20230228)
 ------------------------------------------------------
 
-* New Functionality:
+  .. dropdown:: New Functionality
 
-   * **Convert plot_tcmpr.R calculations to Python** (`#189 <https://github.com/dtcenter/METcalcpy/issues/189>`_)
+     * **Convert plot_tcmpr.R calculations to Python** (`#189 <https://github.com/dtcenter/METcalcpy/issues/189>`_)
 
-* Enhancements:
+  .. dropdown:: Enhancements
 
-   * **Upgrade to using Python 3.10.4** (`#270 <https://github.com/dtcenter/METcalcpy/issues/270>`_)
+     * **Upgrade to using Python 3.10.4** (`#270 <https://github.com/dtcenter/METcalcpy/issues/270>`_)
 
-* Internal:
+  .. dropdown:: Internal
 
-   * Add 'License.txt' to the METcalcpy repo (`#279 <https://github.com/dtcenter/METcalcpy/issues/279>`_)
+     * Add 'License.txt' to the METcalcpy repo (`#279 <https://github.com/dtcenter/METcalcpy/issues/279>`_)
 
-* Bugfixes:
+  .. dropdown:: Bugfixes
+  
+     None.
 
     
 METcalcpy Upgrade Instructions
