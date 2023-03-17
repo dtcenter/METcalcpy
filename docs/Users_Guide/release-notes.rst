@@ -25,7 +25,7 @@ METcalcpy Version 2.1.0-beta1 release notes (20230228)
 
   .. dropdown:: Bugfixes
   
-     None.
+     None
 
     
 METcalcpy Upgrade Instructions
