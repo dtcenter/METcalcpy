@@ -11,7 +11,7 @@ METcalcpy Release Notes
 METcalcpy Version 2.1.0-beta1 release notes (20230228)
 ------------------------------------------------------
 
-  .. dropdown:: New Functionality
+  .. dropdown:: New Functionality 
 
      * **Convert plot_tcmpr.R calculations to Python** (`#189 <https://github.com/dtcenter/METcalcpy/issues/189>`_)
 
