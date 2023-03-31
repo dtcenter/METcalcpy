@@ -1130,7 +1130,8 @@ class AggStat:
 
         # get results for axis2 if needed
         if self.params['series_val_2']:
-            out_frame = out_frame.append(self._proceed_with_axis("2"))
+            axis_2_frame= self._proceed_with_axis("2")
+            out_frame = pd.concat([out_frame, axis_2_frame], ignore_index=True)
 
         header = True
         mode = 'w'
