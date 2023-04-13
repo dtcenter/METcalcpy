@@ -26,8 +26,8 @@ METcalcpy Version 2.1.0-beta2 release notes (20230413)
 
   .. dropdown:: Bugfixes
 
-     * **Remaining reference to ARIMA in utils.py compute_std_err_from_median_variance_inflation_factor() (`#254 <https://github.com/dtcenter/METcalcpy/issues/254>`_)
-     * **Replace frame.append method to pandas.concat in agg_stat.py (`#296 <https://github.com/dtcenter/METcalcpy/issues/296>`_)
+     * **Remaining reference to ARIMA in utils.py compute_std_err_from_median_variance_inflation_factor()** (`#254 <https://github.com/dtcenter/METcalcpy/issues/254>`_)
+     * **Replace frame.append method to pandas.concat in agg_stat.py** (`#296 <https://github.com/dtcenter/METcalcpy/issues/296>`_)
 
 
 METcalcpy Version 2.1.0-beta1 release notes (20230228)
