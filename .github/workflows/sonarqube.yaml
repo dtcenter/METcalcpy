@@ -12,7 +12,7 @@ on:
   pull_request:
       types: [opened, synchronize, reopened]
 
-name: Main Workflow
+name: SonarQube for METcalcpy
 jobs:
   sonarqube:
     runs-on: ubuntu-latest
