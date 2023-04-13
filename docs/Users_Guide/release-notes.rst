@@ -18,7 +18,7 @@ METcalcpy Version 2.1.0-beta2 release notes (20230413)
 
   .. dropdown:: Enhancements
 
-     * Enhance the Release Notes by adding dropdown menus(`#292 <https://github.com/dtcenter/METcalcpy/issues/292>`_
+     * Enhance the Release Notes by adding dropdown menus(`#292 <https://github.com/dtcenter/METcalcpy/issues/292>`_)
 
   .. dropdown:: Internal
 
