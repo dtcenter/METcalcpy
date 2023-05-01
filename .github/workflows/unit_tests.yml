@@ -11,6 +11,13 @@ on:
       - feature_*
       - main_*
       - bugfix_*
+    paths-ignore:
+      - 'docs/**'
+      - '.github/pull_request_template.md'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '**/README.md'
+      - '**/LICENSE.md'
+      
   pull_request:
     types: [opened, reopened, synchronize]
 
