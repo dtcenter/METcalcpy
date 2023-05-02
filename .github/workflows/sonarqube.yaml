@@ -26,7 +26,7 @@ jobs:
     - name: Official SonarQube Scan
       uses: SonarSource/sonarqube-scan-action@v1.2.0
       with:
-          projectBaseDir: METcalcpy/metcalcpy 
+#          projectBaseDir: METcalcpy/metcalcpy 
           args: >
             -Dsonar.verbose=true
       env:
