@@ -22,9 +22,13 @@ jobs:
         fetch-depth: 0
 #     - name: SonarQube Scan
 #       uses: sonarsource/sonarqube-scan-action@master
+    # Use the latest version of sonarqube scan:
     - name: Official SonarQube Scan
       uses: SonarSource/sonarqube-scan-action@v1.2.0
-  
+      with:
+          projectBaseDir: METcalcpy/metcalcpy 
+          args: >
+            -Dsonar.verbose=true
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
