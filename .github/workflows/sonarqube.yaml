@@ -26,10 +26,10 @@ jobs:
     # Use the latest version of sonarqube scan:
     - name: Official SonarQube Scan
       uses: SonarSource/sonarqube-scan-action@v1.2.0
-      with:
-          projectBaseDir: METcalcpy/internal/scripts/sonarqube
-          args: >
-            -Dsonar.verbose=true
+#       with:
+#           projectBaseDir: METcalcpy/internal/scripts/sonarqube
+#           args: >
+#             -Dsonar.verbose=true
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
