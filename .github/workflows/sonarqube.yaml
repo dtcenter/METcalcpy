@@ -11,12 +11,6 @@ on:
   pull_request:
       types: [opened, synchronize, reopened]
 
-name: Show GitHub context   
-  env: 
-    GITHUB_CONTEXT: ${{ toJson(github) }}   
-  run: echo "$GITHUB_CONTEXT"
-  shell: bash
-
 name: SonarQube for METcalcpy
 
 jobs:
@@ -33,7 +27,7 @@ jobs:
     - name: Official SonarQube Scan
       uses: SonarSource/sonarqube-scan-action@v1.2.0
       with:
-#          projectBaseDir: METcalcpy/metcalcpy 
+          projectBaseDir: METcalcpy/internal/scripts/sonarqube
           args: >
             -Dsonar.verbose=true
       env:
