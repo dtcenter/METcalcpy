@@ -21,15 +21,9 @@ jobs:
       with:
         # Disabling shallow clone is recommended for improving relevancy of reporting
         fetch-depth: 0
-#     - name: SonarQube Scan
-#       uses: sonarsource/sonarqube-scan-action@master
     # Use the latest version of sonarqube scan:
-    - name: Official SonarQube Scan
-      uses: SonarSource/sonarqube-scan-action@v1.2.0
+    - name: Action SonarQube
+      uses: vtex/action-sonarqube@v1.0.0
       with:
-          projectBaseDir: METcalcpy/internal/scripts/sonarqube
-          args: >
-            -Dsonar.verbose=true
-      env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
