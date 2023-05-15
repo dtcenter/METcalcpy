@@ -338,8 +338,8 @@ def _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_metho
             high = None
         else:
             bd = bootstrap_dist[bootstrap_dist != _np.array([None])]
-            low = _np.percentile(bd, 100 * (alpha / 2.), interpolation='linear')
-            high = _np.percentile(bd, 100 * (1 - alpha / 2.), interpolation='linear')
+            low = _np.percentile(bd, 100 * (alpha / 2.), method='linear')
+            high = _np.percentile(bd, 100 * (1 - alpha / 2.), method='linear')
         val = stat_val
     else:
         low = None
