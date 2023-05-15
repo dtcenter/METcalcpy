@@ -1181,7 +1181,8 @@ if __name__ == "__main__":
                         type=argparse.FileType('r'),
                         default=sys.stdin)
     ARGS = PARSER.parse_args()
-    PARAMS = yaml.load(ARGS.parameters_file, Loader=yaml.FullLoader)
+    with ARGS.parameters_file as parameters_file:
+        PARAMS = yaml.load(parameters_file, Loader=yaml.FullLoader)
 
     AGG_STAT = AggStat(PARAMS)
     AGG_STAT.calculate_stats_and_ci()
