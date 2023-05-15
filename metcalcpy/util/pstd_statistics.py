@@ -42,6 +42,8 @@ def calculate_pstd_brier(input_data, columns_names):
         o_bar_table = df_pct_perm['oy_i'].sum() / t_table
         o_bar = input_data[0, get_column_index_by_name(columns_names, 'o_bar')]
 
+        t_table.reset_index(inplace=True, drop=True)
+
         reliability = calc_reliability(t_table, df_pct_perm)
         resolution = calc_resolution(t_table, df_pct_perm, o_bar)
         uncertainty = calc_uncertainty(o_bar_table)
@@ -74,6 +76,7 @@ def calculate_pstd_bss_smpl(input_data, columns_names):
         o_bar_table = df_pct_perm['oy_i'].sum() / t_table
         o_bar = input_data[0, get_column_index_by_name(columns_names, 'o_bar')]
 
+        t_table.reset_index(inplace=True, drop=True)
         reliability = calc_reliability(t_table, df_pct_perm)
         resolution = calc_resolution(t_table, df_pct_perm, o_bar)
         uncertainty = calc_uncertainty(o_bar_table)
@@ -158,7 +161,7 @@ def calculate_pstd_resolution(input_data, columns_names):
         df_pct_perm = _calc_common_stats(columns_names, input_data)
         o_bar = input_data[0, get_column_index_by_name(columns_names, 'o_bar')]
         t_table = df_pct_perm['n_i'].sum()
-
+        t_table.reset_index(inplace=True, drop=True)
         resolution = calc_resolution(t_table, df_pct_perm, o_bar)
         result = round_half_up(resolution, PRECISION)
     except (TypeError, ZeroDivisionError, Warning, ValueError):
@@ -274,6 +277,7 @@ def calculate_pstd_roc_auc(input_data, columns_names):
             {'thresh': 0, 'n11': 0, 'n10': 0, 'n01': 0, 'n00': 0, 'pody': 0, 'pofd': 0},
             index=[0]) ])
 
+    final_roc.reset_index(inplace=True, drop=True)
     roc_auc = 0
     for index, row in final_roc.iterrows():
         if index != 0:
@@ -352,6 +356,8 @@ def _calc_common_stats(columns_names, input_data):
             pct_perm['thresh_i'].append(input_data[0, index])
     # calculate vectors and constants to use below
     df_pct_perm = pd.DataFrame(pct_perm)
+    df_pct_perm.reset_index(inplace=True, drop=True)
+
     n_i = [row.oy_i + row.on_i for index, row in df_pct_perm.iterrows()]
     df_pct_perm['n_i'] = n_i
 
@@ -400,6 +406,8 @@ def _calc_pct_roc(data):
         # use df_roc.loc rather than df_roc.at in pandas versions above 1.2.3
         df_roc.loc[df_roc.index[df_roc["thresh"] == thresh], 'n01'] = sum(data[is_less]['oy_i'])
         df_roc.loc[df_roc.index[df_roc["thresh"] == thresh], 'n00'] = sum(data[is_less]['on_i'])
+
+    df_roc.reset_index(inplace=True, drop=True)
 
     # generate the pody and pofd scores from the contingency tables
     df_roc['pody'] = [row.n11 / (row.n11 + row.n01) for index, row in df_roc.iterrows()]
