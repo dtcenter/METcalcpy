@@ -170,6 +170,24 @@ def get_rejected(mean, n):
     return percent_of_rejected
 
 
+def test_roc_auc(settings_pstd):
+    agg_stat = settings_pstd['agg_stat_pstd']
+    agg_stat.calculate_stats_and_ci()
+    result_frame = pd.read_csv(
+        agg_stat.params['agg_stat_output'],
+        header=[0],
+        sep='\t'
+    )
+    assert result_frame.size == 64
+    assert result_frame.shape == (8, 8)
+    assert np.allclose(result_frame['stat_value'][0], 0.9545967)
+    assert np.allclose(result_frame['stat_value'][1], 0.9518047)
+    assert np.allclose(result_frame['stat_value'][2], 0.9522863)
+    assert np.allclose(result_frame['stat_value'][3], 0.9501665)
+    assert np.allclose(result_frame['stat_value'][4], 0.9596318)
+    assert np.allclose(result_frame['stat_value'][5], 0.9590124)
+
+
 def test_prepare_sl1l2_data(settings):
     agg_stat = settings['agg_stat']
     series_data = agg_stat.input_data[
@@ -277,3 +295,32 @@ def settings():
     settings_dict = dict()
     settings_dict['agg_stat'] = agg_stat
     return settings_dict
+@pytest.fixture
+def settings_pstd():
+    """Initialise values for testing.
+
+    Returns:
+        dictionary with values of different type
+    """
+    params = {'random_seed': 1, 'indy_var': 'fcst_lead',
+               'method': 'perc',
+              'num_iterations': 1, 'event_equal': 'False',
+              'derived_series_1': [],
+              'derived_series_2': [],
+              'agg_stat_input': 'data/pstd.data.agg_stat',
+              'fcst_var_val_1': {'DPT_ENS_FREQ_ge288': ['PSTD_ROC_AUC']},
+              'fcst_var_val_2': {},
+              'agg_stat_output': 'data/pstd.data',
+              'fixed_vars_vals_input': {},
+              'series_val_1': {'model': ['RRFSE_CONUS_ICperts_nostoch.rrfs_conuscompact_3km_prob', 'RRFSE_CONUS_ICperts_stoch.rrfs_conuscompact_3km_prob']},
+              'series_val_2': {},
+              'alpha': 0.05, 'line_type': 'pct',
+              'num_threads': -1,
+              'indy_vals': ['160000', '170000', '180000', '190000'],
+              'list_stat_1': ['PSTD_ROC_AUC'],
+              'list_stat_2': [],
+              'circular_block_bootstrap': True}
+    pstd = AggStat(params)
+    settings_dict_pstd = dict()
+    settings_dict_pstd['agg_stat_pstd'] = pstd
+    return settings_dict_pstd
