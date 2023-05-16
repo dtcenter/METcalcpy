@@ -13,6 +13,7 @@ This is an example script for cross-spectral analysis. Computes power and cross-
 data sets.
 """
 import argparse
+import os
 import xarray as xr
 import numpy as np
 
@@ -23,6 +24,24 @@ directory name and script name
 from spacetime import mjo_cross
 from spacetime import get_symmasymm
 from spacetime_utils import save_Spectra
+
+import metcalcpy.util.read_env_vars_in_config as readconfig
+
+
+# Read in the YAML config file
+# user can use their own, if none specified at the command line,
+# use the "default" example YAML config file, spectra_plot_coh2.py
+# Using a custom YAML reader so we can use environment variables
+cross_config_file = os.getenv("YAML_CONFIG_NAME","spectra_comp.yaml")
+
+config_dict = readconfig.parse_config(cross_config_file)
+
+# Retrieve settings from config file
+#pathdata is now set in the METplus conf file
+pathout = config_dict['pathout'][0]
+print("Output path ",pathout)
+model = config_dict['model']
+print("Model ",model)
 
 """
 Set parameters for the spectra calculation.
@@ -35,62 +54,68 @@ Symmetry:    Can be "symm", "asymm" for symmetric or anti-symmetric across the e
 latMin:      Minimum latitude to include.
 latMax:      Maximum latitude to include.
 """
-spd = 2
-nperseg = 46 * spd
-segOverLap = -20 * spd
-Symmetry = "symm"
-latMin = -15.
-latMax = 15.
-datestrt = '2015-12-01'  # plot start date, format: yyyy-mm-dd
-datelast = '2016-03-31'  # plot end date, format: yyyy-mm-dd
-
-parser = argparse.ArgumentParser()
-parser.add_argument('--datapath', type=str,
-    help='data path')
-parser.add_argument('--pathout', type=str,
-    help='output path')
-args = parser.parse_args()
-
-# datapath = '../data/'
-# path to the location where to save the output spectra
-# pathout = '../data/'
-datapath = args.datapath
-pathout = args.pathout
+#spd = 4
+#nperseg = 15 * spd
+#segOverLap = -5 * spd
+#Symmetry = "symm"
+#latMin = -15.
+#latMax = 15.
+#datestrt = '2014-04-01T06:00:00'  # plot start date, format: yyyy-mm-dd
+#datelast = '2014-05-04T18:00:00'  # plot end date, format: yyyy-mm-dd
+spd = config_dict['spd']
+nperseg = config_dict['nperseg']*spd
+segOverLap = config_dict['segOverLap']*spd
+Symmetry = config_dict['Symmetry']
+latMin = config_dict['latMin']
+latMax = config_dict['latMax']
+datestrt = config_dict['datestrt']
+datelast = config_dict['datelast']
+print('spd: ', spd,', nperseg: ',nperseg,', segOverLap: ',segOverLap)
+print('symmetry: ',Symmetry,', latMin: ',latMin,', latMax: ',latMax)
+print('datestrt: ',datestrt,', datelast: ',datelast)
 
 print("reading data from file:")
 """ 
 Read in data here. Example:
 """
-ds = xr.open_dataset(datapath+'precip.trmm.'+str(spd)+'x.1p0.v7a.fillmiss.comp.2014-2016.nc')
+filenames = os.environ.get("INPUT_FILE_NAMES","P_verif,P_model,Vlev1_model,Vlev2_model").split(",")
+print("Filename ",filenames[1])
+ds = xr.open_dataset(filenames[0])
 z = ds.precip
 z = z.sel(lat=slice(latMin, latMax))
 z = z.sel(time=slice(datestrt, datelast))
 z = z.squeeze()
 latC = ds.lat.sel(lat=slice(latMin, latMax))
 
-ds = xr.open_dataset(datapath+'precip.erai.sfc.1p0.'+str(spd)+'x.2014-2016.nc')
-x = ds.precip
+ds = xr.open_dataset(filenames[1])
+x = ds.prate
 x = x.sel(lat=slice(latMin, latMax))
 x = x.sel(time=slice(datestrt, datelast))
 x = x.squeeze()
 latA = ds.lat.sel(lat=slice(latMin, latMax))
 ds.close()
 
-ds = xr.open_dataset(datapath+'div.erai.850.1p0.'+str(spd)+'x.2014-2016.nc')
-y = ds.div
+ds = xr.open_dataset(filenames[2])
+ds = ds.rename({'latitude':'lat'})
+ds = ds.sortby('lat',ascending=True)
+y = ds.u
 y = y.sel(lat=slice(latMin, latMax))
 y = y.sel(time=slice(datestrt, datelast))
 y = y.squeeze()
 latB = ds.lat.sel(lat=slice(latMin, latMax))
 
-ds = xr.open_dataset(datapath+'div.erai.200.1p0.'+str(spd)+'x.2014-2016.nc')
-w = ds.div
-w = y.sel(lat=slice(latMin, latMax))
-w = y.sel(time=slice(datestrt, datelast))
-w = y.squeeze()
+ds = xr.open_dataset(filenames[3])
+ds = ds.rename({'latitude':'lat'})
+ds = ds.sortby('lat',ascending=True)
+w = ds.u
+w = w.sel(lat=slice(latMin, latMax))
+w = w.sel(time=slice(datestrt, datelast))
+w = w.squeeze()
 latB = ds.lat.sel(lat=slice(latMin, latMax))
 
-
+print(x.shape)
+print(y.shape)
+print(z.shape)
 
 if any(latA - latB) != 0:
     print("Latitudes must be the same for both variables! Check latitude ordering.")
@@ -132,7 +157,7 @@ freq = result['freq']
 freq = freq * spd
 wnum = result['wave']
 # save spectra in netcdf file
-fileout = 'SpaceTimeSpectra_ERAI_P_D850_' + Symmetry + '_' + str(spd) + 'spd'
+fileout = 'SpaceTimeSpectra_'+model+'_P_D850_' + Symmetry + '_' + str(spd) + 'spd'
 print('saving spectra to file: ' + pathout + fileout + '.nc')
 save_Spectra(STC, freq, wnum, fileout, pathout)
 
@@ -142,16 +167,17 @@ freq = result['freq']
 freq = freq * spd
 wnum = result['wave']
 # save spectra in netcdf file
-fileout = 'SpaceTimeSpectra_ERAI_P_D200_' + Symmetry + '_' + str(spd) + 'spd'
+fileout = 'SpaceTimeSpectra_'+model+'_P_D200_' + Symmetry + '_' + str(spd) + 'spd'
 print('saving spectra to file: ' + pathout + fileout + '.nc')
 save_Spectra(STC, freq, wnum, fileout, pathout)
 
-result = mjo_cross(X, Z, nperseg, segOverLap)
+spd = 2
+result = mjo_cross(X.sel(time=Z.time), Z, nperseg, segOverLap)
 STC = result['STC']  # , freq, wave, number_of_segments, dof, prob, prob_coh2
 freq = result['freq']
 freq = freq * spd
 wnum = result['wave']
 # save spectra in netcdf file
-fileout = 'SpaceTimeSpectra_ERAI_TRMM_P_' + Symmetry + '_' + str(spd) + 'spd'
+fileout = 'SpaceTimeSpectra_ERAI_'+model+'_P_' + Symmetry + '_' + str(spd) + 'spd'
 print('saving spectra to file: ' + pathout + fileout + '.nc')
 save_Spectra(STC, freq, wnum, fileout, pathout)
