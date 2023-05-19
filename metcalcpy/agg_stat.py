@@ -302,22 +302,38 @@ class AggStat:
             # get values for the 2nd array
             values_2 = values_both_arrays[:, int(num_of_columns / 2):num_of_columns]
 
-            func_name = f'calculate_{self.statistic}'
+            try:
+                # find the index of the stat column
+                stat_column_index = np.where(self.column_names == 'stat_name')[0][0]
+                # find the actual statistic and corresponding functions for both curves
+                stat_1 = values_1[0, stat_column_index].lower()
+                stat_2 = values_2[0, stat_column_index].lower()
+                func_name_1 = f'calculate_{stat_1}'
+                func_name_2 = f'calculate_{stat_2}'
+            except ValueError:
+                func_name_1 = f'calculate_{self.statistic}'
+                func_name_2 = f'calculate_{self.statistic}'
+
+
+
             # some functions have an extra 3rd parameter that represents
             # if some data preliminary data aggregation was done
             # if this parameter is present we need to add it
-            num_parameters = len(signature(globals()[func_name]).parameters)
+            num_parameters_1 = len(signature(globals()[func_name_1]).parameters)
+            num_parameters_2 = len(signature(globals()[func_name_2]).parameters)
 
-            if num_parameters == 2:
-                # calculate stat for the 1st array
-                stat_values_1 = [globals()[func_name](values_1, self.column_names)]
-                # calculate stat for the 2nd array
-                stat_values_2 = [globals()[func_name](values_2, self.column_names)]
+
+            # calculate stat for the 1st array
+            if num_parameters_1 == 2:
+                stat_values_1 = [globals()[func_name_1](values_1, self.column_names)]
             else:
-                # calculate stat for the 1st array
-                stat_values_1 = [globals()[func_name](values_1, self.column_names, True)]
-                # calculate stat for the 2nd array
-                stat_values_2 = [globals()[func_name](values_2, self.column_names, True)]
+                stat_values_1 = [globals()[func_name_1](values_1, self.column_names, True)]
+
+            # calculate stat for the 2nd array
+            if num_parameters_2 == 2:
+                stat_values_2 = [globals()[func_name_2](values_2, self.column_names)]
+            else:
+                stat_values_2 = [globals()[func_name_2](values_2, self.column_names, True)]
 
             # calculate derived stat
             stat_values = calc_derived_curve_value(
@@ -337,22 +353,36 @@ class AggStat:
                 # get values for the 2nd array
                 values_2 = row[:, int(num_of_columns / 2):num_of_columns]
 
-                func_name = f'calculate_{self.statistic}'
+                try:
+                    # find the index of the stat column
+                    stat_column_index = np.where(self.column_names == 'stat_name')[0][0]
+                    # find the actual statistic and corresponding functions for both curves
+                    stat_1 = values_1[0, stat_column_index].lower()
+                    stat_2 = values_2[0, stat_column_index].lower()
+                    func_name_1 = f'calculate_{stat_1}'
+                    func_name_2 = f'calculate_{stat_2}'
+                except ValueError:
+                    func_name_1 = f'calculate_{self.statistic}'
+                    func_name_2 = f'calculate_{self.statistic}'
+
                 # some functions have an extra 3rd parameter that represents
                 # if some data preliminary data aggregation was done
                 # if this parameter is present we need to add it
-                num_parameters = len(signature(globals()[func_name]).parameters)
+                num_parameters_1 = len(signature(globals()[func_name_1]).parameters)
+                num_parameters_2 = len(signature(globals()[func_name_2]).parameters)
 
-                if num_parameters == 2:
-                    # calculate stat for the 1st array
-                    stat_values_1 = [globals()[func_name](values_1, self.column_names)]
-                    # calculate stat for the 2nd array
-                    stat_values_2 = [globals()[func_name](values_2, self.column_names)]
+                # calculate stat for the 1st array
+                if num_parameters_1 == 2:
+                    stat_values_1 = [globals()[func_name_1](values_1, self.column_names)]
                 else:
-                    # calculate stat for the 1st array
-                    stat_values_1 = [globals()[func_name](values_1, self.column_names, True)]
-                    # calculate stat for the 2nd array
-                    stat_values_2 = [globals()[func_name](values_2, self.column_names, True)]
+                    stat_values_1 = [globals()[func_name_1](values_1, self.column_names, True)]
+
+                # calculate stat for the 2nd array
+                if num_parameters_2 == 2:
+                    stat_values_2 = [globals()[func_name_2](values_2, self.column_names)]
+                else:
+                    stat_values_2 = [globals()[func_name_2](values_2, self.column_names, True)]
+
 
                 # calculate derived stat
                 stat_value = calc_derived_curve_value(
@@ -1130,7 +1160,8 @@ class AggStat:
 
         # get results for axis2 if needed
         if self.params['series_val_2']:
-            out_frame = out_frame.append(self._proceed_with_axis("2"))
+            axis_2_frame= self._proceed_with_axis("2")
+            out_frame = pd.concat([out_frame, axis_2_frame], ignore_index=True)
 
         header = True
         mode = 'w'
