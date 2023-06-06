@@ -8,20 +8,26 @@ import xarray as xr
 
 def read_tcrmw(filename):
     ds = xr.open_dataset(filename)
-    # range, azimuth, pressure, track_point
-    for var in ds.keys():
-        logging.info((var, ds[var].dims))
-    for coord in ds.coords:
-        logging.debug((coord, ds[coord].values))
+    # Original data dimensions: range, azimuth, pressure, track_point.
+    # Recently updated data is: track_point, pressure, range, azimuth.
+    # Use xarray's transpose() to reorder to original data's dimension.
+    ds_transposed = ds.transpose('range', 'azimuth', 'pressure', 'track_point',  \
+                                 'track_line')
+    for var in ds_transposed.keys():
+        logging.info((var, ds_transposed[var].dims))
+    for coord in ds_transposed.coords:
+        logging.debug((coord, ds_transposed[coord].values))
 
-    return ds
+    return ds_transposed
 
 
-def compute_interpolation_weights(args, ds, levels):
+def compute_interpolation_weights(args, ds):
     dims = ds[args.T].dims
-    logging.info(dims)
+    logging.info(f"compute_interpolation_weights, dims:  {dims}")
     nr, na, nl, nt = ds[args.T].shape
-    logging.info((nr, na, nl, nt))
+
+    logging.info(f"compute_interpolation_weights||nr, na, nl, nt: "
+                 f"({nr, na, nl, nt})")
 
 
 def compute_wind_components(args, ds):
@@ -29,32 +35,32 @@ def compute_wind_components(args, ds):
     e_r = cos(theta) e_x + sin(theta) e_y
     e_theta = - sin(theta) e_x + cos(theta) e_y
     """
+
     nr, na, nl, nt = ds[args.T].shape
-    logging.info((nr, na, nl, nt))
     theta = np.empty((nr, na, nl, nt), dtype=np.float32)
     for i in range(nr):
         for k in range(nl):
             for t in range(nt):
-                theta[i, :, k, t] \
-                    = (np.pi / 180) * ds['azimuth'].values + np.pi / 2
+                theta[i, :, k, t] = (np.pi / 180) * ds['azimuth'].values + np.pi / 2
     mask = np.greater(theta, 2 * np.pi)
     theta[mask] = theta[mask] - 2 * np.pi
     u_radial = np.cos(theta) * ds[args.u].values + np.sin(theta) * ds[args.v].values
-    u_tangential = - np.sin(theta) * ds[args.u].values + np.cos(theta) * ds[args.v].values
+    u_tangential = - np.sin(theta) * ds[args.u].values + np.cos(theta) * ds[
+        args.v].values
     return u_radial, u_tangential
 
 
 def test_plot_pressure_lev(args, ds, track_index=0):
     # Plot setup
     import matplotlib.pyplot as plt
-    #import seaborn as sns
+    # import seaborn as sns
     # Set for dark PyCharm theme
-    #plt.style.use('dark_background')
+    # plt.style.use('dark_background')
     textcolor = (175 / 255, 177 / 255, 179 / 255)
-#    facecolor = (60 / 255, 63 / 255, 65 / 255)
+    #    facecolor = (60 / 255, 63 / 255, 65 / 255)
     # textcolor = (0, 0, 0)
     # facecolor = (1, 1, 1)
-    #sns.set_context('notebook')
+    # sns.set_context('notebook')
     plt.rcParams['figure.dpi'] = 300
     plt.rcParams['text.color'] = textcolor
     plt.rcParams['axes.edgecolor'] = textcolor
@@ -62,9 +68,9 @@ def test_plot_pressure_lev(args, ds, track_index=0):
     plt.rcParams['xtick.color'] = textcolor
     plt.rcParams['ytick.color'] = textcolor
     fig = plt.figure(figsize=(10, 5))
-    #fig.patch.set_facecolor(facecolor)
+    # fig.patch.set_facecolor(facecolor)
     ax = fig.add_subplot()
-    #ax.set_facecolor(facecolor)
+    # ax.set_facecolor(facecolor)
     ax.annotate('Tangential Wind (m s-1)', xy=(14, 350), color='darkgreen')
     ax.annotate('Temperature (K)', xy=(14, 370), color='darkblue')
     # nautical miles to kilometers conversion factor
@@ -79,22 +85,22 @@ def test_plot_pressure_lev(args, ds, track_index=0):
     ax.set_yticklabels(np.arange(1000, 250, -100))
 
     # Azimuthal averages
-    u_radial_azi_mean = np.mean(ds['u_radial'].values, axis=1)
+    # u_radial_azi_mean
+    _ = np.mean(ds['u_radial'].values, axis=1)
     u_tangential_azi_mean = np.mean(ds['u_tangential'].values, axis=1)
-    T_azi_mean = np.mean(ds[args.T].values, axis=1)
+    t_azi_mean = np.mean(ds[args.T].values, axis=1)
 
     # Contour plots
     u_contour = ax.contour(ds['range'].values, ds['pressure'].values,
-        u_tangential_azi_mean[:, :, track_index].transpose(),
-        levels=np.arange(5, 40, 5), colors='darkgreen', linewidths=1)
+                           u_tangential_azi_mean[:, :, track_index].transpose(),
+                           levels=np.arange(5, 40, 5), colors='darkgreen', linewidths=1)
     ax.clabel(u_contour, colors='darkgreen', fmt='%1.0f')
-    T_contour = ax.contour(ds['range'].values, ds['pressure'].values,
-        T_azi_mean[:, :, track_index].transpose(),
-        levels=np.arange(250, 300, 10), colors='darkblue', linewidths=1)
-    ax.clabel(T_contour, colors='darkblue', fmt='%1.0f')
+    t_contour = ax.contour(ds['range'].values, ds['pressure'].values,
+                           t_azi_mean[:, :, track_index].transpose(),
+                           levels=np.arange(250, 300, 10), colors='darkblue',
+                           linewidths=1)
+    ax.clabel(t_contour, colors='darkblue', fmt='%1.0f')
 
-    # plt.savefig(os.path.join(args.datadir, 'test.pdf'))
-    # plt.savefig(os.path.join(args.datadir, 'test.png'), dpi=300)
     plt.show()
 
 
@@ -174,7 +180,7 @@ if __name__ == '__main__':
     """
     Compute interpolation weights
     """
-    compute_interpolation_weights(args, ds, levels)
+    compute_interpolation_weights(args, ds)
 
     """
     Compute tangential and radial wind components
