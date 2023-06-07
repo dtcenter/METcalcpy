@@ -32,7 +32,7 @@ import metcalcpy.util.read_env_vars_in_config as readconfig
 # user can use their own, if none specified at the command line,
 # use the "default" example YAML config file, spectra_plot_coh2.py
 # Using a custom YAML reader so we can use environment variables
-cross_config_file = os.getenv("COMP_YAML_CONFIG_NAME","spectra_comp.yaml")
+cross_config_file = os.getenv("COMP_SPECTRA_YAML_CONFIG_NAME","spectra_comp.yaml")
 
 config_dict = readconfig.parse_config(cross_config_file)
 
@@ -42,6 +42,10 @@ pathout = config_dict['pathout'][0]
 print("Output path ",pathout)
 model = config_dict['model']
 print("Model ",model)
+
+# Make output directory if it does not exist
+if not os.path.exists(pathout):
+    os.makedirs(pathout)
 
 """
 Set parameters for the spectra calculation.
@@ -78,7 +82,7 @@ print("reading data from file:")
 """ 
 Read in data here. Example:
 """
-filenames = os.environ.get("COMP_INPUT_FILE_NAMES","P_verif,P_model,Vlev1_model,Vlev2_model").split(",")
+filenames = os.environ.get("COMP_SPECTRA_INPUT_FILE_NAMES","P_verif,P_model,Vlev1_model,Vlev2_model").split(",")
 print("Filename ",filenames[1])
 ds = xr.open_dataset(filenames[0])
 z = ds.precip
