@@ -1,11 +1,12 @@
+********************************
 Installation guide for METcalcpy
-===========================================
+********************************
 
 METcalcpy is written entirely in Python to provide statistics calculations and other utilities that
 are used by METviewer, METplotpy, and other applications.
 
 Python Requirements
-~~~~~~~~~~~~~~~~~~~
+===================
 
 * Python 3.8.6
 
@@ -45,7 +46,7 @@ Python Requirements
 
 
 Retrieve METcalcpy code
-~~~~~~~~~~~~~~~~~~~~~~~
+=======================
 
 You can retrieve the METcalcpy source code using the web browser. Begin by entering
 https://github.com/dtcenter/METcalcpy in
@@ -59,7 +60,7 @@ will reside (e.g. /home/someuser/).
 Uncompress the compressed code using unzip <code> for the zip version or tar -xvfz <code> for the tar.gz version.
 
 Install METcalcpy package
-~~~~~~~~~~~~~~~~~~~~~~~~~
+=========================
 
 It is recommended that one works within a conda environment when using the METcalcpy package.  Please refer to 
 https://docs.conda.io/projects/conda/en/latest for more information abount conda as a package and environnent
@@ -82,7 +83,7 @@ installation into a virtual environment or conda environment using `pip <package
 
 
 Explore METcalcpy modules
-~~~~~~~~~~~~~~~~~~~~~~~~~
+=========================
 
 There are numerous statistics tools and other useful utilities available in METcalcpy. To examine what is
 available, open a Python console from the command line by entering `python` at the command line.
@@ -217,7 +218,7 @@ Produces information that looks like the following::
 
 
 Using METcalcpy modules
-~~~~~~~~~~~~~~~~~~~~~~~
+=======================
 
 From within the active conda environment, use the METcalcpy packages and
 and modules of interest in your code.  For example, in the METplotpy performance_diagram.py file, the event_equalization
