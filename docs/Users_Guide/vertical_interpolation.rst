@@ -1,8 +1,9 @@
+**********************
 Vertical Interpolation
-=======================
+**********************
 
 Description
-~~~~~~~~~~~
+===========
 
 This module is used to perform pressure to height conversion in TC-RMW
 data (netCDF or grb2) by vertically interpolating fields
@@ -11,7 +12,7 @@ implemented with linear interpolation.
 
 
 Example
-~~~~~~~
+=======
 
 **Sample Data**
 
@@ -60,7 +61,7 @@ fields:
 
 
 Run from the Command Line
-~~~~~~~~~~~~~~~~~~~~~~~~~
+=========================
 
 A sample Bourne-shell script can be used to convert the pressure level data to height level data:
 
