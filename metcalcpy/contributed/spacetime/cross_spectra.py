@@ -78,7 +78,7 @@ print("reading data from file:")
 """ 
 Read in data here. Example:
 """
-filenames = os.environ.get("INPUT_FILE_NAMES","P_verif,P_model,Vlev1_model,Vlev2_model").split(",")
+filenames = os.environ.get("COMP_INPUT_FILE_NAMES","P_verif,P_model,Vlev1_model,Vlev2_model").split(",")
 print("Filename ",filenames[1])
 ds = xr.open_dataset(filenames[0])
 z = ds.precip
