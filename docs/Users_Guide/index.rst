@@ -1,8 +1,9 @@
-============
+************
 User's Guide
-============
+************
 
-**Foreword: A note to METcalcpy users**
+Foreword: A note to METcalcpy users
+===================================
 
 This User's guide is provided as an aid to users of METcalcpy.  METcalcpy is a
 Python version of the statistics calculation functionality of METviewer,
@@ -21,7 +22,8 @@ in the
 We will then determine if we will be able to
 include the contribution in a future version.
 
-**Model Evaluation Tools Calc Py (METcalcpy)  TERMS OF USE - IMPORTANT!**
+Model Evaluation Tools Calc Py (METcalcpy)  TERMS OF USE - IMPORTANT!
+=====================================================================
 
 Copyright |copyright|
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,7 +41,8 @@ governing permissions and limitations under the License.
 
 .. _citations:
 
-**Citations**
+Citations
+=========
 
 The citation for this User's Guide should be:
 
@@ -47,7 +50,8 @@ The citation for this User's Guide should be:
 Developmental Testbed Center.
 Available at: https://github.com/dtcenter/METcalcpy/releases.
 
-**Acknowledgments**
+Acknowledgments
+===============
 
 We thank all of the METplus sponsors including: DTC partners (NOAA, NCAR,
 USAF, and NSF), along with NOAA/Office of Atmospheric Research (OAR),
