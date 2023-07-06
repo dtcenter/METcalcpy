@@ -1,13 +1,14 @@
-===========================
+###########################
 METcalcpy version |version|
-===========================
+###########################
+
 Developed by the `Developmental Testbed Center <https://dtcenter.org/>`_,
 Boulder, CO
 
 .. image:: _static/METplus_banner_photo_web.png
 
 History
-___-------
+-------
 The Model Evaluation Tools (MET) were developed by the Developmental Testbed
 Center (DTC)  and released in January 2008. The goal of the tools was to
 provide the community with a platform-independent and extensible framework
@@ -122,7 +123,7 @@ To cite this documentation in publications, please refer to the METcalcpy User's
 
 
 Indices
-=======
+-------
 
 * :ref:`genindex`
 * :ref:`modindex`
