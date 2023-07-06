@@ -22,9 +22,9 @@ https://dtcenter.ucar.edu/dfiles/code/METplus/METplotpy/tcrmw/tc_rmw_example.nc.
 
 Save this data file to a directory of your choosing and *cd* to your directory:
 
- .. code-block:: ini 
+.. code-block:: ini 
 
-  cd $METCALCPY_DATA_DIR
+ cd $METCALCPY_DATA_DIR
 
 *$METCALCPY_DATA_DIR* is the directory where you stored the example data.
 
