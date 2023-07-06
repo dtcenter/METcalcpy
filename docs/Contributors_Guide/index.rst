@@ -75,7 +75,7 @@ Finally, the *METcalcpy/metcalcpy* directory contains statistics scripts that ar
 Tasks to Perform Before Contributing Code
 =========================================
 
-* A Github account is needed along with inclusion into the METcalcpy Developer's group
+* You will need a Github account and be included into the METcalcpy Developer’s group
 
 * Create a Github issue describing what the contribute code will do
 
