@@ -1,6 +1,6 @@
-********************************
-Installation guide for METcalcpy
-********************************
+******************
+Installation Guide
+******************
 
 METcalcpy is written entirely in Python to provide statistics calculations and other utilities that
 are used by METviewer, METplotpy, and other applications.
