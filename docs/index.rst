@@ -8,7 +8,8 @@ Boulder, CO
 .. image:: _static/METplus_banner_photo_web.png
 
 History
--------
+=======
+
 The Model Evaluation Tools (MET) were developed by the Developmental Testbed
 Center (DTC)  and released in January 2008. The goal of the tools was to
 provide the community with a platform-independent and extensible framework
@@ -37,7 +38,8 @@ modeling frameworks.  It is being actively developed by NCAR, ESRL, EMC
 and is open to community contributions.
 
 METplus Concept
----------------
+===============
+
 METplus is the overarching, or umbrella, repository and hence framework for
 the Unified Forecast System verification capability.  It is intended to be
 extensible through adding additional capability developed by the community.
@@ -76,7 +78,7 @@ that are developed and managed independently. Each component also may have
 additional "external" dependencies that need to be maintained independently.
 
 Acronyms
---------
+========
 
 * **MET** - Model Evaluation Tools
 * **DTC** - Developmental Testbed Center
@@ -94,7 +96,7 @@ Acronyms
 
 
 Authors
--------
+=======
 
 Many authors, listed below in alphabetical order, have contributed to the documentation of METplus.
 To cite this documentation in publications, please refer to the METcalcpy User's Guide :ref:`Citation Instructions<citations>`.
@@ -123,7 +125,7 @@ To cite this documentation in publications, please refer to the METcalcpy User's
 
 
 Indices
--------
+=======
 
 * :ref:`genindex`
 * :ref:`modindex`
