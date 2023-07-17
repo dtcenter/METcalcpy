@@ -9,8 +9,8 @@ METcalcpy Release Notes
 =======================
 
 
-METcalcpy Version 2.1.0-beta2 release notes (20230620)
-------------------------------------------------------
+METcalcpy Version 2.1.0-rc1 release notes (20230620)
+----------------------------------------------------
 
   .. dropdown:: New Functionality
 
