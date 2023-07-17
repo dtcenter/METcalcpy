@@ -45,8 +45,8 @@ Python Requirements
 * xarray 2022.3.0
 
 
-Retrieve METcalcpy code
-=======================
+Retrieve Code
+=============
 
 You can retrieve the METcalcpy source code using the web browser. Begin by entering
 https://github.com/dtcenter/METcalcpy in
@@ -59,8 +59,8 @@ will reside (e.g. /home/someuser/).
 
 Uncompress the compressed code using unzip <code> for the zip version or tar -xvfz <code> for the tar.gz version.
 
-Install METcalcpy package
-=========================
+Install Package
+===============
 
 It is recommended that one works within a conda environment when using the METcalcpy package.  Please refer to 
 https://docs.conda.io/projects/conda/en/latest for more information abount conda as a package and environnent
@@ -76,14 +76,12 @@ This instructs pip to install the package based on instructios in the setup.py f
 (as indicated by the '.').  The `-e` directs pip to install the package in edit mode, so if one wishes to make changes
 to this source code, the changes are automatically applied without the need to re-install the package.
 
-
-
 `Note: In a future release, METcalcpy will be located on PyPI (Python Package Index) to facilitate
 installation into a virtual environment or conda environment using `pip <packagename>`.  `
 
 
-Explore METcalcpy modules
-=========================
+Explore Modules
+===============
 
 There are numerous statistics tools and other useful utilities available in METcalcpy. To examine what is
 available, open a Python console from the command line by entering `python` at the command line.
@@ -217,8 +215,8 @@ Produces information that looks like the following::
 
 
 
-Using METcalcpy modules
-=======================
+Using Modules
+=============
 
 From within the active conda environment, use the METcalcpy packages and
 and modules of interest in your code.  For example, in the METplotpy performance_diagram.py file, the event_equalization
