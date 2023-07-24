@@ -1,12 +1,13 @@
+###################
 Contributor's Guide
-====================
+###################
 
 METcalcpy is written entirely in Python to provide statistics calculations and other utilities that
 are used by METviewer, METplotpy, and other applications.  The modules and packages can be imported into
 other scripts.
 
 Python Requirements
-~~~~~~~~~~~~~~~~~~~
+===================
 
 * Python 3.10.4
 
@@ -36,28 +37,29 @@ Python Requirements
 
 
 Coding Standards
-~~~~~~~~~~~~~~~~
+================
 
 METplus has adopted some coding standards for its Python code.  Detailed information can be found here: https://metplus.readthedocs.io/en/main_v4.0/Users_Guide/
 
 Comment the Python code using Python docstrings: https://peps.python.org/pep-0257/
 
 Organization of Code in the Github Repository
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+=============================================
+
 The source code for METcalcpy resides in a public GitHub repository:
 https://github.com/dtcenter/METcalcpy
 
 Contributed code will reside in one of the following directories:
 
-* METcalcpy/metcalpy
+* *METcalcpy/metcalpy*
 
-* METcalcpy/metcalcpy/contributed
+* *METcalcpy/metcalcpy/contributed*
 
-* METcalcpy/metcalcpy/diagnostics
+* *METcalcpy/metcalcpy/diagnostics*
 
-* METcalcpy/metcalpy/pre-processing
+* *METcalcpy/metcalpy/pre-processing*
 
-* METcalcpy/metcalcpy/util
+* *METcalcpy/metcalcpy/util*
 
 The *METcalcpy/metcalcpy/contributed* directory is where contributed code (from outside contributors) is initially saved.
 
@@ -71,9 +73,9 @@ Finally, the *METcalcpy/metcalcpy* directory contains statistics scripts that ar
 
 
 Tasks to Perform Before Contributing Code
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+=========================================
 
-* You will need a Github account and be included into the METcalcpy Developer's group
+* You will need a Github account and be included into the METcalcpy Developer’s group
 
 * Create a Github issue describing what the contribute code will do
 
@@ -87,7 +89,7 @@ Tasks to Perform Before Contributing Code
 
 * Fill out the issue template with relevant information
 
-* Provide information about the enhancement or new feature, the time estimate for the work, assignees (an engineer and a scientist), and fill in the labels (menu on the right hand bar of the issues page).
+* Provide information about the enhancement or new feature, the time estimate for the work, assignees (an engineer and a scientist), and fill in the labels (menu on the right hand bar of the issues page)
 
 * Provide as much relevant information as possible
 
@@ -96,7 +98,7 @@ Tasks to Perform Before Contributing Code
 * Set up your conda/virtual environment or have your system administrator install the necessary Python version and third-party packages defined above
 
 Retrieve METcalcpy code
-~~~~~~~~~~~~~~~~~~~~~~~
+=======================
 
 * Create a METcalcpy directory on your host machine (<path-to-METcalcpy>) where you have read/write/execute privileges
 
@@ -145,7 +147,7 @@ Retrieve METcalcpy code
 
 
 Contributing Your Code
-~~~~~~~~~~~~~~~~~~~~~~
+======================
 
 * Begin working in the feature branch that you created in the previous step.  From this point on, your code will deviate from the code in the *develop* branch.
 
@@ -159,7 +161,7 @@ Otherwise work in one of the appropriate METcalcpy directories.
 
 
 Testing Your Code
-~~~~~~~~~~~~~~~~~~
+=================
 
 * Use the pytest framework to create tests to ensure that your code works
 
@@ -177,7 +179,7 @@ Testing Your Code
 
 
 Create User Documentation
-~~~~~~~~~~~~~~~~~~~~~~~~~
+=========================
 
 * Comment your Python code using python docstrings:
 
@@ -218,7 +220,7 @@ Create User Documentation
    (e.g. /home/my_dir) and *feature_123_xyz* is the feature branch you created
 
 Incorporate Your Code Into the Repository
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+=========================================
 
 * Create a pull request (PR) within GitHub and assign one or more scientists and/or engineers from the METplus core team to review your code to verify that your tests are successful and the documentation is correct.
 
