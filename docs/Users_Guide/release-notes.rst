@@ -9,6 +9,29 @@ METcalcpy Release Notes
 =======================
 
 
+METcalcpy Version 2.1.0-rc1 release notes (20230620)
+----------------------------------------------------
+
+  .. dropdown:: New Functionality
+
+     None
+
+  .. dropdown:: Enhancements
+
+     * **Updated Analysis tools to handle TC-RMW functionality** (`#308 <https://github.com/dtcenter/METcalcpy/issues/308>`_)
+
+  .. dropdown:: Internal
+
+     * Update cloud python to 3.10(`#170 <https://github.com/dtcenter/METcalcpy/issues/170>`_)
+     * Update cloud python to 3.8(`#169 <https://github.com/dtcenter/METcalcpy/issues/169>`_)
+     * Changed Project to Cycle assignment in github(`#301 <https://github.com/dtcenter/METcalcpy/issues/301>`_)
+     * Partial completion of logging for STIGS(`#46 <https://github.com/dtcenter/METplus-internal/issues/46>`_)
+
+  .. dropdown:: Bugfixes
+
+     * **Fixed Ratio Derived curve not generating** (`#302 <https://github.com/dtcenter/METcalcpy/issues/302>`_)
+     * **Fixed PSTD_ROC_AUC calculation** (`#306 <https://github.com/dtcenter/METcalcpy/issues/306>`_)
+
 METcalcpy Version 2.1.0-beta2 release notes (20230413)
 ------------------------------------------------------
 

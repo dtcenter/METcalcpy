@@ -1,6 +1,6 @@
-============
+############
 User's Guide
-============
+############
 
 **Foreword: A note to METcalcpy users**
 
@@ -66,8 +66,7 @@ National Center for Atmospheric Research (NCAR) is sponsored by NSF.
    vertical_interpolation
    release-notes
 
-Indices and tables
-==================
+**Indices and tables**
 
 * :ref:`genindex`
 * :ref:`search`

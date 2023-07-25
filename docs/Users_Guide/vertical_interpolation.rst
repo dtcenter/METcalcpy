@@ -1,8 +1,9 @@
+**********************
 Vertical Interpolation
-=======================
+**********************
 
 Description
-~~~~~~~~~~~
+===========
 
 This module is used to perform pressure to height conversion in TC-RMW
 data (netCDF or grb2) by vertically interpolating fields
@@ -11,7 +12,7 @@ implemented with linear interpolation.
 
 
 Example
-~~~~~~~
+=======
 
 **Sample Data**
 
@@ -21,13 +22,17 @@ https://dtcenter.ucar.edu/dfiles/code/METplus/METplotpy/tcrmw/tc_rmw_example.nc.
 
 Save this data file to a directory of your choosing and *cd* to your directory:
 
-``cd $METCALCPY_DATA_DIR``
+.. code-block:: ini 
+
+ cd $METCALCPY_DATA_DIR
 
 *$METCALCPY_DATA_DIR* is the directory where you stored the example data.
 
 Uncompress the data using *gunzip*:
 
-``gunzip tc_rmw_example.nc.gz``
+.. code-block:: ini
+
+  gunzip tc_rmw_example.nc.gz
 
 You should now have a file: *tc_rmw_example.nc*
 
@@ -60,7 +65,7 @@ fields:
 
 
 Run from the Command Line
-~~~~~~~~~~~~~~~~~~~~~~~~~
+=========================
 
 A sample Bourne-shell script can be used to convert the pressure level data to height level data:
 
@@ -81,13 +86,17 @@ the directory where you saved the sample data:
 
 e.g.
 
-``export DATA_DIR=/users/mydir/data/tcrmw``
+.. code-block:: ini
+
+  export DATA_DIR=/users/mydir/data/tcrmw
 
 Replace the `/path/to/output` to the directory where you want to save your output:
 
 e.g.
 
-``--output /users/mydir/tcrmw/output``
+.. code-block:: ini
+
+  --output /users/mydir/tcrmw/output
 
 Where in this example, the /users/mydir/tcrmw/output is the directory where the output should be directed.  Replace this with the full path to
 the desired location for output files.
@@ -125,7 +134,9 @@ To perform the conversion, do the following:
 
 * run the script, enter the following command:
 
-``sh height_from_pressure_tcrmw.sh``
+.. code-block:: ini
+
+  sh height_from_pressure_tcrmw.sh
 
 This will produce a netCDF file with the filename specified in the *height_from_pressure_tcrmw.sh* script,
 in this case it is *tc_rmw_example_vertical_interp.nc* and will be located in the output directory specified
