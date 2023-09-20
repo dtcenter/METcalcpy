@@ -19,6 +19,7 @@ METcalcpy Version 3.0.0-beta1 release notes (20230915)
   .. dropdown:: Internal
 
   .. dropdown:: Bugfixes
+
      * Remove reset_index from various calculations (`#322 <https://github.com/dtcenter/METcalcpy/issues/322>`_)
 
 
