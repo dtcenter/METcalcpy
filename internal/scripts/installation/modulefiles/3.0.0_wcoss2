@@ -3,7 +3,7 @@
 ##      METcalcpy
 ##
 proc ModulesHelp { } {
-  puts stderr "Sets up the paths and environment variables to use the METcalcpy-2.1.0.
+  puts stderr "Sets up the paths and environment variables to use the METcalcpy-3.0.0.
      *** For help see the official MET webpage at http://www.dtcenter.org/met/users ***"
 }
 
@@ -12,4 +12,4 @@ module load intel
 module use /apps/dev/modulefiles/
 module load ve/evs/2.0
 
-prepend-path PYTHONPATH /apps/sw_review/emc/METcalcpy/2.1.0
+prepend-path PYTHONPATH /apps/sw_review/emc/METcalcpy/3.0.0
