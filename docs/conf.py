@@ -41,7 +41,8 @@ html_last_updated_fmt = '%c'
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.intersphinx',
               'sphinx_gallery.gen_gallery',
-              'sphinx_design']
+              'sphinx_design',
+              'sphinx_rtd_theme',]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
