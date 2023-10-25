@@ -74,9 +74,10 @@ When :math:`\bar{x}` is close to but slightly below the threshold (e.g. between 
 almost all combinations of probability of exceedance and spread deserve a look, and all values of the 
 difficulty index for medium and large spread are difficult or nearly difficult.
 
-.. list-table:: Table 1: Example of an obviously easy forecast. :math:`\bar{x}` is very large (e.g. 48 kt) or very small (e.g. 7kt), making :math:`A/2=0.1/2=0.05`.
+.. list-table:: Example of an easy forecast where :math:`\bar{x}` is very large (e.g. 48 kt) or very small (e.g. 7kt), making :math:`A/2=0.1/2=0.05`.
   :widths: auto
   :header-rows: 1
+  :header-columns: 1
 
   * - 
     - Small Spread
@@ -102,3 +103,63 @@ difficulty index for medium and large spread are difficult or nearly difficult.
     - 0.05*(0.01+0.5) = 0.026
     - 0.05*(0.5+0.5) = 0.05
     - 0.05*(1+0.5) = 0.075
+
+.. list-table:: Example of a forecast that could be difficult if the conditions are right, where :math:`\bar{x}` is moderately close to the threshold (e.g. 25kt or 37kt), making :math:`A/2=1/2=0.5`.
+  :widths: auto
+  :header-rows: 1
+  :header-columns: 1
+
+  * - 
+    - Small Spread
+    - Medium Spread
+    - Large Spread
+  * - 1
+    - 0.5*(0.01+0.5) = 0.26
+    - 0.5*(0.5+0.5) = 0.5
+    - 0.5*(1+0.5) = 0.75
+  * - 0.75
+    - 0.5*(0.01+0.75) = 0.38
+    - 0.5*(0.5+0.75) = 0.63
+    - 0.5*(1+0.75) = 0.88
+  * - 0.5
+    - 0.5*(0.01+1) = 0.51
+    - 0.5*(0.5+1) = 0.75
+    - 0.5*(1+1) = 1.0
+  * - 0.25
+    - 0.5*(0.01+0.75) = 0.38
+    - 0.5*(0.5+0.75) = 0.63
+    - 0.5*(1+0.75) = 0.88
+  * - 0
+    - 0.5*(0.01+0.5) = 0.26
+    - 0.5*(0.5+0.5) = 0.5
+    - 0.5*(1+0.5) = 0.75
+
+.. list-table:: Example of a situation that is almost always difficult, where :math:`\bar{x}` is at or slightly below the threshold (e.g. 28kt to 34kt), making :math:`A/2=1.5/2=0.75`.
+  :widths: auto
+  :header-rows: 1
+  :header-columns: 1
+
+  * - 
+    - Small Spread
+    - Medium Spread
+    - Large Spread
+  * - 1
+    - 0.75*(0.01+0.5) = 0.38
+    - 0.75*(0.5+0.5) = 0.75
+    - 0.75*(1+0.5) = 1.13
+  * - 0.75
+    - 0.75*(0.01+0.75) = 0.57
+    - 0.75*(0.5+0.75) = 0.94
+    - 0.75*(1+0.75) = 1.31
+  * - 0.5
+    - 0.75*(0.01+1) = 0.76
+    - 0.75*(0.5+1) = 1.13
+    - 0.75*(1+1) = 1.5
+  * - 0.25
+    - 0.75*(0.01+0.75) = 0.57
+    - 0.75*(0.5+0.75) = 0.94
+    - 0.75*(1+0.75) = 1.31
+  * - 0
+    - 0.75*(0.01+0.5) = 0.38
+    - 0.75*(0.5+0.5) = 0.75
+    - 0.75*(1+0.5) = 1.13
