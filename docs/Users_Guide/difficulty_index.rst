@@ -52,4 +52,53 @@ This accounts for the notion that a forecast is more difficult when it is slight
 than slightly above. The value of :math:`A` then ramps down to zero for large values of 
 :math:`\bar{x}_{i,j}`.
 
+To gain a sense of how the difficulty index performs, consider the interplay between probability of 
+exceedance, normalized ensemble spread, and the mean forecast value (which sets the value of 
+:math:`A`) shown in Tables 1-3. Each row is for a different probability of threshold exceedance, 
+:math:`P(x_{i,j} \geq thresh)`, each column is for a different value of normalized uncertainty, 
+quantized as small, :math:`(\sigma/\bar{x})/(\sigma/\bar{x})_{ref}=0.01`, medium, 
+:math:`(\sigma/\bar{x})/(\sigma/\bar{x})_{ref}=0.05`, and large, 
+:math:`(\sigma/\bar{x})/(\sigma/\bar{x})_{ref}=1.0`. Each box contains the calculation of 
+:math:`d_{i,j}` for that case.
 
+When :math:`\bar{x}` is very large or very small the difficulty index is dominated by :math:`A`. 
+Regardless of the spread or the probability of exceedance the difficulty index takes on a value near 
+zero and the forecast is considered to be easy (see Table 1).
+
+When :math:`\bar{x}` is near the threshold (e.g. 25kt or 37kt), the situation is a bit more complex 
+(see Table 2). For small values of spread the only interesting case is when the probability is 
+equally distributed about the threshold. For large spread, all probability values deserve a look, and 
+the case where the probability is equally distributed about the threshold is deemed difficult.
+
+When :math:`\bar{x}` is close to but slightly below the threshold (e.g. between 28kt and 34kt), 
+almost all combinations of probability of exceedance and spread deserve a look, and all values of the 
+difficulty index for medium and large spread are difficult or nearly difficult.
+
+.. list-table:: Table 1: Example of an obviously easy forecast. :math:`\bar{x}` is very large (e.g. 48 kt) or very small (e.g. 7kt), making :math:`A/2=0.1/2=0.05`.
+  :widths: auto
+  :header-rows: 1
+
+  * - 
+    - Small Spread
+    - Medium Spread
+    - Large Spread
+  * - 1
+    - 0.05*(0.01+0.5) = 0.026
+    - 0.05*(0.5+0.5) = 0.05
+    - 0.05*(1+0.5) = 0.075
+  * - 0.75
+    - 0.05*(0.01+0.75) = 0.038
+    - 0.05*(0.5+0.75) = 0.063
+    - 0.05*(1+0.75) = 0.088
+  * - 0.5
+    - 0.05*(0.01+1) = 0.051
+    - 0.05*(0.5+1) = 0.075
+    - 0.05*(1+1) = 0.1
+  * - 0.25
+    - 0.05*(0.01+0.75) = 0.038
+    - 0.05*(0.5+0.75) = 0.063
+    - 0.05*(1+0.75) = 0.088
+  * - 0
+    - 0.05*(0.01+0.5) = 0.026
+    - 0.05*(0.5+0.5) = 0.05
+    - 0.05*(1+0.5) = 0.075
