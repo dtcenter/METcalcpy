@@ -77,7 +77,6 @@ difficulty index for medium and large spread are difficult or nearly difficult.
 .. list-table:: Example of an easy forecast where :math:`\bar{x}` is very large (e.g. 48 kt) or very small (e.g. 7kt), making :math:`A/2=0.1/2=0.05`.
   :widths: auto
   :header-rows: 1
-  :header-columns: 1
 
   * - 
     - Small Spread
@@ -107,7 +106,6 @@ difficulty index for medium and large spread are difficult or nearly difficult.
 .. list-table:: Example of a forecast that could be difficult if the conditions are right, where :math:`\bar{x}` is moderately close to the threshold (e.g. 25kt or 37kt), making :math:`A/2=1/2=0.5`.
   :widths: auto
   :header-rows: 1
-  :header-columns: 1
 
   * - 
     - Small Spread
@@ -137,7 +135,6 @@ difficulty index for medium and large spread are difficult or nearly difficult.
 .. list-table:: Example of a situation that is almost always difficult, where :math:`\bar{x}` is at or slightly below the threshold (e.g. 28kt to 34kt), making :math:`A/2=1.5/2=0.75`.
   :widths: auto
   :header-rows: 1
-  :header-columns: 1
 
   * - 
     - Small Spread
