@@ -39,13 +39,13 @@ threshold. So it penalizes the split case, where the ensemble members are close 
 either side of the threshold. The A term outside the brackets is a weighting to account for 
 heuristic forecast difficulty situations. Its values for winds are given below.
 
-  .. math :: A = 0 if \bar{x} is above 50kt
-  .. math :: A = 0 if \bar{x} is below 5kt
-  .. math :: A = 1.5 if \bar{x} is between 28kt and 34kt
-  .. math :: \text{A} = 1.5 - 1.5[\frac{\bar{x}(kt)-34kt}{16kt}] for 34kt\leq\bar{x}\leq 50kt
-  .. math :: \text{A} = 1.5[\frac{\bar{x}(kt)-5kt}{23kt}] for 5kt\leq\bar{x}\leq 28kt
+A = 0 if :math:`\bar{x}` is above 50kt
+A = 0 if :math:`\bar{x}` is below 5kt
+A = 1.5 if :math:`\bar{x}` is between 28kt and 34kt
+A = :math:`1.5 - 1.5[\frac{\bar{x}(kt)-34kt}{16kt}]` for 34kt\leq\bar{x}\leq 50kt
+A = :math:`1.5[\frac{\bar{x}(kt)-5kt}{23kt}]` for 5kt\leq\bar{x}\leq 28kt
 
-  .. image:: figure/weighting_wave_hgt_difficulty_index.png
+  .. image:: figure/weighting_wind_speed_difficulty_index.png
 
 The weighting ramps up to a value 1.5 for a value of :math:`x` that is slightly below the threshold. 
 This accounts for the notion that a forecast is more difficult when it is slightly below the threshold 
