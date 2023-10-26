@@ -12,7 +12,7 @@ function of space and time.
 Example
 =======
 
-An example Use-Case for running Difficulty Index for Wind Speed can be found in the `METplus documentation <https://metplus.readthedocs.io/en/main_v5.1/generated/model_applications/medium_range/UserScript_fcstGEFS_Difficulty_Index.html#sphx-glr-generated-model-applications-medium-range-userscript-fcstgefs-difficulty-index-py>`_.
+An example Use-Case for running Difficulty Index for Wind Speed can be found in the `METplus documentation <https://metplus.readthedocs.io/en/latest/generated/model_applications/medium_range/UserScript_fcstGEFS_Difficulty_Index.html#sphx-glr-generated-model-applications-medium-range-userscript-fcstgefs-difficulty-index-py>`_.
 
 Decision Difficulty Index Computation
 =====================================
@@ -83,7 +83,7 @@ difficulty index for medium and large spread are difficult or nearly difficult (
   :widths: auto
   :header-rows: 1
 
-  * - 
+  * - Prob of Thresh Exceedance 
     - Small Spread
     - Medium Spread
     - Large Spread
@@ -114,7 +114,7 @@ difficulty index for medium and large spread are difficult or nearly difficult (
   :widths: auto
   :header-rows: 1
 
-  * - 
+  * - Prob of Thresh Exceedance
     - Small Spread
     - Medium Spread
     - Large Spread
@@ -145,7 +145,7 @@ difficulty index for medium and large spread are difficult or nearly difficult (
   :widths: auto
   :header-rows: 1
 
-  * - 
+  * - Prob of Thresh Exceedance
     - Small Spread
     - Medium Spread
     - Large Spread
