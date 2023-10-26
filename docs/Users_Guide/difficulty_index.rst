@@ -12,8 +12,7 @@ function of space and time.
 Example
 =======
 
-An example Use-Case for running Difficulty Index for Wind Speed can be found in the METplus 
-documentation.
+An example Use-Case for running Difficulty Index for Wind Speed can be found in the `METplus documentation <https://metplus.readthedocs.io/en/main_v5.1/generated/model_applications/medium_range/UserScript_fcstGEFS_Difficulty_Index.html#sphx-glr-generated-model-applications-medium-range-userscript-fcstgefs-difficulty-index-py>`_.
 
 Decision Difficulty Index Computation
 =====================================
@@ -45,7 +44,11 @@ heuristic forecast difficulty situations. Its values for winds are given below.
 | A = :math:`1.5 - 1.5[\frac{\bar{x}(kt)-34kt}{16kt}]` for 34kt :math:`\leq\bar{x}\leq` 50kt
 | A = :math:`1.5[\frac{\bar{x}(kt)-5kt}{23kt}]` for 5kt :math:`\leq\bar{x}\leq` 28kt
 
-  .. image:: figure/weighting_wind_speed_difficulty_index.png
+  .. _difficulty_index_fig1:
+
+  .. figure:: figure/weighting_wind_speed_difficulty_index.png
+
+     Weighting applied to wind difficulty index.
 
 The weighting ramps up to a value 1.5 for a value of :math:`x` that is slightly below the threshold. 
 This accounts for the notion that a forecast is more difficult when it is slightly below the threshold 
@@ -54,7 +57,7 @@ than slightly above. The value of :math:`A` then ramps down to zero for large va
 
 To gain a sense of how the difficulty index performs, consider the interplay between probability of 
 exceedance, normalized ensemble spread, and the mean forecast value (which sets the value of 
-:math:`A`) shown in Tables 1-3. Each row is for a different probability of threshold exceedance, 
+:math:`A`) shown in Tables 3.1-3.3. Each row is for a different probability of threshold exceedance, 
 :math:`P(x_{i,j} \geq thresh)`, each column is for a different value of normalized uncertainty, 
 quantized as small, :math:`(\sigma/\bar{x})/(\sigma/\bar{x})_{ref}=0.01`, medium, 
 :math:`(\sigma/\bar{x})/(\sigma/\bar{x})_{ref}=0.05`, and large, 
@@ -63,16 +66,18 @@ quantized as small, :math:`(\sigma/\bar{x})/(\sigma/\bar{x})_{ref}=0.01`, medium
 
 When :math:`\bar{x}` is very large or very small the difficulty index is dominated by :math:`A`. 
 Regardless of the spread or the probability of exceedance the difficulty index takes on a value near 
-zero and the forecast is considered to be easy (see Table 1).
+zero and the forecast is considered to be easy (:numref:`table_1`).
 
 When :math:`\bar{x}` is near the threshold (e.g. 25kt or 37kt), the situation is a bit more complex 
-(see Table 2). For small values of spread the only interesting case is when the probability is 
+(:numref:`table_2`). For small values of spread the only interesting case is when the probability is 
 equally distributed about the threshold. For large spread, all probability values deserve a look, and 
 the case where the probability is equally distributed about the threshold is deemed difficult.
 
 When :math:`\bar{x}` is close to but slightly below the threshold (e.g. between 28kt and 34kt), 
 almost all combinations of probability of exceedance and spread deserve a look, and all values of the 
-difficulty index for medium and large spread are difficult or nearly difficult.
+difficulty index for medium and large spread are difficult or nearly difficult (:numref:`table_3`).
+
+.. _table_1:
 
 .. list-table:: Example of an easy forecast where :math:`\bar{x}` is very large (e.g. 48 kt) or very small (e.g. 7kt), making :math:`A/2=0.1/2=0.05`.
   :widths: auto
@@ -103,6 +108,8 @@ difficulty index for medium and large spread are difficult or nearly difficult.
     - 0.05*(0.5+0.5) = 0.05
     - 0.05*(1+0.5) = 0.075
 
+.. _table_2:
+
 .. list-table:: Example of a forecast that could be difficult if the conditions are right, where :math:`\bar{x}` is moderately close to the threshold (e.g. 25kt or 37kt), making :math:`A/2=1/2=0.5`.
   :widths: auto
   :header-rows: 1
@@ -131,6 +138,8 @@ difficulty index for medium and large spread are difficult or nearly difficult.
     - 0.5*(0.01+0.5) = 0.26
     - 0.5*(0.5+0.5) = 0.5
     - 0.5*(1+0.5) = 0.75
+
+.. _table_3:
 
 .. list-table:: Example of a situation that is almost always difficult, where :math:`\bar{x}` is at or slightly below the threshold (e.g. 28kt to 34kt), making :math:`A/2=1.5/2=0.75`.
   :widths: auto
