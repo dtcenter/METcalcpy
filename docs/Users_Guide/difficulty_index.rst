@@ -26,17 +26,17 @@ where :math:`\sigma` is the ensemble standard deviation, :math:`\bar{x}` is the 
 to the threshold, and  :math:`P(x_{i,j}<thresh)` is the ensemble probability of being less than 
 the threshold. The :math:`(\sigma/\bar{x})` expression is a measure of spread normalized by the 
 mean, and it allows one to identify situations of truly significant uncertainty. Because the 
-difficulty index is defined only for positive definite quantities such as significant wave height, 
-division by zero is avoided. :math:`(\sigma/\bar{x})_{ref}` is a (scalar) reference value, for 
-example the maximum value of :math:`(\sigma/\bar{x})` obtained over the last 5 days as a function 
-of geographic region.
+difficulty index is defined only for positive definite quantities such as wind speed or significant 
+wave height, division by zero is avoided. :math:`(\sigma/\bar{x})_{ref}` is a (scalar) reference 
+value, for example the maximum value of :math:`(\sigma/\bar{x})` obtained over the last 5 days as 
+a function of geographic region.
 
 The first term in the outer brackets is large when the uncertainty in the current forecast is 
 large relative to a reference. The second term is minimum when all the probability is either 
 above or below the threshold, and maximum when the probability is evenly distributed about the 
-threshold. So it penalizes the split case, where the ensemble members are close to evenly split on 
-either side of the threshold. The A term outside the brackets is a weighting to account for 
-heuristic forecast difficulty situations. Its values for winds are given below.
+threshold. Therefore, it penalizes the split case, where the ensemble members are close to evenly 
+split on either side of the threshold. The *A* term outside the brackets is a weighting to account 
+for heuristic forecast difficulty situations. Its values for winds are given below.
 
 | A = 0 if :math:`\bar{x}` is above 50kt
 | A = 0 if :math:`\bar{x}` is below 5kt
@@ -50,21 +50,21 @@ heuristic forecast difficulty situations. Its values for winds are given below.
 
      Weighting applied to wind difficulty index.
 
-The weighting ramps up to a value 1.5 for a value of :math:`x` that is slightly below the threshold. 
+The weighting ramps up to a value 1.5 for a value of *x* that is slightly below the threshold. 
 This accounts for the notion that a forecast is more difficult when it is slightly below the threshold 
-than slightly above. The value of :math:`A` then ramps down to zero for large values of 
+than slightly above. The value of *A* then ramps down to zero for large values of 
 :math:`\bar{x}_{i,j}`.
 
 To gain a sense of how the difficulty index performs, consider the interplay between probability of 
 exceedance, normalized ensemble spread, and the mean forecast value (which sets the value of 
-:math:`A`) shown in Tables 3.1-3.3. Each row is for a different probability of threshold exceedance, 
+*A*) shown in Tables 3.1-3.3. Each row is for a different probability of threshold exceedance, 
 :math:`P(x_{i,j} \geq thresh)`, each column is for a different value of normalized uncertainty, 
 quantized as small, :math:`(\sigma/\bar{x})/(\sigma/\bar{x})_{ref}=0.01`, medium, 
 :math:`(\sigma/\bar{x})/(\sigma/\bar{x})_{ref}=0.05`, and large, 
 :math:`(\sigma/\bar{x})/(\sigma/\bar{x})_{ref}=1.0`. Each box contains the calculation of 
 :math:`d_{i,j}` for that case.
 
-When :math:`\bar{x}` is very large or very small the difficulty index is dominated by :math:`A`. 
+When :math:`\bar{x}` is very large or very small the difficulty index is dominated by *A*. 
 Regardless of the spread or the probability of exceedance the difficulty index takes on a value near 
 zero and the forecast is considered to be easy (:numref:`table_1`).
 
