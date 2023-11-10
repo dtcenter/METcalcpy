@@ -7,8 +7,8 @@ Boulder, CO
 
 .. image:: _static/METplus_banner_photo_web.png
 
-**History**
-
+History
+-------
 
 The Model Evaluation Tools (MET) were developed by the Developmental Testbed
 Center (DTC)  and released in January 2008. The goal of the tools was to
@@ -37,7 +37,8 @@ diagnostics capability for NOAA's UFS and a component of NCAR's SIMA
 modeling frameworks.  It is being actively developed by NCAR, ESRL, EMC
 and is open to community contributions.
 
-**METplus Concept**
+METplus Concept
+---------------
 
 METplus is the overarching, or umbrella, repository and hence framework for
 the Unified Forecast System verification capability.  It is intended to be
@@ -76,7 +77,8 @@ was developed because CESM is comprised of a number of different components
 that are developed and managed independently. Each component also may have
 additional "external" dependencies that need to be maintained independently.
 
-**Acronyms**
+Acronyms
+--------
 
 * **MET** - Model Evaluation Tools
 * **DTC** - Developmental Testbed Center
@@ -93,7 +95,8 @@ additional "external" dependencies that need to be maintained independently.
 * **GSD** - Global Systems Division
 
 
-**Authors**
+Authors
+-------
 
 Many authors, listed below in alphabetical order, have contributed to the documentation of METplus.
 To cite this documentation in publications, please refer to the METcalcpy User's Guide :ref:`Citation Instructions<citations>`.
@@ -121,7 +124,8 @@ To cite this documentation in publications, please refer to the METcalcpy User's
 
 
 
-**Indices**
+Indices
+=======
 
 * :ref:`genindex`
 * :ref:`modindex`
