@@ -1,6 +1,6 @@
-###########################
+===========================
 METcalcpy version |version|
-###########################
+===========================
 
 Developed by the `Developmental Testbed Center <https://dtcenter.org/>`_,
 Boulder, CO
