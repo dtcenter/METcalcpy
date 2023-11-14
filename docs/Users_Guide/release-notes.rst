@@ -9,6 +9,21 @@ METcalcpy Release Notes
 =======================
 
 
+METcalcpy Velsion 3.0.0-beta2 release notes (20231114)
+------------------------------------------------------
+
+  .. dropdown:: New Functionality
+
+  .. dropdown:: Enhancements
+
+  .. dropdown:: Internal
+
+     * Change second person references to third (`#315 <https://github.com/dtcenter/METcalcpy/issues/315>`_)
+
+  .. dropdown:: Bugfixes
+
+     * Add missing reliability statistics (`#330 <https://github.com/dtcenter/METcalcpy/issues/330>`_)
+
 METcalcpy Version 3.0.0-beta1 release notes (20230915)
 ------------------------------------------------------
 
