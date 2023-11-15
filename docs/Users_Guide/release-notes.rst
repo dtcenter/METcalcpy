@@ -19,6 +19,7 @@ METcalcpy Velsion 3.0.0-beta2 release notes (20231114)
   .. dropdown:: Internal
 
      * Change second person references to third (`#315 <https://github.com/dtcenter/METcalcpy/issues/315>`_)
+     * Enhanced documentation for Difficulty index (`#332 <https://github.com/dtcenter/METcalcpy/issues/332>`_)
 
   .. dropdown:: Bugfixes
 
