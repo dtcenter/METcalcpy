@@ -17,6 +17,12 @@ from scipy import stats
 
 
 def parse_steps():
+    """
+    Function to parse the steps for the Blocking and weather regime Calculations
+    and then return them to the driver
+    :return: Lists containing the forecast and observation steps
+    :rtype: List of strings
+    """
 
     steps_param_fcst = os.environ.get('FCST_STEPS','')
     steps_list_fcst = steps_param_fcst.split("+")
@@ -25,6 +31,27 @@ def parse_steps():
     steps_list_obs = steps_param_obs.split("+")
 
     return steps_list_fcst, steps_list_obs
+
+
+def get_filenames_list(filetxt):
+    """
+    Function that opens a text file containing the listing of input files, remove the header
+    which may say file_list and then return them for reading
+    :param filetxt:
+        input filename that contains the listing of input files
+    :type filetxt: string
+    :return: List containing the names of the input files
+    :rtype: List of strings
+    """
+
+    # Read input file
+    with open(filetxt) as ft:
+        data_infiles = ft.read().splitlines()
+    # Remove the first line if it's there
+    if (data_infiles[0] == 'file_list'):
+        data_infiles = data_infiles[1:]
+
+    return data_infiles
 
 
 def write_mpr_file(data_obs,data_fcst,lats_in,lons_in,time_obs,time_fcst,mname,desc,fvar,funit,flev,ovar,ounit,olev,maskname,obslev,outfile):
@@ -75,6 +102,24 @@ def write_mpr_file(data_obs,data_fcst,lats_in,lons_in,time_obs,time_fcst,mname,d
 
 
 def read_nc_met(infiles,invar,nseasons,dseasons):
+    """
+    Function to read in MET version netCDF data specifically for the blocking and weather regime
+    calculations.  The output array needs to be in a specific format.
+    :param infiles: 
+        List of full paths to filenames of the data to read in
+    :param invar: 
+        Variable name in the file of the data to read in
+    :param nseasons:
+        The number of years the input data contains
+    :param dseasons:
+        The number of days in each year (must be equal for all input years)
+    :type infiles: List of strings
+    :type invar: String
+    :type nseasons: Integer
+    :type dseasons: Integer
+    return: 4D array of data [year, day, lat, lon], latitude array, longitude array, and a time dictionary
+    rtype: numpy array, numpy array, numpy array, dictionary
+    """
 
     print("Reading in Data")
 
@@ -129,38 +174,3 @@ def read_nc_met(infiles,invar,nseasons,dseasons):
     time_dict = {'init':init_list_2d,'valid':valid_list_2d,'lead':lead_list_2d}
 
     return var_4d,lats,lons,time_dict
-
-
-def reorder_fcst_regimes(kmeans_fcst,perc_fcst,wrc_fcst,wrnum_fcst,fcst_order):
-
-    # Reorder the data so that the weather regime patterns match between
-    # the forecast and observations, is needed
-    kmeans_fcst_new = np.empty(kmeans_fcst.shape,dtype=float)
-    perc_fcst_new = np.empty(perc_fcst.shape,dtype=float)
-    wrc_fcst_new = np.empty(wrc_fcst.shape,dtype=float)
-    for wrn in np.arange(wrnum_fcst):
-        perc_fcst_new[wrn] = perc_fcst[fcst_order[wrn]-1]
-        kmeans_fcst_new[wrn,:,:] = kmeans_fcst[fcst_order[wrn]-1,:,:]
-        wrc_cur = np.where(wrc_fcst == fcst_order[wrn])
-        wrc_fcst_new[wrc_cur] = wrn + 1
-
-    return kmeans_fcst_new,perc_fcst_new,wrc_fcst_new
-
-
-def reorder_fcst_regimes_correlate(kmeans_obs,kmeans_fcst,perc_fcst,wrc_fcst,wrnum_fcst):
-
-    # Correlate between the forecast and obs weather regimes to find the max correlation
-    # Use the max correlation in reordering the forecast to match the observations
-    matching_order = np.empty(wrnum_fcst,dtype=int)
-    for wrr in np.arange(wrnum_fcst):
-        corr_arr = np.empty(wrnum_fcst,dtype=float)
-        for owr in np.arange(wrnum_fcst):
-            curcorr = stats.pearsonr(kmeans_obs[wrr,:,:].flatten(),kmeans_fcst[owr,:,:].flatten())
-            corr_arr[owr] = curcorr[0]
-        matching_order[wrr] = corr_arr.argmax()+1
-
-    # Call the reorder_fcst_regimes to reorder
-    matching_order = list(matching_order)
-    kmeans_fcst_new,perc_fcst_new,wrc_fcst_new = reorder_fcst_regimes(kmeans_fcst,perc_fcst,wrc_fcst,wrnum_fcst,matching_order)
-
-    return kmeans_fcst_new,perc_fcst_new,wrc_fcst_new 
