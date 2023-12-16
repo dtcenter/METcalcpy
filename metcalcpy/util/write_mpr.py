@@ -9,29 +9,28 @@ import os
 import numpy as np
 
 
-#def write_mpr_file(data_obs,data_fcst,lats_in,lons_in,obs_lead,obs_valid,fcst_lead,fcst_valid,mod_name,desc,fcst_var,fcst_unit,fcst_lev,obs_var,obs_unit,obs_lev,maskname,obslev,full_outfile):
 def write_mpr_file(data_fcst,data_obs,lats_in,lons_in,fcst_lead,fcst_valid,obs_lead,obs_valid,mod_name,desc,fcst_var,fcst_unit,fcst_lev,obs_var,obs_unit,obs_lev,maskname,obsslev,outdir,outfile_prefix):
 
     """
     Function to write an output mpr file given a 1d array of observation and forecast data
     Parameters:
     ----------
-    data_obs: 1D array float
-            observation data to write to MPR file
     data_fcst: 1D array float
             forecast data to write to MPR file
+    data_obs: 1D array float
+            observation data to write to MPR file
     lats_in: 1D array float
             data latitudes
     lons_in: 1D array float
             data longitudes
-    obs_lead: 1D array string of format HHMMSS
-            observation lead time
-    obs_valid: 1D array string of format YYYYmmdd_HHMMSS
-            observation valid time
     fcst_lead: 1D array string of format HHMMSS
             forecast lead time
     fcst_valid: 1D array string of format YYYYmmdd_HHMMSS
             forecast valid time
+    obs_lead: 1D array string of format HHMMSS
+            observation lead time
+    obs_valid: 1D array string of format YYYYmmdd_HHMMSS
+            observation valid time
     mod_name: string
             output model name (the MODEL column in MET)
     desc: string
