@@ -105,7 +105,7 @@ def write_mpr_file(data_fcst,data_obs,lats_in,lons_in,fcst_lead,fcst_valid,obs_l
     """
     Write the file
     """
-    print('Writing output MPR file: '+full_outfile)
+    #print('Writing output MPR file: '+full_outfile)
     with open(full_outfile, 'w') as mf:
         # Write the header
         mf.write(format_string % ('VERSION', 'MODEL', 'DESC', 'FCST_LEAD', 'FCST_VALID_BEG', 'FCST_VALID_END',
