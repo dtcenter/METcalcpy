@@ -93,7 +93,7 @@ def write_mpr_file(data_fcst,data_obs,lats_in,lons_in,fcst_lead,fcst_valid,obs_l
     Create the output directory if it doesn't exist
     """
     if not os.path.exists(outdir):
-        os.path.makedirs(outdir)
+        os.makedirs(outdir)
 
     """
     Put the timestamp on the output file
