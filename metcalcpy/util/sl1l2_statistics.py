@@ -524,10 +524,13 @@ def calculate_bcmse(input_data, columns_names, aggregation=False):
     """
     warnings.filterwarnings('error')
     try:
+
         mse = calculate_mse(input_data, columns_names, aggregation)
         me = calculate_me(input_data, columns_names, aggregation)
         result = mse - me ** 2
         result = round_half_up(result, PRECISION)
+        if result < 0:
+            return 0.
     except (TypeError, Warning):
         result = None
     warnings.filterwarnings('ignore')
