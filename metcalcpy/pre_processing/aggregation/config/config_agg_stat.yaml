@@ -1,0 +1,66 @@
+agg_stat_input: ./grid_stat_reformatted.agg.txt
+agg_stat_output: ./output.txt
+alpha: 0.05
+append_to_file: null
+circular_block_bootstrap: 'True'
+derived_series_1: []
+derived_series_2: []
+event_equal: 'FALSE'
+fcst_var_val_1:
+  APCP_03:
+  - FAR
+  - PODY
+  - FBIAS
+  - POFD
+  - FBAR
+  - FSTDEV
+  - OBAR
+  - OSTDEV
+  # - PR_CORR
+  # - RMSE
+fcst_var_val_2: {}
+indy_vals:
+- '30000'
+- '60000'
+- '90000'
+- '120000'
+- '150000'
+- '180000'
+- '210000'
+- '240000'
+- '270000'
+- '300000'
+- '330000'
+- '360000'
+indy_var: fcst_lead
+line_type: ctc
+list_stat_1:
+- FAR
+- PODY
+- FBIAS
+- POFD
+- FBAR
+- FSTDEV
+- OBAR
+- OSTDEV
+# - PR_CORR
+# - RMSE
+list_stat_2: []
+method: perc
+num_iterations: 1
+num_threads: -1
+random_seed: null
+series_val_1:
+  model:
+  - RRFS_GDAS_GF.SPP.SPPT_mem01
+  - RRFS_GDAS_GF.SPP.SPPT_mem02
+  - RRFS_GDAS_GF.SPP.SPPT_mem03
+  - RRFS_GDAS_GF.SPP.SPPT_mem04
+  - RRFS_GDAS_GF.SPP.SPPT_mem05
+  - RRFS_GDAS_GF.SPP.SPPT_mem06
+  - RRFS_GDAS_GF.SPP.SPPT_mem07
+  - RRFS_GDAS_GF.SPP.SPPT_mem08
+  - RRFS_GDAS_GF.SPP.SPPT_mem09
+  - RRFS_GDAS_GF.SPP.SPPT_mem10
+  - RRFS_GDAS_GF.SPP_agg
+series_val_2: {}

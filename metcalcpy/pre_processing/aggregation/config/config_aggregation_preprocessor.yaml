@@ -1,0 +1,36 @@
+prefix: "/scratch2/BMC/fv3lam/HIWT/expt_dirs/RRFS_GDAS_GF.SPP.SPPT_20220501-06/"
+suffix: "/metprd/grid_stat_cmn"
+members:
+- '2022050100/mem01'
+- '2022050100/mem02'
+- '2022050100/mem03'
+- '2022050100/mem04'
+- '2022050100/mem05'
+- '2022050100/mem06'
+- '2022050100/mem07'
+- '2022050100/mem08'
+- '2022050100/mem09'
+- '2022050100/mem10'
+group_members: True
+group_name: "RRFS_GDAS_GF.SPP_agg"
+output_xml_file: "point_stat.xml"
+output_yaml_file: "point_stat.yaml"
+output_reformatted_file: "grid_stat_reformatted.txt"
+output_aggregate_file: "grid_stat_reformatted.agg.txt"
+metdataio_dir: "/home/Vanderlei.Vargas/Packages/METdataio"
+fcst_var:
+- APCP_03
+fcst_thresh:
+- ">0.0"
+list_stat: 
+- FAR
+- PODY
+- FBIAS
+- POFD
+- FBAR
+- FSTDEV
+- OBAR
+- OSTDEV
+# - PR_CORR
+# - RMSE
+log_file: log.agg_wflow

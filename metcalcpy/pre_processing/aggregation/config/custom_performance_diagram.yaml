@@ -1,0 +1,16 @@
+title: "Performance Diagram"
+# Axis labels and tick configuration
+xaxis: Success Ratio
+xlab_offset: -0.1
+xlab_size: 1.5
+xlab_weight: 1
+xtlab_horiz: 0.5
+xtlab_orient: 1
+xtlab_size: 0.9
+yaxis_1: Probability of Detection (PODY)
+ylab_offset: -0.1
+ylab_size: 1.5
+ylab_weight: 1
+ytlab_orient: 1
+ytlab_size: 0.9
+plot_filename: plot_performance_diagram_APCP3h.png

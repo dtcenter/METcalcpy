@@ -1,0 +1,81 @@
+indy_label:
+- '3'
+- '6'
+- '9'
+- '12'
+- '15'
+- '18'
+- '21'
+- '24'
+- '27'
+- '30'
+- '33'
+- '36'
+con_series:
+- 1
+- 1
+- 1
+- 1
+- 1
+- 1
+- 1
+- 1
+- 1
+- 1
+- 1
+fcst_var_val_1:
+  APCP_03:
+  - FBIAS
+list_stat_1:
+- FBIAS
+series_type:
+- b
+- b
+- b
+- b
+- b
+- b
+- b
+- b
+- b
+- b
+- b
+stat_input: ./output.txt
+title: 'Frequency Bias: 3h Accumulated Precipitation &gt; 0 mm (04 May 2022)'
+# Axis labels and tick configuration
+xaxis: Forecast Lead Time (h)
+xlab_offset: -20.
+xlab_size: 8
+xlab_weight: 1
+xtlab_horiz: 0.5
+xtlab_orient: 1
+xtlab_size: 0.9
+yaxis_1: Frequency Bias (mm)
+ylab_offset: -20.
+ylab_size: 8
+ylab_weight: 1
+ytlab_orient: 1
+ytlab_size: 0.9
+plot_filename: plot_FBIAS_APCP3h.png
+
+# Legend configuration
+legend_box: o  # 'o' likely stands for the shape or border style of the legend box
+legend_inset:
+  x: 0
+  y: -0.2
+legend_ncol: 3
+legend_size: 1.0
+user_legend:
+- 'mem01'
+- 'mem02'
+- 'mem03'
+- 'mem04'
+- 'mem05'
+- 'mem06'
+- 'mem07'
+- 'mem08'
+- 'mem09'
+- 'mem10'
+- Aggregated
+ylim: [0.8,2.0]
+
