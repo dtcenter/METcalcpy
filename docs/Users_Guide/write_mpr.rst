@@ -13,8 +13,8 @@ the output directory is present and will create that directory if it does not ex
 Example
 =======
 
-Examples for how to use this script can be found in the driver scripts of multiple use 
-cases listed below.
+Examples for how to use this script can be found in the driver scripts of the use cases 
+listed below.
 
 * `Stratosphere Polar <https://metplus.readthedocs.io/en/latest/generated/model_applications/s2s/UserScript_fcstGFS_obsERA_StratospherePolar.html#sphx-glr-generated-model-applications-s2s-userscript-fcstgfs-obsera-stratospherepolar-py>`_
 * `Blocking <https://metplus.readthedocs.io/en/latest/generated/model_applications/s2s_mid_lat/UserScript_fcstGFS_obsERA_Blocking.html#sphx-glr-generated-model-applications-s2s-mid-lat-userscript-fcstgfs-obsera-blocking-py>`_
@@ -95,12 +95,4 @@ Run from a python script
 
    write_mpr_file(data_fcst,data_obs,lats_in,lons_in,fcst_lead,fcst_valid,obs_lead,obs_valid,mod_name,desc,fcst_var,fcst_unit,fcst_lev,obs_var,obs_unit,obs_lev,maskname,obsslev,outdir,outfile_prefix)
 
-FIX this paragraph: This will produce a netCDF file with the filename specified in the *height_from_pressure_tcrmw.sh* script,
-in this case it is *tc_rmw_example_vertical_interp.nc* and will be located in the output directory specified
-via the $OUTPUT_DIR environment variable.  This file contains the converted levels for the
-fields specified in the *height_from_pressure_tcrmw.yaml* configuration file.
-
-
-
-
-
+The output fill be a .stat file located in outdir with data in `MET's Matched Pair Format <https://met.readthedocs.io/en/latest/Users_Guide/point-stat.html#id24>`_.  The file will be labeled with outfile_prefix and then have lead time, valid YYYYMMDD, and valid HHMMSS stamped onto the file name.
