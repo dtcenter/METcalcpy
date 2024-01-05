@@ -16,7 +16,7 @@ Example
 Examples for how to use this script can be found in the driver scripts of the use cases 
 listed below.
 
-.._`Stratosphere Polar <https://metplus.readthedocs.io/en/latest/generated/model_applications/s2s/UserScript_fcstGFS_obsERA_StratospherePolar.html#sphx-glr-generated-model-applications-s2s-userscript-fcstgfs-obsera-stratospherepolar-py>`_
+* `Stratosphere Polar <https://metplus.readthedocs.io/en/latest/generated/model_applications/s2s/UserScript_fcstGFS_obsERA_StratospherePolar.html#sphx-glr-generated-model-applications-s2s-userscript-fcstgfs-obsera-stratospherepolar-py>`_
 * `Blocking <https://metplus.readthedocs.io/en/latest/generated/model_applications/s2s_mid_lat/UserScript_fcstGFS_obsERA_Blocking.html#sphx-glr-generated-model-applications-s2s-mid-lat-userscript-fcstgfs-obsera-blocking-py>`_
 * `Weather Regime <https://metplus.readthedocs.io/en/latest/generated/model_applications/s2s_mid_lat/UserScript_fcstGFS_obsERA_WeatherRegime.html#sphx-glr-generated-model-applications-s2s-mid-lat-userscript-fcstgfs-obsera-weatherregime-py>`_
 
