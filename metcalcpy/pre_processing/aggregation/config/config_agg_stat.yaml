@@ -8,16 +8,7 @@ derived_series_2: []
 event_equal: 'FALSE'
 fcst_var_val_1:
   APCP_03:
-  - FAR
-  - PODY
-  - FBIAS
-  - POFD
-  - FBAR
-  - FSTDEV
-  - OBAR
-  - OSTDEV
-  # - PR_CORR
-  # - RMSE
+  - GSS
 fcst_var_val_2: {}
 indy_vals:
 - '30000'
@@ -35,16 +26,7 @@ indy_vals:
 indy_var: fcst_lead
 line_type: ctc
 list_stat_1:
-- FAR
-- PODY
-- FBIAS
-- POFD
-- FBAR
-- FSTDEV
-- OBAR
-- OSTDEV
-# - PR_CORR
-# - RMSE
+- GSS
 list_stat_2: []
 method: perc
 num_iterations: 1
@@ -61,6 +43,5 @@ series_val_1:
   - RRFS_GDAS_GF.SPP.SPPT_mem07
   - RRFS_GDAS_GF.SPP.SPPT_mem08
   - RRFS_GDAS_GF.SPP.SPPT_mem09
-  - RRFS_GDAS_GF.SPP.SPPT_mem10
-  - RRFS_GDAS_GF.SPP_agg
+  - RRFS_GDAS_GF.SPP.SPPT_mem10  
 series_val_2: {}

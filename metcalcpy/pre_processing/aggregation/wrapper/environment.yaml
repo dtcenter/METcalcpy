@@ -1,7 +1,7 @@
 
-METCALCPY: "/home/Vanderlei.Vargas/Packages/METcalcpy"
-METPLOTPY: "/home/Vanderlei.Vargas/Packages/METplotpy"
-AGG_WFLOW: "/home/Vanderlei.Vargas/Packages/reformat/workdir/PointStat/agg_wflow"
+METCALCPY: "/path/to/METcalcpy"
+METPLOTPY: "/path/to/METplotpy"
+AGG_WFLOW: "/path/to/METcalcpy/metcalcpy/pre_processing/aggregation"
 
 AGG_STAT_YAML: "../config/config_agg_stat.yaml"
 
@@ -12,7 +12,7 @@ AGG_PREP: True
 
 # Plots
 PERFORMANCE_DIAGRAM: False
-LINE: False
+LINE: True
 TAYLOR: False
 
 

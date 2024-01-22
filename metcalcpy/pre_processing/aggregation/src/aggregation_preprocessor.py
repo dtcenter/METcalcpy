@@ -147,6 +147,7 @@ def main():
     # Access individual elements from the config_data dictionary
     prefix = check_var(config_data,'prefix')
     suffix = check_var(config_data,'suffix')
+    dates = check_var(config_data,'dates')
     members = check_var(config_data,'members')
     group_members = config_data.get('group_members')
     group_name = config_data.get('group_name')
@@ -188,10 +189,13 @@ def main():
                 print(f"'{user_input}' is not a valid option!")
     
     dirs = []
-    for i in members:
-        idir = prefix + i + suffix
-        if os.path.isdir(idir):
-            dirs.append(idir)
+    for i in dates:
+        for j in members:
+            idir = prefix + i + "/" + j + suffix
+            if os.path.isdir(idir):
+                dirs.append(idir)
+    
+    
     
     if len(dirs) == 0:
         raise Exception("No directories found!")

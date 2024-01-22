@@ -11,7 +11,6 @@ colors:
 - '#ffa500'  # Orange
 - '#6a5acd'  # SlateBlue
 - '#20b2aa'  # LightSeaGreen
-- '#000000'  # Black
 plot_height: 8.5
 plot_res: 72
 plot_units: in
@@ -70,11 +69,9 @@ user_legend:
 - 'mem08'
 - 'mem09'
 - 'mem10'
-- Aggregated
 
 # Series plot settings
 plot_ci:
-- none
 - none
 - none
 - none
@@ -96,7 +93,6 @@ plot_disp:
 - 'True'
 - 'True'
 - 'True'
-- 'True'
 series_order:
 - 1
 - 2
@@ -108,7 +104,6 @@ series_order:
 - 8
 - 9
 - 10
-- 11
 series_line_style:
 - --
 - -.
@@ -120,7 +115,6 @@ series_line_style:
 - '-'
 - -.
 - ':'
-- '-'
 series_line_width:
 - 1
 - 1
@@ -132,7 +126,6 @@ series_line_width:
 - 1
 - 1
 - 1
-- 2
 series_symbols:
 - o
 - ^
@@ -144,7 +137,6 @@ series_symbols:
 - d
 - o
 - ^
-- .
 series_type:
 - joined lines
 
@@ -161,14 +153,12 @@ series_val_1:
   - RRFS_GDAS_GF.SPP.SPPT_mem08
   - RRFS_GDAS_GF.SPP.SPPT_mem09
   - RRFS_GDAS_GF.SPP.SPPT_mem10
-  - RRFS_GDAS_GF.SPP_agg
 
 # Data input and derived series settings
 stat_input: ./output.txt
 fcst_var_val_1:
   APCP_03:
-  - FAR
-  - PODY
+  - FBIAS
 derived_series_1: []
 derived_series_2: []
 series_val_2: {}

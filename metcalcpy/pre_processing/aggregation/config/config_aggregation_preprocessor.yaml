@@ -1,17 +1,24 @@
 prefix: "/scratch2/BMC/fv3lam/HIWT/expt_dirs/RRFS_GDAS_GF.SPP.SPPT_20220501-06/"
 suffix: "/metprd/grid_stat_cmn"
+dates:
+- '2022050100'
+- '2022050200'
+- '2022050300'
+- '2022050400'
+- '2022050500'
+- '2022050600'
 members:
-- '2022050100/mem01'
-- '2022050100/mem02'
-- '2022050100/mem03'
-- '2022050100/mem04'
-- '2022050100/mem05'
-- '2022050100/mem06'
-- '2022050100/mem07'
-- '2022050100/mem08'
-- '2022050100/mem09'
-- '2022050100/mem10'
-group_members: True
+- 'mem01'
+- 'mem02'
+- 'mem03'
+- 'mem04'
+- 'mem05'
+- 'mem06'
+- 'mem07'
+- 'mem08'
+- 'mem09'
+- 'mem10'
+group_members: False
 group_name: "RRFS_GDAS_GF.SPP_agg"
 output_xml_file: "point_stat.xml"
 output_yaml_file: "point_stat.yaml"
@@ -23,14 +30,5 @@ fcst_var:
 fcst_thresh:
 - ">0.0"
 list_stat: 
-- FAR
-- PODY
-- FBIAS
-- POFD
-- FBAR
-- FSTDEV
-- OBAR
-- OSTDEV
-# - PR_CORR
-# - RMSE
+- GSS
 log_file: log.agg_wflow

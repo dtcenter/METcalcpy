@@ -22,14 +22,12 @@ con_series:
 - 1
 - 1
 - 1
-- 1
 fcst_var_val_1:
   APCP_03:
-  - FBIAS
+  - GSS
 list_stat_1:
-- FBIAS
+- GSS
 series_type:
-- b
 - b
 - b
 - b
@@ -76,6 +74,5 @@ user_legend:
 - 'mem08'
 - 'mem09'
 - 'mem10'
-- Aggregated
 ylim: [0.8,2.0]
 
