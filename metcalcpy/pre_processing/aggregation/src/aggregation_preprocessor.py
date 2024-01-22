@@ -75,7 +75,7 @@ def pre_req(stat_name: list) -> list:
     STATISTIC_TO_FIELDS1 = {
         'baser': ['fy_oy', 'fn_oy'],
         'acc': ['fy_oy', 'fn_on'],
-        'fbias': ['fy_oy', 'fn_on', 'fy_oy', 'fy_on'],
+        'fbias': ['fy_oy', 'fn_on', 'fn_oy', 'fy_on'],
         'fmean': ['fy_oy', 'fy_on'],
         'pody': ['fy_oy', 'fn_oy'],
         'pofd': ['fy_on', 'fn_on'],
