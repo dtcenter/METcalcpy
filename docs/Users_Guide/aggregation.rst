@@ -23,13 +23,15 @@ Use Case
 Reformatting and Filtering
 ==========================
 
-For this step the files aggregation_preprocessor.py and config_aggregation_preprocessor.yaml files are required.
+For this step the files **aggregation_preprocessor.py** and 
+**config_aggregation_preprocessor.yaml** files are required.
 
-1 - Modify the variables prefix, suffix, dates, and members in the config_aggregation_preprocessor.yaml file to point to the data you wish to process:
+1.  Modify the variables prefix, suffix, dates, and members in the 
+**config_aggregation_preprocessor.yaml** file to point to the data to be processed:
 
 For instance, if the variables are set as the following:
 
-.. code-block:: ini
+.. code-block:: yaml
 
   prefix: "/scratch2/BMC/fv3lam/HIWT/expt_dirs/RRFS_GDAS_GF.SPP.SPPT_20220501-06/"
   suffix: "/metprd/grid_stat_cmn"
@@ -45,7 +47,7 @@ For instance, if the variables are set as the following:
 
 The code will look for the data (.stat files) in the following folders:
 
-.. code-block:: ini
+.. code-block:: yaml
 
   /scratch2/BMC/fv3lam/HIWT/expt_dirs/RRFS_GDAS_GF.SPP.SPPT_20220501-06/2022050100/mem01/metprd/grid_stat_cmn
   /scratch2/BMC/fv3lam/HIWT/expt_dirs/RRFS_GDAS_GF.SPP.SPPT_20220501-06/2022050100/mem02/metprd/grid_stat_cmn
@@ -57,17 +59,17 @@ The code will look for the data (.stat files) in the following folders:
   /scratch2/BMC/fv3lam/HIWT/expt_dirs/RRFS_GDAS_GF.SPP.SPPT_20220501-06/2022050300/mem02/metprd/grid_stat_cmn
   /scratch2/BMC/fv3lam/HIWT/expt_dirs/RRFS_GDAS_GF.SPP.SPPT_20220501-06/2022050300/mem03/metprd/grid_stat_cmn
 
-2 - (Optional) It is possible to group the entire dataset using the following:
+2. (Optional) It is possible to group the entire dataset using the following:
 
-.. code-block:: ini
+.. code-block:: yaml
 
   group_members: True
   group_name: "RRFS_GDAS_GF.SPP_agg"
 
 
-3 - It is also necessary to select the meteorological variable (APCP_03, APCP_01, TMP...), the threshold and the stat variable (FBAR, FBIAS, GSS...):
+3. It is also necessary to select the meteorological variable (APCP_03, APCP_01, TMP...), the threshold and the stat variable (FBAR, FBIAS, GSS...):
 
-.. code-block:: ini
+.. code-block:: yaml
 
   fcst_var:
   - APCP_03
@@ -77,9 +79,9 @@ The code will look for the data (.stat files) in the following folders:
   - FBAR
 
 
-4 - Additional settings might need to be adjusted as well:
+4. Additional settings might need to be adjusted as well:
 
-.. code-block:: ini
+.. code-block:: yaml
 
   prefix: "/scratch2/BMC/fv3lam/HIWT/expt_dirs/RRFS_GDAS_GF.SPP.SPPT_20220501-06/"
   suffix: "/metprd/grid_stat_cmn"
@@ -106,9 +108,9 @@ The code will look for the data (.stat files) in the following folders:
     - FBIAS
   log_file: log.agg_wflow
 
-5 - You can set a WORK_DIR folder and copy the required files to it before executing the python script. To execute the python script use the following command:
+5. Set a WORK_DIR folder and copy the required files to it before executing the python script. To execute the python script use the following command:
 
-.. code-block:: ini
+.. code-block:: yaml
 
   bash
   python aggregation_preprocessor.py -y config_aggregation_preprocessor.yaml
@@ -123,19 +125,19 @@ Aggregation
 
 For this step the files **agg_stat.py** and **config_agg_stat.yaml** files are required.
 
-1 - In order to aggregate the filtered data (grid_stat_reformatted.agg.txt) produced above, 
-it is necessary to edit the settings in the config_agg_stat.yaml file:
+1. In order to aggregate the filtered data (**grid_stat_reformatted.agg.txt**) produced above, 
+it is necessary to edit the settings in the **config_agg_stat.yaml** file:
 
 1.1 - Specify the input and output files
 
-.. code-block:: ini
+.. code-block:: yaml
 
   agg_stat_input: ./grid_stat_reformatted.agg.txt
   agg_stat_output: ./output.txt
 
 1.2 - Specify the meterological and the stat variables:
 
-.. code-block:: ini
+.. code-block:: yaml
 
   fcst_var_val_1:
     APCP_03:
@@ -143,7 +145,7 @@ it is necessary to edit the settings in the config_agg_stat.yaml file:
 
 1.3 - Specify the selected models/members:
 
-.. code-block:: ini
+.. code-block:: yaml
 
   series_val_1:
     model:
@@ -153,7 +155,7 @@ it is necessary to edit the settings in the config_agg_stat.yaml file:
 
 The full **config_agg_stat.yaml** file can be seen below:
 
-.. code-block:: ini
+.. code-block:: yaml
 
   agg_stat_input: ./grid_stat_reformatted.agg.txt
   agg_stat_output: ./output.txt
@@ -196,15 +198,15 @@ The full **config_agg_stat.yaml** file can be seen below:
     - RRFS_GDAS_GF.SPP.SPPT_mem03
   series_val_2: {}
 
-2 - Run the python script:
+2. Run the python script:
 
-.. code-block:: ini
+.. code-block:: yaml
 
   bash
   python agg_stat.py config_stat_agg.yaml
 
 
-The command above will generate a file called output.txt with the aggregated data that 
+The command above will generate a file called **output.txt** with the aggregated data that 
 can be later plot using the METplotpy tools.
 
 
@@ -217,10 +219,10 @@ files are required.
 **config_plot_cmn.yaml** : Config file containing common settings across the different plot types.
 **custom_line.yaml** : Config file specific for the line plot.
 
-1 - The **yaml_preprocessor.py** file is responsible for combining **config_plot_cmn.yaml** 
+1. The **yaml_preprocessor.py** file is responsible for combining **config_plot_cmn.yaml** 
 with the custom config file for the specific plot, in this case **custom_line.yaml**.
 
-.. code-block:: ini
+.. code-block:: yaml
   
   bash
   python yaml_preprocessor.py config_plot_cmn.yaml custom_line.yaml -o config_line.yaml
@@ -230,9 +232,9 @@ The command above will create the **config_line.yaml** file which is the result 
 combination of the both config files **config_plot_cmn.yaml custom_line.yaml**, 
 where **custom_line.yaml** variables have priority over the **config_plot_cmn.yaml** variables.
 
-2 - Creating the line plot
+2. Creating the line plot
 
-.. code-block:: ini
+.. code-block:: yaml
 
   bash
   python line.yaml config_line.yaml 
@@ -245,7 +247,7 @@ steps mentioned above at once.
 Specify the settings using the **environment.yaml** file and the config files m
 entioned above since they are coppied to a WORK_DIR folder.
 
-.. code-block:: ini
+.. code-block:: yaml
 
   bash
   python aggregation_WE2E.py
