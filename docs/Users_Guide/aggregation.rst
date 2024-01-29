@@ -86,6 +86,11 @@ it is necessary to edit the settings in the **config_agg_stat.yaml** file:
 Modify the YAML configuration file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+The config_agg_stat.yaml configuration file is located in the $METCALCPY_BASE/metcalcpy/pre_processing/aggregation/config
+directory. The $METCALCPY_BASE is the directory where the METcalcpy source code is
+saved (e.g. /Users/my_acct/METcalcpy). Change directory to $METCALCPY_BASE/metcalcpy/pre_processing/aggregation/config
+and modify the config_agg_stat.yaml file.
+
 1.  Specify the input and output files
 
 .. code-block:: yaml
@@ -119,8 +124,8 @@ The full **config_agg_stat.yaml** file is shown below:
 
 .. code-block:: yaml
 
-  agg_stat_input: ./rrfs_cts_reformatted.data
-  agg_stat_output: ./rrfs_cts_aggregated.txt
+  agg_stat_input: /Users/my_account/sample_data/rrfs_cts_reformatted.data
+  agg_stat_output: /Users/my_account/my_output/rrfs_cts_aggregated.data
   alpha: 0.05
   append_to_file: null
   circular_block_bootstrap: 'True'
@@ -161,8 +166,8 @@ The full **config_agg_stat.yaml** file is shown below:
   series_val_2: {}
 
 
-In the configuration file above, the input data and output file will be located in the directory from
-where the agg_stat.py script is run.
+**NOTE**: Use full directory paths when specifying the location of the input file and output
+file.
 
 
 Set the Environment and PYTHONPATH
@@ -208,11 +213,12 @@ The following are instructions for performing aggregation from the command-line:
 .. code-block:: yaml
 
 
-  python $METCALCPY_BASE/metcalcpy/agg_stat.py config_stat_agg.yaml
+  python $METCALCPY_BASE/metcalcpy/agg_stat.py $METCALCPY_BASE/metcalcpy/pre_processing/aggregation/config/config_stat_agg.yaml
 
 
-This will generate the file **rrfs_cts_aggregated.txt** which contains the
+This will generate the file **rrfs_cts_aggregated.data** which contains the
 aggregated statistics data that can be used to generate plots using METplotpy.
+
 
 
 Additionally, the agg_stat.py module can be invoked by another script or module
