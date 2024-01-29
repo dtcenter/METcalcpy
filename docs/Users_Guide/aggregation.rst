@@ -5,127 +5,55 @@ Aggregation
 Python Requirements
 ===================
 
+The third-party Python packages and the corresponding version numbers are found
+in the requirements.txt and nco_requirements.txt files:
+
+
 Retrieve Code
 =============
+
+Refer to the Installation Guide for instructions.
+The
 
 Install Package
 ===============
 
-Explore Modules
-===============
+Refer to the Installation Guide for instructions.
 
-Using Modules
-=============
-
-Use Case
-========
-
-Reformatting and Filtering
-==========================
-
-For this step the files **aggregation_preprocessor.py** and 
-**config_aggregation_preprocessor.yaml** files are required.
-
-1.  Modify the variables prefix, suffix, dates, and members in the 
-**config_aggregation_preprocessor.yaml** file to point to the data to be processed:
-
-For instance, if the variables are set as the following:
-
-.. code-block:: yaml
-
-  prefix: "/scratch2/BMC/fv3lam/HIWT/expt_dirs/RRFS_GDAS_GF.SPP.SPPT_20220501-06/"
-  suffix: "/metprd/grid_stat_cmn"
-  dates:
-  - '2022050100'
-  - '2022050200'
-  - '2022050300'
-  members:
-  - 'mem01'
-  - 'mem02'
-  - 'mem03'
-
-
-The code will look for the data (.stat files) in the following folders:
-
-.. code-block:: yaml
-
-  /scratch2/BMC/fv3lam/HIWT/expt_dirs/RRFS_GDAS_GF.SPP.SPPT_20220501-06/2022050100/mem01/metprd/grid_stat_cmn
-  /scratch2/BMC/fv3lam/HIWT/expt_dirs/RRFS_GDAS_GF.SPP.SPPT_20220501-06/2022050100/mem02/metprd/grid_stat_cmn
-  /scratch2/BMC/fv3lam/HIWT/expt_dirs/RRFS_GDAS_GF.SPP.SPPT_20220501-06/2022050100/mem03/metprd/grid_stat_cmn
-  /scratch2/BMC/fv3lam/HIWT/expt_dirs/RRFS_GDAS_GF.SPP.SPPT_20220501-06/2022050200/mem01/metprd/grid_stat_cmn
-  /scratch2/BMC/fv3lam/HIWT/expt_dirs/RRFS_GDAS_GF.SPP.SPPT_20220501-06/2022050200/mem02/metprd/grid_stat_cmn
-  /scratch2/BMC/fv3lam/HIWT/expt_dirs/RRFS_GDAS_GF.SPP.SPPT_20220501-06/2022050200/mem03/metprd/grid_stat_cmn
-  /scratch2/BMC/fv3lam/HIWT/expt_dirs/RRFS_GDAS_GF.SPP.SPPT_20220501-06/2022050300/mem01/metprd/grid_stat_cmn
-  /scratch2/BMC/fv3lam/HIWT/expt_dirs/RRFS_GDAS_GF.SPP.SPPT_20220501-06/2022050300/mem02/metprd/grid_stat_cmn
-  /scratch2/BMC/fv3lam/HIWT/expt_dirs/RRFS_GDAS_GF.SPP.SPPT_20220501-06/2022050300/mem03/metprd/grid_stat_cmn
-
-2. (Optional) It is possible to group the entire dataset using the following:
-
-.. code-block:: yaml
-
-  group_members: True
-  group_name: "RRFS_GDAS_GF.SPP_agg"
-
-
-3. It is also necessary to select the meteorological variable (APCP_03, APCP_01, TMP...), the threshold and the stat variable (FBAR, FBIAS, GSS...):
-
-.. code-block:: yaml
-
-  fcst_var:
-  - APCP_03
-  fcst_thresh:
-  - ">0.0"
-  list_stat: 
-  - FBAR
-
-
-4. Additional settings might need to be adjusted as well:
-
-.. code-block:: yaml
-
-  prefix: "/scratch2/BMC/fv3lam/HIWT/expt_dirs/RRFS_GDAS_GF.SPP.SPPT_20220501-06/"
-  suffix: "/metprd/grid_stat_cmn"
-  dates:
-    - '2022050100'
-    - '2022050200'
-    - '2022050300'
-  members:
-    - 'mem01'
-    - 'mem02'
-    - 'mem03'
-  group_members: False
-  group_name: "RRFS_GDAS_GF.SPP_agg"
-  output_xml_file: "point_stat.xml"
-  output_yaml_file: "point_stat.yaml"
-  output_reformatted_file: "grid_stat_reformatted.txt"
-  output_aggregate_file: "grid_stat_reformatted.agg.txt"
-  metdataio_dir: "/path/to/METdataio" 
-  fcst_var:
-    - APCP_03
-  fcst_thresh:
-    - ">0.0"
-  list_stat: 
-    - FBIAS
-  log_file: log.agg_wflow
-
-5. Set a WORK_DIR folder and copy the required files to it before executing the python script. To execute the python script use the following command:
-
-.. code-block:: yaml
-
-  bash
-  python aggregation_preprocessor.py -y config_aggregation_preprocessor.yaml
-
-Considering the settings above, the command will create two output files: 
-
-- **grid_stat_reformatted.txt** : File containing the reformatted data
-- **grid_stat_reformatted.agg.txt** : Filtered data that can be used by agg_stat.py
 
 Aggregation
 ===========
 
-For this step the files **agg_stat.py** and **config_agg_stat.yaml** files are required.
+The agg_stat module, **agg_stat.py** to is used to calculate aggregated statistics and confidence intervals.
+This module can be run as a script at the command-line, or imported in another Python script.
 
-1. In order to aggregate the filtered data (**grid_stat_reformatted.agg.txt**) produced above, 
+A required YAML configuration file,  **config_agg_stat.yaml** files is used to define the location of
+input data and the name and location of the output file.
+
+The agg_stat module support the following linetypes that are output from the MET
+**point-stat** and **grid-stat** tools:
+
+* CTC
+* SL1L2
+* SAL1L2
+* VAL1L2
+* VCNT
+* PSTD
+* MCTS
+* PCT
+
+In addition, the following linetypes from the MET **grid-stat** tool are supported:
+
+* GRAD
+* NBRCNT
+* NBRCTC
+
+Finally, the following linetypes from the MET **ensemble-stat** tool are supported:
+
+* SSVAR (the SSVAR_SPREAD and SSVAR_RMSE statistics are exempt)
+* ECNT
+
+In order to aggregate the filtered data (**grid_stat_reformatted.agg.txt**) produced above,
 it is necessary to edit the settings in the **config_agg_stat.yaml** file:
 
 1.1 - Specify the input and output files
@@ -135,7 +63,7 @@ it is necessary to edit the settings in the **config_agg_stat.yaml** file:
   agg_stat_input: ./grid_stat_reformatted.agg.txt
   agg_stat_output: ./output.txt
 
-1.2 - Specify the meterological and the stat variables:
+1.2 - Specify the meteorological and the stat variables:
 
 .. code-block:: yaml
 
@@ -209,46 +137,4 @@ The full **config_agg_stat.yaml** file can be seen below:
 The command above will generate a file called **output.txt** with the aggregated data that 
 can be later plot using the METplotpy tools.
 
-
-Plot with METplotpy
-===================
-
-For this step the files **line.py**, **config_plot_cmn.yaml** and **custom_line.yaml** 
-files are required.
-
-**config_plot_cmn.yaml** : Config file containing common settings across the different plot types.
-**custom_line.yaml** : Config file specific for the line plot.
-
-1. The **yaml_preprocessor.py** file is responsible for combining **config_plot_cmn.yaml** 
-with the custom config file for the specific plot, in this case **custom_line.yaml**.
-
-.. code-block:: yaml
-  
-  bash
-  python yaml_preprocessor.py config_plot_cmn.yaml custom_line.yaml -o config_line.yaml
-
-
-The command above will create the **config_line.yaml** file which is the result of the 
-combination of the both config files **config_plot_cmn.yaml custom_line.yaml**, 
-where **custom_line.yaml** variables have priority over the **config_plot_cmn.yaml** variables.
-
-2. Creating the line plot
-
-.. code-block:: yaml
-
-  bash
-  python line.yaml config_line.yaml 
-
-Aggregation Workflow
-====================
-
-Additionally, a python wrapper named **aggregation_WE2E.py** is available to run all the 
-steps mentioned above at once.
-Specify the settings using the **environment.yaml** file and the config files m
-entioned above since they are coppied to a WORK_DIR folder.
-
-.. code-block:: yaml
-
-  bash
-  python aggregation_WE2E.py
 
