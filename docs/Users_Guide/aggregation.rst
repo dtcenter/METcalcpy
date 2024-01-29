@@ -2,23 +2,50 @@
 Aggregation
 ***********
 
+Aggregation is an option that can be applied to MET stat output (in
+the appropriate format) to calculate aggregation statistics and confidence intervals.
+Input data must first be reformatted using the METdataio METreformat module to
+reorder the statistics and confidence limits into separate columns.
+
 Python Requirements
 ===================
 
 The third-party Python packages and the corresponding version numbers are found
 in the requirements.txt and nco_requirements.txt files:
 
+**For Non-NCO systems**:
+
+* `requirements.txt <https://github.com/dtcenter/METcalcpy/blob/develop/requirements.txt>`_
+
+**For NCO systems**:
+
+* `nco_requirements.txt <https://github.com/dtcenter/METcalcpy/blob/develop/nco_requirements.txt>`_
+
 
 Retrieve Code
 =============
 
-Refer to the Installation Guide for instructions.
-The
+Refer to the `Installation Guide <https://metcalcpy.readthedocs.io/en/develop/Users_Guide/installation.html>`_ for instructions.
 
-Install Package
-===============
 
-Refer to the Installation Guide for instructions.
+Retrieve Sample Data
+====================
+
+The sample data used for this example is located in the $METCALCPY_BASE/test directory,
+where **$METCALCPY_BASE** is the full path to the location of the METcalcpy source code
+(e.g. /User/my_dir/METcalcpy).
+The example data file used for this example is **rrfs_cts_reformatted.data**.
+This data was reformatted from the MET .stat output using the METdataio METreformat module.
+The reformatting step collects the statistics and any confidence limits for a specified linetype.  The CTS linetype of
+the MET grid-stat output has been reformatted into separate columns: stat_name, stat_value, stat_ncl,
+stat_ncu, stat_bcl, and stat_bcu.  Input data **must** be in this format for the aggregation
+module.
+
+The example data can be copied to a working directory, or left in this directory.  The location
+of the data will be specified in the YAML configuration file.
+
+Please refer to the METdataio User's Guide for instructions for reformatting MET .stat files :
+https://metdataio.readthedocs.io/en/develop/Users_Guide/reformat_stat_data.html for more
 
 
 Aggregation
@@ -27,7 +54,7 @@ Aggregation
 The agg_stat module, **agg_stat.py** to is used to calculate aggregated statistics and confidence intervals.
 This module can be run as a script at the command-line, or imported in another Python script.
 
-A required YAML configuration file,  **config_agg_stat.yaml** files is used to define the location of
+A required YAML configuration file,  **config_agg_stat.yaml** file is used to define the location of
 input data and the name and location of the output file.
 
 The agg_stat module support the following linetypes that are output from the MET
@@ -56,14 +83,21 @@ Finally, the following linetypes from the MET **ensemble-stat** tool are support
 In order to aggregate the filtered data (**grid_stat_reformatted.agg.txt**) produced above,
 it is necessary to edit the settings in the **config_agg_stat.yaml** file:
 
-1.1 - Specify the input and output files
+Modify the YAML configuration file
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+1.  Specify the input and output files
 
 .. code-block:: yaml
 
-  agg_stat_input: ./grid_stat_reformatted.agg.txt
-  agg_stat_output: ./output.txt
+  agg_stat_input: /path-to/rrfs_cts_reformatted.data
+  agg_stat_output: /path-to/rrfs_cts_aggregated.txt
 
-1.2 - Specify the meteorological and the stat variables:
+Replace the *path-to* in the above two settings to the location where the input data
+was stored (either in a working directory or the $METCALCPY_BASE/test directory). **NOTE**:
+Use the **full path** to the input and output directories (no environment variables).
+
+2.  Specify the meteorological and the stat variables:
 
 .. code-block:: yaml
 
@@ -71,7 +105,7 @@ it is necessary to edit the settings in the **config_agg_stat.yaml** file:
     APCP_03:
     - FBIAS
 
-1.3 - Specify the selected models/members:
+3.  Specify the selected models/members:
 
 .. code-block:: yaml
 
@@ -81,12 +115,12 @@ it is necessary to edit the settings in the **config_agg_stat.yaml** file:
     - RRFS_GDAS_GF.SPP.SPPT_mem02
     - RRFS_GDAS_GF.SPP.SPPT_mem03
 
-The full **config_agg_stat.yaml** file can be seen below:
+The full **config_agg_stat.yaml** file is shown below:
 
 .. code-block:: yaml
 
-  agg_stat_input: ./grid_stat_reformatted.agg.txt
-  agg_stat_output: ./output.txt
+  agg_stat_input: ./rrfs_cts_reformatted.data
+  agg_stat_output: ./rrfs_cts_aggregated.txt
   alpha: 0.05
   append_to_file: null
   circular_block_bootstrap: 'True'
@@ -126,15 +160,55 @@ The full **config_agg_stat.yaml** file can be seen below:
     - RRFS_GDAS_GF.SPP.SPPT_mem03
   series_val_2: {}
 
-2. Run the python script:
 
+In the configuration file above, the input data and output file will be located in the directory from
+where the agg_stat.py script is run.
+
+
+Set the Environment and PYTHONPATH
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+bash shell:
+
+.. code-block:: ini
+
+ export METCALCPY_BASE=/path-to-METcalcpy
+
+csh shell:
+
+.. code-block:: ini
+
+ setenv METCALCPY_BASE /path-to-METcalcpy
+
+
+where *path-to-METcalcpy* is the full path to where the METcalcpy source code is located
+(e.g. /User/my_dir/METcalcpy)
+
+bash shell:
+
+.. code-block:: ini
+
+ export PYTHONPATH=$METCALCPY_BASE/:$METCALCPY_BASE/metcalcpy
+
+csh shell
+
+.. code-block:: ini
+
+ setenv PYTHONPATH $METCALCPY_BASE/:$METCALCPY_BASE/metcalcpy
+
+
+Where $METCALCPY_BASE is the full path to where the METcalcpy code resides (e.g. /User/
+my_dir/METcalcpy).
+
+Run the python script:
+^^^^^^^^^^^^^^^^^^^^^
 .. code-block:: yaml
 
-  bash
+
   python agg_stat.py config_stat_agg.yaml
 
 
-The command above will generate a file called **output.txt** with the aggregated data that 
-can be later plot using the METplotpy tools.
+This will generate the file **rrfs_cts_aggregated.txt** which contains the
+aggregated statistics data that can be used to generate plots using METplotpy.
 
 
