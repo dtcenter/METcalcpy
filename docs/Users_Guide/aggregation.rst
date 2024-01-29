@@ -215,7 +215,7 @@ This will generate the file **rrfs_cts_aggregated.txt** which contains the
 aggregated statistics data that can be used to generate plots using METplotpy.
 
 
-Additionally, the agg_stat.py module can be imported by another script or module
+Additionally, the agg_stat.py module can be invoked by another script or module
 by importing the package:
 
 .. code-block:: ini
@@ -225,9 +225,9 @@ by importing the package:
   AGG_STAT = AggStat(PARAMS)
   AGG_STAT.calculate_stats_and_ci()
 
-  where PARAMS – a dictionary with data description parameters including
-  location of input and output data. The structure is similar to the
-  original Rscript template from which this Python implementation was derived.
+where PARAMS is a dictionary containing the parameters indicating the
+location of input and output data. The structure is similar to the
+original Rscript template from which this Python implementation was derived.
 
-  Use the same PYTHONPATH defined above to ensure that the agg_stat module is found by
-  the Python import process.
+Use the same PYTHONPATH defined above to ensure that the agg_stat module is found by
+the Python import process.
