@@ -38,14 +38,14 @@ The example data file used for this example is **rrfs_cts_reformatted.data**.
 This data was reformatted from the MET .stat output using the METdataio METreformat module.
 The reformatting step collects the statistics and any confidence limits for a specified linetype.  The CTS linetype of
 the MET grid-stat output has been reformatted into separate columns: stat_name, stat_value, stat_ncl,
-stat_ncu, stat_bcl, and stat_bcu.  Input data **must** be in this format for the aggregation
-module.
+stat_ncu, stat_bcl, and stat_bcu.  Input data **must** be in this format prior to using the aggregation
+module, agg_stat.py.
 
 The example data can be copied to a working directory, or left in this directory.  The location
 of the data will be specified in the YAML configuration file.
 
 Please refer to the METdataio User's Guide for instructions for reformatting MET .stat files :
-https://metdataio.readthedocs.io/en/develop/Users_Guide/reformat_stat_data.html for more
+https://metdataio.readthedocs.io/en/develop/Users_Guide/reformat_stat_data.html
 
 
 Aggregation
@@ -202,6 +202,9 @@ my_dir/METcalcpy).
 
 Run the python script:
 ^^^^^^^^^^^^^^^^^^^^^^
+
+The following are instructions for performing aggregation from the command-line:
+
 .. code-block:: yaml
 
 
@@ -212,3 +215,19 @@ This will generate the file **rrfs_cts_aggregated.txt** which contains the
 aggregated statistics data that can be used to generate plots using METplotpy.
 
 
+Additionally, the agg_stat.py module can be imported by another script or module
+by importing the package:
+
+.. code-block:: ini
+
+  from metcalcpy.agg_stat import AggStat
+
+  AGG_STAT = AggStat(PARAMS)
+  AGG_STAT.calculate_stats_and_ci()
+
+  where PARAMS – a dictionary with data description parameters including
+  location of input and output data. The structure is similar to the
+  original Rscript template from which this Python implementation was derived.
+
+  Use the same PYTHONPATH defined above to ensure that the agg_stat module is found by
+  the Python import process.
