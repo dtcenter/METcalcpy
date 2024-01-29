@@ -201,7 +201,7 @@ Where $METCALCPY_BASE is the full path to where the METcalcpy code resides (e.g.
 my_dir/METcalcpy).
 
 Run the python script:
-^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^
 .. code-block:: yaml
 
 
