@@ -1,32 +1,32 @@
-agg_stat_input: ./grid_stat_reformatted.agg.txt
-agg_stat_output: ./output.txt
+agg_stat_input: /path-to/rrfs_cts_reformatted.data
+agg_stat_output: /path-to/rrfs_cts_aggregated.txt
 alpha: 0.05
 append_to_file: null
-circular_block_bootstrap: 'True'
+circular_block_bootstrap: True
 derived_series_1: []
 derived_series_2: []
-event_equal: 'FALSE'
+event_equal:  False
 fcst_var_val_1:
   APCP_03:
-  - GSS
+  - FBIAS
 fcst_var_val_2: {}
 indy_vals:
 - '30000'
 - '60000'
 - '90000'
 - '120000'
-- '150000'
+- '160000'
 - '180000'
-- '210000'
+- '200000'
 - '240000'
 - '270000'
 - '300000'
-- '330000'
+- '340000'
 - '360000'
 indy_var: fcst_lead
-line_type: ctc
+line_type: cts
 list_stat_1:
-- GSS
+- fbias
 list_stat_2: []
 method: perc
 num_iterations: 1
