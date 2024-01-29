@@ -208,7 +208,7 @@ The following are instructions for performing aggregation from the command-line:
 .. code-block:: yaml
 
 
-  python agg_stat.py config_stat_agg.yaml
+  python $METCALCPY_BASE/metcalcpy/agg_stat.py config_stat_agg.yaml
 
 
 This will generate the file **rrfs_cts_aggregated.txt** which contains the
