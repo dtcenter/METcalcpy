@@ -176,8 +176,9 @@ The following are instructions for performing aggregation from the command-line:
   python $METCALCPY_BASE/metcalcpy/agg_stat.py $METCALCPY_BASE/metcalcpy/pre_processing/aggregation/config/config_stat_agg.yaml
 
 
-This will generate the file **rrfs_cts_aggregated.data** which contains the
-aggregated statistics data that can be used to generate plots using METplotpy.
+This will generate the file **ecnt_aggregated.data** (from the agg_stat_output setting) which now contains the
+aggregated statistics data. This data is in a format that can be read by the METplotpy line plot
+to generate a spread-skill plot by plotting the ECNT_RMSE and ECNT_SPREAD_PLUS_OERR.
 
 
 
@@ -195,5 +196,5 @@ where PARAMS is a dictionary containing the parameters indicating the
 location of input and output data. The structure is similar to the
 original Rscript template from which this Python implementation was derived.
 
-Use the same PYTHONPATH defined above to ensure that the agg_stat module is found by
+**NOTE**: Remember to use the same PYTHONPATH defined above to ensure that the agg_stat module is found by
 the Python import process.
