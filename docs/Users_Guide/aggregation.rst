@@ -66,36 +66,19 @@ This module can be run as a script at the command-line, or imported in another P
 A required YAML configuration file,  **config_agg_stat.yaml** file is used to define the location of
 input data and the name and location of the output file.
 
-The agg_stat module support the following linetypes that are output from the MET
-**point-stat** and **grid-stat** tools:
+The agg_stat module support the ECNT linetype that are output from the MET
+**ensemble-stat** tool
 
-* CTC
-* SL1L2
-* SAL1L2
-* VAL1L2
-* VCNT
-* PSTD
-* MCTS
-* PCT
-
-In addition, the following linetypes from the MET **grid-stat** tool are supported:
-
-* GRAD
-* NBRCNT
-* NBRCTC
-
-Finally, the following linetypes from the MET **ensemble-stat** tool are supported:
-
-* SSVAR (the SSVAR_SPREAD and SSVAR_RMSE statistics are exempt)
-* ECNT
-
-In order to aggregate the filtered data (**grid_stat_reformatted.agg.txt**) produced above,
-it is necessary to edit the settings in the **config_agg_stat.yaml** file:
+The input to the agg_stat module must have the appropriate format.  The ECNT linetype must first be
+`reformatted via the METdataio METreformat module <https://metdataio.readthedocs.io/en/develop/Users_Guide/reformat_stat_data.html>`_
+by following the instructions under the **Reformatting for computing aggregation statistics with METcalcpy agg_stat**
+header.
 
 Modify the YAML configuration file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The config_agg_stat.yaml configuration file is located in the $METCALCPY_BASE/metcalcpy/pre_processing/aggregation/config
+The config_agg_stat.yaml is required to perform aggregation statistics calculations. This
+configuration file is located in the $METCALCPY_BASE/metcalcpy/pre_processing/aggregation/config
 directory. The $METCALCPY_BASE is the directory where the METcalcpy source code is
 saved (e.g. /Users/my_acct/METcalcpy). Change directory to $METCALCPY_BASE/metcalcpy/pre_processing/aggregation/config
 and modify the config_agg_stat.yaml file.
@@ -104,8 +87,8 @@ and modify the config_agg_stat.yaml file.
 
 .. code-block:: yaml
 
-  agg_stat_input: /path-to/rrfs_cts_reformatted.data
-  agg_stat_output: /path-to/rrfs_cts_aggregated.txt
+  agg_stat_input: /path-to/test/data/rrfs_ecnt_for_agg.data
+  agg_stat_output: /path-to/ecnt_aggregated.data
 
 Replace the *path-to* in the above two settings to the location where the input data
 was stored (either in a working directory or the $METCALCPY_BASE/test directory). **NOTE**:
@@ -116,8 +99,9 @@ Use the **full path** to the input and output directories (no environment variab
 .. code-block:: yaml
 
   fcst_var_val_1:
-    APCP_03:
-    - FBIAS
+    TMP:
+      - ECNT_RMSE
+      - ECNT_SPREAD_PLUS_OERR
 
 3.  Specify the selected models/members:
 
@@ -125,54 +109,21 @@ Use the **full path** to the input and output directories (no environment variab
 
   series_val_1:
     model:
-    - RRFS_GDAS_GF.SPP.SPPT_mem01
-    - RRFS_GDAS_GF.SPP.SPPT_mem02
-    - RRFS_GDAS_GF.SPP.SPPT_mem03
+     - RRFS_GEFS_GF.SPP.SPPT
+
+4.  Specify the selected statistics to be aggregated, in this case, the RMSE and SPREAD_PLUS_OERR
+    statistics from the ECNT ensemble-stat tool output are to be calculated.  The aggregated statistics
+    are named ECNT_RMSE and ECNT_SPREAD_PLUS_OERR (append original statistic name with the linetype):
+
+    list_stat_1:
+-    - ECNT_RMSE
+     - ECNT_SPREAD_PLUS_OERR
 
 The full **config_agg_stat.yaml** file is shown below:
 
-.. code-block:: yaml
 
-  agg_stat_input: /Users/my_account/sample_data/rrfs_cts_reformatted.data
-  agg_stat_output: /Users/my_account/my_output/rrfs_cts_aggregated.data
-  alpha: 0.05
-  append_to_file: null
-  circular_block_bootstrap: 'True'
-  derived_series_1: []
-  derived_series_2: []
-  event_equal: 'FALSE'
-  fcst_var_val_1:
-    APCP_03:
-    - FBIAS
-  fcst_var_val_2: {}
-  indy_vals:
-  - '30000'
-  - '60000'
-  - '90000'
-  - '120000'
-  - '150000'
-  - '180000'
-  - '210000'
-  - '240000'
-  - '270000'
-  - '300000'
-  - '330000'
-  - '360000'
-  indy_var: fcst_lead
-  line_type: ctc
-  list_stat_1:
-  - FBIAS
-  list_stat_2: []
-  method: perc
-  num_iterations: 1
-  num_threads: -1
-  random_seed: null
-  series_val_1:
-    model:
-    - RRFS_GDAS_GF.SPP.SPPT_mem01
-    - RRFS_GDAS_GF.SPP.SPPT_mem02
-    - RRFS_GDAS_GF.SPP.SPPT_mem03
-  series_val_2: {}
+.. literalinclude:: ../../metcalcpy/pre_processing/aggregation/config/config_agg_stat.yaml
+
 
 
 **NOTE**: Use full directory paths when specifying the location of the input file and output
