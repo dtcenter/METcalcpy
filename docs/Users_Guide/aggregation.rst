@@ -5,7 +5,11 @@ Aggregation
 Aggregation is an option that can be applied to MET stat output (in
 the appropriate format) to calculate aggregation statistics and confidence intervals.
 Input data must first be reformatted using the METdataio METreformat module to
-reorder the statistics and confidence limits into separate columns.
+label all the columns with the corresponding statistic name specified in the
+`MET User's Guide <https://met.readthedocs.io/en/develop/Users_Guide/index.html>`_
+for `point-stat <https://met.readthedocs.io/en/develop/Users_Guide/point-stat.html>`_,
+`grid-stat <https://met.readthedocs.io/en/develop/Users_Guide/grid-stat.html>`_, or
+`ensemble-stat <https://met.readthedocs.io/en/develop/Users_Guide/ensemble-stat.html>`_ .stat output data.
 
 Python Requirements
 ===================
@@ -25,7 +29,8 @@ in the requirements.txt and nco_requirements.txt files:
 Retrieve Code
 =============
 
-Refer to the `Installation Guide <https://metcalcpy.readthedocs.io/en/develop/Users_Guide/installation.html>`_ for instructions.
+Refer to the `Installation Guide <https://metcalcpy.readthedocs.io/en/develop/Users_Guide/installation.html>`_
+for instructions.
 
 
 Retrieve Sample Data
@@ -34,11 +39,15 @@ Retrieve Sample Data
 The sample data used for this example is located in the $METCALCPY_BASE/test directory,
 where **$METCALCPY_BASE** is the full path to the location of the METcalcpy source code
 (e.g. /User/my_dir/METcalcpy).
-The example data file used for this example is **rrfs_cts_reformatted.data**.
+The example data file used for this example is **rrfs_ecnt_for_agg.data**.
 This data was reformatted from the MET .stat output using the METdataio METreformat module.
-The reformatting step collects the statistics and any confidence limits for a specified linetype.  The CTS linetype of
-the MET grid-stat output has been reformatted into separate columns: stat_name, stat_value, stat_ncl,
-stat_ncu, stat_bcl, and stat_bcu.  Input data **must** be in this format prior to using the aggregation
+The reformatting step labels the columns with the corresponding statistics, based on the MET tool (point-stat,
+grid-stat, or ensemble-stat).  The ECNT linetype of
+the MET grid-stat output has been reformatted to include the statistics names for all
+`ECNT <https://met.readthedocs.io/en/develop/Users_Guide/ensemble-stat.html#id2>`_ specific columns.
+
+
+Input data **must** be in this format prior to using the aggregation
 module, agg_stat.py.
 
 The example data can be copied to a working directory, or left in this directory.  The location
