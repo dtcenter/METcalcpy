@@ -116,7 +116,7 @@ Use the **full path** to the input and output directories (no environment variab
     are named ECNT_RMSE and ECNT_SPREAD_PLUS_OERR (append original statistic name with the linetype):
 
     list_stat_1:
--    - ECNT_RMSE
+     - ECNT_RMSE
      - ECNT_SPREAD_PLUS_OERR
 
 The full **config_agg_stat.yaml** file is shown below:
