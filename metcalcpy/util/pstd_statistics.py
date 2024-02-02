@@ -41,13 +41,16 @@ def calculate_pstd_brier(input_data, columns_names):
         t_table = df_pct_perm['n_i'].sum()
         o_bar_table = df_pct_perm['oy_i'].sum() / t_table
         o_bar = input_data[0, get_column_index_by_name(columns_names, 'o_bar')]
+
+        t_table.reset_index(inplace=True, drop=True)
+
         reliability = calc_reliability(t_table, df_pct_perm)
         resolution = calc_resolution(t_table, df_pct_perm, o_bar)
         uncertainty = calc_uncertainty(o_bar_table)
 
         brier = reliability - resolution + uncertainty
         result = round_half_up(brier, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError, AttributeError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
@@ -72,6 +75,8 @@ def calculate_pstd_bss_smpl(input_data, columns_names):
         t_table = df_pct_perm['n_i'].sum()
         o_bar_table = df_pct_perm['oy_i'].sum() / t_table
         o_bar = input_data[0, get_column_index_by_name(columns_names, 'o_bar')]
+
+        t_table.reset_index(inplace=True, drop=True)
         reliability = calc_reliability(t_table, df_pct_perm)
         resolution = calc_resolution(t_table, df_pct_perm, o_bar)
         uncertainty = calc_uncertainty(o_bar_table)
@@ -156,6 +161,7 @@ def calculate_pstd_resolution(input_data, columns_names):
         df_pct_perm = _calc_common_stats(columns_names, input_data)
         o_bar = input_data[0, get_column_index_by_name(columns_names, 'o_bar')]
         t_table = df_pct_perm['n_i'].sum()
+        t_table.reset_index(inplace=True, drop=True)
         resolution = calc_resolution(t_table, df_pct_perm, o_bar)
         result = round_half_up(resolution, PRECISION)
     except (TypeError, ZeroDivisionError, Warning, ValueError):
