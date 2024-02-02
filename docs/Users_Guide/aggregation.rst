@@ -177,9 +177,7 @@ The following are instructions for performing aggregation from the command-line:
 
 
 This will generate the file **ecnt_aggregated.data** (from the agg_stat_output setting) which now contains the
-aggregated statistics data. This data is in a format that can be read by the METplotpy line plot
-to generate a spread-skill plot by plotting the ECNT_RMSE and ECNT_SPREAD_PLUS_OERR.
-
+aggregated statistics data.
 
 
 Additionally, the agg_stat.py module can be invoked by another script or module
