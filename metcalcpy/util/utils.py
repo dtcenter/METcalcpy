@@ -691,14 +691,7 @@ def equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axi
 
     for fcst_var, fcst_var_stats in fcst_var_val.items():
         series_data_for_ee = pd.DataFrame()
-        fcst_var_stats_current = fcst_var_stats
-        # if the data comes from agg_stat workflow it doesn't contain statistics values.
-        # They will be calculated later. In this case The code should not loop over all
-        # requested statistics but instead should do it only ones to avoid data multiplication
-        if 'stat_name' not in input_data.keys():
-            fcst_var_stats_current = [fcst_var_stats[0]]
-
-        for fcst_var_stat in fcst_var_stats_current:
+        for fcst_var_stat in fcst_var_stats:
             # for each series for the specified axis
             if len(params['series_val_' + axis]) == 0:
                 series_data_for_ee = input_data
