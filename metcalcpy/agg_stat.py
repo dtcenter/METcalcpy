@@ -1101,11 +1101,12 @@ class AggStat:
                     n_stats = 0
 
                 # save results to the output data frame
-                out_frame['fcst_var'][point_ind] = fcst_var
-                out_frame['stat_value'][point_ind] = bootstrap_results.value
-                out_frame['stat_btcl'][point_ind] = bootstrap_results.lower_bound
-                out_frame['stat_btcu'][point_ind] = bootstrap_results.upper_bound
-                out_frame['nstats'][point_ind] = n_stats
+                out_frame.loc[point_ind, 'fcst_var'] = fcst_var
+                out_frame.loc[point_ind, 'stat_value'] = bootstrap_results.value
+                out_frame.loc[point_ind, 'stat_btcl'] = bootstrap_results.lower_bound
+                out_frame.loc[point_ind, 'stat_btcu'] = bootstrap_results.upper_bound
+                out_frame.loc[point_ind, 'nstats'] = n_stats
+
 
         else:
             out_frame = pd.DataFrame()

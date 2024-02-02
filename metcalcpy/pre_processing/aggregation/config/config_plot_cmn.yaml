@@ -1,0 +1,198 @@
+# General plot appearance and settings
+alpha: 0.05
+colors:
+- '#32cd32'  # LimeGreen
+- '#ff6347'  # Tomato
+- '#4682b4'  # SteelBlue
+- '#ffa500'  # Orange
+- '#6a5acd'  # SlateBlue
+- '#20b2aa'  # LightSeaGreen
+- '#4682b4'  # SteelBlue
+- '#ffa500'  # Orange
+- '#6a5acd'  # SlateBlue
+- '#20b2aa'  # LightSeaGreen
+plot_height: 8.5
+plot_res: 72
+plot_units: in
+plot_width: 11.0
+plot_caption: ''
+plot_filename: ./test.png
+title: Performance Diagram (APCP3h - May 1st to 6th, 2022)
+title_align: 0.5
+title_offset: -2
+title_size: 1.8
+title_weight: 2.0
+
+# Grid configuration
+grid_col: '#cccccc'
+grid_lty: 3
+grid_lwd: 1
+grid_on: 'True'
+
+# Axis labels and tick configuration
+xaxis: Success Ratio
+xlab_offset: 0
+xlab_size: 1.75
+xlab_weight: 2
+xtlab_horiz: 0.5
+xtlab_orient: 2
+xtlab_size: 1.2
+yaxis_1: Probability of Detection (PODY)
+ylab_offset: 0
+ylab_size: 2.5
+ylab_weight: 1
+ytlab_orient: 1
+ytlab_size: 0.9
+
+# Caption settings
+caption_align: 0.0
+caption_col: '#333333'
+caption_offset: 30.0
+caption_size: 0.8
+caption_weight: 1
+
+# Legend configuration
+legend_box: o  # 'o' likely stands for the shape or border style of the legend box
+legend_inset:
+  x: 0.25
+  y: -0.27
+legend_ncol: 3
+legend_size: 1.0
+user_legend:
+- 'mem01'
+- 'mem02'
+- 'mem03'
+- 'mem04'
+- 'mem05'
+- 'mem06'
+- 'mem07'
+- 'mem08'
+- 'mem09'
+- 'mem10'
+
+# Series plot settings
+plot_ci:
+- none
+- none
+- none
+- none
+- none
+- none
+- none
+- none
+- none
+- none
+plot_disp:
+- 'True'
+- 'True'
+- 'True'
+- 'True'
+- 'True'
+- 'True'
+- 'True'
+- 'True'
+- 'True'
+- 'True'
+series_order:
+- 1
+- 2
+- 3
+- 4
+- 5
+- 6
+- 7
+- 8
+- 9
+- 10
+series_line_style:
+- --
+- -.
+- ':'
+- --
+- ':'
+- -.
+- ':'
+- '-'
+- -.
+- ':'
+series_line_width:
+- 1
+- 1
+- 1
+- 1
+- 1
+- 1
+- 1
+- 1
+- 1
+- 1
+series_symbols:
+- o
+- ^
+- s
+- d
+- o
+- ^
+- .
+- d
+- o
+- ^
+series_type:
+- joined lines
+
+# Model series values
+series_val_1:
+  model:
+  - RRFS_GDAS_GF.SPP.SPPT_mem01
+  - RRFS_GDAS_GF.SPP.SPPT_mem02
+  - RRFS_GDAS_GF.SPP.SPPT_mem03
+  - RRFS_GDAS_GF.SPP.SPPT_mem04
+  - RRFS_GDAS_GF.SPP.SPPT_mem05
+  - RRFS_GDAS_GF.SPP.SPPT_mem06
+  - RRFS_GDAS_GF.SPP.SPPT_mem07
+  - RRFS_GDAS_GF.SPP.SPPT_mem08
+  - RRFS_GDAS_GF.SPP.SPPT_mem09
+  - RRFS_GDAS_GF.SPP.SPPT_mem10
+
+# Data input and derived series settings
+stat_input: ./output.txt
+fcst_var_val_1:
+  APCP_03:
+  - FBIAS
+derived_series_1: []
+derived_series_2: []
+series_val_2: {}
+stat_curve: None
+
+# Bootstrap and data dumping settings for METviewer compatibility
+circular_block_bootstrap: 'True'
+dump_points_1: 'False'
+add_point_thresholds: false
+create_html: 'False'
+
+# Independent variable settings for plotting
+indy_vals:
+- '30000'
+- '60000'
+- '90000'
+- '120000'
+- '150000'
+- '180000'
+- '210000'
+- '240000'
+- '270000'
+- '300000'
+- '330000'
+- '360000'
+indy_var: fcst_lead
+
+# Miscellaneous settings
+ensss_pts: -1
+ensss_pts_disp: 'True'
+equalize_by_indep: 'False'
+event_equal: false
+roc_ctc: true
+roc_pct: false
+show_nstats: 'False'
+show_signif:
+- 'False'

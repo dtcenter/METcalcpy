@@ -15,3 +15,4 @@ python3 -m pytest test_spacetime.py
 python3 -m pytest test_statistics.py
 python3 -m pytest test_tost_paired.py
 python3 -m pytest test_utils.py
+python3 -m pytest test_reformatted_for_agg.py

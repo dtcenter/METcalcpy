@@ -209,11 +209,11 @@ class AggStatBootstrap:
                         index = rows_with_mask_indy_var.index[0]
 
                         # save results to the output data frame
-                        out_frame['fcst_var'][index] = fcst_var
-                        out_frame['stat_value'][index] = bootstrap_results.value
-                        out_frame['stat_btcl'][index] = bootstrap_results.lower_bound
-                        out_frame['stat_btcu'][index] = bootstrap_results.upper_bound
-                        out_frame['nstats'][index] = n_stats
+                        out_frame.loc[index, 'fcst_var'] = fcst_var
+                        out_frame.loc[index, 'stat_value'] = bootstrap_results.value
+                        out_frame.loc[index, 'stat_btcl'] = bootstrap_results.lower_bound
+                        out_frame.loc[index, 'stat_btcu'] = bootstrap_results.upper_bound
+                        out_frame.loc[index, 'nstats'] = n_stats
         else:
             out_frame = pd.DataFrame()
         return out_frame

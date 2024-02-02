@@ -1,0 +1,18 @@
+
+METCALCPY: "/path/to/METcalcpy"
+METPLOTPY: "/path/to/METplotpy"
+AGG_WFLOW: "/path/to/METcalcpy/metcalcpy/pre_processing/aggregation"
+
+AGG_STAT_YAML: "../config/config_agg_stat.yaml"
+
+WORKDIR: "./workdir"
+
+AGG_STAT: True
+AGG_PREP: True
+
+# Plots
+PERFORMANCE_DIAGRAM: False
+LINE: True
+TAYLOR: False
+
+

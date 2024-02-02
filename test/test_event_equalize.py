@@ -95,7 +95,7 @@ def perform_event_equalize(fcst_var_val, fixed_vars_vals_input, indy_var, input_
                 if output_data.empty:
                     output_data = series_data
                 else:
-                    output_data.append(series_data)
+                    pd.concat([output_data, series_data], ignore_index=True)
     end_all = time.time()
     print("total :" + str(end_all - start_all))
     return output_data

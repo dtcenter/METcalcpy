@@ -1,0 +1,11 @@
+---
+# custom config file to override some of the settings in the
+# default config file taylor_diagram_defaults.yaml
+stat_input: ./plot_dlwr_sample.data
+plot_filename: ./test_neg_and_pos_corr_plot.png
+taylor_show_gamma: True
+# Show only positive values of correlation
+taylor_voc: False
+legend_inset:
+  x: 0.1
+  y: -0.25
