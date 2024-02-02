@@ -64,6 +64,7 @@ National Center for Atmospheric Research (NCAR) is sponsored by NSF.
 
    installation
    vertical_interpolation
+   difficulty_index
    release-notes
 
 **Indices and tables**
