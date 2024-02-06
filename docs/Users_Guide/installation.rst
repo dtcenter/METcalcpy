@@ -8,6 +8,7 @@ are used by METviewer, METplotpy, and other applications.
 Python Requirements
 ===================
 
+.. highlight:: bash
 .. literalinclude:: ../../requirements.txt
 
 Retrieve Code
