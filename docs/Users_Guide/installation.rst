@@ -8,7 +8,8 @@ are used by METviewer, METplotpy, and other applications.
 Python Requirements
 ===================
 
-.. highlight:: bash
+The requirements below come directly from the **requirements.txt** file at the top level of the repository.
+
 .. literalinclude:: ../../requirements.txt
 
 Retrieve Code
