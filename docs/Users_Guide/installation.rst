@@ -8,42 +8,9 @@ are used by METviewer, METplotpy, and other applications.
 Python Requirements
 ===================
 
-* Python 3.8.6
+The requirements below come directly from the **requirements.txt** file at the top level of the repository.
 
-* cartopy 0.20.2
-
-* eofs
-
-* imutils 0.5.4
-
-* imageio 2.19.2
-
-* lxml
-
-* matplotlib 3.5.1
-
-* metcalcpy
-
-* metpy
-
-* netcdf4 1.5.8
-
-* numpy 1.22.3
-
-* pandas 1.2.3
-
-* pytest 7.1.2
-
-* pyyaml 5.3.1 or above
-
-* scikit-image 0.18.1 or above
-
-* scikit-learn 0.23.2
-
-* scipy 1.8.0
-
-* xarray 2022.3.0
-
+.. literalinclude:: ../../requirements.txt
 
 Retrieve Code
 =============
