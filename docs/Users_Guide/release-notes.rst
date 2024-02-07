@@ -9,6 +9,29 @@ METcalcpy Release Notes
 =======================
 
 
+METcalcpy Velsion 3.0.0-beta3 release notes (20230207)
+------------------------------------------------------
+
+
+  .. dropdown:: New Functionality
+
+
+  .. dropdown:: Enhancements
+ 
+     * **Create aggregation support for MET .stat output** (`#325 <https://github.com/dtcenter/METcalcpy/issues/325>`_)
+
+
+  .. dropdown:: Internal
+
+     * Update GitHub actions workflows to switch from node 16 to node 20  (`#345 <https://github.com/dtcenter/METcalcpy/issues/345>`_)
+
+
+  .. dropdown:: Bugfixes
+
+
+     * Address negative values returned by calculate_bcmse() and calculate_bcrmse() in sl1l2_statistics module (`#329 <https://github.com/dtcenter/METcalcpy/issues/329>`_)
+
+
 METcalcpy Velsion 3.0.0-beta2 release notes (20231114)
 ------------------------------------------------------
 
