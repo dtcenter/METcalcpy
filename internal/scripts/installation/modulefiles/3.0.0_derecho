@@ -1,0 +1,15 @@
+#%Module######################################################################
+##
+##      METcalcpy
+##
+proc ModulesHelp { } {
+  puts stderr "Sets up the paths and environment variables to use the METcalcpy-3.0.0
+     *** For help see the official MET webpage at
+#http://www.dtcenter.org/met/users ***"
+}
+
+module load ncarenv/23.09
+module load intel/2023.2.1
+
+prepend-path PATH /glade/work/dtcrt/METplus/derecho/miniconda/miniconda3/envs/metplus_v5.1_py3.10/bin
+prepend-path PYTHONPATH /glade/work/dtcrt/METplus/derecho/components/METcalcpy/installations/METcalcpy-3.0.0
