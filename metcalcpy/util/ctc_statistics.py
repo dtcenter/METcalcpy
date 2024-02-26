@@ -1032,37 +1032,55 @@ def sort_by_thresh(input_dataframe: pd.DataFrame, sort_column_name: str = 'fcst_
         # and the numerical value of the threshold (which can be a negative value)
 
         # Capture the entire threshold expression
-        match = re.match(r'(\w*)|(\<|\<=|\==|\>=|\>)*((-)*(\d+\.*\d*))(.\s*&*)?', thresh)
+        match = re.match(r'(NA)|(\<|\<=|\==|\>=|\>)*((-)*(\d+\.*\d*))(.\s*&*)?', thresh)
 
         # Handle NA values separately
         nan_value = -999999.99
-        match_na = re.match(r'(^\w*)', thresh)
+        match_na = re.match(r'(NA)', thresh)
 
         # Handle expressions with operators
         # match_text = re.match(r'(\<|\<=|\==|\>=|\>)*(.*)', thrsh)
-        match_text = re.match(r'((\<|\<=|\==|\>=|\>)*((-)*(\d+\.*\d*))(.\s*&*)?)', thresh)
+        match_num = re.match(r'((\<|\<=|\==|\>=|\>)*((-)*(\d+\.*\d*))(.\s*&*)?)', thresh)
+        match_text = re.match(r'(\<|\<=|\==|\>=|\>)*((.)*)', thresh)
 
         if match:
-            second_compararison_operator.append(False)
             if match.group(1):
-                operators.append('NA')
-                value = nan_value
+                if match_na:
+                   operators.append('NA')
+                   value = nan_value
+                   second_compararison_operator.append(False)
+                else:
+                    # Raw number, no comparison operator.
+                    operators.append(None)
+                    value = float(match_text.group(3))
+                    second_compararison_operator.append(False)
                 values.append(value)
 
-            elif match_text:
-                operators.append(match_text.group(2))
-                value = float(match_text.group(3))
+            elif match_num:
+                # value after the comparison operator is a numerical value
+                operators.append(match_num.group(2))
+                value = float(match_num.group(3))
                 values.append(value)
 
-                if match_text.group(6):
+                # && or & found, signifying a second comparison operation
+                if match_num.group(6):
                     second_compararison_operator.append(True)
+                else:
+                    second_compararison_operator.append(False)
 
-    # Assign weights to the operators so that
+        elif match_text:
+                # value after the comparison operator is text e.g. > SPF20
+                operators.append(match_text.group(1))
+                text = match_text.group(2)
+                text_strings.append(text)
+                second_compararison_operator.append(False)
+
+     # Assign weights to the operators so that
     # > supercedes all other operators and there is spread
     # between comparisons to allow decreasing the weights if there
     # are more constraints (i.e. second comparison: >=3.2 && <9.9 vs >=3.2,
     # where the >=3.2 will have a higher weight value).
-    wt_maps = {'NA': 1, '<': 3, '<=': 5, '==': 7, '>=': 9, '>': 11}
+    wt_maps = {'NA': -1, '<': 3, '<=': 5, '==': 7, '>=': 9, '>': 11}
 
     operator_wts = []
 
@@ -1075,11 +1093,11 @@ def sort_by_thresh(input_dataframe: pd.DataFrame, sort_column_name: str = 'fcst_
             # no operator, assume ==
             operator_wts.append(wt_maps['=='])
         else:
-            wt_value = wt_maps[operator]
+            wt_value = int(wt_maps[operator])
             if second_compararison_operator[idx]:
                 # Reduce the weighting value by 1 to give precedence to lower-bounded thresholds:
                 # e.g. >=5.1 has higher weight over >=5.1 && <9.3
-                wt_value = wt_value - 1
+                wt_value =  wt_value - 1
 
             operator_wts.append(wt_value)
 
