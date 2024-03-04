@@ -36,7 +36,7 @@ def calculate_baser(input_data, columns_names):
 
         Returns:
             calculated BASER as float
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     warnings.filterwarnings('error')
 
@@ -62,7 +62,7 @@ def calculate_acc(input_data, columns_names):
 
         Returns:
             calculated ACC as float
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     warnings.filterwarnings('error')
     try:
@@ -87,7 +87,7 @@ def calculate_fbias(input_data, columns_names):
 
         Returns:
             calculated FBIAS as float
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     warnings.filterwarnings('error')
     try:
@@ -116,7 +116,7 @@ def calculate_fmean(input_data, columns_names):
 
         Returns:
             calculated FMEAN as float
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     warnings.filterwarnings('error')
     try:
@@ -144,7 +144,7 @@ def calculate_pody(input_data, columns_names):
 
         Returns:
             calculated PODY as float
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     warnings.filterwarnings('error')
 
@@ -171,7 +171,7 @@ def calculate_pofd(input_data, columns_names):
 
         Returns:
             calculated POFD as float
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     warnings.filterwarnings('error')
     try:
@@ -244,7 +244,7 @@ def calculate_podn(input_data, columns_names):
 
         Returns:
             calculated PODN as float
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     warnings.filterwarnings('error')
     try:
@@ -269,7 +269,7 @@ def calculate_far(input_data, columns_names):
 
         Returns:
             calculated FAR as float
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     warnings.filterwarnings('error')
     try:
@@ -294,7 +294,7 @@ def calculate_csi(input_data, columns_names):
 
         Returns:
             calculated CSI as float
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     warnings.filterwarnings('error')
     try:
@@ -321,7 +321,7 @@ def calculate_gss(input_data, columns_names):
 
         Returns:
             calculated GSS as float
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     warnings.filterwarnings('error')
     try:
@@ -351,7 +351,7 @@ def calculate_hk(input_data, columns_names):
 
         Returns:
             calculated HK as float
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     warnings.filterwarnings('error')
     try:
@@ -379,7 +379,7 @@ def calculate_hss(input_data, columns_names):
 
         Returns:
             calculated HSS as float
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     warnings.filterwarnings('error')
     try:
@@ -410,7 +410,7 @@ def calculate_odds(input_data, columns_names):
 
         Returns:
             calculated ODDS as float
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     warnings.filterwarnings('error')
     try:
@@ -440,7 +440,7 @@ def calculate_lodds(input_data, columns_names):
 
         Returns:
             calculated LODDS as float
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     warnings.filterwarnings('error')
     try:
@@ -469,7 +469,7 @@ def calculate_bagss(input_data, columns_names):
 
         Returns:
             calculated BAGSS as float
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     warnings.filterwarnings('error')
     try:
@@ -507,7 +507,7 @@ def calculate_eclv(input_data, columns_names):
 
         Returns:
             calculated BAGSS as float
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     warnings.filterwarnings('error')
     try:
@@ -549,7 +549,7 @@ def calculate_economic_value(values, cost_lost_ratio=np.arange(start=0.05, stop=
                 H    - Conditional hit rate
                 cl   - Vector of cost loss ratios.
                 s    - Base rate
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     warnings.filterwarnings('error')
     try:
@@ -601,7 +601,7 @@ def calculate_ctc_total(input_data, columns_names):
 
         Returns:
             calculated Total number of matched pairs as float
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     total = sum_column_data_by_name(input_data, columns_names, 'total')
     return round_half_up(total, PRECISION)
@@ -618,7 +618,7 @@ def calculate_cts_total(input_data, columns_names):
 
             Returns:
                 calculated Total number of matched pairs as float
-                or None if some of the data values are missing or invalid
+                or None if some data values are missing or invalid
     """
     total = sum_column_data_by_name(input_data, columns_names, 'total')
     return round_half_up(total, PRECISION)
@@ -635,7 +635,7 @@ def calculate_ctc_fn_on(input_data, columns_names):
 
         Returns:
             calculated Number of forecast no and observation no as float
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     fn_on = sum_column_data_by_name(input_data, columns_names, 'fn_on')
     return round_half_up(fn_on, PRECISION)
@@ -652,7 +652,7 @@ def calculate_ctc_fn_oy(input_data, columns_names):
 
         Returns:
             calculated Number of forecast no and observation yes as float
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     fn_oy = sum_column_data_by_name(input_data, columns_names, 'fn_oy')
     return round_half_up(fn_oy, PRECISION)
@@ -669,7 +669,7 @@ def calculate_ctc_fy_on(input_data, columns_names):
 
         Returns:
             calculated Number of forecast yes and observation no as float
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     fy_on = sum_column_data_by_name(input_data, columns_names, 'fy_on')
     return round_half_up(fy_on, PRECISION)
@@ -686,7 +686,7 @@ def calculate_ctc_fy_oy(input_data, columns_names):
 
         Returns:
             calculated Number of forecast yes and observation yes as float
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     fy_oy = sum_column_data_by_name(input_data, columns_names, 'fy_oy')
     return round_half_up(fy_oy, PRECISION)
@@ -704,7 +704,7 @@ def calculate_ctc_oy(input_data, columns_names):
 
         Returns:
             calculated OY as float
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     fy_oy = sum_column_data_by_name(input_data, columns_names, 'fy_oy')
     fn_oy = sum_column_data_by_name(input_data, columns_names, 'fn_oy')
@@ -723,7 +723,7 @@ def calculate_ctc_on(input_data, columns_names):
 
         Returns:
             calculated ON as float
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     fy_on = sum_column_data_by_name(input_data, columns_names, 'fy_on')
     fn_on = sum_column_data_by_name(input_data, columns_names, 'fn_on')
@@ -742,7 +742,7 @@ def calculate_ctc_fy(input_data, columns_names):
 
         Returns:
             calculated FY as float
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     fy_on = sum_column_data_by_name(input_data, columns_names, 'fy_on')
     fy_oy = sum_column_data_by_name(input_data, columns_names, 'fy_oy')
@@ -761,7 +761,7 @@ def calculate_ctc_fn(input_data, columns_names):
 
         Returns:
             calculated FN as float
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     fn_on = sum_column_data_by_name(input_data, columns_names, 'fn_on')
     fn_oy = sum_column_data_by_name(input_data, columns_names, 'fn_oy')
@@ -807,7 +807,7 @@ def calculate_odds1(input_data, columns_names):
 
         Returns:
             calculated ODDS as float
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     warnings.filterwarnings('error')
     try:
@@ -835,7 +835,7 @@ def calculate_orss(input_data, columns_names):
 
         Returns:
             calculated ORSS as float
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     warnings.filterwarnings('error')
     try:
@@ -865,7 +865,7 @@ def calculate_sedi(input_data, columns_names):
 
         Returns:
             calculated SEDI as float
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     warnings.filterwarnings('error')
     try:
@@ -896,7 +896,7 @@ def calculate_seds(input_data, columns_names):
 
         Returns:
             calculated SEDS as float
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     warnings.filterwarnings('error')
     try:
@@ -927,7 +927,7 @@ def calculate_edi(input_data, columns_names):
 
         Returns:
             calculated EDI as float
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     warnings.filterwarnings('error')
     try:
@@ -958,7 +958,7 @@ def calculate_eds(input_data, columns_names):
 
         Returns:
             calculated EDs as float
-            or None if some of the data values are missing or invalid
+            or None if some data values are missing or invalid
     """
     warnings.filterwarnings('error')
     try:
@@ -983,11 +983,11 @@ def sort_by_thresh(input_dataframe: pd.DataFrame, sort_column_name: str = 'fcst_
         Sorts the input pandas dataframe by threshold values in the specified column that have
         format "operator value", ie >=1.  This is done by first separating
         the fcst_thresh column into a threshold operator (<,<=, ==, >=, >)
-        and thresh value column.  Assign a weight to each operator (1 for <,
-        2 for <=, 3 for ==  and no operator, 4 for >=, and 5 for >).  Finally,
-        sort the input dataframe by these two new columns resulting in a new
-        dataframe sorted by fcst_thresh in ascending order (default) or descending
-        order.
+        and thresh value column.  Assign a weight to each operator so that > has the highest weight.
+        Assign a "fill" value of -999999.99 for nan values and handle compound thresholds (e.g. >=3.14 && <=10.2)
+        Finally, sort the input dataframe by these two new columns resulting in a new dataframe sorted by fcst_thresh
+        (default) in ascending order (default) or descending order.  NA values will always be last (following the
+        behavior of pandas sort_values()).
 
         Args:
 
@@ -999,7 +999,7 @@ def sort_by_thresh(input_dataframe: pd.DataFrame, sort_column_name: str = 'fcst_
                                      (which is a colunn in CTC output)
 
             :param ascending: A boolean value, by default is set to True to sort by
-                              ascending value.  Set to False to sort in descending order.
+                              ascending value, False to sort in descending order.
 
         Returns:
             sorted_df:  A pandas dataframe that is sorted based on the specified column's values and
@@ -1010,30 +1010,81 @@ def sort_by_thresh(input_dataframe: pd.DataFrame, sort_column_name: str = 'fcst_
 
     operators = []
     values = []
+    second_compararison_operator = []
     text_strings = []
+
+
+    # Replace nan with the string 'NA' for just the sort_column_name threshold
+    input_dataframe[sort_column_name] = input_dataframe[sort_column_name].fillna('NA')
+
     requested_thresh = input_dataframe[sort_column_name]
 
+
+    # If the df_input dataframe is empty (most likely as a result of event equalization),
+    # return the df_input data frame.
+    if input_dataframe.empty:
+        return input_dataframe
+
     for thresh in requested_thresh:
+
         # for thresholds that are comprised of an operator and value, ie >=3,
         # separate the fcst_thresh into two parts: the operator (ie <, <=, ==, >=, >)
         # and the numerical value of the threshold (which can be a negative value)
-        match = re.match(r'(\<|\<=|\==|\>=|\>)*((-)*([0-9])(.)*)', thresh)
+
+        # Capture the entire threshold expression
+        match = re.match(r'(NA)|(\<|\<=|\==|\>=|\>)*((-)*(\d+\.*\d*))(.\s*&*)?', thresh)
+
+        # Handle NA values separately
+        nan_value = -999999.99
+        match_na = re.match(r'(NA)', thresh)
+
+        # Handle expressions with operators
+        # match_text = re.match(r'(\<|\<=|\==|\>=|\>)*(.*)', thrsh)
+        match_num = re.match(r'((\<|\<=|\==|\>=|\>)*((-)*(\d+\.*\d*))(.\s*&*)?)', thresh)
         match_text = re.match(r'(\<|\<=|\==|\>=|\>)*((.)*)', thresh)
 
         if match:
-            operators.append(match.group(1))
-            value = float(match.group(2))
-            values.append(value)
-        elif match_text:
-            operators.append(match_text.group(1))
-            text = match_text.group(2)
-            text_strings.append(text)
+            if match.group(1):
+                if match_na:
+                   operators.append('NA')
+                   value = nan_value
+                   second_compararison_operator.append(False)
+                else:
+                    # Raw number, no comparison operator.
+                    operators.append(None)
+                    value = float(match_text.group(3))
+                    second_compararison_operator.append(False)
+                values.append(value)
 
-    # apply a numerical weighting to each operator: 1 for <, 2 for <=, etc.
-    wt_maps = {'<': 1, '<=': 2, '==': 3, '>=': 4, '>': 5}
+            elif match_num:
+                # value after the comparison operator is a numerical value
+                operators.append(match_num.group(2))
+                value = float(match_num.group(3))
+                values.append(value)
+
+                # && or & found, signifying a second comparison operation
+                if match_num.group(6):
+                    second_compararison_operator.append(True)
+                else:
+                    second_compararison_operator.append(False)
+
+        elif match_text:
+                # value after the comparison operator is text e.g. > SPF20
+                operators.append(match_text.group(1))
+                text = match_text.group(2)
+                text_strings.append(text)
+                second_compararison_operator.append(False)
+
+     # Assign weights to the operators so that
+    # > supercedes all other operators and there is spread
+    # between comparisons to allow decreasing the weights if there
+    # are more constraints (i.e. second comparison: >=3.2 && <9.9 vs >=3.2,
+    # where the >=3.2 will have a higher weight value).
+    wt_maps = {'NA': -1, '<': 3, '<=': 5, '==': 7, '>=': 9, '>': 11}
+
     operator_wts = []
 
-    for operator in operators:
+    for idx, operator in enumerate(operators):
         # if no operator is found, assign the same
         # weight as used for the == operator (i.e. assume
         # that if a bare number is observed, assume that
@@ -1042,9 +1093,15 @@ def sort_by_thresh(input_dataframe: pd.DataFrame, sort_column_name: str = 'fcst_
             # no operator, assume ==
             operator_wts.append(wt_maps['=='])
         else:
-            operator_wts.append(wt_maps[operator])
+            wt_value = int(wt_maps[operator])
+            if second_compararison_operator[idx]:
+                # Reduce the weighting value by 1 to give precedence to lower-bounded thresholds:
+                # e.g. >=5.1 has higher weight over >=5.1 && <9.3
+                wt_value =  wt_value - 1
 
-    # Columns to use in pandas dataframe sorting
+            operator_wts.append(wt_value)
+
+    # Columns to use in pandas dataframe's sort_values()
     sort_by_cols = ['thresh_values', 'op_wts']
     input_dataframe['op_wts'] = operator_wts
 
@@ -1055,7 +1112,8 @@ def sort_by_thresh(input_dataframe: pd.DataFrame, sort_column_name: str = 'fcst_
         input_dataframe['thresh_values'] = text_strings
     else:
         # if the threshold values don't conform to what is expected, then
-        # use the requested threshold column name for sorting.
+        # use the requested threshold column name for sorting (rely on the pandas
+        # sort_values() to do the sorting of the original threshold values).
         sort_by_cols = [sort_column_name]
 
     # sort with ignore_index=True because we don't need to keep the original index values. We
@@ -1063,4 +1121,5 @@ def sort_by_thresh(input_dataframe: pd.DataFrame, sort_column_name: str = 'fcst_
     # we don't want to modify the input dataframe's order, we want a new dataframe.
     sorted_dataframe = input_dataframe.sort_values(by=sort_by_cols, inplace=False,
                                                    ascending=ascending, ignore_index=True)
+
     return sorted_dataframe
