@@ -8,7 +8,8 @@ Description
 This module is used to perform pressure to height conversion in TC-RMW
 data (netCDF or grb2) by vertically interpolating fields
 between grids with pressure vertical coordinates.  The pressure to height conversion is
-implemented with linear interpolation.
+implemented with linear interpolation. The following fields are required in the input data:
+relative humidity, surface pressure, and temperature.
 
 
 Example
@@ -62,7 +63,7 @@ fields:
     - 'RH'
     - 'PRMSL'
 
-
+**NOTE**:  The relative humidity, surface pressure, and temperature fields are required, as they are used to calculate pressure indices. 
 
 Run from the Command Line
 =========================
