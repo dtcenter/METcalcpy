@@ -203,9 +203,9 @@ Create User Documentation
 
 * from the command line, run the following commands::
 
-   build clean
+   make clean
 
-   build_html
+   make html
 
 * Verify that there aren’t any warnings or error messages in the output
 
