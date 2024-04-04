@@ -4,6 +4,8 @@
 # temp files surrounded by #
 *#*#
 
+__pycache__/
+
 # sphinx output
 docs/_build
 docs/diag_api/generated
