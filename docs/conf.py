@@ -12,7 +12,7 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('..'))
 print(sys.path)
 
 
@@ -39,10 +39,14 @@ html_last_updated_fmt = '%c'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.autodoc',
+              'sphinx.ext.autosummary',
               'sphinx.ext.intersphinx',
               'sphinx_gallery.gen_gallery',
               'sphinx_design',
               'sphinx_rtd_theme',]
+
+# Turn on sphinx.ext.autosummary
+autosummary_generate = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
