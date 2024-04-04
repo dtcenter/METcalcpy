@@ -1,10 +1,10 @@
 #!/bin/bash
 #
-# Run SonarQube Source Code Analyzer on a specified revision of MET
+# Run SonarQube Source Code Analyzer for METcalcpy
 #=======================================================================
 #
 # This run_sonarqube.sh script will check out the specified version
-# of MET and run the SonarQube Source Code Analyzer on it.  First,
+# of METcalcpy and run the SonarQube Source Code Analyzer on it.  First,
 # go to the directory where you would like the SCA output written and
 # then run:
 #
@@ -12,9 +12,9 @@
 #    METcalcpy/sonarqube/run_sonarqube.sh name
 #
 # Usage: run_sonarqube.sh name
-#    Test the specified branched version of MET:
+#    Test the specified branched version of METcalcpy:
 #       run_sonarqube.sh {branch name}
-#    Test the specified tagged version of MET:
+#    Test the specified tagged version of METcalcpy:
 #       run_sonarqube.sh {tag name}
 #
 #=======================================================================
@@ -24,14 +24,24 @@ GIT_REPO_NAME=METcalcpy
 GIT_REPO="https://github.com/dtcenter/${GIT_REPO_NAME}"
 
 function usage {
-        echo
-        echo "USAGE: $(basename $0) name"
-        echo "   where \"name\" specifies a branch, tag, or hash."
-        echo
+  echo
+  echo "USAGE: $(basename $0) name"
+  echo "   where \"name\" specifies a branch, tag, or hash."
+  echo
 }
 
 # Check for arguments
 if [[ $# -lt 1 ]]; then usage; exit; fi
+
+# Check that SONAR_TOKEN and SONAR_HOST_URL are defined
+if [ -z ${SONAR_TOKEN} ]; then
+  echo "ERROR: SONAR_TOKEN must be set"
+  exit 1
+fi
+if [ -z ${SONAR_HOST_URL} ]; then
+  echo "ERROR: SONAR_HOST_URL must be set"
+  exit 1
+fi
 
 # Check that SONARQUBE_WRAPPER_BIN is defined
 if [ -z ${SONARQUBE_WRAPPER_BIN} ]; then
@@ -87,7 +97,6 @@ function run_command() {
   return ${STATUS}
 }
 
-
 # Store the full path to the scripts directory
 SCRIPT_DIR=`dirname $0`
 if [[ ${0:0:1} != "/" ]]; then SCRIPT_DIR=$(pwd)/${SCRIPT_DIR}; fi 
@@ -102,14 +111,21 @@ run_command "git clone ${GIT_REPO} ${REPO_DIR}"
 run_command "cd ${REPO_DIR}"
 run_command "git checkout ${1}"
 
+# Define the version string
+SONAR_PROJECT_VERSION=$(cat docs/version | cut -d'=' -f2 | tr -d '" ')
+
 SONAR_PROPERTIES=sonar-project.properties
 
-# Copy sonar-project.properties for Python code
+# Configure the sonar-project.properties
 [ -e $SONAR_PROPERTIES ] && rm $SONAR_PROPERTIES
-cp -p $SCRIPT_DIR/sonar-project.properties $SONAR_PROPERTIES
+sed -e "s|SONAR_PROJECT_KEY|METcalcpy_NB|" \
+    -e "s|SONAR_PROJECT_NAME|METcalcpy Nightly Build|" \
+    -e "s|SONAR_PROJECT_VERSION|$SONAR_PROJECT_VERSION|" \
+    -e "s|SONAR_HOST_URL|$SONAR_HOST_URL|" \
+    -e "s|SONAR_TOKEN|$SONAR_TOKEN|" \
+    -e "s|SONAR_BRANCH_NAME|${1}|" \
+    $SCRIPT_DIR/$SONAR_PROPERTIES > $SONAR_PROPERTIES
 
 # Run SonarQube scan for Python code
 run_command "${SONARQUBE_SCANNER_BIN}/sonar-scanner"
 
-# Run SonarQube report generator to make a PDF file
-#TODAY=`date +%Y%m%d`
