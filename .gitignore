@@ -6,6 +6,7 @@
 
 # sphinx output
 docs/_build
+docs/diag_api/generated
 
 docs/auto_examples
 
