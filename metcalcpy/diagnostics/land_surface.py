@@ -18,30 +18,25 @@ def calc_tci(soil_data,sfc_flux_data):
   :rtype: Xarray DataArray, Pandas DataFrame
   """
 
-  try:
-    # For Xarray objects, compute the mean 
-    if isinstance(soil_data,DataArray) and isinstance(sfc_flux_data,DataArray):
-      soil_mean = soil_data.mean(dim='time')
-      soil_count = soil_data.count(dim='time')
-      sfc_flux_mean = sfc_flux_data.mean(dim='time')
-      soil_std = soil_data.std(dim='time')
-      numer = ((soil_data-soil_mean) * (sfc_flux_data-sfc_flux_mean)).sum(dim='time')
+  # For Xarray objects, compute the mean 
+  if isinstance(soil_data,DataArray) and isinstance(sfc_flux_data,DataArray):
+    soil_mean = soil_data.mean(dim='time')
+    soil_count = soil_data.count(dim='time')
+    sfc_flux_mean = sfc_flux_data.mean(dim='time')
+    soil_std = soil_data.std(dim='time')
+    numer = ((soil_data-soil_mean) * (sfc_flux_data-sfc_flux_mean)).sum(dim='time')
 
-    # For Pandas objects, compute the mean
-    elif isinstance(soil_data,Series) and isinstance(sfc_flux_data,Series):
-      soil_mean = soil_data.mean()
-      soil_count = soil_data.count()
-      sfc_flux_mean = sfc_flux_data.mean()
-      soil_std = soil_data.std()
-      numer = ((soil_data-soil_mean) * (sfc_flux_data-sfc_flux_mean)).sum()
+  # For Pandas objects, compute the mean
+  elif isinstance(soil_data,Series) and isinstance(sfc_flux_data,Series):
+    soil_mean = soil_data.mean()
+    soil_count = soil_data.count()
+    sfc_flux_mean = sfc_flux_data.mean()
+    soil_std = soil_data.std()
+    numer = ((soil_data-soil_mean) * (sfc_flux_data-sfc_flux_mean)).sum()
 
-    # No other object types are supported
-    else:
-      raise TypeError
-
-  except TypeError:
-    print("Only Xarray DataArray or Pandas DataFrame Objects are supported.\
-           Input objects must be of the same type.")
+  # No other object types are supported
+  else:
+    raise TypeError("Only Xarray DataArray or Pandas DataFrame Objects are supported. Input objects must be of the same type. Got "+str(type(soil_data))+" for soil_data and "+str(type(sfc_flux_data))+" for sfc_flux_data")
 
   # Compute the covariance term
   covarTerm = numer / soil_count 
