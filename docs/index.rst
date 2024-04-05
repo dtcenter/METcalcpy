@@ -120,7 +120,6 @@ To cite this documentation in publications, please refer to the METcalcpy User's
 
    Users_Guide/index
    Contributors_Guide/index
-   diag_api/index
 
 Indices
 =======
