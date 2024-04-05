@@ -34,7 +34,6 @@ function usage {
 # Check for arguments
 if [ $# -lt 1 ]; then usage; exit 1; fi
 
-
 # Store the full path to the scripts directory
 SCRIPT_DIR=`dirname $0`
 if [[ ${0:0:1} != "/" ]]; then SCRIPT_DIR=$(pwd)/${SCRIPT_DIR}; fi 
