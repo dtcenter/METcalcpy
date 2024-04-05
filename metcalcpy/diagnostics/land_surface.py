@@ -16,6 +16,8 @@ def calc_tci(soil_data,sfc_flux_data):
   
   :return: Terrestrial Coupling Index
   :rtype: Xarray DataArray, Pandas DataFrame
+
+  :param test:
   """
 
   # For Xarray objects, compute the mean 
