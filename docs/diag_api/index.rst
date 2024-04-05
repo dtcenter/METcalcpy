@@ -1,8 +1,10 @@
 .. _api-index:
 
-################################
+********************************
 Diagnostic Calculation Reference
-################################
+********************************
+
+This reference contains technical documentation for various diagnostic calculations in METcalcpy.
 
 .. currentmodule:: metcalcpy.diagnostics
 
