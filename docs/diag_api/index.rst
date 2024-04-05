@@ -11,8 +11,6 @@ Diagnostic API Reference
    :recursive:
 
    land_surface
-   fire_wx
-   medium_range
   
 * :ref:`modindex`
 * :ref:`genindex`
