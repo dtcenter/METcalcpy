@@ -1,8 +1,8 @@
 .. _api-index:
 
-########################
-Diagnostic API Reference
-########################
+################################
+Diagnostic Calculation Reference
+################################
 
 .. currentmodule:: metcalcpy.diagnostics
 
