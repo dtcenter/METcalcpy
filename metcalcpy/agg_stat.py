@@ -175,6 +175,10 @@ class AggStat:
         'vcnt_dir_abser': ['ufbar', 'vfbar', 'uobar', 'vobar'],
         'vcnt_anom_corr': ['uvffabar', 'uvfoabar', 'uvooabar', 'fa_speed_bar', 'oa_speed_bar'],
         'vcnt_anom_corr_uncntr': ['uvffabar', 'uvfoabar', 'uvooabar'],
+        'vcnt_dir_me': ['dir_me'],
+        'vcnt_dir_mae': ['dir_mae'],
+        'vcnt_dir_mse': ['dir_mse'],
+        'vcnt_dir_rmse': ['dir_mse'],
 
         'vl1l2_bias': ['uvffbar', 'uvoobar'],
         'vl1l2_fvar': ['uvffbar', 'f_speed_bar'],
@@ -185,6 +189,9 @@ class AggStat:
 
         'val1l2_anom_corr':
             ['ufabar', 'vfabar', 'uoabar', 'voabar', 'uvfoabar', 'uvffabar', 'uvooabar'],
+        'val1l2_dira_me': ['dira_me'],
+        'val1l2_dira_mae': ['dira_mae'],
+        'val1l2_dira_mse': ['dira_mse'],
 
         'ssvar_fbar': ['fbar'],
         'ssvar_fstdev': ['fbar', 'ffbar'],
@@ -224,7 +231,7 @@ class AggStat:
         'ecnt_me_ge_obs': ['me_ge_obs'],
         'ecnt_n_lt_obs': [],
         'ecnt_me_lt_obs': ['me_lt_obs'],
-        'ecnt_bias_ratio': ['me_ge_obs','me_lt_obs'],
+        'ecnt_bias_ratio': ['me_ge_obs', 'me_lt_obs'],
 
         'nbr_fbs': ['fbs'],
         'nbr_fss': ['fss'],
