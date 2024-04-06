@@ -105,3 +105,32 @@ def calculate_val1l2_dira_me(input_data, columns_names, aggregation=False):
         result = None
     warnings.filterwarnings('ignore')
     return result
+
+
+def calculate_val1l2_dira_mae(input_data, columns_names, aggregation=False):
+    """Performs calculation of DIRA_MAE
+    """
+    try:
+        total = get_total_values(input_data, columns_names, aggregation)
+        result = sum_column_data_by_name(input_data, columns_names, 'dira_mae') / total
+
+        result = round_half_up(result, PRECISION)
+
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+def calculate_val1l2_dira_mse(input_data, columns_names, aggregation=False):
+    """Performs calculation of DIRA_MSE
+    """
+    try:
+        total = get_total_values(input_data, columns_names, aggregation)
+        result = sum_column_data_by_name(input_data, columns_names, 'dira_mse') / total
+
+        result = round_half_up(result, PRECISION)
+
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
