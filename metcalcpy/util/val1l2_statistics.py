@@ -90,3 +90,18 @@ def calculate_val1l2_total(input_data, columns_names):
     """
     total = sum_column_data_by_name(input_data, columns_names, 'total')
     return round_half_up(total, PRECISION)
+
+
+def calculate_val1l2_dira_me(input_data, columns_names, aggregation=False):
+    """Performs calculation of DIRA_ME
+    """
+    try:
+        total = get_total_values(input_data, columns_names, aggregation)
+        result = sum_column_data_by_name(input_data, columns_names, 'dira_me') / total
+
+        result = round_half_up(result, PRECISION)
+
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
