@@ -12,7 +12,7 @@
 #    METcalcpy/sonarqube/run_nightly.sh name
 #
 # Usage: run_nightly.sh name
-#    where "name" speci1fies a branch, tag, or hash
+#    where "name" specifies a branch, tag, or hash
 #
 # For example, scan the develop branch:
 #    run_nightly.sh develop
@@ -20,8 +20,7 @@
 #=======================================================================
 
 # Constants
-EMAIL_LIST="johnhg@ucar.edu hsoh@ucar.edu mccabe@ucar.edu minnawin@ucar.edu"
-TEST_EMAIL_LIST="hsoh@ucar.edu"
+EMAIL_LIST="johnhg@ucar.edu hsoh@ucar.edu jpresto@ucar.edu minnawin@ucar.edu"
 KEEP_DAYS=5
 GIT_REPO_NAME=METcalcpy
 
@@ -34,7 +33,6 @@ function usage {
 
 # Check for arguments
 if [ $# -lt 1 ]; then usage; exit 1; fi
-
 
 # Store the full path to the scripts directory
 SCRIPT_DIR=`dirname $0`
@@ -68,12 +66,9 @@ LOGFILE=${RUN_DIR}/run_sonarqube_${TODAY}.log
 # Run scan and check for bad return status
 ${SCRIPT_DIR}/run_sonarqube.sh ${1} >& ${LOGFILE}
 if [[ $? -ne 0 ]]; then
-  [ ! -z $2 ] && EMAIL_LIST=$TEST_EMAIL_LIST
   echo "$0: The nightly SonarQube scanning for $GIT_REPO_NAME FAILED in `basename ${RUN_DIR}`." >> ${LOGFILE}
   cat ${LOGFILE} | mail -s "$GIT_REPO_NAME SonarQube scanning failed for ${1} in `basename ${RUN_DIR}` (autogen msg)" ${EMAIL_LIST}
   exit 1
 fi
-
-# Convert SonarQube report from pdf to html
 
 exit 0
