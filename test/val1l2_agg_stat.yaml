@@ -1,4 +1,4 @@
-agg_stat_input:  "../Data/val1l2/point_stat_GRIB1_NAM_GDAS_120000L_20120409_120000V_val1l2.txt"
+agg_stat_input:  "./data/stat_analysis/point_stat_GRIB1_NAM_GDAS_120000L_20120409_120000V_val1l2.txt"
 agg_stat_output:  "./calcpy_val1l2_agg.txt"
 alpha: 0.05
 append_to_file: null
