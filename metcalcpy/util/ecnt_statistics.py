@@ -560,3 +560,42 @@ def calculate_ecnt_total(input_data, columns_names):
     """
     total = sum_column_data_by_name(input_data, columns_names, 'total')
     return round_half_up(total, PRECISION)
+
+def calculate_ecnt_ign_conv_oerr(input_data, columns_names, aggregation=False):
+    """Performs calculation of IGN_CONV_OERR - The error-convolved logarithmic scoring
+       rule (ignorance score)
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
+
+        Returns:
+            calculated IGN_CONV_OERR as float
+            or None if some data values are missing or invalid
+    """
+
+    return weighted_average(input_data, np.array(columns_names), 'ign_conv_oerr', aggregation)
+
+
+def calculate_ecnt_ign_corr_oerr(input_data, columns_names, aggregation=False):
+    """Performs calculation of IGN_CORR_OERR - The error-corrected logarithmic scoring
+       rule (ignorance score)
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
+
+        Returns:
+            calculated IGN_CORR_OERR as float
+            or None if some data values are missing or invalid
+    """
+
+    return weighted_average(input_data, np.array(columns_names), 'ign_corr_oerr', aggregation)
+
+
