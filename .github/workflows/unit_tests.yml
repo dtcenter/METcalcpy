@@ -66,7 +66,7 @@ jobs:
         pytest test_future_warnings.py
         pytest test_sl1l2.py
         pytest test_reformatted_for_agg.py
-        pytest test_stat_analysis.py
+        pytest test_agg_stat.py
         coverage run -m pytest test_agg_eclv.py test_agg_stats_and_boot.py test_agg_stats_with_groups.py test_calc_difficulty_index.py test_convert_lon_indices.py test_event_equalize.py test_event_equalize_against_values.py test_lon_360_to_180.py test_statistics.py test_tost_paired.py test_utils.py test_future_warnings.py test_reformatted_for_agg.py
         coverage html
         
