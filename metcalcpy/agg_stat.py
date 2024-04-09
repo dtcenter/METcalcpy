@@ -93,9 +93,20 @@ class AggStat:
             self.input_data = pd.read_csv(
                 self.params['agg_stat_input'],
                 header=[0],
-                sep='\t'
+                sep=r'\t|\s+',
+                engine='python'
             )
-            self.column_names = self.input_data.columns.values
+
+            # Original, keep or discard
+            # self.column_names = self.input_data.columns.values
+            # DEBUG
+            cols = self.input_data.columns.to_list()
+            # Convert all col headers to lower case
+            lc_cols = [lc_cols.lower() for lc_cols in cols]
+            self.column_names = lc_cols
+            self.input_data.columns = lc_cols
+
+
         except pandas.errors.EmptyDataError:
             raise
         except KeyError as er:
@@ -186,6 +197,10 @@ class AggStat:
         'vl1l2_speed_err': ['ufbar', 'vfbar', 'uobar', 'vobar'],
         'vl1l2_rmsve': ['uvffbar', 'uvfobar', 'uvoobar'],
         'vl1l2_msve': ['uvffbar', 'uvfobar', 'uvoobar'],
+        'vl1l2_dir_me': ['dir_me'],
+        'vl1l2_dir_ame': ['dir_mae'],
+        'vl1l2_dir_se': ['dir_mse'],
+
 
         'val1l2_anom_corr':
             ['ufabar', 'vfabar', 'uoabar', 'voabar', 'uvfoabar', 'uvffabar', 'uvooabar'],
@@ -232,6 +247,8 @@ class AggStat:
         'ecnt_n_lt_obs': [],
         'ecnt_me_lt_obs': ['me_lt_obs'],
         'ecnt_bias_ratio': ['me_ge_obs', 'me_lt_obs'],
+        'ecnt_ign_conv_oerr': ['ign_conv_oerr'],
+        'ecnt_ign_corr_oerr': ['ign_corr_oerr'],
 
         'nbr_fbs': ['fbs'],
         'nbr_fss': ['fss'],
