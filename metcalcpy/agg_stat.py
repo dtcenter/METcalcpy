@@ -93,13 +93,10 @@ class AggStat:
             self.input_data = pd.read_csv(
                 self.params['agg_stat_input'],
                 header=[0],
-                sep=r'\t|\s+',
+                sep=r'\t',
                 engine='python'
             )
 
-            # Original, keep or discard
-            # self.column_names = self.input_data.columns.values
-            # DEBUG
             cols = self.input_data.columns.to_list()
             # Convert all col headers to lower case
             lc_cols = [lc_cols.lower() for lc_cols in cols]
@@ -198,8 +195,8 @@ class AggStat:
         'vl1l2_rmsve': ['uvffbar', 'uvfobar', 'uvoobar'],
         'vl1l2_msve': ['uvffbar', 'uvfobar', 'uvoobar'],
         'vl1l2_dir_me': ['dir_me'],
-        'vl1l2_dir_ame': ['dir_mae'],
-        'vl1l2_dir_se': ['dir_mse'],
+        'vl1l2_dir_mae': ['dir_mae'],
+        'vl1l2_dir_mse': ['dir_mse'],
 
 
         'val1l2_anom_corr':
