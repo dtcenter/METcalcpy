@@ -1,0 +1,29 @@
+agg_stat_input:  ./data/stat_analysis/ensemble_stat_OBSERR_20120410_120000V_ecnt.txt
+agg_stat_output: ./calcpy_ecnt_agg.txt
+alpha: 0.05
+append_to_file: null
+circular_block_bootstrap: True
+derived_series_1: []
+derived_series_2: []
+event_equal: False
+fcst_var_val_1:
+  APCP_24:
+  - ECNT_IGN_CONV_OERR
+  - ECNT_IGN_CORR_OERR
+fcst_var_val_2: {}
+indy_vals:
+- '240000'
+indy_var: fcst_lead
+line_type: ecnt
+list_stat_1:
+  - ECNT_IGN_CONV_OERR
+  - ECNT_IGN_CORR_OERR
+list_stat_2: []
+method: perc
+num_iterations: 1
+num_threads: -1
+random_seed: null
+series_val_1:
+  model:
+  - FCST
+series_val_2: {}
