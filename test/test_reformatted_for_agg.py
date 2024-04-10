@@ -44,7 +44,7 @@ def test_reformatted_input():
     # dataframes.  If any exist, the total number of rows will be reduced and the test fails, as this
     # input data should only produce valid stat_name values.
     clean_rmse = rmse_only[rmse_only['stat_value'].notna()]
-    clean_spread_plus_oerr = spread_plus_oerr_only[ spread_plus_oerr_only['stat_value'].notna()]
+    clean_spread_plus_oerr = spread_plus_oerr_only[spread_plus_oerr_only['stat_value'].notna()]
     num_cleaned_rmse = clean_rmse.shape[0]
     num_cleaned_spread_plus_oerr = clean_spread_plus_oerr.shape[0]
 
