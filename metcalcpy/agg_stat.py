@@ -93,16 +93,14 @@ class AggStat:
             self.input_data = pd.read_csv(
                 self.params['agg_stat_input'],
                 header=[0],
-                sep=r'\t',
-                engine='python'
+                sep='\t'
             )
 
             cols = self.input_data.columns.to_list()
             # Convert all col headers to lower case
             lc_cols = [lc_cols.lower() for lc_cols in cols]
-            self.column_names = lc_cols
+            self.column_names = np.array(lc_cols)
             self.input_data.columns = lc_cols
-
 
         except pandas.errors.EmptyDataError:
             raise
