@@ -1,5 +1,5 @@
-agg_stat_input:  /Users/minnawin/METcalcpy_Dev/feature_361_aggstat_for_linetypes/METcalcpy/test/data/stat_analysis/point_stat_GRIB1_NAM_GDAS_120000L_20120409_120000V_vcnt.txt
-agg_stat_output: /Users/minnawin/METcalcpy_Dev/feature_361_aggstat_for_linetypes/METcalcpy/metcalcpy/output/calcpy_vcnt_agg.txt
+agg_stat_input: ./data/stat_analysis/point_stat_GRIB1_NAM_GDAS_120000L_20120409_120000V_vcnt.txt
+agg_stat_output: ./output/calcpy_vcnt_agg.txt
 alpha: 0.05
 append_to_file: null
 circular_block_bootstrap: True
