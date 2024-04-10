@@ -39,7 +39,7 @@ Python Requirements
 Coding Standards
 ================
 
-METplus has adopted some coding standards for its Python code.  Detailed information can be found here: https://metplus.readthedocs.io/en/main_v4.0/Contributors_Guide/coding_standards.html
+METplus has adopted some coding standards for its Python code.  Detailed information can be found here: https://metplus.readthedocs.io/en/latest/Contributors_Guide/coding_standards.html
 
 Comment the Python code using Python docstrings: https://peps.python.org/pep-0257/
 
