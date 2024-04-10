@@ -191,8 +191,8 @@ def test_vcnt():
    # -out_line_type VCNT -v 5 -out filename-for-output-file
 
    # skip the first row of the file, it contains joblist information from stat-analysis
-   agg_from_met: pd.DataFrame = pd.read_csv("./data/stat_analysis/met_vcnt_from_vl1l2_aggstat.txt", sep=r'\s+|\t',
-                                            engine='python', skiprows=1)
+   agg_from_met: pd.DataFrame = pd.read_csv("./data/stat_analysis/met_vcnt_from_vl1l2_aggstat.txt", sep='\s+',
+                                            skiprows=1)
 
    # convert all the column names to lower case
    cols = agg_from_met.columns.to_list()
