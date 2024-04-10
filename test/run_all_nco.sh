@@ -1,6 +1,7 @@
 #!/bin/bash
 
 python3 -m pytest test_agg_eclv.py
+python3 -m pytest test_agg_ratio.py
 python3 -m pytest test_agg_stats_and_boot.py
 python3 -m pytest test_agg_stats_with_groups.py
 python3 -m pytest test_calc_difficulty_index.py
