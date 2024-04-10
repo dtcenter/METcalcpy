@@ -17,7 +17,8 @@ def calc_tci(soil_data,sfc_flux_data):
   :return: Terrestrial Coupling Index
   :rtype: Xarray DataArray, Pandas DataFrame
 
-  :param test:
+  Reference:
+  Dirmeyer, P. A., 2011: The terrestrial segment of soil moisture-climate coupling. *Geophys. Res. Lett.*, **38**, L16702, doi: 10.1029/2011GL048268.
   """
 
   # For Xarray objects, compute the mean 
