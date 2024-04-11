@@ -43,7 +43,8 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.intersphinx',
               'sphinx_gallery.gen_gallery',
               'sphinx_design',
-              'sphinx_rtd_theme',]
+              'sphinx_rtd_theme',
+              'sphinx.ext.napoleon',]
 
 # Turn on sphinx.ext.autosummary
 autosummary_generate = True

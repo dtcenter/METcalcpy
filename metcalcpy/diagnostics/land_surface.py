@@ -4,23 +4,27 @@ from xarray.core.dataarray import DataArray
 from pandas.core.series import Series
 
 def calc_tci(soil_data,sfc_flux_data,skipna=True):
-  """ Function for computing the Terrestrial Coupling Index 
+  """ Function for computing the Terrestrial Coupling Index
 
-  :param soil_data: The land data for the function
-  :type soil_data: Xarray DataArray, Pandas DataFrame
-  
-  :param sfc_flux_data: The surface flux data for the function
-  :type sfc_flux_data: Xarray DataArray, Pandas DataFrame
-
-  :param skipna: Skip NA values, passed to Pandas and Xarray
-  :type skipna: bool
+  Args:
+      soil_data (Xarray DataAraay or Pandas Series): The moisture
+      variable to use for computing TCI.
+      sfc_flux_data (Xarray DataArray or Pandas Series): The latent
+      heat flux variable to use for computing TCI.
+      skipna (bool): Skip NA values. Passed to Pandas or Xarray.
  
-  :raises: TypeError
-  
-  :return: Terrestrial Coupling Index
-  :rtype: Xarray DataArray, Pandas DataFrame
+  Returns:
+      If Xarray DataArray's are passed, then an Xarray DataArray containing
+      the gridded TCI is returned. If a Pandas Series is passed, then
+      a single TCI value of type float32 is returned.
 
-  :Reference: Dirmeyer, P. A., 2011: The terrestrial segment of soil moisture-climate coupling. *Geophys. Res. Lett.*, **38**, L16702, doi: 10.1029/2011GL048268.
+  Raises:
+      TypeError: If an unrecognized objest type is passed,
+      or the object types do not match.
+
+  Reference:
+      Dirmeyer, P. A., 2011: The terrestrial segment of soil moisture-climate coupling. *Geophys. Res. Lett.*, **38**, L16702, doi: 10.1029/2011GL048268.
+  
   """
 
   # For Xarray objects, compute the mean 
