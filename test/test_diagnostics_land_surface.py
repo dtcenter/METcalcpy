@@ -1,4 +1,4 @@
-"""Tests the calc_tci() function in diagnostics/land_surface.py"""
+"""Tests the functions in diagnostics/land_surface.py"""
 
 from metcalcpy.diagnostics.land_surface import calc_tci
 from xarray.testing import assert_equal
