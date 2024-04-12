@@ -8,7 +8,7 @@ __pycache__/
 
 # sphinx output
 docs/_build
-docs/diag_api/generated
+docs/diag_ref/generated
 docs/sg_execution_times.rst
 docs/auto_examples
 
