@@ -95,7 +95,13 @@ class AggStat:
                 header=[0],
                 sep='\t'
             )
-            self.column_names = self.input_data.columns.values
+
+            cols = self.input_data.columns.to_list()
+            # Convert all col headers to lower case
+            lc_cols = [lc_cols.lower() for lc_cols in cols]
+            self.column_names = np.array(lc_cols)
+            self.input_data.columns = lc_cols
+
         except pandas.errors.EmptyDataError:
             raise
         except KeyError as er:
@@ -175,6 +181,10 @@ class AggStat:
         'vcnt_dir_abser': ['ufbar', 'vfbar', 'uobar', 'vobar'],
         'vcnt_anom_corr': ['uvffabar', 'uvfoabar', 'uvooabar', 'fa_speed_bar', 'oa_speed_bar'],
         'vcnt_anom_corr_uncntr': ['uvffabar', 'uvfoabar', 'uvooabar'],
+        'vcnt_dir_me': ['dir_me'],
+        'vcnt_dir_mae': ['dir_mae'],
+        'vcnt_dir_mse': ['dir_mse'],
+        'vcnt_dir_rmse': ['dir_mse'],
 
         'vl1l2_bias': ['uvffbar', 'uvoobar'],
         'vl1l2_fvar': ['uvffbar', 'f_speed_bar'],
@@ -182,9 +192,16 @@ class AggStat:
         'vl1l2_speed_err': ['ufbar', 'vfbar', 'uobar', 'vobar'],
         'vl1l2_rmsve': ['uvffbar', 'uvfobar', 'uvoobar'],
         'vl1l2_msve': ['uvffbar', 'uvfobar', 'uvoobar'],
+        'vl1l2_dir_me': ['dir_me'],
+        'vl1l2_dir_mae': ['dir_mae'],
+        'vl1l2_dir_mse': ['dir_mse'],
+
 
         'val1l2_anom_corr':
             ['ufabar', 'vfabar', 'uoabar', 'voabar', 'uvfoabar', 'uvffabar', 'uvooabar'],
+        'val1l2_dira_me': ['dira_me'],
+        'val1l2_dira_mae': ['dira_mae'],
+        'val1l2_dira_mse': ['dira_mse'],
 
         'ssvar_fbar': ['fbar'],
         'ssvar_fstdev': ['fbar', 'ffbar'],
@@ -224,7 +241,9 @@ class AggStat:
         'ecnt_me_ge_obs': ['me_ge_obs'],
         'ecnt_n_lt_obs': [],
         'ecnt_me_lt_obs': ['me_lt_obs'],
-        'ecnt_bias_ratio': ['me_ge_obs','me_lt_obs'],
+        'ecnt_bias_ratio': ['me_ge_obs', 'me_lt_obs'],
+        'ecnt_ign_conv_oerr': ['ign_conv_oerr'],
+        'ecnt_ign_corr_oerr': ['ign_corr_oerr'],
 
         'nbr_fbs': ['fbs'],
         'nbr_fss': ['fss'],

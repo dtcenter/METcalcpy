@@ -90,3 +90,68 @@ def calculate_val1l2_total(input_data, columns_names):
     """
     total = sum_column_data_by_name(input_data, columns_names, 'total')
     return round_half_up(total, PRECISION)
+
+
+def calculate_val1l2_dira_me(input_data, columns_names, aggregation=False):
+    """Performs calculation of DIRA_ME
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+        Returns:
+            dira_me
+    """
+    try:
+        total = get_total_values(input_data, np.array(columns_names), aggregation)
+        result = sum_column_data_by_name(input_data, np.array(columns_names), 'dira_me') / total
+
+        result = round_half_up(result, PRECISION)
+
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_val1l2_dira_mae(input_data, columns_names, aggregation=False):
+    """Performs calculation of DIRA_MAE
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+        Returns:
+            dira_mae statistic
+    """
+    try:
+        total = get_total_values(input_data, np.array(columns_names), aggregation)
+        result = sum_column_data_by_name(input_data, np.array(columns_names), 'dira_mae') / total
+
+        result = round_half_up(result, PRECISION)
+
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+def calculate_val1l2_dira_mse(input_data, columns_names, aggregation=False):
+    """Performs calculation of DIRA_MSE
+     Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+        Returns:
+            dira_mse statistic
+    """
+    try:
+        total = get_total_values(input_data, np.array(columns_names), aggregation)
+        result = sum_column_data_by_name(input_data, np.array(columns_names), 'dira_mse') / total
+
+        result = round_half_up(result, PRECISION)
+
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result

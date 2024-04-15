@@ -51,6 +51,8 @@ jobs:
       run: |
         cd test
         pytest test_agg_eclv.py
+        pytest test_agg_ratio.py
+        pytest test_agg_stat.py
         pytest test_agg_stats_and_boot.py
         pytest test_agg_stats_with_groups.py
         pytest test_calc_difficulty_index.py
@@ -67,7 +69,12 @@ jobs:
         pytest test_sl1l2.py
         pytest test_reformatted_for_agg.py
         pytest test_diagnostics_land_surface.py
-        coverage run -m pytest test_agg_eclv.py test_agg_stats_and_boot.py test_agg_stats_with_groups.py test_calc_difficulty_index.py test_convert_lon_indices.py test_event_equalize.py test_event_equalize_against_values.py test_lon_360_to_180.py test_statistics.py test_tost_paired.py test_utils.py test_future_warnings.py test_reformatted_for_agg.py test_diagnostics_land_surface.py
+        coverage run -m pytest test_agg_eclv.py test_agg_ratio.py test_agg_stat.py test_agg_stats_and_boot.py \
+                  test_agg_stats_with_groups.py test_calc_difficulty_index.py test_convert_lon_indices.py \
+                  test_event_equalize.py  test_event_equalize_against_values.py test_lon_360_to_180.py \
+                  test_statistics.py test_tost_paired.py test_utils.py test_future_warnings.py \
+                  test_sl1l2.py test_reformatted_for_agg.py
+        
         coverage html
         
     - name: Archive code coverage results
