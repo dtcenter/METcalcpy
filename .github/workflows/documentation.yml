@@ -20,11 +20,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.8'
+          python-version: '3.10'
       - name: Install dependencies
         run: |
           python -m pip install --upgrade python-dateutil requests sphinx \
-          sphinx-gallery Pillow sphinx_rtd_theme
+          sphinx-gallery Pillow sphinx_rtd_theme pandas xarray 
           python -m pip install -r docs/requirements.txt
       - name: Build docs
         run: ./.github/jobs/build_documentation.sh 

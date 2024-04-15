@@ -4,9 +4,12 @@
 # temp files surrounded by #
 *#*#
 
+__pycache__/
+
 # sphinx output
 docs/_build
-
+docs/diag_ref/generated
+docs/sg_execution_times.rst
 docs/auto_examples
 
 
