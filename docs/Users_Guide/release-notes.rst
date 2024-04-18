@@ -9,6 +9,32 @@ METcalcpy Release Notes
 =======================
 
 
+METcalcpy Velsion 3.0.0-beta4 release notes (20230417)
+------------------------------------------------------
+
+
+  .. dropdown:: New Functionality
+
+
+  .. dropdown:: Enhancements
+ 
+     * Add calculation for Terrestrial Coupling Index (`#364 <https://github.com/dtcenter/METcalcpy/issues/364>`_)
+     * Enhance aggregate statistics for ECNT,VL1L2,VAL1L2 and VCNT (`#361 <https://github.com/dtcenter/METcalcpy/issues/361>`_)
+
+
+  .. dropdown:: Internal
+
+     * Develop sonarqube capabilities  (`#367 <https://github.com/dtcenter/METcalcpy/issues/367>`_)
+     * Add github action for sonarqube   (`#366 <https://github.com/dtcenter/METcalcpy/issues/366>`_)
+     * Updated pythoh requirements.txt   (`#355 <https://github.com/dtcenter/METcalcpy/issues/355>`_)
+     * Modified python requirements section of Users Guide   (`#352 <https://github.com/dtcenter/METcalcpy/issues/352>`_)
+
+
+  .. dropdown:: Bugfixes
+
+
+     * Address negative values returned by calculate_bcmse() and calculate_bcrmse() in sl1l2_statistics module (`#329 <https://github.com/dtcenter/METcalcpy/issues/329>`_)
+
 METcalcpy Velsion 3.0.0-beta3 release notes (20230207)
 ------------------------------------------------------
 
