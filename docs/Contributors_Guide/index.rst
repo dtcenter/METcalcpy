@@ -9,32 +9,7 @@ other scripts.
 Python Requirements
 ===================
 
-* Python 3.10.4
-
-* imutils 0.5.4
-
-* imageio 2.25.0
-
-* metpy 1.4.0
-
-* netcdf4 1.6.2
-
-* numpy 1.24.1
-
-* opencv-python 4.7.0.68
-
-* pandas 1.4.2
-
-* pytest 7.1.2
-
-* pyyaml 6.0
-
-* scikit-image 0.19.3 
-
-* scipy 1.10.0
-
-* xarray 2023.1.0
-
+.. literalinclude:: ../../requirements.txt
 
 Coding Standards
 ================
