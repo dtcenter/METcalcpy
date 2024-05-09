@@ -9,6 +9,8 @@ other scripts.
 Python Requirements
 ===================
 
+The requirements below come directly from the **requirements.txt** file at the top level of the repository.
+
 .. literalinclude:: ../../requirements.txt
 
 Coding Standards
