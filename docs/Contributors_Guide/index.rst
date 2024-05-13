@@ -9,16 +9,14 @@ other scripts.
 Python Requirements
 ===================
 
-The requirements below come directly from the **requirements.txt** file at the top level of the repository.
-
-.. literalinclude:: ../../requirements.txt
+For information about the Python Requirements for METcalcpy, please see the User’s Guide `Python Requirements <https://metcalcpy.readthedocs.io/en/develop/Users_Guide/installation.html#python-requirements>`_ section in the `Installation Guide <https://metcalcpy.readthedocs.io/en/develop/Users_Guide/installation.html#installation-guide>`_.
 
 Coding Standards
 ================
 
-METplus has adopted some coding standards for its Python code.  Detailed information can be found here: https://metplus.readthedocs.io/en/latest/Contributors_Guide/coding_standards.html
+METplus has adopted some coding standards for its Python code.  Detailed information can be found in the `METplus Coding Standards <https://metplus.readthedocs.io/en/latest/Contributors_Guide/coding_standards.html>`_ documentation. 
 
-Comment the Python code using Python docstrings: https://peps.python.org/pep-0257/
+Comment the Python code using `Python docstring conventions <https://peps.python.org/pep-0257/>`_. 
 
 Organization of Code in the Github Repository
 =============================================
