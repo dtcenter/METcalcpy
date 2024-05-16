@@ -39,8 +39,8 @@ Consider breaking the task down into sub-issues.
 - [ ] Select **requestor(s)**
 
 ### Milestone and Projects ###
-- [ ] Select **Milestone** as the next official version, **Consider for Next Release**, or **Backlog of Development Ideas**
-- [ ] For the next official version, select the **METcalcpy-X.Y.Z Development** project
+- [ ] Select **Milestone** as a **METcalcpy-X.Y.Z** version, **Consider for Next Release**, or **Backlog of Development Ideas**
+- [ ] For a **METcalcpy-X.Y.Z** version, select the **METcalcpy-X.Y.Z Development** project
 
 ## Define Related Issue(s) ##
 Consider the impact to the other METplus components.
@@ -56,7 +56,6 @@ Branch name: `feature_<Issue Number>_<Description>`
 - [ ] Add/update unit tests.
 - [ ] Add/update documentation.
 - [ ] Add any new Python packages to the [METplus Components Python Requirements](https://metplus.readthedocs.io/en/develop/Users_Guide/appendixA.html#metplus-components-python-packages) table.
-- [ ] For any new datasets, an entry to the [METplus Verification Datasets Guide](https://metplus.readthedocs.io/en/latest/Verification_Datasets/index.html).
 - [ ] Push local changes to GitHub.
 - [ ] Submit a pull request to merge into **develop**.
 Pull request: `feature <Issue Number> <Description>`
