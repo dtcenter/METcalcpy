@@ -19,7 +19,6 @@ If **yes**, please describe:
 ## Pull Request Checklist ##
 See the [METplus Workflow](https://metplus.readthedocs.io/en/latest/Contributors_Guide/github_workflow.html) for details.
 - [ ] Add any new Python packages to the [METplus Components Python Requirements](https://metplus.readthedocs.io/en/develop/Users_Guide/appendixA.html#metplus-components-python-packages) table.
-- [ ] For any new datasets, an entry to the [METplus Verification Datasets Guide](https://metplus.readthedocs.io/en/latest/Verification_Datasets/index.html).
 - [ ] Review the source issue metadata (required labels, projects, and milestone).
 - [ ] Complete the PR definition above.
 - [ ] Ensure the PR title matches the feature or bugfix branch name.
