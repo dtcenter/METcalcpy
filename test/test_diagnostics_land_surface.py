@@ -1,12 +1,41 @@
 """Tests the functions in diagnostics/land_surface.py"""
 
+import numpy as np
+import pandas as pd
+import xarray as xr
 from metcalcpy.diagnostics.land_surface import calc_tci
 from xarray.testing import assert_equal
-import xarray as xr
-import pandas as pd
-import numpy as np
 
 __author__ = "Daniel Adriaansen (NCAR)"
+
+def test_calc_ctp():
+  """
+  Test that the output of the calc_ctp function is correct.
+  
+  Returns 
+  -------
+  None.
+  """
+
+  # 1. Open up CSV file of sounding with pressure/temperature data
+  # 2. Test defaults
+  # 3. Test with start_pressure_hpa provided
+  # 4. Test 2 with interp=True
+  # 4. Test 3 with interp=True
+
+def test_calc_humidity_index():
+  """
+  Test that the output of the calc_humidity_index function is correct.
+  
+  Returns
+  -------
+  None.
+  """ 
+
+  # 1. Open up CSV file of sounding with pressure/temperature/dewpoint data
+  #    Can be the same sounding used for test_calc_ctp()
+  # 2. Test defaults
+  # 3. Test 2 with interp=True
 
 def test_calc_tci():
   """
@@ -53,4 +82,6 @@ def test_calc_tci():
       assert test==truth
     
 if __name__ == "__main__":
-  test_calc_tci()  
+  test_calc_tci()
+  test_calc_ctp()
+  test_calc_humidity_index()
