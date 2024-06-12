@@ -37,7 +37,9 @@ def test_calc_ctp():
   s3tmp = site3['temperature'].astype('float').values*units('degK')
 
   # Test 1: default
-  t1test = np.array([calc_ctp(s1prs,s1tmp).m,calc_ctp(s2prs,s2tmp).m,calc_ctp(s3prs,s3tmp).m])
+  t1test = np.array([calc_ctp(s1prs,s1tmp).m,\
+                     calc_ctp(s2prs,s2tmp).m,\
+                     calc_ctp(s3prs,s3tmp).m])
 
   # Test 2: provide a start_pressure_hpa
   t2test = np.array([calc_ctp(s1prs,s1tmp,start_pressure_hpa=925.0).m,\
