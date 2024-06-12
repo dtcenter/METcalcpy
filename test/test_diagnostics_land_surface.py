@@ -2,8 +2,14 @@
 
 import numpy as np
 import pandas as pd
+import pytest
+import warnings
 import xarray as xr
 from metcalcpy.diagnostics.land_surface import calc_tci
+from metcalcpy.diagnostics.land_surface import calc_ctp
+from metcalcpy.diagnostics.land_surface import calc_humidity_index
+from metpy.units import units
+from numpy.testing import assert_almost_equal
 from xarray.testing import assert_equal
 
 __author__ = "Daniel Adriaansen (NCAR)"
@@ -18,35 +24,54 @@ def test_calc_ctp():
   """
 
   # Open sounding data for the three test sites
-  site1 = pd.read_csv('2023031512_GDAS_Sounding_72210.csv')
-  site2 = pd.read_csv('2023031512_GDAS_Sounding_76225.csv')
-  site3 = pd.read_csv('2023031512_GDAS_Sounding_76458.csv')
+  site1 = pd.read_csv('data/2023031512_GDAS_Sounding_72210.csv')
+  site2 = pd.read_csv('data/2023031512_GDAS_Sounding_76225.csv')
+  site3 = pd.read_csv('data/2023031512_GDAS_Sounding_76458.csv')
 
-  # 1. Open up CSV file of sounding with pressure/temperature data
-  # 2. Test defaults
-  # 3. Test with start_pressure_hpa provided
-  # 4. Test 2 with interp=True
-  # 4. Test 3 with interp=True
+  # Save variables with units for testing
+  s1prs = site1['pressure'].astype('float').values*units('hPa')
+  s2prs = site2['pressure'].astype('float').values*units('hPa')
+  s3prs = site3['pressure'].astype('float').values*units('hPa')
+  s1tmp = site1['temperature'].astype('float').values*units('degK')
+  s2tmp = site2['temperature'].astype('float').values*units('degK')
+  s3tmp = site3['temperature'].astype('float').values*units('degK')
 
-  # DEFAULT
-  # 72210 --> 5.552989
-  # 76225 --> 363.563595
-  # 76458 --> 51.231849 
+  # Test 1: default
+  t1test = np.array([calc_ctp(s1prs,s1tmp).m,calc_ctp(s2prs,s2tmp).m,calc_ctp(s3prs,s3tmp).m])
 
-  # TEST2 (used start_pressure_hpa=925.0), rest default
-  # 72210 --> 130.746506
-  # 76225 --> 363.563595
-  # 76458 --> -17.487427
+  # Test 2: provide a start_pressure_hpa
+  t2test = np.array([calc_ctp(s1prs,s1tmp,start_pressure_hpa=925.0).m,\
+                     calc_ctp(s2prs,s2tmp,start_pressure_hpa=925.0).m,\
+                     calc_ctp(s3prs,s3tmp,start_pressure_hpa=925.0).m])
 
-  # TEST3 (DEFAULT, but interp=True)
-  # 72210 --> 4.206843
-  # 76225 --> 239.918212
-  # 76458 --> 65.445686
+  # Test 3: Default, but with interp=True
+  t3test = np.array([calc_ctp(s1prs,s1tmp,interp=True).m,\
+                     calc_ctp(s2prs,s2tmp,interp=True).m,\
+                     calc_ctp(s3prs,s3tmp,interp=True).m])
 
-  # TEST4 (TEST2, but interp=True)  
-  # 72210 --> 75.682023
-  # 76225 --> -9999. --> the bottom of this sounding is 861 hPa so interp fails.
-  # 76458 --> -4.076987
+  # Test 4: Same as test 2, but with interp=True
+  t4test = np.array([calc_ctp(s1prs,s1tmp,start_pressure_hpa=925.0,interp=True).m,\
+                     calc_ctp(s2prs,s2tmp,start_pressure_hpa=925.0,interp=True).m,\
+                     calc_ctp(s3prs,s3tmp,start_pressure_hpa=925.0,interp=True).m])
+ 
+  # Truth values
+  # Ordered by [site1,site2,site3]
+  t1truth = np.array([5.55298893,363.56359537,51.23184928])
+  t2truth = np.array([130.74650626,363.56359537,-17.48742726])
+  t3truth = np.array([4.20684335,239.91821201,65.44568564])
+  t4truth = np.array([7.56820228e+01,-9.99900000e+03,-4.07698660e+00])
+  
+  # Validate test 1
+  assert_almost_equal(t1test,t1truth,decimal=5)
+
+  # Validate test 2
+  assert_almost_equal(t2test,t2truth,decimal=5)
+
+  # Validate test 3
+  assert_almost_equal(t3test,t3truth,decimal=5)
+  
+  # Validate test 4
+  assert_almost_equal(t4test,t4truth,decimal=5)
 
 def test_calc_humidity_index():
   """
@@ -72,7 +97,7 @@ def test_calc_humidity_index():
   # 76225 --> NaN!
   # 76458 --> 11.099218
 
-
+@pytest.mark.filterwarnings("ignore:Degrees of freedom")
 def test_calc_tci():
   """
   Test that the output of the calc_tci function is correct.
@@ -118,6 +143,6 @@ def test_calc_tci():
       assert test==truth
     
 if __name__ == "__main__":
-  test_calc_tci()
+  #test_calc_tci()
   test_calc_ctp()
-  test_calc_humidity_index()
+  #test_calc_humidity_index()
