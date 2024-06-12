@@ -17,11 +17,36 @@ def test_calc_ctp():
   None.
   """
 
+  # Open sounding data for the three test sites
+  site1 = pd.read_csv('2023031512_GDAS_Sounding_72210.csv')
+  site2 = pd.read_csv('2023031512_GDAS_Sounding_76225.csv')
+  site3 = pd.read_csv('2023031512_GDAS_Sounding_76458.csv')
+
   # 1. Open up CSV file of sounding with pressure/temperature data
   # 2. Test defaults
   # 3. Test with start_pressure_hpa provided
   # 4. Test 2 with interp=True
   # 4. Test 3 with interp=True
+
+  # DEFAULT
+  # 72210 --> 5.552989
+  # 76225 --> 363.563595
+  # 76458 --> 51.231849 
+
+  # TEST2 (used start_pressure_hpa=925.0), rest default
+  # 72210 --> 130.746506
+  # 76225 --> 363.563595
+  # 76458 --> -17.487427
+
+  # TEST3 (DEFAULT, but interp=True)
+  # 72210 --> 4.206843
+  # 76225 --> 239.918212
+  # 76458 --> 65.445686
+
+  # TEST4 (TEST2, but interp=True)  
+  # 72210 --> 75.682023
+  # 76225 --> -9999. --> the bottom of this sounding is 861 hPa so interp fails.
+  # 76458 --> -4.076987
 
 def test_calc_humidity_index():
   """
@@ -36,6 +61,17 @@ def test_calc_humidity_index():
   #    Can be the same sounding used for test_calc_ctp()
   # 2. Test defaults
   # 3. Test 2 with interp=True
+  
+  # DEFAULT
+  # 72210 --> 32.083832
+  # 76225 --> -9999. (lowest pressure > 950).
+  # 76458 --> 9.759857 
+
+  # INTERP=TRUE
+  # 72210 --> 30.895859
+  # 76225 --> NaN!
+  # 76458 --> 11.099218
+
 
 def test_calc_tci():
   """
