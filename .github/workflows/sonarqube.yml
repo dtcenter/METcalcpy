@@ -58,7 +58,7 @@ jobs:
         # try installing scikit-image explicitly. Using requirements.txt versions doesn't seem to build correctly
         python -m pip install -U scikit-image
         # install the coverage.py code coverage tool
-        python3 -m pip install coverage
+        python3 -m pip install pytest-cov
     - name: Test with pytest
       # these are tests that don't have external dependencies (i.e. need to run on Linux test hosts where large datasets reside or require exact machine type for
       # image comparisons to work, etc.)
