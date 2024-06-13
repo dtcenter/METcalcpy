@@ -13,3 +13,6 @@ docs/sg_execution_times.rst
 docs/auto_examples
 
 /metcalcpy.egg-info/
+
+.coverage
+coverage.xml
