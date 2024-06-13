@@ -1,2 +1,5 @@
 [run]
 relative_files = True
+omit = 
+    config.py
+    config-3.py
