@@ -52,7 +52,7 @@ jobs:
         coverage run -m pytest
         coverage report -m
         coverage html
-        
+
     - name: Archive code coverage results
       uses: actions/upload-artifact@v4
       with:
