@@ -60,7 +60,7 @@ def test_val1l2():
    # -v 5 -out filename-for-output-file
 
    # skip the first row of the file, it contains joblist information from stat-analysis
-   agg_from_met: pd.DataFrame = pd.read_csv(f"{cwd}/data/stat_analysis/met_val1l2_stat_anal.txt", sep='\s+',
+   agg_from_met: pd.DataFrame = pd.read_csv(f"{cwd}/data/stat_analysis/met_val1l2_stat_anal.txt", sep=r'\s+',
                                             skiprows=1)
 
    # convert all the column names to lower case
@@ -78,7 +78,7 @@ def test_val1l2():
    parms = get_parms(config_file)
    # change the headers of the input data
    # to lower case, the agg_stat.py code is looking for lower case header names
-   raw_df: pd.DataFrame = pd.read_csv(parms['agg_stat_input'], sep='\s+')
+   raw_df: pd.DataFrame = pd.read_csv(parms['agg_stat_input'], sep=r'\s+')
    uc_cols = raw_df.columns.to_list()
    lc_cols = [lc_cols.lower() for lc_cols in uc_cols]
    raw_df.columns = lc_cols
@@ -142,7 +142,7 @@ def test_vl1l2():
    parms = get_parms(config_file)
    # change the headers of the input data
    # to lower case, the agg_stat.py code is looking for lower case header names
-   raw_df: pd.DataFrame = pd.read_csv(parms['agg_stat_input'], sep='\s+')
+   raw_df: pd.DataFrame = pd.read_csv(parms['agg_stat_input'], sep=r'\s+')
    uc_cols = raw_df.columns.to_list()
    lc_cols = [lc_cols.lower() for lc_cols in uc_cols]
    raw_df.columns = lc_cols
@@ -188,7 +188,7 @@ def test_vcnt():
    # -out_line_type VCNT -v 5 -out filename-for-output-file
 
    # skip the first row of the file, it contains joblist information from stat-analysis
-   agg_from_met: pd.DataFrame = pd.read_csv(f"{cwd}/data/stat_analysis/met_vcnt_from_vl1l2_aggstat.txt", sep='\s+',
+   agg_from_met: pd.DataFrame = pd.read_csv(f"{cwd}/data/stat_analysis/met_vcnt_from_vl1l2_aggstat.txt", sep=r'\s+',
                                             skiprows=1)
 
    # convert all the column names to lower case
@@ -207,7 +207,7 @@ def test_vcnt():
    parms = get_parms(config_file)
    # change the headers of the input data
    # to lower case, the agg_stat.py code is looking for lower case header names
-   raw_df: pd.DataFrame = pd.read_csv(parms['agg_stat_input'], sep='\s+')
+   raw_df: pd.DataFrame = pd.read_csv(parms['agg_stat_input'], sep=r'\s+')
    uc_cols = raw_df.columns.to_list()
    lc_cols = [lc_cols.lower() for lc_cols in uc_cols]
    raw_df.columns = lc_cols
@@ -257,7 +257,7 @@ def test_ecnt():
    # -v 5 -out filename-for-output-file
 
    # skip the first row of the file, it contains joblist information from stat-analysis
-   agg_from_met: pd.DataFrame = pd.read_csv(f"{cwd}/data/stat_analysis/met_ecnt_agg.txt", sep='\s+',
+   agg_from_met: pd.DataFrame = pd.read_csv(f"{cwd}/data/stat_analysis/met_ecnt_agg.txt", sep=r'\s+',
                                             skiprows=1)
 
    # convert all the column names to lower case
@@ -274,7 +274,7 @@ def test_ecnt():
    parms = get_parms(config_file)
    # change the headers of the input data
    # to lower case, the agg_stat.py code is looking for lower case header names
-   raw_df: pd.DataFrame = pd.read_csv(parms['agg_stat_input'], sep='\s+')
+   raw_df: pd.DataFrame = pd.read_csv(parms['agg_stat_input'], sep=r'\s+')
    uc_cols = raw_df.columns.to_list()
    lc_cols = [lc_cols.lower() for lc_cols in uc_cols]
    raw_df.columns = lc_cols
