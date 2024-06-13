@@ -286,6 +286,12 @@ def calc_humidity_index(pressure,temperature,dewpoint,bot_pressure_hpa=950.0,top
 
     tmpBot, dewBot = log_interp_1d(bot_pressure_hpa,pressure,temperature,dewpoint)
     tmpTop, dewTop = log_interp_1d(top_pressure_hpa,pressure,temperature,dewpoint)
+    
+    # log_interp_1d returns array-like, so get the float values
+    tmpBot = tmpBot[0]
+    dewBot = dewBot[0]
+    tmpTop = tmpTop[0]
+    dewTop = dewTop[0]
 
   else:
 
