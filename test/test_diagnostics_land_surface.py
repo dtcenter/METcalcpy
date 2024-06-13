@@ -46,12 +46,12 @@ def test_calc_ctp():
                      calc_ctp(s2prs,s2tmp,start_pressure_hpa=925.0).m,\
                      calc_ctp(s3prs,s3tmp,start_pressure_hpa=925.0).m])
 
-  # Test 3: Default, but with interp=True
+  # Test 3: default, but with interp=True
   t3test = np.array([calc_ctp(s1prs,s1tmp,interp=True).m,\
                      calc_ctp(s2prs,s2tmp,interp=True).m,\
                      calc_ctp(s3prs,s3tmp,interp=True).m])
 
-  # Test 4: Same as test 2, but with interp=True
+  # Test 4: same as test 2, but with interp=True
   t4test = np.array([calc_ctp(s1prs,s1tmp,start_pressure_hpa=925.0,interp=True).m,\
                      calc_ctp(s2prs,s2tmp,start_pressure_hpa=925.0,interp=True).m,\
                      calc_ctp(s3prs,s3tmp,start_pressure_hpa=925.0,interp=True).m])
@@ -82,22 +82,44 @@ def test_calc_humidity_index():
   Returns
   -------
   None.
-  """ 
+  """
 
-  # 1. Open up CSV file of sounding with pressure/temperature/dewpoint data
-  #    Can be the same sounding used for test_calc_ctp()
-  # 2. Test defaults
-  # 3. Test 2 with interp=True
+  # Open sounding data for the three test sites
+  site1 = pd.read_csv('data/2023031512_GDAS_Sounding_72210.csv')
+  site2 = pd.read_csv('data/2023031512_GDAS_Sounding_76225.csv')
+  site3 = pd.read_csv('data/2023031512_GDAS_Sounding_76458.csv')
+
+  # Save variables with units for testing
+  s1prs = site1['pressure'].astype('float').values*units('hPa')
+  s2prs = site2['pressure'].astype('float').values*units('hPa')
+  s3prs = site3['pressure'].astype('float').values*units('hPa')
+  s1tmp = site1['temperature'].astype('float').values*units('degK')
+  s2tmp = site2['temperature'].astype('float').values*units('degK')
+  s3tmp = site3['temperature'].astype('float').values*units('degK')
+  s1dew = site1['dewpoint'].astype('float').values*units('degK')
+  s2dew = site2['dewpoint'].astype('float').values*units('degK')
+  s3dew = site3['dewpoint'].astype('float').values*units('degK')
+
+  # Test 1: default
+  t1test = np.array([calc_humidity_index(s1prs,s1tmp,s1dew).m,\
+                     calc_humidity_index(s2prs,s2tmp,s2dew).m,\
+                     calc_humidity_index(s3prs,s3tmp,s3dew).m])
+
+  # Test 2: default, but with interp=True
+  t2test = np.array([calc_humidity_index(s1prs,s1tmp,s1dew,interp=True).m,\
+                     calc_humidity_index(s2prs,s2tmp,s2dew,interp=True).m,\
+                     calc_humidity_index(s3prs,s3tmp,s3dew,interp=True).m])
+
+  # Truth values
+  # Ordered by [site1,site2,site3]
+  t1truth = np.array([32.083832,33.06573486,9.759857])
+  t2truth = np.array([30.895859,-9999.,11.099218])
+
+  # Validate test 1
+  assert_almost_equal(t1test,t1truth,decimal=5)
   
-  # DEFAULT
-  # 72210 --> 32.083832
-  # 76225 --> -9999. (lowest pressure > 950).
-  # 76458 --> 9.759857 
-
-  # INTERP=TRUE
-  # 72210 --> 30.895859
-  # 76225 --> NaN!
-  # 76458 --> 11.099218
+  # Validate test 2
+  assert_almost_equal(t2test,t2truth,decimal=5)
 
 @pytest.mark.filterwarnings("ignore:Degrees of freedom")
 def test_calc_tci():
@@ -145,6 +167,6 @@ def test_calc_tci():
       assert test==truth
     
 if __name__ == "__main__":
-  #test_calc_tci()
+  test_calc_tci()
   test_calc_ctp()
-  #test_calc_humidity_index()
+  test_calc_humidity_index()
