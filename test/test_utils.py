@@ -2,12 +2,14 @@
 import numpy as np
 import pandas as pd
 import pytest
+import os
 
 from metcalcpy.util.utils import represents_int, is_string_integer, get_derived_curve_name, calc_derived_curve_value, \
     unique, intersection, is_derived_point, parse_bool, round_half_up, sum_column_data_by_name, \
     nrow_column_data_by_name_value, create_permutations_mv, column_data_by_name, calculate_mtd_revision_stats, \
     autocor_coef, is_string_strictly_float
 
+cwd = os.path.dirname(__file__)
 
 @pytest.fixture
 def settings():
@@ -194,7 +196,7 @@ def test_create_permutations_mv_list():
 
 
 def test_calculate_mtd_revision_stats():
-    df = pd.read_csv('data/mtd_revision.data', index_col=0)
+    df = pd.read_csv(f'{cwd}/data/mtd_revision.data', index_col=0)
     stats = calculate_mtd_revision_stats(df)
     assert stats.get("ww_run") == 0
     assert stats.get("auto_cor_p") == 0

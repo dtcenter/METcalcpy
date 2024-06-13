@@ -1,5 +1,5 @@
-agg_stat_input:  ./data/stat_analysis/ensemble_stat_OBSERR_20120410_120000V_ecnt.txt
-agg_stat_output: ./calcpy_ecnt_agg.txt
+agg_stat_input:  !ENV "${TEST_DIR}/data/stat_analysis/ensemble_stat_OBSERR_20120410_120000V_ecnt.txt"
+agg_stat_output: !ENV "${TEST_DIR}/calcpy_ecnt_agg.txt"
 alpha: 0.05
 append_to_file: null
 circular_block_bootstrap: True

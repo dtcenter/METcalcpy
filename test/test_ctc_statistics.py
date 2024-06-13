@@ -1,8 +1,11 @@
 import pytest
 import pandas as pd
 import sys
+import os
 sys.path.append("../../")
 from metcalcpy.util import ctc_statistics as ctc
+
+cwd = os.path.dirname(__file__)
 
 def test_asc_sort_by_ctc_fcst_thresh():
    """
@@ -12,7 +15,7 @@ def test_asc_sort_by_ctc_fcst_thresh():
    :return:
 
    """
-   df = pd.read_csv("./data/threshold.csv")
+   df = pd.read_csv(f"{cwd}/data/threshold.csv")
    sorted_df = ctc.sort_by_thresh(df)
    expected_fcst_thresh_list = ['NA','0', '>=0','>=0','>=0', '>0.01',  '<=1', '>=1&<=22.2', '>=1', '==3', '<5', '20', '>35&&<100.0', '>35', '100']
    expected_fcst_thresh = pd.Series(expected_fcst_thresh_list)
@@ -26,7 +29,7 @@ def test_desc_sort_by_ctc_fcst_thresh():
 
    :return:
    """
-   df = pd.read_csv("./data/threshold.csv")
+   df = pd.read_csv(f"{cwd}/data/threshold.csv")
    sorted_df = ctc.sort_by_thresh(df, ascending=False)
    expected_fcst_thresh_list = ['100', '>35', '>35&&<100.0', '20', '<5','==3', '>=1','>=1&<=22.2', '<=1', '>0.01', '>=0', '>=0', '>=0', '0', 'NA']
    expected_fcst_thresh = pd.Series(expected_fcst_thresh_list)
@@ -44,7 +47,7 @@ def test_calculate_ctc_roc_ascending():
     """
 
     # read in the CTC input data
-    df = pd.read_csv("./data/ROC_CTC.data", sep='\t', header='infer')
+    df = pd.read_csv(f"{cwd}/data/ROC_CTC.data", sep='\t', header='infer')
     expected_pody_list = [0.8457663, 0.7634846, 0.5093934, 0.1228585]
     expected_pody = pd.Series(expected_pody_list)
     expected_thresh_list = ['>=1','>=2','>=3','>=4']
@@ -84,7 +87,7 @@ def test_calculate_ctc_roc_descending():
     """
 
     # read in the CTC input data
-    df = pd.read_csv("./data/ROC_CTC.data", sep='\t', header='infer')
+    df = pd.read_csv(f"{cwd}/data/ROC_CTC.data", sep='\t', header='infer')
     ascending = False
     expected_pody_list = [0.1228585,0.5093934,0.7634846,0.8457663]
     expected_pody = pd.Series(expected_pody_list)
@@ -109,7 +112,7 @@ def test_calculate_ctc_roc_descending():
 
 def test_CTC_ROC_thresh():
     # read in the CTC input data
-    df = pd.read_csv("./data/ROC_CTC_SFP.data", sep='\t', header='infer')
+    df = pd.read_csv(f"{cwd}/data/ROC_CTC_SFP.data", sep='\t', header='infer')
     ascending = False
 
     # All fcst_thresh values are >SFP30, so we expect only
