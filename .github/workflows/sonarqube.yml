@@ -48,6 +48,48 @@ jobs:
         # Disable shallow clones for better analysis
         fetch-depth: 0
 
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.10"
+    - name: Install dependencies
+      run: |
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        # try installing scikit-image explicitly. Using requirements.txt versions doesn't seem to build correctly
+        python -m pip install -U scikit-image
+        # install the coverage.py code coverage tool
+        python3 -m pip install coverage
+    - name: Test with pytest
+      # these are tests that don't have external dependencies (i.e. need to run on Linux test hosts where large datasets reside or require exact machine type for
+      # image comparisons to work, etc.)
+      run: |
+        cd test
+        pytest test_agg_eclv.py
+        pytest test_agg_ratio.py
+        pytest test_agg_stat.py
+        pytest test_agg_stats_and_boot.py
+        pytest test_agg_stats_with_groups.py
+        pytest test_calc_difficulty_index.py
+        pytest test_convert_lon_indices.py
+        pytest test_ctc_statistics.py
+        pytest test_event_equalize.py
+        pytest test_event_equalize_against_values.py
+        pytest test_lon_360_to_180.py
+        pytest test_statistics.py
+        pytest test_tost_paired.py
+        pytest test_utils.py
+        pytest test_validate_mv_python.py
+        pytest test_future_warnings.py
+        pytest test_sl1l2.py
+        pytest test_reformatted_for_agg.py
+        pytest test_diagnostics_land_surface.py
+        coverage run -m pytest test_agg_eclv.py test_agg_ratio.py test_agg_stat.py test_agg_stats_and_boot.py \
+                  test_agg_stats_with_groups.py test_calc_difficulty_index.py test_convert_lon_indices.py \
+                  test_event_equalize.py  test_event_equalize_against_values.py test_lon_360_to_180.py \
+                  test_statistics.py test_tost_paired.py test_utils.py test_future_warnings.py \
+                  test_sl1l2.py test_reformatted_for_agg.py
+        coverage xml
+
     - name: Get branch name
       id: get_branch_name
       run: echo branch_name=${GITHUB_REF#refs/heads/} >> $GITHUB_OUTPUT
