@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+import os
 import math
 import statistics
 
@@ -10,6 +11,7 @@ from metcalcpy.util.utils import round_half_up, PRECISION
 
 TEST_LENGTH = 1000
 
+cwd = os.path.dirname(__file__)
 
 def lossdiff_ml(data, ):
     if len(data.shape) < 3:
@@ -51,7 +53,7 @@ def lossdiff_msl(data):
 def test_cboot():
 
     et = np.loadtxt(
-        "./data/et.txt" )
+        f"{cwd}/data/et.txt" )
 
     # create an array for accepted/rejected flags
     ml_reject = [1] * TEST_LENGTH
@@ -277,10 +279,10 @@ def settings():
               'derived_series_1': [
                   ['ENS001v3.6.1_d01 DPT FBAR', 'ENS001v3.6.1_d02 DPT FBAR', 'DIFF']],
               'derived_series_2': [],
-              'agg_stat_input': 'data/agg_stat_and_boot_data.data',
+              'agg_stat_input': f'{cwd}/data/agg_stat_and_boot_data.data',
               'fcst_var_val_1': {'DPT': ['FBAR']},
               'fcst_var_val_2': {},
-              'agg_stat_output': 'data/agg_stat_and_boot_output.data',
+              'agg_stat_output': f'{cwd}/data/agg_stat_and_boot_output.data',
               'fixed_vars_vals_input': {'fcst_lev': {'fcst_lev_0': ['P100']}},
               'series_val_1': {'model': ['ENS001v3.6.1_d01', 'ENS001v3.6.1_d02']},
               'series_val_2': {},
@@ -307,10 +309,10 @@ def settings_pstd():
               'num_iterations': 1, 'event_equal': 'False',
               'derived_series_1': [],
               'derived_series_2': [],
-              'agg_stat_input': 'data/pstd.data.agg_stat',
+              'agg_stat_input': f'{cwd}/data/pstd.data.agg_stat',
               'fcst_var_val_1': {'DPT_ENS_FREQ_ge288': ['PSTD_ROC_AUC']},
               'fcst_var_val_2': {},
-              'agg_stat_output': 'data/pstd.data',
+              'agg_stat_output': f'{cwd}/data/pstd.data',
               'fixed_vars_vals_input': {},
               'series_val_1': {'model': ['RRFSE_CONUS_ICperts_nostoch.rrfs_conuscompact_3km_prob', 'RRFSE_CONUS_ICperts_stoch.rrfs_conuscompact_3km_prob']},
               'series_val_2': {},

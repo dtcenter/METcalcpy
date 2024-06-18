@@ -48,6 +48,25 @@ jobs:
         # Disable shallow clones for better analysis
         fetch-depth: 0
 
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.10"
+    - name: Install dependencies
+      run: |
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        # try installing scikit-image explicitly. Using requirements.txt versions doesn't seem to build correctly
+        python -m pip install -U scikit-image
+        # install the coverage.py code coverage tool
+        python3 -m pip install pytest-cov
+    - name: Test with pytest
+      # these are tests that don't have external dependencies (i.e. need to run on Linux test hosts where large datasets reside or require exact machine type for
+      # image comparisons to work, etc.)
+      run: |
+        coverage run -m pytest
+        coverage report -m
+        coverage xml
+
     - name: Get branch name
       id: get_branch_name
       run: echo branch_name=${GITHUB_REF#refs/heads/} >> $GITHUB_OUTPUT

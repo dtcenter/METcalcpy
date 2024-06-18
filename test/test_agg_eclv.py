@@ -1,8 +1,10 @@
+import os
 import numpy as np
 import pytest
 
 from metcalcpy.agg_eclv import AggEclv, pd
 
+cwd = os.path.dirname(__file__)
 
 def test_calculate_value_and_ci(settings):
     agg_eclv = settings['agg_stat']
@@ -31,8 +33,8 @@ def settings():
     params = {'random_seed': 1, 'indy_var': '',
               'method': 'perc',
               'num_iterations': 100, 'event_equal': 'False',
-              'agg_stat_input': 'data/agg_eclv_data.data',
-              'agg_stat_output': 'data/agg_eclv_data_output.data',
+              'agg_stat_input': f'{cwd}/data/agg_eclv_data.data',
+              'agg_stat_output': f'{cwd}/data/agg_eclv_data_output.data',
               'fixed_vars_vals_input': {},
               'series_val_1': {'model': ['WRF'], 'fcst_lev': ['Z10', 'P850-700']},
               'alpha': 0.05, 'line_type': 'ctc',
