@@ -52,7 +52,7 @@ INTERP_PNTS =  1, and OBTYPE = ADPUPA.
             observation valid time
     mod_name: string
             output model name (the MODEL column in MET)
-    desc: string
+    desc: 1D array string
             output description (the DESC column in MET)
     fcst_var: 1D array string
             forecast variable name
