@@ -1,0 +1,43 @@
+agg_stat_input: ./data/point_stat/point_stat_GRIB2_SREF_GDAS_150000L_20120409_120000V_vl1l2.txt
+agg_stat_output: ./met_v12_vl1l2_agg_calcpy.txt
+alpha: 0.05
+append_to_file: null
+circular_block_bootstrap: True
+derived_series_1: []
+derived_series_2: []
+event_equal: False
+fcst_var_val_1:
+  UGRD_VGRD:
+  - VL1L2_DIR_ME
+  - VL1L2_DIR_MAE
+  - VL1L2_DIR_MSE
+fcst_var_val_2: {}
+indy_vals:
+#- '30000'
+#- '40000'
+#- '60000'
+#- '90000'
+#- '120000'
+- '150000'
+#- '160000'
+#- '170000'
+#- '180000'
+#- '200000'
+#- '240000'
+#- '270000'
+
+indy_var: fcst_lead
+line_type: vl1l2
+list_stat_1:
+  - VL1L2_DIR_ME
+  - VL1L2_DIR_MAE
+  - VL1L2_DIR_MSE
+list_stat_2: []
+method: perc
+num_iterations: 1
+num_threads: -1
+random_seed: null
+series_val_1:
+ model:
+  - FCST
+series_val_2: {}
