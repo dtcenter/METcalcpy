@@ -1,13 +1,12 @@
 # ============================*
- # ** Copyright UCAR (c) 2020
- # ** University Corporation for Atmospheric Research (UCAR)
- # ** National Center for Atmospheric Research (NCAR)
- # ** Research Applications Lab (RAL)
- # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
- # ============================*
- 
- 
- 
+# ** Copyright UCAR (c) 2020
+# ** University Corporation for Atmospheric Research (UCAR)
+# ** National Center for Atmospheric Research (NCAR)
+# ** Research Applications Lab (RAL)
+# ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+# ============================*
+
+
 """
 Program Name: vl1l2_statistics.py
 """
@@ -15,7 +14,8 @@ import warnings
 import numpy as np
 
 from metcalcpy.util.met_stats import calc_speed
-from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION, get_total_values
+from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION, get_total_values, \
+    get_total_dir_values
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
@@ -250,8 +250,9 @@ def calculate_vl1l2_total(input_data, columns_names):
     total = sum_column_data_by_name(input_data, columns_names, 'total')
     return round_half_up(total, PRECISION)
 
+
 def calculate_vl1l2_dir_me(input_data, columns_names, aggregation=False):
-    """Performs calculation of DIR_ME
+    """Performs calculation of DIR_ME, which was added in MET v12.0
         Args:
             input_data: 2-dimensional numpy array with data for the calculation
                 1st dimension - the row of data frame
@@ -261,7 +262,7 @@ def calculate_vl1l2_dir_me(input_data, columns_names, aggregation=False):
             dir_me
     """
     try:
-        total = get_total_values(input_data, np.array(columns_names), aggregation)
+        total = get_total_dir_values(input_data, np.array(columns_names), aggregation)
         result = sum_column_data_by_name(input_data, np.array(columns_names), 'dir_me') / total
 
         result = round_half_up(result, PRECISION)
@@ -283,7 +284,7 @@ def calculate_vl1l2_dir_mae(input_data, columns_names, aggregation=False):
             dir_mae statistic
     """
     try:
-        total = get_total_values(input_data, np.array(columns_names), aggregation)
+        total = get_total_dir_values(input_data, np.array(columns_names), aggregation)
         result = sum_column_data_by_name(input_data, np.array(columns_names), 'dir_mae') / total
 
         result = round_half_up(result, PRECISION)
@@ -292,6 +293,7 @@ def calculate_vl1l2_dir_mae(input_data, columns_names, aggregation=False):
         result = None
     warnings.filterwarnings('ignore')
     return result
+
 
 def calculate_vl1l2_dir_mse(input_data, columns_names, aggregation=False):
     """Performs calculation of DIR_MSE
@@ -304,7 +306,7 @@ def calculate_vl1l2_dir_mse(input_data, columns_names, aggregation=False):
             dir_mse statistic
     """
     try:
-        total = get_total_values(input_data, np.array(columns_names), aggregation)
+        total = get_total_dir_values(input_data, np.array(columns_names), aggregation)
         result = sum_column_data_by_name(input_data, np.array(columns_names), 'dir_mse') / total
 
         result = round_half_up(result, PRECISION)
@@ -313,3 +315,4 @@ def calculate_vl1l2_dir_mse(input_data, columns_names, aggregation=False):
         result = None
     warnings.filterwarnings('ignore')
     return result
+
