@@ -132,7 +132,6 @@ def test_vl1l2():
    # -v 5 -out filename-for-output-file
 
    # skip the first row of the file, it contains joblist information from stat-analysis
-   #aggregated_by_stat_analysis = "./data/stat_analysis/met_vl1l2_agg.txt"
    aggregated_by_stat_analysis = "./data/stat_analysis/met_vl1l2_aggregated.txt"
    agg_from_met: pd.DataFrame = pd.read_csv(aggregated_by_stat_analysis, sep=r'\s+|\t',
                                             engine='python', skiprows=1)
@@ -314,15 +313,17 @@ def test_ecnt():
    cleanup(lc_df_name)
 
 
+
+pytest.mark.skip("not yet finished")
 def test_total_dir():
    """ The TOTAL_DIR column was added to the VL1L2, VAL1L2, and VCNT linetypes.
        Verify that when the util.utils.get_total_dir_values is called instead of
        util.utils.get_total_values, the calculated total values are what is expected.
 
    """
-   vl1l2_filename = 'data/point_stat/point_stat_GRIB2_SREF_GDAS_150000L_20120409_120000V_vl1l2.txt'
-   val1l2_filename = 'data/point_stat/met_v12/point_stat_GRIB1_NAM_GDAS_MASK_SID_120000L_20120409_120000V_val1l2.txt'
-   vcnt_filename = 'data/point_stat/met_v12/point_stat_GRIB2_NAM_NDAS_120000L_20120409_120000V_vcnt.txt'
+   vl1l2_filename = '.data/point_stat/point_stat_GRIB2_SREF_GDAS_150000L_20120409_120000V_vl1l2.txt'
+   val1l2_filename = '.data/point_stat/met_v12/point_stat_GRIB1_NAM_GDAS_MASK_SID_120000L_20120409_120000V_val1l2.txt'
+   vcnt_filename = '.data/point_stat/met_v12/point_stat_GRIB2_NAM_NDAS_120000L_20120409_120000V_vcnt.txt'
 
    vl1l2_df = pd.read_csv(vl1l2_filename, sep='\s+')
    val1l2_df = pd.read_csv(val1l2_filename, sep='\s+')
