@@ -3,11 +3,10 @@ import numpy as np
 import pandas as pd
 import pytest
 
-import util.utils
 from metcalcpy.util.utils import represents_int, is_string_integer, get_derived_curve_name, calc_derived_curve_value, \
     unique, intersection, is_derived_point, parse_bool, round_half_up, sum_column_data_by_name, \
     nrow_column_data_by_name_value, create_permutations_mv, column_data_by_name, calculate_mtd_revision_stats, \
-    autocor_coef, is_string_strictly_float
+    autocor_coef, is_string_strictly_float, get_met_version
 
 
 @pytest.fixture
@@ -239,7 +238,7 @@ def test_get_met_versions_np():
     minor_expected = int(0)
     bugfix_expected = int(0)
     # test with numpy array and upper case column names
-    np_version = util.utils.get_met_version(np_dummy, uc_column_names)
+    np_version = get_met_version(np_dummy, uc_column_names)
     assert major_expected == int(np_version.major)
     assert minor_expected == int(np_version.minor)
     assert bugfix_expected == int(np_version.bugfix)
@@ -262,7 +261,7 @@ def test_get_met_versions_np_no_cols():
 
     # test with numpy array missing the column names
     with pytest.raises(ValueError):
-        util.utils.get_met_version(np_dummy)
+        get_met_version(np_dummy)
 
 def test_get_met_versions_pandas():
     """
@@ -277,7 +276,7 @@ def test_get_met_versions_pandas():
     major_expected = int(12)
     minor_expected = int(1)
     bugfix_expected = int(1)
-    pd_version = util.utils.get_met_version(pd_dummy)
+    pd_version = get_met_version(pd_dummy)
     assert major_expected == int(pd_version.major)
     assert minor_expected == int(pd_version.minor)
     assert bugfix_expected == int(pd_version.bugfix)
@@ -291,4 +290,4 @@ def test_get_met_versions_pandas():
     data = ["A", 1, "Z"]
     # Verify that any other input raises an error
     with pytest.raises(ValueError):
-        util.utils.get_met_version(data)
+        get_met_version(data)
