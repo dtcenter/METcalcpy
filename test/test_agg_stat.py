@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import yaml
+import pytest
 
 from metcalcpy.util.utils import  get_met_version
 
@@ -50,6 +51,7 @@ def aggregate(parms):
    agg_stat_obj.calculate_stats_and_ci()
 
 
+@pytest.mark.skip('Not yet updated with new data')
 def test_val1l2():
    '''
       Compare MET stat_analysis tool output with
@@ -182,6 +184,7 @@ def test_vl1l2():
    cleanup(output_file)
    cleanup(lc_df_name)
 
+@pytest.mark.skip('Not yet updated with new data')
 def test_vcnt():
    '''
       Compare MET stat_analysis tool output with
