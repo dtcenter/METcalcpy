@@ -68,7 +68,7 @@ def test_val1l2():
    # -v 5 -out filename-for-output-file
 
    # skip the first row of the file, it contains joblist information from stat-analysis
-   agg_from_met: pd.DataFrame = pd.read_csv("data/stat_analysis/met_val1l2_stat_anal.txt", sep='\s+',
+   agg_from_met: pd.DataFrame = pd.read_csv("./data/stat_analysis/met_val1l2_stat_anal.txt", sep='\s+',
                                             skiprows=1)
 
    # convert all the column names to lower case
