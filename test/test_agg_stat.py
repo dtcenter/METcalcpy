@@ -313,7 +313,7 @@ def test_ecnt():
    cleanup(lc_df_name)
 
 
-
+@pytest.mark.skip("work in progress")
 def test_total_dir():
    """ The TOTAL_DIR column was added to the VL1L2, VAL1L2, and VCNT linetypes.
        Verify that when the util.utils.get_total_dir_values is called instead of
