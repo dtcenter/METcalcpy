@@ -3,7 +3,7 @@ name: Trigger METplus Workflow
 on:
   push:
     branches:
-      - develop
+      - main
     paths-ignore:
       - 'docs/**'
       - '.github/pull_request_template.md'
