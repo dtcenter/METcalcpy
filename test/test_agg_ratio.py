@@ -1,8 +1,10 @@
+import os
 import numpy as np
 import pytest
 
 from metcalcpy.agg_stat import AggStat, pd
 
+cwd = os.path.dirname(__file__)
 
 def test_agg_ratio(settings):
     agg_stat = settings['agg_stat']
@@ -30,8 +32,8 @@ def settings():
     params = {'random_seed': 1, 'indy_var': 'fcst_lead',
               'method': 'perc',
               'num_iterations': 10, 'event_equal': 'True',
-              'agg_stat_input': 'data/agg_ratio.data',
-              'agg_stat_output': 'data/agg_ratio_data_output.data',
+              'agg_stat_input': f'{cwd}/data/agg_ratio.data',
+              'agg_stat_output': f'{cwd}/data/agg_ratio_data_output.data',
               'fixed_vars_vals_input': {
                   'obtype': {
                       'obtype_0' : ['CCPA']

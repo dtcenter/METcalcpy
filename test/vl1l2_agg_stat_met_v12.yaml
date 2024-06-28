@@ -1,5 +1,5 @@
-agg_stat_input: ./data/point_stat/point_stat_GRIB2_SREF_GDAS_150000L_20120409_120000V_vl1l2.txt
-agg_stat_output: ./met_v12_vl1l2_agg_calcpy.txt
+agg_stat_input: !ENV "${TEST_DIR}/data/stat_analysis/point_stat_GRIB2_SREF_GDAS_150000L_20120409_120000V_vl1l2.txt"
+agg_stat_output: !ENV "${TEST_DIR}/met_v12_v1l1l2_agg.txt"
 alpha: 0.05
 append_to_file: null
 circular_block_bootstrap: True

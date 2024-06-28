@@ -6,7 +6,9 @@ import pytest
 from metcalcpy.util.utils import  get_met_version
 
 from metcalcpy.agg_stat import AggStat
+from metcalcpy.util.read_env_vars_in_config import parse_config
 
+cwd = os.path.dirname(__file__)
 
 def get_parms(config_file):
    '''
@@ -14,13 +16,8 @@ def get_parms(config_file):
    :param config_file:
    :return: dictionary representation of the yaml config file settings
    '''
-
-   with open(config_file, 'r') as stream:
-      try:
-         parms: dict = yaml.load(stream, Loader=yaml.FullLoader)
-      except yaml.YAMLError as exc:
-         print(exc)
-   return parms
+   os.environ['TEST_DIR'] = cwd
+   return parse_config(config_file)
 
 def cleanup(filename):
    '''
@@ -68,7 +65,7 @@ def test_val1l2():
    # -v 5 -out filename-for-output-file
 
    # skip the first row of the file, it contains joblist information from stat-analysis
-   agg_from_met: pd.DataFrame = pd.read_csv("./data/stat_analysis/met_val1l2_stat_anal.txt", sep='\s+',
+   agg_from_met: pd.DataFrame = pd.read_csv(f"{cwd}/data/stat_analysis/met_val1l2_stat_anal.txt", sep=r'\s+',
                                             skiprows=1)
 
    # convert all the column names to lower case
@@ -81,12 +78,12 @@ def test_val1l2():
 
    # Retrieve the same stat values above from the METcalcpy agg_stat.py output
    # Read in the yaml config file
-   config_file = './val1l2_agg_stat.yaml'
+   config_file = f'{cwd}/val1l2_agg_stat.yaml'
 
    parms = get_parms(config_file)
    # change the headers of the input data
    # to lower case, the agg_stat.py code is looking for lower case header names
-   raw_df: pd.DataFrame = pd.read_csv(parms['agg_stat_input'], sep='\s+')
+   raw_df: pd.DataFrame = pd.read_csv(parms['agg_stat_input'], sep=r'\s+')
    uc_cols = raw_df.columns.to_list()
    lc_cols = [lc_cols.lower() for lc_cols in uc_cols]
    raw_df.columns = lc_cols
@@ -132,8 +129,7 @@ def test_vl1l2():
    # -v 5 -out filename-for-output-file
 
    # skip the first row of the file, it contains joblist information from stat-analysis
-   aggregated_by_stat_analysis = "./data/stat_analysis/met_vl1l2_aggregated.txt"
-   agg_from_met: pd.DataFrame = pd.read_csv(aggregated_by_stat_analysis, sep=r'\s+|\t',
+   agg_from_met: pd.DataFrame = pd.read_csv(f"{cwd}/data/stat_analysis/met_vl1l2_aggregated.txt", sep=r'\s+|\t',
                                             engine='python', skiprows=1)
 
    # convert all the column names to lower case
@@ -146,12 +142,12 @@ def test_vl1l2():
 
    # Retrieve the same stat values above from the METcalcpy agg_stat.py output
    # Read in the yaml config file
-   config_file = './vl1l2_agg_stat_met_v12.yaml'
+   config_file = f"{cwd}/vl1l2_agg_stat_met_v12.yaml"
 
    parms = get_parms(config_file)
    # change the headers of the input data
    # to lower case, the agg_stat.py code is looking for lower case header names
-   raw_df: pd.DataFrame = pd.read_csv(parms['agg_stat_input'], sep='\s+')
+   raw_df: pd.DataFrame = pd.read_csv(parms['agg_stat_input'], sep=r'\s+')
    uc_cols = raw_df.columns.to_list()
    lc_cols = [lc_cols.lower() for lc_cols in uc_cols]
    raw_df.columns = lc_cols
@@ -200,7 +196,7 @@ def test_vcnt():
    # -out_line_type VCNT -v 5 -out filename-for-output-file
 
    # skip the first row of the file, it contains joblist information from stat-analysis
-   agg_from_met: pd.DataFrame = pd.read_csv("./data/stat_analysis/met_vcnt_from_vl1l2_aggstat.txt", sep='\s+',
+   agg_from_met: pd.DataFrame = pd.read_csv(f"{cwd}/data/stat_analysis/met_vcnt_from_vl1l2_aggstat.txt", sep=r'\s+',
                                             skiprows=1)
 
    # convert all the column names to lower case
@@ -214,12 +210,12 @@ def test_vcnt():
 
    # Retrieve the same stat values above from the METcalcpy agg_stat.py output
    # Read in the yaml config file
-   config_file = './vcnt_agg_stat.yaml'
+   config_file = f"{cwd}/vcnt_agg_stat.yaml"
 
    parms = get_parms(config_file)
    # change the headers of the input data
    # to lower case, the agg_stat.py code is looking for lower case header names
-   raw_df: pd.DataFrame = pd.read_csv(parms['agg_stat_input'], sep='\s+')
+   raw_df: pd.DataFrame = pd.read_csv(parms['agg_stat_input'], sep=r'\s+')
    uc_cols = raw_df.columns.to_list()
    lc_cols = [lc_cols.lower() for lc_cols in uc_cols]
    raw_df.columns = lc_cols
@@ -269,7 +265,7 @@ def test_ecnt():
    # -v 5 -out filename-for-output-file
 
    # skip the first row of the file, it contains joblist information from stat-analysis
-   agg_from_met: pd.DataFrame = pd.read_csv("data/stat_analysis/met_ecnt_agg.txt", sep='\s+',
+   agg_from_met: pd.DataFrame = pd.read_csv(f"{cwd}/data/stat_analysis/met_ecnt_agg.txt", sep=r'\s+',
                                             skiprows=1)
 
    # convert all the column names to lower case
@@ -281,18 +277,18 @@ def test_ecnt():
 
    # Retrieve the same stat values above from the METcalcpy agg_stat.py output
    # Read in the yaml config file
-   config_file = './ecnt_agg_stat.yaml'
+   config_file = f"{cwd}/ecnt_agg_stat.yaml"
 
    parms = get_parms(config_file)
    # change the headers of the input data
    # to lower case, the agg_stat.py code is looking for lower case header names
-   raw_df: pd.DataFrame = pd.read_csv(parms['agg_stat_input'], sep='\s+')
+   raw_df: pd.DataFrame = pd.read_csv(parms['agg_stat_input'], sep=r'\s+')
    uc_cols = raw_df.columns.to_list()
    lc_cols = [lc_cols.lower() for lc_cols in uc_cols]
    raw_df.columns = lc_cols
    # create a temporary file with lower case headers, which is what
    # agg_stat.py is expecting
-   lc_df_name = "./lc_ecnt.txt"
+   lc_df_name = f"{cwd}/lc_ecnt.txt"
    raw_df.to_csv(lc_df_name, sep='\t', index=False)
    parms['agg_stat_input'] = lc_df_name
    aggregate(parms)
@@ -311,21 +307,3 @@ def test_ecnt():
    output_file = parms['agg_stat_output']
    cleanup(output_file)
    cleanup(lc_df_name)
-
-
-@pytest.mark.skip("work in progress")
-def test_total_dir():
-   """ The TOTAL_DIR column was added to the VL1L2, VAL1L2, and VCNT linetypes.
-       Verify that when the util.utils.get_total_dir_values is called instead of
-       util.utils.get_total_values, the calculated total values are what is expected.
-
-   """
-   vl1l2_filename = './data/point_stat/point_stat_GRIB2_SREF_GDAS_150000L_20120409_120000V_vl1l2.txt'
-   val1l2_filename = './data/point_stat/met_v12/point_stat_GRIB1_NAM_GDAS_MASK_SID_120000L_20120409_120000V_val1l2.txt'
-   vcnt_filename = './data/point_stat/met_v12/point_stat_GRIB2_NAM_NDAS_120000L_20120409_120000V_vcnt.txt'
-
-   vl1l2_df = pd.read_csv(vl1l2_filename, sep='\s+')
-   val1l2_df = pd.read_csv(val1l2_filename, sep='\s+')
-   vcnt_df = pd.read_csv(vcnt_filename, sep='\s+')
-
-   # vl1l2_total = get_total_values(vl1l2_df,,)

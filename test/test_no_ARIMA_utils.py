@@ -1,11 +1,12 @@
+import os
 import numpy as np
 import pandas as pd
 import metcalcpy.util.utils as utils
 
-
+cwd = os.path.dirname(__file__)
 
 def test_no_arima():
-    data_file = "./data/scorecard.csv"
+    data_file = f"{cwd}/data/scorecard.csv"
     df = pd.read_csv(data_file)
 
     stat_values:pd.Series = df['stat_value']
