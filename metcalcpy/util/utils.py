@@ -23,6 +23,8 @@ import numpy as np
 import pandas as pd
 from pandas import DataFrame
 import warnings
+from dataclasses import make_dataclass
+import re
 
 from scipy import stats
 from scipy.stats import t, nct
@@ -454,6 +456,31 @@ def get_total_values(input_data, columns_names, aggregation):
         total = sum_column_data_by_name(input_data, columns_names, 'total')
     return total
 
+def get_total_dir_values(input_data, columns_names, aggregation):
+    """ Returns the total value from the TOTAL_DIR column, rather than the TOTAL column
+        for the VL1L2, VAL1L2, and VCNT linetypes (MET v12.0 and beyond). This is invoked
+        by the calculate_<linetype>_me|mse|mae in the <linetype>_statistics.py module, where
+        <linetype> = vl1l2, val1l2, or vcnt.
+
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+            aggregation: if the aggregation on fields was performed
+
+        Returns:
+                1 - if the aggregation was not preformed on the array
+                sum of all values from 'total_dir' columns
+                    - if the aggregation was preformed on the array
+
+
+    """
+
+    total = 1
+    if aggregation:
+        total = sum_column_data_by_name(input_data, columns_names, 'total_dir')
+    return total
 
 def aggregate_field_values(series_var_val, input_data_frame, line_type):
     """Finds and aggregates statistics for fields with values containing ';'.
@@ -1390,3 +1417,59 @@ def autocor_coef(data: list) -> Union[None, float]:
 
     n = len(data_valid)
     return sx * sy / (sx - (n - 1) * sxx) + sxy / (sxx - sx * sx / (n - 1))
+
+
+def get_met_version(input_data:Union[pd.DataFrame, np.array], column_names:list=None) -> str:
+    """
+        Determines the version of MET for this data
+        Args:
+           @param input_data: The numpy array or pandas dataframe representation of the MET .stat or .text file of data
+                              (e.g. point-stat, grid-stat, stat-analysis, etc.)
+           @param column_names: An optional list of the column names corresponding to the input_data when the input
+                                data is a numpy array.
+
+        Returns:
+               version: a dataclass containing the major, minor, and bugfix values of the version
+    """
+
+    if isinstance(input_data, np.ndarray):
+        if column_names is None:
+            raise ValueError("numpy array input requires a list of column names.")
+        else:
+            lc_column_names = [cur_col.lower() for cur_col in column_names]
+        df = pd.DataFrame(input_data, index=None, columns=lc_column_names)
+    elif isinstance(input_data, pd.DataFrame):
+        df = input_data
+        # Convert the column names to lower case
+        cols = df.columns.to_list()
+        lc_cols = [cur_col.lower() for cur_col in cols]
+        df.columns = lc_cols
+    else:
+        raise ValueError("input data must be either a numpy array or pandas dataframe")
+
+    # Get the version from the data (the first row)
+    versions = df['version'].to_list()
+    full_version = versions[0]
+
+    # Use an immutable (frozen=True) dataclass to hold the major,
+    # minor, and bugfix values that make up the version number.
+    Version = make_dataclass("Version",["major", "minor", "bugfix"], frozen=True)
+
+    # Parse out the major, minor, and bugfix portions of the version
+    match = re.match(r'V(\d+).?(\d*).?(\d*)', full_version)
+    if match:
+        major = match.group(1)
+        if match.group(2):
+            minor = match.group(2)
+        else:
+            minor = 0
+        if match.group(3):
+            bugfix = match.group(3)
+        else:
+            bugfix = 0
+
+    version = Version(major, minor, bugfix)
+
+    return version
+
+

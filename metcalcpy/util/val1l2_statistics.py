@@ -14,7 +14,8 @@ Program Name: val1l2_statistics.py
 import warnings
 import numpy as np
 
-from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION, get_total_values
+from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION, get_total_values, get_met_version, \
+    get_total_dir_values
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
@@ -91,6 +92,23 @@ def calculate_val1l2_total(input_data, columns_names):
     total = sum_column_data_by_name(input_data, columns_names, 'total')
     return round_half_up(total, PRECISION)
 
+def calculate_val1l2_total_dir(input_data, columns_names):
+    """Performs calculation of Total number of matched pairs for
+       well-defined forecast and observation wind directions (TOTAL_DIR column)
+        Args:
+            input_data: 2-dimensional numpy array with data for the calculation
+                1st dimension - the row of data frame
+                2nd dimension - the column of data frame
+            columns_names: names of the columns for the 2nd dimension as Numpy array
+
+        Returns:
+            calculated Total number of matched pairs as float
+            or None if some of the data values are missing or invalid
+    """
+    total = sum_column_data_by_name(input_data, columns_names, 'total_dir')
+    return round_half_up(total, PRECISION)
+
+
 
 def calculate_val1l2_dira_me(input_data, columns_names, aggregation=False):
     """Performs calculation of DIRA_ME
@@ -103,7 +121,7 @@ def calculate_val1l2_dira_me(input_data, columns_names, aggregation=False):
             dira_me
     """
     try:
-        total = get_total_values(input_data, np.array(columns_names), aggregation)
+        total = get_total_dir_values(input_data, np.array(columns_names), aggregation)
         result = sum_column_data_by_name(input_data, np.array(columns_names), 'dira_me') / total
 
         result = round_half_up(result, PRECISION)
@@ -125,7 +143,7 @@ def calculate_val1l2_dira_mae(input_data, columns_names, aggregation=False):
             dira_mae statistic
     """
     try:
-        total = get_total_values(input_data, np.array(columns_names), aggregation)
+        total = get_total_dir_values(input_data, np.array(columns_names), aggregation)
         result = sum_column_data_by_name(input_data, np.array(columns_names), 'dira_mae') / total
 
         result = round_half_up(result, PRECISION)
@@ -146,7 +164,7 @@ def calculate_val1l2_dira_mse(input_data, columns_names, aggregation=False):
             dira_mse statistic
     """
     try:
-        total = get_total_values(input_data, np.array(columns_names), aggregation)
+        total = get_total_dir_values(input_data, np.array(columns_names), aggregation)
         result = sum_column_data_by_name(input_data, np.array(columns_names), 'dira_mse') / total
 
         result = round_half_up(result, PRECISION)
@@ -155,3 +173,4 @@ def calculate_val1l2_dira_mse(input_data, columns_names, aggregation=False):
         result = None
     warnings.filterwarnings('ignore')
     return result
+

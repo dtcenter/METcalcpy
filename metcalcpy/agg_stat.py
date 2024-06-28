@@ -38,6 +38,7 @@ from inspect import signature
 import yaml
 import pandas
 
+
 from metcalcpy import GROUP_SEPARATOR, DATE_TIME_REGEX
 from metcalcpy.bootstrap import bootstrap_and_value, BootstrapResults
 from metcalcpy.util.ctc_statistics import *
@@ -54,6 +55,7 @@ from metcalcpy.util.nbrctc_statistics import *
 from metcalcpy.util.pstd_statistics import *
 from metcalcpy.util.rps_statistics import *
 from metcalcpy.util.mcts_statistics import *
+from metcalcpy.util.utils import  get_met_version
 
 from metcalcpy.util.utils import is_string_integer, get_derived_curve_name, \
     calc_derived_curve_value, intersection, is_derived_point, parse_bool, \
@@ -460,39 +462,67 @@ class AggStat:
 
     def _prepare_vl1l2_data(self, data_for_prepare):
         """Prepares vl1l2 data.
-            Multiplies needed for the statistic calculation columns to the 'total'value
+            Multiplies needed for the statistic calculation columns to the 'total' value
+            or 'total_dir' value for MET version 12.0 and above.
 
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
+        # Determine the MET version for this data.  If MET v12.0 or above, use the 'total_dir' column rather than
+        # the 'total' column.
+        met_version = get_met_version(data_for_prepare)
+        major = int(met_version.major)
+
         if self.statistic in self.STATISTIC_TO_FIELDS.keys():
             for column in self.STATISTIC_TO_FIELDS[self.statistic]:
-                data_for_prepare[column] \
-                    = data_for_prepare[column].values * data_for_prepare['total'].values
+                if major >= int(12):
+                    data_for_prepare[column] \
+                        = data_for_prepare[column].values * data_for_prepare['total_dir'].values
+                else:
+                    data_for_prepare[column] \
+                        = data_for_prepare[column].values * data_for_prepare['total'].values
 
     def _prepare_val1l2_data(self, data_for_prepare):
         """Prepares val1l2 data.
-            Multiplies needed for the statistic calculation columns to the 'total' value
+            Multiplies needed for the statistic calculation columns to the 'total_dir' value
+            (MET 12.0) or 'total' MET<12.0
 
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
+        # Determine the MET version for this data.  If MET v12.0 or above, use the 'total_dir' column rather than
+        # the 'total' column.
+        met_version = get_met_version(data_for_prepare)
+        major = int(met_version.major)
+
         if self.statistic in self.STATISTIC_TO_FIELDS.keys():
             for column in self.STATISTIC_TO_FIELDS[self.statistic]:
-                data_for_prepare[column] \
-                    = data_for_prepare[column].values * data_for_prepare['total'].values
-
+                if major >= int(12):
+                    data_for_prepare[column] \
+                        = data_for_prepare[column].values * data_for_prepare['total_dir'].values
+                else:
+                    data_for_prepare[column] \
+                        = data_for_prepare[column].values * data_for_prepare['total'].values
     def _prepare_vcnt_data(self, data_for_prepare):
         """Prepares vcnt data.
-            Multiplies needed for the statistic calculation columns to the 'total' value
+            Multiplies needed for the statistic calculation columns to the 'total_dir' value
 
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
+        # Determine the MET version for this data.  If MET v12.0 or above, use the 'total_dir' column rather than
+        # the 'total' column.
+        met_version = get_met_version(data_for_prepare)
+        major = int(met_version.major)
+
         if self.statistic in self.STATISTIC_TO_FIELDS.keys():
             for column in self.STATISTIC_TO_FIELDS[self.statistic]:
-                data_for_prepare[column] \
-                    = data_for_prepare[column].values * data_for_prepare['total'].values
+                if major >= int(12):
+                    data_for_prepare[column] \
+                        = data_for_prepare[column].values * data_for_prepare['total_dir'].values
+                else:
+                    data_for_prepare[column] \
+                        = data_for_prepare[column].values * data_for_prepare['total'].values
 
     def _prepare_ecnt_data(self, data_for_prepare):
         """Prepares ecnt data.
