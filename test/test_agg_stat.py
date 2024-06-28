@@ -109,7 +109,7 @@ def test_val1l2():
 
    # clean up
    output_file = parms['agg_stat_output']
-   # cleanup(output_file)
+   cleanup(output_file)
    cleanup(lc_df_name)
 
 def test_vl1l2():
@@ -178,7 +178,6 @@ def test_vl1l2():
    cleanup(output_file)
    cleanup(lc_df_name)
 
-@pytest.mark.skip('Not yet updated with new data')
 def test_vcnt():
    '''
       Compare MET stat_analysis tool output with
@@ -195,7 +194,7 @@ def test_vcnt():
    # -out_line_type VCNT -v 5 -out filename-for-output-file
 
    # skip the first row of the file, it contains joblist information from stat-analysis
-   agg_from_met: pd.DataFrame = pd.read_csv(f"{cwd}/data/stat_analysis/met_vcnt_from_vl1l2_aggstat.txt", sep=r'\s+',
+   agg_from_met: pd.DataFrame = pd.read_csv(f"{cwd}/data/stat_analysis/met_vcnt_from_vl1l2.txt", sep=r'\s+',
                                             skiprows=1)
 
    # convert all the column names to lower case
