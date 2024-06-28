@@ -48,7 +48,6 @@ def aggregate(parms):
    agg_stat_obj.calculate_stats_and_ci()
 
 
-@pytest.mark.skip('Not yet updated with new data')
 def test_val1l2():
    '''
       Compare MET stat_analysis tool output with
@@ -65,7 +64,7 @@ def test_val1l2():
    # -v 5 -out filename-for-output-file
 
    # skip the first row of the file, it contains joblist information from stat-analysis
-   agg_from_met: pd.DataFrame = pd.read_csv(f"{cwd}/data/stat_analysis/met_val1l2_stat_anal.txt", sep=r'\s+',
+   agg_from_met: pd.DataFrame = pd.read_csv(f"{cwd}/data/stat_analysis/met_val1l2_aggregated.txt", sep=r'\s+',
                                             skiprows=1)
 
    # convert all the column names to lower case
@@ -110,7 +109,7 @@ def test_val1l2():
 
    # clean up
    output_file = parms['agg_stat_output']
-   cleanup(output_file)
+   # cleanup(output_file)
    cleanup(lc_df_name)
 
 def test_vl1l2():
