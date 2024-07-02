@@ -19,13 +19,13 @@ print(sys.path)
 # -- Project information -----------------------------------------------------
 
 project = 'METcalcpy'
-copyright = '2023, NCAR'
+copyright = '2024, NCAR'
 author = 'UCAR/NCAR, NOAA, CSU/CIRA, and CU/CIRES'
-author_list = 'Fisher, H., C. Kalb, D. Adriaansen, D. Fillmore, M. Win-Gildenmeister, T. Burek, and T. Jensen'
+author_list = 'Fisher, H., C. Kalb, D. Adriaansen, D. Fillmore, M. Win-Gildenmeister, T. Burek, M. Smith, and T. Jensen'
 version = 'release'
 verinfo = version
 release = f'{version}'
-release_year = '2023'
+release_year = '2024'
 release_date = f'{release_year}-06-28'
 copyright = f'{release_year}, {author}'
 
