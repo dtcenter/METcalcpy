@@ -1,5 +1,5 @@
-agg_stat_input: ./data/rrfs_ecnt_for_agg.data
-agg_stat_output: ./rrfs_ecnt_aggregated.data
+agg_stat_input: !ENV "${TEST_DIR}/data/rrfs_ecnt_for_agg.data"
+agg_stat_output: !ENV "${TEST_DIR}/rrfs_ecnt_aggregated.data"
 alpha: 0.05
 append_to_file: null
 circular_block_bootstrap: True

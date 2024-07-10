@@ -14,7 +14,8 @@ import warnings
 import numpy as np
 
 from metcalcpy.util.met_stats import calc_direction, calc_speed
-from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION, get_total_values
+from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION, get_total_values, \
+    get_total_dir_values
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
@@ -63,7 +64,7 @@ def calculate_vcnt_obar(input_data, columns_names, aggregation=False):
     """
     warnings.filterwarnings('error')
     try:
-        total = get_total_values(input_data, columns_names, aggregation)
+        total = get_total_dir_values(input_data, columns_names, aggregation)
         result = sum_column_data_by_name(input_data, columns_names, 'o_speed_bar') / total
         result = round_half_up(result, PRECISION)
     except (TypeError, ZeroDivisionError, Warning, ValueError):
@@ -538,7 +539,7 @@ def calculate_vcnt_anom_corr(input_data, columns_names, aggregation=False):
     return result
 
 
-def calculate_vcnt_anom_corr_uncntr(input_data, columns_names, aggregation=False):
+def calculate_vcnt_anom_corr_uncntr(input_data, columns_names):
     warnings.filterwarnings('error')
     try:
         uvffabar = sum_column_data_by_name(input_data, columns_names, 'uvffabar')   # ff
@@ -553,6 +554,60 @@ def calculate_vcnt_anom_corr_uncntr(input_data, columns_names, aggregation=False
             result = 1.0
         elif result < -1:
             result = -1.0
+
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_vcnt_dir_me(input_data, columns_names, aggregation=False):
+    warnings.filterwarnings('error')
+    try:
+        total = get_total_dir_values(input_data, np.array(columns_names), aggregation)
+        result = sum_column_data_by_name(input_data,np.array(columns_names), 'dir_me') / total
+
+        result = round_half_up(result, PRECISION)
+
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+def calculate_vcnt_dir_mae(input_data, columns_names, aggregation=False):
+    warnings.filterwarnings('error')
+    try:
+        total = get_total_dir_values(input_data, np.array(columns_names), aggregation)
+        result = sum_column_data_by_name(input_data, np.array(columns_names), 'dir_mae') / total
+
+        result = round_half_up(result, PRECISION)
+
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_vcnt_dir_mse(input_data, columns_names, aggregation=False):
+    warnings.filterwarnings('error')
+    try:
+        total = get_total_dir_values(input_data, np.array(columns_names), aggregation)
+        result = sum_column_data_by_name(input_data, np.array(columns_names), 'dir_mse') / total
+
+        result = round_half_up(result, PRECISION)
+
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = None
+    warnings.filterwarnings('ignore')
+    return result
+
+
+def calculate_vcnt_dir_rmse(input_data, columns_names, aggregation=False):
+    warnings.filterwarnings('error')
+    try:
+        result = np.sqrt(calculate_vcnt_dir_mse(input_data, np.array(columns_names), aggregation))
+
+        result = round_half_up(result, PRECISION)
 
     except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None

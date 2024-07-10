@@ -3,6 +3,9 @@ import pandas as pd
 import pytest
 import yaml
 from metcalcpy.agg_stat import AggStat
+from metcalcpy.util.read_env_vars_in_config import parse_config
+
+cwd = os.path.dirname(__file__)
 
 def test_reformatted_input():
     '''
@@ -15,14 +18,8 @@ def test_reformatted_input():
     '''
 
     # Read in the YAML config file
-    config_file = "./rrfs_ecnt_config_agg_stat.yaml"
-
-    with open(config_file, 'r') as stream:
-        try:
-            parms: dict = yaml.load(stream, Loader=yaml.FullLoader)
-
-        except yaml.YAMLError as exc:
-            print(exc)
+    config_file = f"{cwd}/rrfs_ecnt_config_agg_stat.yaml"
+    parms = parse_config(config_file)
 
     # Calculate the aggregation statistics using the specified YAML config file and reformatted
     # ECNT linetype data (reformatted via the METdataio METreformat module)
@@ -44,7 +41,7 @@ def test_reformatted_input():
     # dataframes.  If any exist, the total number of rows will be reduced and the test fails, as this
     # input data should only produce valid stat_name values.
     clean_rmse = rmse_only[rmse_only['stat_value'].notna()]
-    clean_spread_plus_oerr = spread_plus_oerr_only[ spread_plus_oerr_only['stat_value'].notna()]
+    clean_spread_plus_oerr = spread_plus_oerr_only[spread_plus_oerr_only['stat_value'].notna()]
     num_cleaned_rmse = clean_rmse.shape[0]
     num_cleaned_spread_plus_oerr = clean_spread_plus_oerr.shape[0]
 

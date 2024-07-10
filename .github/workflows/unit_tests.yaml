@@ -41,37 +41,21 @@ jobs:
     - name: Install dependencies
       run: |
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        # try installing scikit-image explicitly. Using requirements.txt versions doesn't seem to build correctly 
+        # try installing scikit-image explicitly. Using requirements.txt versions doesn't seem to build correctly
         python -m pip install -U scikit-image
         # install the coverage.py code coverage tool
-        python3 -m pip install coverage
+        python3 -m pip install pytest-cov
     - name: Test with pytest
       # these are tests that don't have external dependencies (i.e. need to run on Linux test hosts where large datasets reside or require exact machine type for 
       # image comparisons to work, etc.)
       run: |
-        cd test
-        pytest test_agg_eclv.py
-        pytest test_agg_stats_and_boot.py
-        pytest test_agg_stats_with_groups.py
-        pytest test_calc_difficulty_index.py
-        pytest test_convert_lon_indices.py
-        pytest test_ctc_statistics.py
-        pytest test_event_equalize.py
-        pytest test_event_equalize_against_values.py
-        pytest test_lon_360_to_180.py
-        pytest test_statistics.py
-        pytest test_tost_paired.py
-        pytest test_utils.py
-        pytest test_validate_mv_python.py
-        pytest test_future_warnings.py
-        pytest test_sl1l2.py
-        pytest test_reformatted_for_agg.py
-        coverage run -m pytest test_agg_eclv.py test_agg_stats_and_boot.py test_agg_stats_with_groups.py test_calc_difficulty_index.py test_convert_lon_indices.py test_event_equalize.py test_event_equalize_against_values.py test_lon_360_to_180.py test_statistics.py test_tost_paired.py test_utils.py test_future_warnings.py test_reformatted_for_agg.py
+        coverage run -m pytest
+        coverage report -m
         coverage html
-        
+
     - name: Archive code coverage results
       uses: actions/upload-artifact@v4
       with:
         name: code-coverage-report
-        path: test/htmlcov/index.html
+        path: htmlcov/index.html
 

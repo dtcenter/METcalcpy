@@ -12,21 +12,21 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('..'))
 print(sys.path)
 
 
 # -- Project information -----------------------------------------------------
 
 project = 'METcalcpy'
-copyright = '2023, NCAR'
+copyright = '2024, NCAR'
 author = 'UCAR/NCAR, NOAA, CSU/CIRA, and CU/CIRES'
-author_list = 'Fisher, H., C. Kalb, D. Adriaansen, D. Fillmore, M. Win-Gildenmeister, T. Burek, and T. Jensen'
+author_list = 'Fisher, H., C. Kalb, D. Adriaansen, D. Fillmore, M. Win-Gildenmeister, T. Burek, M. Smith, and T. Jensen'
 version = 'release'
 verinfo = version
 release = f'{version}'
-release_year = '2023'
-release_date = f'{release_year}-07-28'
+release_year = '2024'
+release_date = f'{release_year}-06-28'
 copyright = f'{release_year}, {author}'
 
 # if set, adds "Last updated on " followed by
@@ -39,10 +39,15 @@ html_last_updated_fmt = '%c'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.autodoc',
+              'sphinx.ext.autosummary',
               'sphinx.ext.intersphinx',
               'sphinx_gallery.gen_gallery',
               'sphinx_design',
-              'sphinx_rtd_theme',]
+              'sphinx_rtd_theme',
+              'sphinx.ext.napoleon',]
+
+# Turn on sphinx.ext.autosummary
+autosummary_generate = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

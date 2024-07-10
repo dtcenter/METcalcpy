@@ -4,6 +4,7 @@ import os
 from metcalcpy import GROUP_SEPARATOR
 from metcalcpy.agg_stat import AggStat
 
+cwd = os.path.dirname(__file__)
 
 def test_groups():
     # prepare parameters
@@ -13,10 +14,10 @@ def test_groups():
               'derived_series_1': [
                   ['Group_y1_1 TMP ME', 'Group_y1_2 TMP ME', 'DIFF']],
               'derived_series_2': [],
-              'agg_stat_input': 'data/agg_stat_with_groups_data.data',
+              'agg_stat_input': f'{cwd}/data/agg_stat_with_groups_data.data',
               'fcst_var_val_1': {'TMP': ['ME']},
               'fcst_var_val_2': {},
-              'agg_stat_output': 'data/agg_stat_with_groups_output.data',
+              'agg_stat_output': f'{cwd}/data/agg_stat_with_groups_output.data',
               'fixed_vars_vals_input': {'fcst_lev': {'fcst_lev_0': ['Z02']}},
               'series_val_1': {'model': ['GTS+RAIN3mm' + GROUP_SEPARATOR + 'GTS+RAIN4mm',
                                          'GTS+RAIN50p' + GROUP_SEPARATOR + 'GTS+RAIN5mm']},

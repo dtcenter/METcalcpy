@@ -9,39 +9,14 @@ other scripts.
 Python Requirements
 ===================
 
-* Python 3.10.4
-
-* imutils 0.5.4
-
-* imageio 2.25.0
-
-* metpy 1.4.0
-
-* netcdf4 1.6.2
-
-* numpy 1.24.1
-
-* opencv-python 4.7.0.68
-
-* pandas 1.4.2
-
-* pytest 7.1.2
-
-* pyyaml 6.0
-
-* scikit-image 0.19.3 
-
-* scipy 1.10.0
-
-* xarray 2023.1.0
-
+For information about the Python Requirements for METcalcpy, please see the User’s Guide `Python Requirements <https://metcalcpy.readthedocs.io/en/develop/Users_Guide/installation.html#python-requirements>`_ section in the `Installation Guide <https://metcalcpy.readthedocs.io/en/develop/Users_Guide/installation.html#installation-guide>`_.
 
 Coding Standards
 ================
 
-METplus has adopted some coding standards for its Python code.  Detailed information can be found here: https://metplus.readthedocs.io/en/main_v4.0/Users_Guide/
+METplus has adopted some coding standards for its Python code.  Detailed information can be found in the `METplus Coding Standards <https://metplus.readthedocs.io/en/latest/Contributors_Guide/coding_standards.html>`_ documentation. 
 
-Comment the Python code using Python docstrings: https://peps.python.org/pep-0257/
+Comment the Python code using `Python docstring conventions <https://peps.python.org/pep-0257/>`_. 
 
 Organization of Code in the Github Repository
 =============================================
@@ -203,9 +178,9 @@ Create User Documentation
 
 * from the command line, run the following commands::
 
-   build clean
+   make clean
 
-   build_html
+   make html
 
 * Verify that there aren’t any warnings or error messages in the output
 

@@ -33,7 +33,7 @@ def write_mpr_file(data_fcst,data_obs,lats_in,lons_in,fcst_lead,fcst_valid,obs_l
             observation valid time
     mod_name: string
             output model name (the MODEL column in MET)
-    desc: string
+    desc: 1D array string
             output description (the DESC column in MET)
     fcst_var: 1D array string
             forecast variable name
@@ -69,7 +69,7 @@ def write_mpr_file(data_fcst,data_obs,lats_in,lons_in,fcst_lead,fcst_valid,obs_l
     Get the length of the model, FCST_VAR, FCST_LEV, OBS_VAR, OBS_LEV, VX_MASK, etc for formatting
     """
     mname_len = str(max([5,len(mod_name)])+3)
-    desc_len = str(max([4,len(desc)])+3)
+    desc_len = str(max([4,max([len(l) for l in desc])])+3)
     mask_len = str(max([7,len(maskname)])+3)
     fvar_len = str(max([8,max([len(l) for l in fcst_var])])+3)
     funit_len = str(max([8,max([len(l) for l in fcst_unit])])+3)
@@ -114,7 +114,7 @@ def write_mpr_file(data_fcst,data_obs,lats_in,lons_in,fcst_lead,fcst_valid,obs_l
             'OBS_THRESH', 'COV_THRESH', 'ALPHA', 'LINE_TYPE'))
         for dpt in range(dlength):
             # Write the data
-            mf.write(format_string2 % ('V9.1',mod_name,desc,fcst_lead[dpt],fcst_valid[dpt],fcst_valid[dpt],
+            mf.write(format_string2 % ('V9.1',mod_name,desc[dpt],fcst_lead[dpt],fcst_valid[dpt],fcst_valid[dpt],
                 obs_lead[dpt],obs_valid[dpt],obs_valid[dpt],fcst_var[dpt],fcst_unit[dpt],fcst_lev[dpt],
                 obs_var[dpt],obs_unit[dpt],obs_lev[dpt],'ADPUPA',maskname,'NEAREST','1','NA','NA','NA','NA','MPR',
                 str(dlength),str(index_num[dpt]),'NA',lats_in[dpt],lons_in[dpt],obsslev[dpt],'NA',data_fcst[dpt],

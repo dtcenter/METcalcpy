@@ -9,6 +9,54 @@ METcalcpy Release Notes
 =======================
 
 
+METcalcpy Velsion 3.0.0-beta5 release notes (20230628)
+------------------------------------------------------
+
+
+  .. dropdown:: New Functionality
+
+     * **Add updates to MPR writer and fix bugs for stratosphere** (`#385 <https://github.com/dtcenter/METcalcpy/issues/385>`_)
+
+  .. dropdown:: Enhancements
+
+     * **Enhance METcalcpy to use the TOTAL_DIR column when aggregate statistics wind direction statistics in the VL1L2, VAL1L2, and VCNT columns** (`#384 <https://github.com/dtcenter/METcalcpy/issues/384>`_)
+
+  .. dropdown:: Internal
+
+     * Update GitHub issue and pull request templates to reflect the current development workflow details  (`#326 <https://github.com/dtcenter/METcalcpy/issues/326>`_)
+     * Consider using only .yml or only .yaml extensions  (`#349 <https://github.com/dtcenter/METcalcpy/issues/349>`_)
+     * Code coverage statistics  (`#54 <https://github.com/dtcenter/METplus-Internal/issues/54>`_)
+
+
+  .. dropdown:: Bugfixes
+
+
+METcalcpy Velsion 3.0.0-beta4 release notes (20230417)
+------------------------------------------------------
+
+
+  .. dropdown:: New Functionality
+
+
+  .. dropdown:: Enhancements
+ 
+     * Add calculation for Terrestrial Coupling Index (`#364 <https://github.com/dtcenter/METcalcpy/issues/364>`_)
+     * Enhance aggregate statistics for ECNT,VL1L2,VAL1L2 and VCNT (`#361 <https://github.com/dtcenter/METcalcpy/issues/361>`_)
+
+
+  .. dropdown:: Internal
+
+     * Develop sonarqube capabilities  (`#367 <https://github.com/dtcenter/METcalcpy/issues/367>`_)
+     * Add github action for sonarqube   (`#366 <https://github.com/dtcenter/METcalcpy/issues/366>`_)
+     * Updated pythoh requirements.txt   (`#355 <https://github.com/dtcenter/METcalcpy/issues/355>`_)
+     * Modified python requirements section of Users Guide   (`#352 <https://github.com/dtcenter/METcalcpy/issues/352>`_)
+
+
+  .. dropdown:: Bugfixes
+
+
+     * Address negative values returned by calculate_bcmse() and calculate_bcrmse() in sl1l2_statistics module (`#329 <https://github.com/dtcenter/METcalcpy/issues/329>`_)
+
 METcalcpy Velsion 3.0.0-beta3 release notes (20230207)
 ------------------------------------------------------
 

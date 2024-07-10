@@ -1,0 +1,14 @@
+#%Module######################################################################
+##
+##      METcalcpy
+##
+proc ModulesHelp { } {
+  puts stderr "Sets up the paths and environment variables to use the METcalcpy-3.0.0.
+     *** For help see the official MET webpage at http://www.dtcenter.org/met/users ***"
+}
+
+module load contrib
+module load intel/2020.2
+
+prepend-path PATH /work/noaa/ovp/miniconda/miniconda3/envs/metplus_v5.1_py3.10/bin
+prepend-path PYTHONPATH /apps/contrib/MET/METcalcpy/METcalcpy-3.0.0
