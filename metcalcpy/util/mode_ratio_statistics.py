@@ -848,7 +848,7 @@ def calculate_objcsi(input_data, columns_names):
             nrow_column_data_by_name_value(input_data, columns_names, denominator_filter_1) / 2
         denominator_2 = \
             nrow_column_data_by_name_value(input_data, columns_names, denominator_filter_2)
-        result = round_half_up(nominator / (denominator_1 +  denominator_2), PRECISION)
+        result = round_half_up(nominator / (denominator_1 + denominator_2), PRECISION)
     except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
