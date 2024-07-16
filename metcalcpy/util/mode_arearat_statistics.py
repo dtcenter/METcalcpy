@@ -902,16 +902,16 @@ def calculate_objacsi(input_data, columns_names):
 
     try:
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
-        nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
+        nominator = sum_column_data_by_name(nominator_data, columns_names, 'area') / 2
 
         denominator_1_data = \
             column_data_by_name_value(input_data, columns_names, denominator_filter_1)
-        denominator_1 = sum_column_data_by_name(denominator_1_data, columns_names, 'area')
+        denominator_1 = sum_column_data_by_name(denominator_1_data, columns_names, 'area') / 2
 
         denominator_2_data = \
             column_data_by_name_value(input_data, columns_names, denominator_filter_2)
         denominator_2 = sum_column_data_by_name(denominator_2_data, columns_names, 'area')
-        result = round_half_up(nominator / (denominator_1 + 2 * denominator_2), PRECISION)
+        result = round_half_up(nominator / (denominator_1 + denominator_2), PRECISION)
     except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
