@@ -838,17 +838,17 @@ def calculate_objcsi(input_data, columns_names):
             or None if some of the data values are missing or invalid
     """
     warnings.filterwarnings('error')
-    nominator_filter = {'fcst_flag': 1, 'matched_flag': 0}
+    nominator_filter = {'simple_flag': 1, 'matched_flag': 1}
     denominator_filter_1 = {'simple_flag': 1, 'matched_flag': 1}
     denominator_filter_2 = {'simple_flag': 1, 'matched_flag': 0}
 
     try:
-        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
+        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter) / 2
         denominator_1 = \
-            nrow_column_data_by_name_value(input_data, columns_names, denominator_filter_1)
+            nrow_column_data_by_name_value(input_data, columns_names, denominator_filter_1) / 2
         denominator_2 = \
             nrow_column_data_by_name_value(input_data, columns_names, denominator_filter_2)
-        result = round_half_up(nominator / (denominator_1 + 2 * denominator_2), PRECISION)
+        result = round_half_up(nominator / (denominator_1 + denominator_2), PRECISION)
     except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
