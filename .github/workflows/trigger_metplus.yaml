@@ -27,7 +27,7 @@ jobs:
             await github.rest.actions.createWorkflowDispatch({
               owner: 'dtcenter',
               repo: 'METplus',
-              workflow_id: 'testing.yml',
+              workflow_id: 'testing.yaml',
               ref: 'develop',
               inputs: {
                 repository: '${{ github.repository }}',
