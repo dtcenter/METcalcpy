@@ -1,0 +1,96 @@
+2024-09-04 23:27:28 UTC - ishitas - INFO - User: ishitas has started the script with command: /home/ishitas/.local/lib/python3.10/site-packages/pytest/__main__.py -s --log-cli-level=INFO test_agg_eclv.py
+2024-09-04 23:27:28 UTC - ishitas - INFO - Successfully loaded data from /d1/personal/ishitas/METcalcpy/test/data/agg_eclv_data.data
+2024-09-04 23:27:28 UTC - ishitas - INFO - Random seed set to 1.
+2024-09-04 23:27:28 UTC - ishitas - INFO - Generated all combinations for points to be processed: 2 combinations.
+2024-09-04 23:27:28 UTC - ishitas - INFO - Output DataFrame initialized successfully with fields: ['model', 'fcst_lev', 'thresh_i', 'x_pnt_i', 'y_pnt_i', 'stat_btcl', 'stat_btcu', 'nstats'].
+2024-09-04 23:27:28 UTC - ishitas - INFO - Output DataFrame initialized successfully with fields: ['model', 'fcst_lev', 'thresh_i', 'x_pnt_i', 'y_pnt_i', 'stat_btcl', 'stat_btcu', 'nstats'].
+2024-09-04 23:27:28 UTC - ishitas - INFO - Statistics calculated successfully for single value case.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Bootstrapped statistics calculated for threshold 0.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Completed processing for point ('WRF', 'Z10')
+2024-09-04 23:27:29 UTC - ishitas - INFO - Output DataFrame initialized successfully with fields: ['model', 'fcst_lev', 'thresh_i', 'x_pnt_i', 'y_pnt_i', 'stat_btcl', 'stat_btcu', 'nstats'].
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for single value case.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics calculated successfully for all bootstrap samples.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Bootstrapped statistics calculated for threshold 0.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Completed processing for point ('WRF', 'P850-700')
+2024-09-04 23:27:29 UTC - ishitas - INFO - All data processed successfully. Returning compiled DataFrame.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Statistics and confidence intervals calculation completed.
+2024-09-04 23:27:29 UTC - ishitas - INFO - Data successfully written to /d1/personal/ishitas/METcalcpy/test/data/agg_eclv_data_output.data in mode w.

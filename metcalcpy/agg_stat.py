@@ -62,6 +62,8 @@ from metcalcpy.util.utils import is_string_integer, get_derived_curve_name, \
     OPERATION_TO_SIGN, perfect_score_adjustment, perform_event_equalization, \
     aggregate_field_values, sort_data, DerivedCurveComponent, is_string_strictly_float
 
+from logging_config import setup_logging
+
 __author__ = 'Tatiana Burek'
 
 
@@ -86,7 +88,9 @@ class AggStat:
             Raises: EmptyDataError or ValueError when the input DataFrame is empty
                 or doesn't have data
         """
-
+        self.logging = setup_logging(in_params)
+        logging = self.logging
+        logging.debug("Initializing AggStat with parameters")
         self.statistic = None
         self.derived_name_to_values = {}
         self.params = in_params
@@ -97,19 +101,23 @@ class AggStat:
                 header=[0],
                 sep='\t'
             )
-
+            logger.info(f"Successfully loaded data from {self.params['agg_stat_input']}")
             cols = self.input_data.columns.to_list()
             # Convert all col headers to lower case
             lc_cols = [lc_cols.lower() for lc_cols in cols]
             self.column_names = np.array(lc_cols)
             self.input_data.columns = lc_cols
-
-        except pandas.errors.EmptyDataError:
+        except pd.errors.EmptyDataError as e:
+            logger.error("Input data file is empty, raising EmptyDataError.", exc_info=True)
             raise
-        except KeyError as er:
-            print(f'ERROR: parameter with key {er} is missing')
+        except KeyError as e:
+            logger.error(f"Parameter with key {str(e)} is missing, raising KeyError.", exc_info=True)
+            raise
+        except Exception as e:
+            logger.error(f"Unexpected error occurred during data loading: {str(e)}", exc_info=True)
             raise
         self.group_to_value = {}
+        logger.debug("AggStat initialized successfully.")
 
     EXEMPTED_VARS = ['SSVAR_Spread', 'SSVAR_RMSE']
     STATISTIC_TO_FIELDS = {
@@ -267,29 +275,52 @@ class AggStat:
                 an error
 
         """
+        logger = self.logger
         func_name = f'calculate_{self.statistic}'
+        try:
+            stat_function = globals()[func_name]
+        except KeyError:
+            logger.error(f"Statistical function {func_name} not found in globals.")
+            raise KeyError(f"Function {func_name} not defined.")
         # some functions have an extra 3rd parameter that represents
         # if some data preliminary data aggregation was done
         # if this parameter is present we need to add it
+     
         num_parameters = len(signature(globals()[func_name]).parameters)
+        logger.debug(f"Function {func_name} expects {num_parameters} parameters.")
+    
+        if values is None:
+            logger.error("Input values array is None.")
+            raise ValueError("Input values cannot be None.")
 
         if values is not None and values.ndim == 2:
-
+            logger.debug("Processing single value case for statistical calculation.")
             # The single value case
-            if num_parameters == 2:
-                stat_values = [globals()[func_name](values, self.column_names)]
-            else:
-                stat_values = [globals()[func_name](values, self.column_names, True)]
+            try:
+                if num_parameters == 2:
+                    stat_values = [stat_function(values, self.column_names)]
+                else:
+                    stat_values = [stat_function(values, self.column_names, True)]
+                logger.info("Statistics calculated successfully for single value case.")
+            except Exception as e:
+                logger.error(f"Failed to calculate statistics: {e}", exc_info=True)
+                raise
+
         elif values is not None and values.ndim == 3:
             # bootstrapped case
+            logger.debug("Processing bootstrapped case for statistical calculation.")
             stat_values = []
-            for row in values:
-                if num_parameters == 2:
-                    stat_value = [globals()[func_name](row, self.column_names)]
-                else:
-                    stat_value = [globals()[func_name](row, self.column_names, True)]
-
-                stat_values.append(stat_value)
+            try:
+                for row in values:
+                    if num_parameters == 2:
+                        stat_value = [stat_function(row, self.column_names)]
+                    else:
+                        stat_value = [stat_function(row, self.column_names, True)]
+                    stat_values.append(stat_value)
+                logger.info("Statistics calculated successfully for all bootstrap samples.")
+            except Exception as e:
+                logger.error(f"Failed during bootstrap calculations: {e}", exc_info=True)
+                raise
 
             # pool = mp.Pool(mp.cpu_count())
             # stat_values = pool.map(partial(globals()['calculate_{}'.format(stat)],
@@ -298,6 +329,7 @@ class AggStat:
             # pool.join()
 
         else:
+            logger.error(f"Invalid data dimensions {values.ndim}; expected 2D or 3D array.")
             raise KeyError("can't calculate statistic")
         return stat_values
 
@@ -314,6 +346,16 @@ class AggStat:
             a list of calculated derived statistics
 
         """
+        logger = self.logger
+        logger.debug("Starting calculation of derived statistics.")
+        
+        if values_both_arrays is None:
+            logger.error("Input values array is None.")
+            raise ValueError("Input values cannot be None.")
+
+        if values_both_arrays.ndim not in [2, 3]:
+            logger.error(f"Invalid data dimensions {values_both_arrays.ndim}; expected 2D or 3D array.")
+            raise KeyError("Invalid data dimensions")
 
         if values_both_arrays is not None and values_both_arrays.ndim == 2:
             # The single value case
@@ -334,8 +376,9 @@ class AggStat:
             except ValueError:
                 func_name_1 = f'calculate_{self.statistic}'
                 func_name_2 = f'calculate_{self.statistic}'
-
-
+                logger.error(f"Error finding statistics function: {e}")
+                raise ValueError("Error processing statistic names")             
+ 
 
             # some functions have an extra 3rd parameter that represents
             # if some data preliminary data aggregation was done
@@ -345,24 +388,33 @@ class AggStat:
 
 
             # calculate stat for the 1st array
-            if num_parameters_1 == 2:
-                stat_values_1 = [globals()[func_name_1](values_1, self.column_names)]
-            else:
-                stat_values_1 = [globals()[func_name_1](values_1, self.column_names, True)]
+            try:
+                if num_parameters_1 == 2:
+                    stat_values_1 = [globals()[func_name_1](values_1, self.column_names)]
+                else:
+                    stat_values_1 = [globals()[func_name_1](values_1, self.column_names, True)]
 
-            # calculate stat for the 2nd array
-            if num_parameters_2 == 2:
-                stat_values_2 = [globals()[func_name_2](values_2, self.column_names)]
-            else:
-                stat_values_2 = [globals()[func_name_2](values_2, self.column_names, True)]
+                # calculate stat for the 2nd array
+                if num_parameters_2 == 2:
+                    stat_values_2 = [globals()[func_name_2](values_2, self.column_names)]
+                else:
+                    stat_values_2 = [globals()[func_name_2](values_2, self.column_names, True)]
+            except Exception as e:
+                logger.error(f"Error calculating statistics: {e}")
+                raise
 
             # calculate derived stat
-            stat_values = calc_derived_curve_value(
-                stat_values_1,
-                stat_values_2,
-                values_both_arrays[0, -1])
-            if not isinstance(stat_values, list):
-                stat_values = [stat_values]
+            try:
+                stat_values = calc_derived_curve_value(
+                    stat_values_1,
+                    stat_values_2,
+                    values_both_arrays[0, -1])
+                if not isinstance(stat_values, list):
+                    stat_values = [stat_values]
+            except Exception as e:
+                logger.error(f"Error calculating derived statistics: {e}", exc_info=True)
+            raise
+
         elif values_both_arrays is not None and values_both_arrays.ndim == 3:
             # bootstrapped case
             stat_values = []
@@ -385,6 +437,8 @@ class AggStat:
                 except ValueError:
                     func_name_1 = f'calculate_{self.statistic}'
                     func_name_2 = f'calculate_{self.statistic}'
+                    logger.error(f"Error finding statistics function: {e}")
+                    raise ValueError("Error processing statistic names")
 
                 # some functions have an extra 3rd parameter that represents
                 # if some data preliminary data aggregation was done
@@ -393,26 +447,35 @@ class AggStat:
                 num_parameters_2 = len(signature(globals()[func_name_2]).parameters)
 
                 # calculate stat for the 1st array
-                if num_parameters_1 == 2:
-                    stat_values_1 = [globals()[func_name_1](values_1, self.column_names)]
-                else:
-                    stat_values_1 = [globals()[func_name_1](values_1, self.column_names, True)]
+                try:
+                    if num_parameters_1 == 2:
+                        stat_values_1 = [globals()[func_name_1](values_1, self.column_names)]
+                    else:
+                        stat_values_1 = [globals()[func_name_1](values_1, self.column_names, True)]
 
-                # calculate stat for the 2nd array
-                if num_parameters_2 == 2:
-                    stat_values_2 = [globals()[func_name_2](values_2, self.column_names)]
-                else:
-                    stat_values_2 = [globals()[func_name_2](values_2, self.column_names, True)]
+                    # calculate stat for the 2nd array
+                    if num_parameters_2 == 2:
+                        stat_values_2 = [globals()[func_name_2](values_2, self.column_names)]
+                    else:
+                        stat_values_2 = [globals()[func_name_2](values_2, self.column_names, True)]
 
+                except Exception as e:
+                    logger.error(f"Error calculating statistics: {e}")
+                    raise
 
                 # calculate derived stat
-                stat_value = calc_derived_curve_value(
-                    stat_values_1,
-                    stat_values_2,
-                    row[0, -1])
-                if not isinstance(stat_value, list):
-                    stat_value = [stat_value]
-                stat_values.append(stat_value)
+                try:
+                    stat_value = calc_derived_curve_value(
+                        stat_values_1,
+                        stat_values_2,
+                        row[0, -1])
+                    if not isinstance(stat_value, list):
+                        stat_value = [stat_value]
+                    stat_values.append(stat_value)
+                    logger.info("Derived statistics calculated successfully.")
+                except Exception as e:
+                    logger.error(f"Error calculating derived statistics: {e}", exc_info=True)
+                    raise
 
             # pool = mp.Pool(mp.cpu_count())
             # stat_values = pool.map(partial(globals()['calculate_{}'.format(stat)],
@@ -431,10 +494,31 @@ class AggStat:
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
+        logger = self.logger
+        logger.debug("Starting preparation of sl1l2 data.")
+       
+        if data_for_prepare is None:
+            logger.error("Input data for preparation is None.")
+            raise ValueError("Input data cannot be None.")
+
         if self.statistic in self.STATISTIC_TO_FIELDS.keys():
-            for column in self.STATISTIC_TO_FIELDS[self.statistic]:
-                data_for_prepare[column] \
-                    = data_for_prepare[column].values * data_for_prepare['total'].values
+            try:
+                for column in self.STATISTIC_TO_FIELDS[self.statistic]:
+                    if column in data_for_prepare.columns and 'total' in data_for_prepare.columns:
+                        data_for_prepare[column] \
+                            = data_for_prepare[column].values * data_for_prepare['total'].values
+                        logger.debug(f"Data for column '{column}' multiplied by 'total'.")
+                    else:
+                        logger.warning(f"Column '{column}' or 'total' not found in the DataFrame.")
+            except Exception as e:
+                logger.error(f"Failed to prepare data for statistic calculation: {e}", exc_info=True)
+                raise
+        else:
+            error_message = f"Statistic '{self.statistic}' is not recognized or lacks associated fields."
+            logger.error(error_message)
+            raise KeyError(error_message)
+
+        logger.info("sl1l2 data preparation completed successfully.")
 
     def _prepare_sal1l2_data(self, data_for_prepare):
         """Prepares sal1l2 data.
@@ -443,11 +527,32 @@ class AggStat:
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
-        if self.statistic in self.STATISTIC_TO_FIELDS.keys():
-            for column in self.STATISTIC_TO_FIELDS[self.statistic]:
-                data_for_prepare[column] \
-                    = data_for_prepare[column].values * data_for_prepare['total'].values
+        logger = self.logger
+        logger.debug(f"Starting preparation of sal1l2 data for statistic '{self.statistic}'.")
 
+        if data_for_prepare is None:
+            logger.error("Input data for preparation is None.")
+            raise ValueError("Input data cannot be None.")
+
+        if self.statistic not in self.STATISTIC_TO_FIELDS:
+            error_message = f"Statistic '{self.statistic}' is not recognized or lacks associated fields."
+            logger.error(error_message)
+            raise KeyError(error_message)
+
+        try:
+            for column in self.STATISTIC_TO_FIELDS[self.statistic]:
+                if column in data_for_prepare.columns and 'total' in data_for_prepare.columns:
+                    data_for_prepare[column] = data_for_prepare[column] * data_for_prepare['total']
+                    logger.debug(f"Column '{column}' successfully multiplied by 'total'.")
+                else:
+                    missing_columns = [col for col in [column, 'total'] if col not in data_for_prepare.columns]
+                    logger.warning(f"Missing columns {missing_columns} in DataFrame. Multiplication skipped.")
+        except Exception as e:
+            logger.error(f"Failed to prepare data for statistic calculation: {e}", exc_info=True)
+            raise
+
+        logger.info("sal1l2 data preparation completed successfully.")
+    
     def _prepare_grad_data(self, data_for_prepare):
         """Prepares grad data.
             Multiplies needed for the statistic calculation columns to the 'total'value
@@ -455,10 +560,31 @@ class AggStat:
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
-        if self.statistic in self.STATISTIC_TO_FIELDS.keys():
+        logger = self.logger
+        logger.debug(f"Starting preparation of grad data for statistic '{self.statistic}'.")
+
+        if data_for_prepare is None:
+            logger.error("Input data for preparation is None.")
+            raise ValueError("Input data cannot be None.")
+
+        if self.statistic not in self.STATISTIC_TO_FIELDS:
+            error_message = f"Statistic '{self.statistic}' is not recognized or lacks associated fields."
+            logger.error(error_message)
+            raise KeyError(error_message)
+
+        try:
             for column in self.STATISTIC_TO_FIELDS[self.statistic]:
-                data_for_prepare[column] \
-                    = data_for_prepare[column].values * data_for_prepare['total'].values
+                if column in data_for_prepare.columns and 'total' in data_for_prepare.columns:
+                   data_for_prepare[column] = data_for_prepare[column] * data_for_prepare['total']
+                    logger.debug(f"Column '{column}' successfully multiplied by 'total'.")
+                else:
+                    missing_columns = [col for col in [column, 'total'] if col not in data_for_prepare.columns]
+                    logger.warning(f"Missing columns {missing_columns} in DataFrame. Multiplication skipped.")
+        except Exception as e:
+            logger.error(f"Failed to prepare data for statistic calculation: {e}", exc_info=True)
+            raise
+
+        logger.info("Grad data preparation completed successfully.")
 
     def _prepare_vl1l2_data(self, data_for_prepare):
         """Prepares vl1l2 data.
@@ -468,19 +594,44 @@ class AggStat:
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
+        logger = self.logger
+        logger.debug("Starting preparation of vl1l2 data.")
+
+        if data_for_prepare is None:
+            logger.error("Input data for preparation is None.")
+            raise ValueError("Input data cannot be None.")
+
         # Determine the MET version for this data.  If MET v12.0 or above, use the 'total_dir' column rather than
         # the 'total' column.
-        met_version = get_met_version(data_for_prepare)
-        major = int(met_version.major)
+        try
+            met_version = get_met_version(data_for_prepare)
+            major = int(met_version.major)
+            logger.debug(f"Detected MET version: {major}")
+        except Exception as e:
+            logger.error(f"Failed to determine MET version from data: {e}", exc_info=True)
+            raise
+
+        if self.statistic not in self.STATISTIC_TO_FIELDS:
+            error_message = f"Statistic '{self.statistic}' is not recognized or lacks associated fields."
+            logger.error(error_message)
+            raise KeyError(error_message)
 
         if self.statistic in self.STATISTIC_TO_FIELDS.keys():
-            for column in self.STATISTIC_TO_FIELDS[self.statistic]:
-                if major >= int(12):
-                    data_for_prepare[column] \
-                        = data_for_prepare[column].values * data_for_prepare['total_dir'].values
-                else:
-                    data_for_prepare[column] \
+            try:
+                for column in self.STATISTIC_TO_FIELDS[self.statistic]:
+                    if major >= int(12):
+                        data_for_prepare[column] \
+                            = data_for_prepare[column].values * data_for_prepare['total_dir'].values
+                        logger.debug(f"Column '{column}' successfully multiplied by 'total_dir'.")
+                    else:
+                        data_for_prepare[column] \
                         = data_for_prepare[column].values * data_for_prepare['total'].values
+                        logger.debug(f"Column '{column}' successfully multiplied by 'total'.")
+            except Exception as e:
+                logger.error(f"Error during data preparation: {e}", exc_info=True)
+                raise
+
+        logger.info("vl1l2 data preparation completed successfully.")
 
     def _prepare_val1l2_data(self, data_for_prepare):
         """Prepares val1l2 data.
@@ -492,17 +643,43 @@ class AggStat:
         """
         # Determine the MET version for this data.  If MET v12.0 or above, use the 'total_dir' column rather than
         # the 'total' column.
-        met_version = get_met_version(data_for_prepare)
-        major = int(met_version.major)
+        logger = self.logger
+        logger.debug("Starting preparation of val1l2 data.")
+
+        if data_for_prepare is None:
+            logger.error("Input data for preparation is None.")
+            raise ValueError("Input data cannot be None.")
+
+        try
+            met_version = get_met_version(data_for_prepare)
+            major = int(met_version.major)
+            logger.debug(f"Detected MET version: {major}")
+        except Exception as e:
+            logger.error(f"Failed to determine MET version from data: {e}", exc_info=True)
+            raise
+
+        if self.statistic not in self.STATISTIC_TO_FIELDS:
+            error_message = f"Statistic '{self.statistic}' is not recognized or lacks associated fields."
+            logger.error(error_message)
+            raise KeyError(error_message)
 
         if self.statistic in self.STATISTIC_TO_FIELDS.keys():
-            for column in self.STATISTIC_TO_FIELDS[self.statistic]:
-                if major >= int(12):
-                    data_for_prepare[column] \
-                        = data_for_prepare[column].values * data_for_prepare['total_dir'].values
-                else:
-                    data_for_prepare[column] \
-                        = data_for_prepare[column].values * data_for_prepare['total'].values
+            try:
+                for column in self.STATISTIC_TO_FIELDS[self.statistic]:
+                    if major >= int(12):
+                        data_for_prepare[column] \
+                            = data_for_prepare[column].values * data_for_prepare['total_dir'].values
+                        logger.debug(f"Column '{column}' successfully multiplied by 'total_dir'.")
+                    else:
+                        data_for_prepare[column] \
+                            = data_for_prepare[column].values * data_for_prepare['total'].values
+                        logger.debug(f"Column '{column}' successfully multiplied by 'total'.")
+            except Exception as e:
+                logger.error(f"Error during data preparation: {e}", exc_info=True)
+                raise
+
+        logger.info("val1l2 data preparation completed successfully.")
+
     def _prepare_vcnt_data(self, data_for_prepare):
         """Prepares vcnt data.
             Multiplies needed for the statistic calculation columns to the 'total_dir' value
@@ -510,19 +687,43 @@ class AggStat:
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
+        logger = self.logger
+        logger.debug("Starting preparation of vcnt data.")
         # Determine the MET version for this data.  If MET v12.0 or above, use the 'total_dir' column rather than
         # the 'total' column.
-        met_version = get_met_version(data_for_prepare)
-        major = int(met_version.major)
+        if data_for_prepare is None:
+            logger.error("Input data for preparation is None.")
+            raise ValueError("Input data cannot be None.")
+
+        try
+            met_version = get_met_version(data_for_prepare)
+            major = int(met_version.major)
+            logger.debug(f"Detected MET version: {major}")
+        except Exception as e:
+            logger.error(f"Failed to determine MET version from data: {e}", exc_info=True)
+            raise
+
+        if self.statistic not in self.STATISTIC_TO_FIELDS:
+            error_message = f"Statistic '{self.statistic}' is not recognized or lacks associated fields."
+            logger.error(error_message)
+            raise KeyError(error_message)
 
         if self.statistic in self.STATISTIC_TO_FIELDS.keys():
-            for column in self.STATISTIC_TO_FIELDS[self.statistic]:
-                if major >= int(12):
-                    data_for_prepare[column] \
-                        = data_for_prepare[column].values * data_for_prepare['total_dir'].values
-                else:
-                    data_for_prepare[column] \
-                        = data_for_prepare[column].values * data_for_prepare['total'].values
+            try:
+                for column in self.STATISTIC_TO_FIELDS[self.statistic]:
+                    if major >= int(12):
+                        data_for_prepare[column] \
+                            = data_for_prepare[column].values * data_for_prepare['total_dir'].values
+                        logger.debug(f"Column '{column}' successfully multiplied by 'total_dir'.")
+                    else:
+                        data_for_prepare[column] \
+                            = data_for_prepare[column].values * data_for_prepare['total'].values
+                        logger.debug(f"Column '{column}' successfully multiplied by 'total'.")
+            except Exception as e:
+                logger.error(f"Error during data preparation: {e}", exc_info=True)
+                raise
+
+        logger.info("vcnt data preparation completed successfully.")
 
     def _prepare_ecnt_data(self, data_for_prepare):
         """Prepares ecnt data.
@@ -531,35 +732,55 @@ class AggStat:
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
-        mse = data_for_prepare['rmse'].values * data_for_prepare['rmse'].values
-        mse_oerr = data_for_prepare['rmse_oerr'].values * data_for_prepare['rmse_oerr'].values
-        # crps_climo = data_for_prepare['crps'].values * data_for_prepare['crps'].values
+        logger = self.logger
+        logger.debug("Starting preparation of ECNT data.")
 
-        variance = data_for_prepare['spread'].values * data_for_prepare['spread'].values
-        variance_oerr = data_for_prepare['spread_oerr'].values * data_for_prepare['spread_oerr'].values
-        variance_plus_oerr = data_for_prepare['spread_oerr'].values * data_for_prepare['spread_oerr'].values
+        if data_for_prepare is None:
+            logger.error("Input data for preparation is None.")
+            raise ValueError("Input data cannot be None.")
 
-        data_for_prepare['mse'] = mse * data_for_prepare['total'].values
-        data_for_prepare['mse_oerr'] = mse_oerr * data_for_prepare['total'].values
-        # data_for_prepare['crps_climo'] = crps_climo * data_for_prepare['total'].values
+        try:
+            mse = data_for_prepare['rmse'].values * data_for_prepare['rmse'].values
+            mse_oerr = data_for_prepare['rmse_oerr'].values * data_for_prepare['rmse_oerr'].values
+            # crps_climo = data_for_prepare['crps'].values * data_for_prepare['crps'].values
 
-        data_for_prepare['variance'] = variance * data_for_prepare['total'].values
-        data_for_prepare['variance_oerr'] = variance_oerr * data_for_prepare['total'].values
-        data_for_prepare['variance_plus_oerr'] = variance_plus_oerr * data_for_prepare['total'].values
+            variance = data_for_prepare['spread'].values * data_for_prepare['spread'].values
+            variance_oerr = data_for_prepare['spread_oerr'].values * data_for_prepare['spread_oerr'].values
+            variance_plus_oerr = data_for_prepare['spread_oerr'].values * data_for_prepare['spread_oerr'].values
 
-        self.column_names = data_for_prepare.columns.values
+            data_for_prepare['mse'] = mse * data_for_prepare['total'].values
+            data_for_prepare['mse_oerr'] = mse_oerr * data_for_prepare['total'].values
+            # data_for_prepare['crps_climo'] = crps_climo * data_for_prepare['total'].values
 
-        if self.statistic in self.STATISTIC_TO_FIELDS.keys():
-            for column in self.STATISTIC_TO_FIELDS[self.statistic]:
-                if column == 'me_ge_obs':
-                    data_for_prepare[column] \
-                        = data_for_prepare[column].values * data_for_prepare['n_ge_obs'].values
-                elif column == 'me_lt_obs':
-                    data_for_prepare[column] \
-                        = data_for_prepare[column].values * data_for_prepare['n_lt_obs'].values
-                else:
-                    data_for_prepare[column] \
-                        = data_for_prepare[column].values * data_for_prepare['total'].values
+            data_for_prepare['variance'] = variance * data_for_prepare['total'].values
+            data_for_prepare['variance_oerr'] = variance_oerr * data_for_prepare['total'].values
+            data_for_prepare['variance_plus_oerr'] = variance_plus_oerr * data_for_prepare['total'].values
+            logger.debug("Basic statistical calculations completed.")
+
+            if self.statistic in self.STATISTIC_TO_FIELDS.keys():
+                for column in self.STATISTIC_TO_FIELDS[self.statistic]:
+                    if column == 'me_ge_obs':
+                        data_for_prepare[column] \
+                            = data_for_prepare[column].values * data_for_prepare['n_ge_obs'].values
+                        logger.debug(f"Column '{column}' successfully multiplied by 'n_ge_obs'.")
+                    elif column == 'me_lt_obs':
+                        data_for_prepare[column] \
+                            = data_for_prepare[column].values * data_for_prepare['n_lt_obs'].values
+                        logger.debug(f"Column '{column}' successfully multiplied by 'n_lt_obs'.")
+                    else:
+                        data_for_prepare[column] \
+                            = data_for_prepare[column].values * data_for_prepare['total'].values
+                        logger.debug(f"Column '{column}' successfully multiplied by 'total'.")
+            else:
+                logger.warning(f"Statistic '{self.statistic}' does not have associated fields for ECNT preparation.")
+            logger.info("ECNT data preparation completed successfully.")
+
+        except KeyError as e:
+            logger.error(f"Key error during data preparation: {e}", exc_info=True)
+            raise
+        except Exception as e:
+            logger.error(f"Unexpected error during data preparation: {e}", exc_info=True)
+            raise
 
     def _prepare_rps_data(self, data_for_prepare):
         total = data_for_prepare['total'].values
