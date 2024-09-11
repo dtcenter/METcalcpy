@@ -650,7 +650,7 @@ class AggStat:
             logger.error("Input data for preparation is None.")
             raise ValueError("Input data cannot be None.")
 
-        try
+        try:
             met_version = get_met_version(data_for_prepare)
             major = int(met_version.major)
             logger.debug(f"Detected MET version: {major}")
@@ -695,7 +695,7 @@ class AggStat:
             logger.error("Input data for preparation is None.")
             raise ValueError("Input data cannot be None.")
 
-        try
+        try:
             met_version = get_met_version(data_for_prepare)
             major = int(met_version.major)
             logger.debug(f"Detected MET version: {major}")
