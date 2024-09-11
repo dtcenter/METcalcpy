@@ -46,7 +46,7 @@ from metcalcpy.util.utils import PRECISION, is_string_strictly_float
 from metcalcpy.util.eclv_statistics import *
 
 from metcalcpy.util.utils import is_string_integer, parse_bool
-from logging_config import setup_logging
+from metcalcpy.logging_config import setup_logging
 
 __author__ = 'Tatiana Burek'
 
