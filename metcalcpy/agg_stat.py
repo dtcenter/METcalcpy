@@ -603,7 +603,7 @@ class AggStat:
 
         # Determine the MET version for this data.  If MET v12.0 or above, use the 'total_dir' column rather than
         # the 'total' column.
-        try
+        try:
             met_version = get_met_version(data_for_prepare)
             major = int(met_version.major)
             logger.debug(f"Detected MET version: {major}")
