@@ -990,99 +990,103 @@ class AggStat:
                 if perm in self.group_to_value:
                     permute_for_second_series[i] = self.group_to_value[perm]
 
-            logger.debug(f"First series components: {permute_for_first_series}")
-            logger.debug(f"Second series components: {permute_for_second_series}")
-
-            ds_1 = ds_2 = None
-
-            # for each component find its BootstrapDistributionResult object
-            for series_to_distrib_key in distributions.keys():
-                if all(elem in permute_for_first_series for elem in series_to_distrib_key):
-                    ds_1 = distributions[series_to_distrib_key]
-                if all(elem in permute_for_second_series for elem in series_to_distrib_key):
-                    ds_2 = distributions[series_to_distrib_key]
-                if ds_1 is not None and ds_2 is not None:
-                    break
-
-            if ds_1 is None or ds_2 is None:
-                logger.warning("Could not find BootstrapDistributionResult objects for one or both series.")
+        except KeyError as err:
+            logger.error(f"Error during derived component lookup: {err}", exc_info=True)
+            return BootstrapResults(None, None, None)
             
-            # if BootstrapDistributionResult object doesn't exist or the original series data size is 0, return empty object
-            if ds_1.values is None or ds_2.values is None or ds_1.values.size == 0 or ds_2.values.size == 0:
-                logger.warning("One or both series have no values. Returning empty BootstrapResults object.")
-                return BootstrapResults(lower_bound=None, value=None, upper_bound=None)
+        logger.debug(f"First series components: {permute_for_first_series}")
+        logger.debug(f"Second series components: {permute_for_second_series}")
 
-            # calculate the number of values in the group if the series has a group, needed for validation
-            num_diff_vals_first = sum(len(val.split(GROUP_SEPARATOR)) for val in permute_for_first_series if len(val.split(GROUP_SEPARATOR)) > 1)
-            num_diff_vals_second = sum(len(val.split(GROUP_SEPARATOR)) for val in permute_for_second_series if len(val.split(GROUP_SEPARATOR)) > 1)
-            num_diff_vals_first = max(num_diff_vals_first, 1)
-            num_diff_vals_second = max(num_diff_vals_second, 1)
+        ds_1 = ds_2 = None
 
-            # validate data
-            if derived_curve_component.derived_operation != 'SINGLE':
-                logger.debug("Validating series for derived operation.")
-                self._validate_series_cases_for_derived_operation(ds_1.values, axis, num_diff_vals_first)
-                self._validate_series_cases_for_derived_operation(ds_2.values, axis, num_diff_vals_second)
+        # for each component find its BootstrapDistributionResult object
+        for series_to_distrib_key in distributions.keys():
+            if all(elem in permute_for_first_series for elem in series_to_distrib_key):
+                ds_1 = distributions[series_to_distrib_key]
+            if all(elem in permute_for_second_series for elem in series_to_distrib_key):
+                ds_2 = distributions[series_to_distrib_key]
+            if ds_1 is not None and ds_2 is not None:
+                break
 
-            # handle bootstrapping
-            if self.params['num_iterations'] == 1 or derived_curve_component.derived_operation == 'ETB':
-                logger.debug("No bootstrapping required; calculating derived statistic.")
-                if derived_curve_component.derived_operation == 'ETB':
-                    index_array = np.where(self.column_names == 'stat_value')[0]
-                    func_name = f'calculate_{self.statistic}'
-                    for row in ds_1.values:
-                        stat = [globals()[func_name](row[np.newaxis, ...], self.column_names)]
-                        row[index_array] = stat
-                    for row in ds_2.values:
-                        stat = [globals()[func_name](row[np.newaxis, ...], self.column_names)]
-                        row[index_array] = stat
+        if ds_1 is None or ds_2 is None:
+            logger.warning("Could not find BootstrapDistributionResult objects for one or both series.")
+        
+        # if BootstrapDistributionResult object doesn't exist or the original series data size is 0, return empty object
+        if ds_1.values is None or ds_2.values is None or ds_1.values.size == 0 or ds_2.values.size == 0:
+            logger.warning("One or both series have no values. Returning empty BootstrapResults object.")
+            return BootstrapResults(lower_bound=None, value=None, upper_bound=None)
 
-                    ds_1_value = ds_1.values[:, index_array].flatten().tolist()
-                    ds_2_value = ds_2.values[:, index_array].flatten().tolist()
-                else:
-                    ds_1_value = [ds_1.value]
-                    ds_2_value = [ds_2.value]
+        # calculate the number of values in the group if the series has a group, needed for validation
+        num_diff_vals_first = sum(len(val.split(GROUP_SEPARATOR)) for val in permute_for_first_series if len(val.split(GROUP_SEPARATOR)) > 1)
+        num_diff_vals_second = sum(len(val.split(GROUP_SEPARATOR)) for val in permute_for_second_series if len(val.split(GROUP_SEPARATOR)) > 1)
+        num_diff_vals_first = max(num_diff_vals_first, 1)
+        num_diff_vals_second = max(num_diff_vals_second, 1)
 
-                stat_val = calc_derived_curve_value(ds_1_value, ds_2_value, derived_curve_component.derived_operation)
-                if stat_val is not None:
-                    results = BootstrapResults(lower_bound=None, value=round_half_up(stat_val[0], 5), upper_bound=None)
-                else:
-                    results = BootstrapResults(lower_bound=None, value=None, upper_bound=None)
-                results.set_distributions([results.value])
+        # validate data
+        if derived_curve_component.derived_operation != 'SINGLE':
+            logger.debug("Validating series for derived operation.")
+            self._validate_series_cases_for_derived_operation(ds_1.values, axis, num_diff_vals_first)
+            self._validate_series_cases_for_derived_operation(ds_2.values, axis, num_diff_vals_second)
+
+        # handle bootstrapping
+        if self.params['num_iterations'] == 1 or derived_curve_component.derived_operation == 'ETB':
+            logger.debug("No bootstrapping required; calculating derived statistic.")
+            if derived_curve_component.derived_operation == 'ETB':
+                index_array = np.where(self.column_names == 'stat_value')[0]
+                func_name = f'calculate_{self.statistic}'
+                for row in ds_1.values:
+                    stat = [globals()[func_name](row[np.newaxis, ...], self.column_names)]
+                    row[index_array] = stat
+                for row in ds_2.values:
+                    stat = [globals()[func_name](row[np.newaxis, ...], self.column_names)]
+                    row[index_array] = stat
+
+                ds_1_value = ds_1.values[:, index_array].flatten().tolist()
+                ds_2_value = ds_2.values[:, index_array].flatten().tolist()
             else:
-                logger.debug("Performing bootstrapping with CI calculation.")
-                operation = np.full((len(ds_1.values), 1), derived_curve_component.derived_operation)
-                values_both_arrays = np.concatenate((ds_1.values, ds_2.values, operation), axis=1)
+                ds_1_value = [ds_1.value]
+                ds_2_value = [ds_2.value]
 
-                try:
-                    block_length = int(math.sqrt(len(values_both_arrays))) if 'circular_block_bootstrap' in self.params and parse_bool(self.params['circular_block_bootstrap']) else 1
-                    results = bootstrap_and_value(
-                        values_both_arrays,
-                        stat_func=self._calc_stats_derived,
-                        num_iterations=self.params['num_iterations'],
-                        num_threads=self.params['num_threads'],
-                        ci_method=self.params['method'],
-                        alpha=self.params['alpha'],
-                        save_data=False,
-                        save_distributions=(derived_curve_component.derived_operation == 'DIFF_SIG'),
-                        block_length=block_length)
-                except KeyError as err:
-                    logger.error(f"Error during bootstrapping: {err}", exc_info=True)
-                    return BootstrapResults(None, None, None)
+            stat_val = calc_derived_curve_value(ds_1_value, ds_2_value, derived_curve_component.derived_operation)
+            if stat_val is not None:
+                results = BootstrapResults(lower_bound=None, value=round_half_up(stat_val[0], 5), upper_bound=None)
+            else:
+                results = BootstrapResults(lower_bound=None, value=None, upper_bound=None)
+            results.set_distributions([results.value])
+        else:
+            logger.debug("Performing bootstrapping with CI calculation.")
+            operation = np.full((len(ds_1.values), 1), derived_curve_component.derived_operation)
+            values_both_arrays = np.concatenate((ds_1.values, ds_2.values, operation), axis=1)
 
-            # Post-processing for DIFF_SIG
-            if derived_curve_component.derived_operation == 'DIFF_SIG':
-                logger.debug("Processing DIFF_SIG operation for derived statistics.")
-                distributions = [i for i in results.distributions if i is not None]
-                if distributions and results.value is not None:
-                    distribution_mean = np.mean(distributions)
-                    distribution_under_h0 = distributions - distribution_mean
-                    pval = np.mean(np.absolute(distribution_under_h0) <= np.absolute(results.value))
-                    diff_sig = perfect_score_adjustment(ds_1.value, ds_2.value, self.statistic, pval)
-                    results.value = diff_sig
+            try:
+                block_length = int(math.sqrt(len(values_both_arrays))) if 'circular_block_bootstrap' in self.params and parse_bool(self.params['circular_block_bootstrap']) else 1
+                results = bootstrap_and_value(
+                    values_both_arrays,
+                    stat_func=self._calc_stats_derived,
+                    num_iterations=self.params['num_iterations'],
+                    num_threads=self.params['num_threads'],
+                    ci_method=self.params['method'],
+                    alpha=self.params['alpha'],
+                    save_data=False,
+                    save_distributions=(derived_curve_component.derived_operation == 'DIFF_SIG'),
+                    block_length=block_length)
+            except KeyError as err:
+                logger.error(f"Error during bootstrapping: {err}", exc_info=True)
+                return BootstrapResults(None, None, None)
 
-            logger.info("Completed derived statistics calculation.")
-            return results
+        # Post-processing for DIFF_SIG
+        if derived_curve_component.derived_operation == 'DIFF_SIG':
+            logger.debug("Processing DIFF_SIG operation for derived statistics.")
+            distributions = [i for i in results.distributions if i is not None]
+            if distributions and results.value is not None:
+                distribution_mean = np.mean(distributions)
+                distribution_under_h0 = distributions - distribution_mean
+                pval = np.mean(np.absolute(distribution_under_h0) <= np.absolute(results.value))
+                diff_sig = perfect_score_adjustment(ds_1.value, ds_2.value, self.statistic, pval)
+                results.value = diff_sig
+
+        logger.info("Completed derived statistics calculation.")
+        return results
 
     def _get_bootstrapped_stats(self, series_data, axis="1"):
         """ Calculates aggregation statistic value and CI intervals if needed for input data
