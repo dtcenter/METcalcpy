@@ -62,7 +62,7 @@ from metcalcpy.util.utils import is_string_integer, get_derived_curve_name, \
     OPERATION_TO_SIGN, perfect_score_adjustment, perform_event_equalization, \
     aggregate_field_values, sort_data, DerivedCurveComponent, is_string_strictly_float
 
-from logging_config import setup_logging
+from metcalcpy.logging_config import setup_logging
 
 __author__ = 'Tatiana Burek'
 
