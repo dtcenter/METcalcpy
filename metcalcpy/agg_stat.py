@@ -301,7 +301,7 @@ class AggStat:
                     stat_values = [stat_function(values, self.column_names)]
                 else:
                     stat_values = [stat_function(values, self.column_names, True)]
-                logger.info("Statistics calculated successfully for single value case.")
+
             except Exception as e:
                 logger.error(f"Failed to calculate statistics: {e}", exc_info=True)
                 raise
@@ -413,7 +413,7 @@ class AggStat:
                     stat_values = [stat_values]
             except Exception as e:
                 logger.error(f"Error calculating derived statistics: {e}", exc_info=True)
-            raise
+                raise
 
         elif values_both_arrays is not None and values_both_arrays.ndim == 3:
             # bootstrapped case
@@ -757,6 +757,8 @@ class AggStat:
             data_for_prepare['variance_plus_oerr'] = variance_plus_oerr * data_for_prepare['total'].values
             logger.debug("Basic statistical calculations completed.")
 
+            self.column_names = data_for_prepare.columns.values
+
             if self.statistic in self.STATISTIC_TO_FIELDS.keys():
                 for column in self.STATISTIC_TO_FIELDS[self.statistic]:
                     if column == 'me_ge_obs':
@@ -775,12 +777,15 @@ class AggStat:
                 logger.warning(f"Statistic '{self.statistic}' does not have associated fields for ECNT preparation.")
             logger.info("ECNT data preparation completed successfully.")
 
+
         except KeyError as e:
             logger.error(f"Key error during data preparation: {e}", exc_info=True)
             raise
         except Exception as e:
             logger.error(f"Unexpected error during data preparation: {e}", exc_info=True)
             raise
+        print(self.statistic)
+        print('786')
 
     def _prepare_rps_data(self, data_for_prepare):
         """Prepares rps data.
@@ -1598,7 +1603,7 @@ class AggStat:
             header = False
             mode = 'a'
         logger.debug(f"Writing mode set to: {mode}, header: {header}")
-
+        print(out_frame)
         # Write the output to a CSV file
         output_file = self.params['agg_stat_output']
         logger.info(f"Writing results to file: {output_file}")
