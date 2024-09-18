@@ -1075,7 +1075,8 @@ class AggStat:
                     alpha=self.params['alpha'],
                     save_data=False,
                     save_distributions=(derived_curve_component.derived_operation == 'DIFF_SIG'),
-                    block_length=block_length)
+                    block_length=block_length
+                    )
             except KeyError as err:
                 logger.error(f"Error during bootstrapping: {err}", exc_info=True)
                 return BootstrapResults(None, None, None)

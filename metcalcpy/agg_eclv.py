@@ -209,7 +209,7 @@ class AggEclv:
                         save_data=False,
                         block_length=block_length,
                         eclv=True
-                    )
+                        )
                     logger.info(f"Bootstrapped statistics calculated for threshold {thresh}.")
                 except KeyError as err:
                     logger.error(f"Failed to calculate bootstrapped statistics due to missing key: {err}", exc_info=True)

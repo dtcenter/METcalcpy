@@ -43,7 +43,7 @@ def safe_log(logger, log_method, message):
     if logger:
         log_method(message)
 
-def _input_check(sigmaij, muij, threshold, fieldijn, sigma_over_mu_ref, under_factor, logger):
+def _input_check(logger, sigmaij, muij, threshold, fieldijn, sigma_over_mu_ref, under_factor):
     """
     Check for valid input to _difficulty_index.
 
@@ -93,7 +93,7 @@ def _input_check(sigmaij, muij, threshold, fieldijn, sigma_over_mu_ref, under_fa
     assert 0.0 <= under_factor <= 1.0
     safe_log(logger, logger.debug, "under_factor is valid and within range.")
 
-def _difficulty_index(sigmaij, muij, threshold, fieldijn, Aplin, sigma_over_mu_ref=EPS, under_factor=0.5, logger):
+def _difficulty_index(logger, sigmaij, muij, threshold, fieldijn, Aplin, sigma_over_mu_ref=EPS, under_factor=0.5):
     """
     Calculates version 6.1 of forecast difficulty index.
     The threshold terms all penalize equal (or slightly unequal) spread.
@@ -160,8 +160,8 @@ def _difficulty_index(sigmaij, muij, threshold, fieldijn, Aplin, sigma_over_mu_r
     return dij
 
 
-def forecast_difficulty(sigmaij, muij, threshold, fieldijn,
-                        Aplin, sigma_over_mu_ref=EPS, logger):
+def forecast_difficulty(logger, sigmaij, muij, threshold, fieldijn,
+                        Aplin, sigma_over_mu_ref=EPS):
     """
     Calls private function _difficulty_index, 
     to calculate version (v6.1) of forecast difficulty index.

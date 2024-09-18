@@ -84,7 +84,7 @@ def settings():
                        'NoahMPv3.5.1_d01']},
               'stat_flag': 'NCAR',
               'sum_stat_input': f'{cwd}/data/scorecard.data',
-              'sum_stat_output': f'{cwd}/data/scorecard_output.data'
+              'sum_stat_output': f'{cwd}/data/scorecard_output.data',
               'log_dir': f'{cwd}/logs/',
               'log_filename': 'log_scorecard.txt',
               'log_level': 'WARNING'
