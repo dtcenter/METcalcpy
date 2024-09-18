@@ -116,11 +116,11 @@ class AggStatEventEqualize:
                     logger.debug(f"Series variable values for {key}: {all_series_vars[key]}")
                 logger.info("Running event equalization on all data.")
 
-                output_ee_data = event_equalize(all_ee_records, self.params['indy_var'],
+                output_ee_data = event_equalize(logger, all_ee_records, self.params['indy_var'],
                                                 all_series_vars,
                                                 list(self.params['fixed_vars_vals_input'].keys()),
                                                 fix_vals_permuted, True,
-                                                False, logger)
+                                                False)
                 logger.debug(f"Final event equalization completed. Number of records: {len(output_ee_data)}")
 
         else:
@@ -164,10 +164,10 @@ class AggStatEventEqualize:
             # perform EE on filtered data
             logger.info(f"Performing event equalization on {series_var}.")
             series_data_after_ee = \
-                event_equalize(series_data_for_ee, self.params['indy_var'],
+                event_equalize(logger, series_data_for_ee, self.params['indy_var'],
                                self.params['series_val_' + axis],
                                list(self.params['fixed_vars_vals_input'].keys()),
-                               fix_vals_permuted, True, False, logger)
+                               fix_vals_permuted, True, False)
             logger.debug(f"Number of records after event equalization for {series_var}: {len(series_data_after_ee)}")
 
             # append EE data to result
