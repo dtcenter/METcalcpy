@@ -125,8 +125,6 @@ def _difficulty_index(logger, sigmaij, muij, threshold, fieldijn, Aplin, sigma_o
         means more difficult.
 
     """
-    safe_log(logger, "debug", f"Checking input: sigmaij shape: {sigmaij.shape}, muij shape: {muij.shape if isinstance(muij, np.ndarray) else 'scalar'}, "
-                 f"threshold: {threshold}, fieldijn shape: {fieldijn.shape}, sigma_over_mu_ref: {sigma_over_mu_ref}, under_factor: {under_factor}")
     # Check for valid input
     _input_check(sigmaij, muij, threshold, fieldijn, sigma_over_mu_ref, under_factor, logger)
     safe_log(logger, "debug", "Input check passed successfully.")

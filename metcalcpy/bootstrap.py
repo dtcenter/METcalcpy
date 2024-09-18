@@ -391,7 +391,6 @@ def _get_confidence_interval_and_value_eclv(logger, bootstrap_dist, stat_val, al
     """
 
     # TODO Only percentile method for the confident intervals is implemented
-    logger = self.logger
     if stat_val is None:
         logger.warning("Statistic value is None. Skipping confidence interval calculation.")
         val = None
@@ -571,7 +570,6 @@ def _all_the_same(elements):
 
 
 def _validate_arrays(logger, values_lists):
-    logger = self.logger
     t = values_lists[0]
     t_type = type(t)
     logger.debug(f"Validating arrays. First array type: {t_type}, shape: {t.shape}")
