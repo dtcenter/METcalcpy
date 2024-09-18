@@ -262,13 +262,14 @@ class AggStatBootstrap:
             logger.info("Performing bootstrapping and confidence interval calculation.")
             try:
                 results = bootstrap_and_value_mode(
+                    logger=logger,
                     self.series_data,
                     cases,
                     stat_func=self._calc_stats,
                     num_iterations=self.params['num_iterations'],
                     num_threads=self.params['num_threads'],
-                    ci_method=self.params['method'],
-                    logger=logger)
+                    ci_method=self.params['method']
+                    )
                 logger.debug("Bootstrapping completed successfully.")
             except KeyError as err:
                 logger.error(f"Error during bootstrapping: {err}", exc_info=True)

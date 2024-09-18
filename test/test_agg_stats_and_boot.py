@@ -63,6 +63,7 @@ def test_cboot():
     # run the boot ci TEST_LENGTH times
     for ind in range(TEST_LENGTH):
         results_ml = bootstrap_and_value(
+            None,
             et,
             stat_func=lossdiff_ml,
             num_iterations=500, alpha=0.05,
@@ -73,6 +74,7 @@ def test_cboot():
             ml_reject[ind] = 0
 
         results_mal = bootstrap_and_value(
+            None,
             et,
             stat_func=lossdiff_mal,
             num_iterations=500, alpha=0.05,
@@ -82,6 +84,7 @@ def test_cboot():
             mal_reject[ind] = 0
 
         results_msl = bootstrap_and_value(
+            None,
             et,
             stat_func=lossdiff_msl,
             num_iterations=500, alpha=0.05,
@@ -92,6 +95,7 @@ def test_cboot():
             msl_reject[ind] = 0
 
         results_mean = bootstrap_and_value(
+            None,
             et[:, 0],
             stat_func=bootstrap.mean,
             num_iterations=500, alpha=0.05,

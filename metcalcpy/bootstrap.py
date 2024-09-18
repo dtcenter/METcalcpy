@@ -99,10 +99,10 @@ class BootstrapResults(object):
         self.distributions = distributions
 
 
-def bootstrap_and_value(values, stat_func, alpha=0.05,
+def bootstrap_and_value(logger, values, stat_func, alpha=0.05,
                         num_iterations=1000, iteration_batch_size=None,
                         num_threads=1, ci_method='perc',
-                        save_data=True, save_distributions=False, block_length: int = 1, eclv: bool = False, logger):
+                        save_data=True, save_distributions=False, block_length: int = 1, eclv: bool = False):
     """Returns bootstrap estimate. Can do the independent and identically distributed (IID)
         or Circular Block Bootstrap (CBB) methods depending on the block_length
         Args:
@@ -151,17 +151,17 @@ def bootstrap_and_value(values, stat_func, alpha=0.05,
 
     stat_val = stat_func(values)[0]
     sz = num_iterations / block_length
-    distributions = _bootstrap_distribution_cbb(values_lists,
+    distributions = _bootstrap_distribution_cbb(logger, values_lists,
                                                 stat_func_lists,
                                                 num_iterations,
                                                 iteration_batch_size,
-                                                num_threads, block_length, logger)
+                                                num_threads, block_length)
 
     bootstrap_dist = do_division(*distributions)
     if eclv:
-        result = _get_confidence_interval_and_value_eclv(bootstrap_dist, stat_val, alpha, ci_method, logger)
+        result = _get_confidence_interval_and_value_eclv(logger, bootstrap_dist, stat_val, alpha, ci_method)
     else:
-        result = _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_method, logger)
+        result = _get_confidence_interval_and_value(logger, bootstrap_dist, stat_val, alpha, ci_method)
     if save_data:
         result.set_original_values(values)
     if save_distributions:
@@ -169,8 +169,8 @@ def bootstrap_and_value(values, stat_func, alpha=0.05,
     return result
 
 
-def _bootstrap_distribution_cbb(values_lists, stat_func_lists,
-                                num_iterations, iteration_batch_size, num_threads, block_length=1, logger):
+def _bootstrap_distribution_cbb(logger, values_lists, stat_func_lists,
+                                num_iterations, iteration_batch_size, num_threads, block_length=1):
     '''Returns the simulated bootstrap distribution. The idea is to sample the same
         indexes in a bootstrap re-sample across all arrays passed into values_lists.
 
@@ -244,10 +244,10 @@ def _bootstrap_distribution_cbb(values_lists, stat_func_lists,
     return results
 
 
-def bootstrap_and_value_mode(values, cases, stat_func, alpha=0.05,
+def bootstrap_and_value_mode(logger, values, cases, stat_func, alpha=0.05,
                              num_iterations=1000, iteration_batch_size=None,
                              num_threads=1, ci_method='perc',
-                             save_data=True, save_distributions=False, block_length=1, logger):
+                             save_data=True, save_distributions=False, block_length=1):
     """Returns bootstrap estimate.
         Args:
             values: numpy array  of values to bootstrap
@@ -299,16 +299,16 @@ def bootstrap_and_value_mode(values, cases, stat_func, alpha=0.05,
         logger.debug(f"Selected {len(values_current)} cases for calculation.")
         stat_val = stat_func(values_current)[0]
         logger.info(f"Calculated statistic value: {stat_val}")
-        distributions = _bootstrap_distribution_cbb(values_lists,
+        distributions = _bootstrap_distribution_cbb(logger, values_lists,
                                                     stat_func_lists,
                                                     num_iterations,
                                                     iteration_batch_size,
-                                                    num_threads, block_length, logger)
+                                                    num_threads, block_length)
         logger.debug(f"Bootstrap distributions: {distributions}")
 
         bootstrap_dist = do_division(*distributions)
         logger.debug(f"Result after division operation: {bootstrap_dist}")
-        result = _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_method, logger)
+        result = _get_confidence_interval_and_value(logger, bootstrap_dist, stat_val, alpha, ci_method)
         logger.info(f"Confidence intervals calculated: {result.lower_bound}, {result.upper_bound}")
 
         if save_data:
@@ -323,7 +323,7 @@ def bootstrap_and_value_mode(values, cases, stat_func, alpha=0.05,
     return result
 
 
-def _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_method, logger):
+def _get_confidence_interval_and_value(logger, bootstrap_dist, stat_val, alpha, ci_method):
     """Get the bootstrap confidence interval for a given distribution.
         Args:
             bootstrap_dist: numpy array of bootstrap results from
@@ -377,7 +377,7 @@ def _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_metho
                             upper_bound=high)
 
 
-def _get_confidence_interval_and_value_eclv(bootstrap_dist, stat_val, alpha, ci_method, logger):
+def _get_confidence_interval_and_value_eclv(logger, bootstrap_dist, stat_val, alpha, ci_method):
     """Get the bootstrap confidence interval for a given distribution for the Economic Cost Loss Relative Value
         Args:
             bootstrap_dist: numpy array of bootstrap results from
@@ -455,8 +455,8 @@ def flatten(lis):
             yield item
 
 
-def _bootstrap_sim_cbb(values_lists, stat_func_lists, num_iterations,
-                       iteration_batch_size, seed, block_length=1, logger):
+def _bootstrap_sim_cbb(logger, values_lists, stat_func_lists, num_iterations,
+                       iteration_batch_size, seed, block_length=1):
     """Returns simulated bootstrap distribution. Can do the independent and identically distributed (IID)
         or Circular Block Bootstrap (CBB) methods depending on the block_length
         Args:
@@ -495,7 +495,7 @@ def _bootstrap_sim_cbb(values_lists, stat_func_lists, num_iterations,
         max_rng = min(iteration_batch_size, num_iterations - rng)
         logger.debug(f"Running bootstrap iteration batch from {rng} to {rng + max_rng}.")
         try:
-            values_sims = _generate_distributions_cbb(values_lists, max_rng, block_length, logger)
+            values_sims = _generate_distributions_cbb(logger, values_lists, max_rng, block_length)
             logger.debug(f"Generated {max_rng} simulated distributions.")
         except Exception as e:
             logger.error(f"Error generating distributions in bootstrap: {e}", exc_info=True)
@@ -508,7 +508,7 @@ def _bootstrap_sim_cbb(values_lists, stat_func_lists, num_iterations,
     return _np.array(results)
 
 
-def _generate_distributions_cbb(values_lists, num_iterations, block_length=1, logger):
+def _generate_distributions_cbb(logger, values_lists, num_iterations, block_length=1):
     values_shape = values_lists[0].shape[0]
     ids = _np.random.choice(
         values_shape,
@@ -570,7 +570,7 @@ def _all_the_same(elements):
     return result
 
 
-def _validate_arrays(values_lists, logger):
+def _validate_arrays(logger, values_lists):
     logger = self.logger
     t = values_lists[0]
     t_type = type(t)
