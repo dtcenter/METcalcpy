@@ -130,6 +130,8 @@ class AggStatEventEqualize:
 
         header = True
         mode = 'w'
+        output_file = self.params['agg_stat_output']
+
         output_ee_data.to_csv(self.params['agg_stat_output'],
                                            index=None, header=header, mode=mode,
                                            sep="\t", na_rep="NA")

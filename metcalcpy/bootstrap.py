@@ -207,7 +207,7 @@ def _bootstrap_distribution_cbb(logger, values_lists, stat_func_lists,
 
     logger.info("Starting circular block bootstrap distribution process.")
     logger.debug("Validating input arrays.")
-    _validate_arrays(values_lists)
+    _validate_arrays(logger, values_lists)
 
     if iteration_batch_size is None:
         iteration_batch_size = num_iterations

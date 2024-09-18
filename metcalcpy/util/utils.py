@@ -753,7 +753,7 @@ def equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axi
             # perform EE on filtered data
             # for SSVAR line_type use equalization of multiple events
             series_data_after_ee = \
-                event_equalize(series_data_for_ee, params['indy_var'],
+                event_equalize(None, series_data_for_ee, params['indy_var'],
                                params['series_val_' + axis],
                                fix_vals_keys,
                                fix_vals_permuted, True,
@@ -811,7 +811,7 @@ def perform_event_equalization(params, input_data):
 
     # perform EE for each forecast variable on the axis 1
     output_ee_data = \
-        equalize_axis_data(fix_vals_keys, fix_vals_permuted_list, params, input_data, axis='1')
+        equalize_axis_data(None, fix_vals_keys, fix_vals_permuted_list, params, input_data, axis='1')
 
     # if the second Y axis is present - run event equalizer on Y1
     # and then run event equalizer on Y1 and Y2 equalized data

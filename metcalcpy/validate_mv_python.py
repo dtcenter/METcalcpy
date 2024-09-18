@@ -42,17 +42,6 @@ import yaml
 from metcalcpy.compare_images import CompareImages
 from metcalcpy.logging_config import setup_logging
 
-def safe_log(logger, log_method, message):
-    """
-    Safely logs a message using the provided logger and log method.
-    
-    Args:
-        logger (logging.Logger): The logger object. If None, the message will not be logged.
-        log_method (callable): The logging method to use (e.g., logger.info, logger.debug).
-        message (str): The message to log.
-    """
-    if logger:
-        log_method(message)
 
 def replace_name(old_name, postfix):
     """Adds postfix to the end of a file name but before the extension
