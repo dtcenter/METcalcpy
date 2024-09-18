@@ -126,7 +126,7 @@ def _difficulty_index(logger, sigmaij, muij, threshold, fieldijn, Aplin, sigma_o
 
     """
     # Check for valid input
-    _input_check(sigmaij, muij, threshold, fieldijn, sigma_over_mu_ref, under_factor, logger)
+    _input_check(logger, sigmaij, muij, threshold, fieldijn, sigma_over_mu_ref, under_factor)
     safe_log(logger, "debug", "Input check passed successfully.")
     # Variance term in range 0 to 1
     safe_log(logger, "debug", "Calculating variance term.")
@@ -206,8 +206,8 @@ def forecast_difficulty(logger, sigmaij, muij, threshold, fieldijn,
                         name=A6_1_name)
         safe_log(logger, "debug", "Default Aplin object created.")
     safe_log(logger, "debug", "Calling _difficulty_index function.")                                                                  
-    dij = _difficulty_index(sigmaij, muij, threshold, fieldijn,
-                       Aplin, sigma_over_mu_ref, logger)
+    dij = _difficulty_index(logger, sigmaij, muij, threshold, fieldijn,
+                       Aplin, sigma_over_mu_ref)
     safe_log(logger, "info", "Forecast difficulty index calculation completed.")
     return dij
 
