@@ -37,8 +37,8 @@ def safe_log(logger, log_level, message):
         if callable(log_method):
             log_method(message)
 
-def event_equalize(series_data, indy_var, series_var_vals, fix_vars,
-                   fix_vals_permuted, equalize_by_indep, multi, logger):
+def event_equalize(logger, series_data, indy_var, series_var_vals, fix_vars,
+                   fix_vals_permuted, equalize_by_indep, multi):
     """Performs event equalisation.
 
     event_equalize assumes that the input series_data contains data indexed by fcst_valid_beg,

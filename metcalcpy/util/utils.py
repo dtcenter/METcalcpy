@@ -811,7 +811,7 @@ def perform_event_equalization(params, input_data):
 
     # perform EE for each forecast variable on the axis 1
     output_ee_data = \
-        equalize_axis_data(None, fix_vals_keys, fix_vals_permuted_list, params, input_data, axis='1')
+        equalize_axis_data(fix_vals_keys, fix_vals_permuted_list, params, input_data, axis='1')
 
     # if the second Y axis is present - run event equalizer on Y1
     # and then run event equalizer on Y1 and Y2 equalized data
@@ -829,7 +829,7 @@ def perform_event_equalization(params, input_data):
             all_series[key] = list(set(all_series[key]))
 
         # run EE on run event equalizer on Y1 and Y2
-        output_ee_data = event_equalize(all_ee_records, params['indy_var'],
+        output_ee_data = event_equalize(None, all_ee_records, params['indy_var'],
                                         all_series,
                                         fix_vals_keys,
                                         fix_vals_permuted_list, True,

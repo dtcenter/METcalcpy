@@ -31,7 +31,7 @@ def safe_log(logger, log_level, message):
         if callable(log_method):
             log_method(message)
         
-def event_equalize_against_values(series_data, input_unique_cases, logger):
+def event_equalize_against_values(logger, series_data, input_unique_cases):
     """Performs event equalisation.
 
     event_equalize_against_values assumes that the input series_data contains data
