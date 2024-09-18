@@ -89,8 +89,8 @@ def perform_event_equalize(fcst_var_val, fixed_vars_vals_input, indy_var, input_
                                          & (input_data[series_var].isin(series_var_vals_no_group))]
                 start = time.time()
                 series_data = \
-                    event_equalize(series_data, indy_var, series_val, fix_vars,
-                                   fix_vals_permuted, True, bool_multi, None)
+                    event_equalize(None, series_data, indy_var, series_val, fix_vars,
+                                   fix_vals_permuted, True, bool_multi)
                 end = time.time()
                 print("one EE:" + str(end - start))
 
