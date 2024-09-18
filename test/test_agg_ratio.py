@@ -67,7 +67,10 @@ def settings():
                   'APCP_03': ['ECNT_RMSE','ECNT_SPREAD']
               },
               'list_stat_1':['ECNT_RMSE', 'ECNT_SPREAD'],
-              'list_stat_2':[]
+              'list_stat_2':[],
+              'log_dir': f'{cwd}/logs/',
+              'log_filename': 'log_agg_stat.txt',
+              'log_level': 'WARNING'
               }
     agg_stat = AggStat(params)
     settings_dict = dict()

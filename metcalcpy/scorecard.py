@@ -34,7 +34,6 @@ How to use:
 from typing import Union
 import pandas as pd
 import yaml
-import logging
 import argparse
 import sys
 import itertools
@@ -51,6 +50,7 @@ from metcalcpy.util.tost_paired import pt
 from metcalcpy.util.utils import intersection, get_derived_curve_name, \
     is_derived_point, is_string_integer, OPERATION_TO_SIGN, calc_derived_curve_value, \
     perfect_score_adjustment, sort_data, PRECISION, DerivedCurveComponent, is_string_strictly_float
+from metcalcpy.logging_config import setup_logging
 
 COLUMNS_TO_REMOVE = ['equalize', 'stat_ncl', 'stat_ncu', 'stat_bcl', 'stat_bcu', 'fcst_valid_beg', 'fcst_init_beg']
 
@@ -78,6 +78,9 @@ class Scorecard:
                     or doesn't have data
         """
 
+        self.logger = setup_logging(in_params)
+        logger = self.logger
+        logger.debug("Initializing Scorecard with parameters.")
         self.params = in_params
         self.derived_name_to_values = {}
         # import pandas
@@ -89,7 +92,7 @@ class Scorecard:
             )
 
             if self.input_data.empty:
-                logging.warning('The input data is empty. The empty output file was created')
+                logger.warning('The input data is empty. The empty output file was created')
                 export_csv = self.input_data.to_csv(self.params['sum_stat_output'],
                                                     index=None, header=True, mode="w",
                                                     sep="\t")
@@ -99,7 +102,7 @@ class Scorecard:
         except pd.errors.EmptyDataError:
             raise
         except KeyError as ex:
-            logging.error('Parameter with key %s is missing', ex)
+            logger.error('Parameter with key %s is missing', ex)
             raise
         self.group_to_value = {}
 
@@ -111,10 +114,14 @@ class Scorecard:
            Saves the data into the file
 
         """
+        logger = self.logger
+        logger.debug("Calculating Scorecard data.")
         # identify all possible points values by adding series values, indy values
         # and statistics and then permute them
         if self.input_data.empty:
+            logger.warning("Input data is empty. Returning an empty DataFrame.")
             return pd.DataFrame()
+        logger.info("Permuting all possible point values for series and independent variables.")
         series_val = self.params['series_val_1']
 
         all_fields_values = series_val.copy()
@@ -123,7 +130,10 @@ class Scorecard:
         if indy_vals:
             all_fields_values[self.params['indy_var']] = indy_vals
         all_points = list(itertools.product(*all_fields_values.values()))
+        logger.debug(f"Generated {len(all_points)} points for calculation.")
+
         if self.params['derived_series_1']:
+            logger.info("Adding derived points for calculation.")
             # identifies and add all possible derived points values
             all_points.extend(self._get_derived_points(series_val, indy_vals))
 
@@ -131,6 +141,7 @@ class Scorecard:
         derived_frame = None
         # for each point
         for point_ind, point in enumerate(all_points):
+            logger.debug(f"Processing point {point_ind + 1} / {len(all_points)}: {point}")
             is_derived = is_derived_point(point)
             if not is_derived:
                 # only get the data for each point - no calculations needed
@@ -176,6 +187,7 @@ class Scorecard:
 
         # print the result to file
         if derived_frame is not None:
+            logger.info(f"Writing results to {self.params['sum_stat_output']}.")
             header = True
             mode = 'w'
             if 'append_to_file' in self.params.keys() and self.params['append_to_file'] == 'True':
@@ -184,6 +196,9 @@ class Scorecard:
             export_csv = derived_frame.to_csv(self.params['sum_stat_output'],
                                           index=None, header=header, mode=mode,
                                           sep="\t", na_rep="NA", float_format='%.' + str(PRECISION) + 'f')
+            logger.info("Results successfully written to file.")
+        else:
+            logger.warning("No results to write.")
 
     def _get_stats_for_derived(self, series, series_to_data) -> Union[DataFrame, None]:
         """ Calculates  derived statistic value for input data
@@ -198,17 +213,22 @@ class Scorecard:
                 DataFrame containing 1 row with the resulting data or None
 
         """
-
+        logger = self.logger
+        logger.debug(f"Calculating derived statistic for series {series}.")
         # get derived name
         derived_name = ''
         for operation in OPERATION_TO_SIGN:
             for point_component in series:
                 if point_component.startswith((operation + '(', operation + ' (')):
                     derived_name = point_component
+                    logger.debug(f"Derived name found: {derived_name}")
                     break
 
         # find all components for the 1st and 2nd series
         derived_curve_component = self.derived_name_to_values[derived_name]
+        if not derived_curve_component:
+            logger.error(f"No derived curve component found for {derived_name}")
+            return None
         permute_for_first_series = derived_curve_component.first_component.copy()
         for series_comp in series[1:]:
             if series_comp not in permute_for_first_series:
@@ -229,6 +249,9 @@ class Scorecard:
             if perm in self.group_to_value:
                 permute_for_second_series[i] = self.group_to_value[perm]
 
+        logger.debug(f"Permuted components for first series: {permute_for_first_series}")
+        logger.debug(f"Permuted components for second series: {permute_for_second_series}")
+
         ds_1 = None
         ds_2 = None
 
@@ -243,6 +266,7 @@ class Scorecard:
 
         if ds_1.values is None or ds_2.values is None \
                 or ds_1.values.size == 0 or ds_2.values.size == 0:
+            logger.error("One or both series are missing data. Unable to calculate derived statistic.")
             return None
 
         # validate data
@@ -266,9 +290,11 @@ class Scorecard:
                 # find the number of unique combinations
                 unique_date_size = len(set(map(tuple, date_lead_stat)))
             except TypeError as err:
+                logger.error(f"Error during validation: {err}")
                 print(err)
                 unique_date_size = []
             if unique_date_size != len(ds_1.values):
+                logger.error("Derived curve can't be calculated due to multiple values for one valid date/fcst_lead.")
                 raise NameError("Derived curve can't be calculated."
                                 " Multiple values for one valid date/fcst_lead")
 
@@ -282,12 +308,14 @@ class Scorecard:
         # calculate derived statistic based on the operation and stat_flag
         derived_stat = None
         if derived_curve_component.derived_operation == 'DIFF_SIG':
+            logger.debug("Calculating DIFF_SIG.")
             if self.params['stat_flag'] == 'EMC':
                 derived_stat = self._calculate_diff_sig_emc(stat_values_1, stat_values_2)
             else:
                 derived_stat = self._calculate_diff_sig_ncar(stat_values_1, stat_values_2)
 
         elif derived_curve_component.derived_operation == 'DIFF':
+            logger.debug("Calculating DIFF.")
             # perform the derived operation
             derived_stat_list = calc_derived_curve_value(
                 stat_values_1,
@@ -296,6 +324,7 @@ class Scorecard:
             derived_stat = statistics.mean(derived_stat_list)
 
         elif derived_curve_component.derived_operation == 'SINGLE':
+            logger.debug("Calculating SINGLE.")
             derived_stat = statistics.mean(stat_values_1)
 
         # create dataframe from teh 1st row of the original data
@@ -321,6 +350,7 @@ class Scorecard:
 
         # set model
         df.at[0, 'model'] = derived_name
+        logger.info(f"Derived statistic for {derived_name} calculated successfully.")
         return df
 
     def _calculate_diff_sig_ncar(self, ds_1_values, ds_2_values) -> float:
@@ -332,17 +362,33 @@ class Scorecard:
             Returns: the difference significance
 
         """
-        # perform the derived operation
-        derived_stat_list = calc_derived_curve_value(ds_1_values, ds_2_values, 'DIFF_SIG')
-        avg = statistics.mean(derived_stat_list)
-        sdv = statistics.stdev(derived_stat_list)
-        total = len(derived_stat_list)
-        t = avg / (sdv / np.sqrt(total))
-        p_val = 1 - 2 * pt(abs(t), total - 1, lower_tail=False)
-        derived_stat = perfect_score_adjustment(statistics.mean(ds_1_values),
-                                                statistics.mean(ds_2_values),
-                                                self.params['list_stat_1'][0],
-                                                p_val)
+        logger = self.logger
+        logger.debug("Calculating DIFF_SIG.")
+
+        # Check if input arrays are not empty
+        if not ds_1_values or not ds_2_values:
+            logger.error("Input arrays for DIFF_SIG calculation are empty.")
+            raise ValueError("Input arrays for DIFF_SIG calculation must not be empty.")
+
+        try:
+            logger.debug(f"Calculating derived statistics between ds_1: {ds_1_values} and ds_2: {ds_2_values}.")
+            # perform the derived operation
+            derived_stat_list = calc_derived_curve_value(ds_1_values, ds_2_values, 'DIFF_SIG')
+            avg = statistics.mean(derived_stat_list)
+            sdv = statistics.stdev(derived_stat_list)
+            total = len(derived_stat_list)
+            logger.debug(f"Derived statistics - Avg: {avg}, Stdev: {sdv}, Total: {total}.")
+            t = avg / (sdv / np.sqrt(total))
+            p_val = 1 - 2 * pt(abs(t), total - 1, lower_tail=False)
+            logger.debug(f"T-statistic: {t}, p-value: {p_val}.")
+            derived_stat = perfect_score_adjustment(statistics.mean(ds_1_values),
+                                                    statistics.mean(ds_2_values),
+                                                    self.params['list_stat_1'][0],
+                                                    p_val)
+            logger.info(f"DIFF_SIG calculation completed successfully. Result: {derived_stat}")
+        except Exception as err:
+            logger.error(f"Error during DIFF_SIG calculation: {err}")
+            raise err
         return derived_stat
 
     def _calculate_diff_sig_emc(self, ds_1_values, ds_2_values) -> float:
@@ -354,67 +400,80 @@ class Scorecard:
             Returns: the difference significance
 
         """
-        derived_stat = None
-        values_1 = np.array(ds_1_values)
-        values_2 = np.array(ds_2_values)
-        val2_minus_val1 = np.subtract(values_2, values_1)
-        acdm = sum(val2_minus_val1) / self.params['ndays']
-        acdm_list = [acdm] * len(values_1)
-        std = math.sqrt(sum(np.subtract(val2_minus_val1, acdm_list) * np.subtract(val2_minus_val1, acdm_list)) /
-                        self.params['ndays'])
-        nsz = len(ds_1_values)
-        intvl = round(1.960 * std / math.sqrt(nsz - 1), 6)
-        mean1 = round(statistics.mean(values_1), 6)
-        mean2 = round(statistics.mean(values_2), 6)
-        if self.params['list_stat_1'][0].startswith('ME') or self.params['list_stat_1'][0].startswith('BIAS'):
-            ds = (abs(mean2 - mean1)) / intvl
-            sss = abs(mean2) - abs(mean1)
-            if sss is not None and sss < 0:
-                ds = (-1) * ds
-        elif self.params['list_stat_1'][0].startswith('RMSE') \
-                or self.params['list_stat_1'][0].startswith('RMSVE'):
-            ds = (mean2 - mean1) / intvl
-        else:
-            ds = (mean1 - mean2) / intvl
-        if ds is not None:
-            ds = round(ds, 3)
-            if self.params['ndays'] >= 80:
-                alpha1 = 1.960  # 95% confidence level
-                alpha2 = 2.576  # 99% confidence level
-                alpha3 = 3.291  # 99.9% confidence level
-            elif self.params['ndays'] >= 40 and self.params['ndays'] < 80:
-                alpha1 = 2.0  # 95% confidence level
-                alpha2 = 2.66  # 99% confidence level
-                alpha3 = 3.46  # 99.9% confidence level
-            elif self.params['ndays'] >= 20 and self.params['ndays'] < 40:
-                alpha1 = 2.042  # 95% confidence level
-                alpha2 = 2.75  # 99% confidence level
-                alpha3 = 3.646  # 99.9% confidence level
-            elif self.params['ndays'] < 20:
-                alpha1 = 2.228  # 95% confidence level
-                alpha2 = 3.169  # 99% confidence level
-                alpha3 = 4.587  # 99.9% confidence level
-            ds95 = ds
-            ds99 = ds * alpha1 / alpha2
-            ds99 = round(ds99, 3)
-            ds999 = ds * alpha1 / alpha3;
-            ds999 = round(ds999, 3)
-            if ds999 >= 1:
-                derived_stat = 1
-            elif ds999 < 1 and ds99 >= 1:
-                derived_stat = 0.99
-            elif ds99 < 1 and ds95 >= 1:
-                derived_stat = 0.95
-            elif ds95 > -1 and ds95 < 1:
-                derived_stat = 0
-            elif ds95 <= -1 and ds99 > -1:
-                derived_stat = -0.95
-            elif ds99 <= -1 and ds999 > -1:
-                derived_stat = -0.99
-            elif ds999 <= -1 and ds999 > -100.0:
-                derived_stat = -1
-            elif ds999 < -100.0:
-                derived_stat = -1
+        logger = self.logger
+        logger.debug("Starting DIFF_SIG EMC calculation.")
+        try:
+            # perform the derived operation
+            derived_stat = None
+            values_1 = np.array(ds_1_values)
+            values_2 = np.array(ds_2_values)
+            val2_minus_val1 = np.subtract(values_2, values_1)
+            logger.debug(f"Values 1: {values_1}, Values 2: {values_2}, Difference: {val2_minus_val1}")
+            acdm = sum(val2_minus_val1) / self.params['ndays']
+            acdm_list = [acdm] * len(values_1)
+            std = math.sqrt(sum(np.subtract(val2_minus_val1, acdm_list) * np.subtract(val2_minus_val1, acdm_list)) /
+                            self.params['ndays'])
+            logger.debug(f"ACDM: {acdm}, Standard Deviation: {std}")
+            nsz = len(ds_1_values)
+            intvl = round(1.960 * std / math.sqrt(nsz - 1), 6)
+            mean1 = round(statistics.mean(values_1), 6)
+            mean2 = round(statistics.mean(values_2), 6)
+            logger.debug(f"Mean 1: {mean1}, Mean 2: {mean2}, Interval: {intvl}")
+            if self.params['list_stat_1'][0].startswith('ME') or self.params['list_stat_1'][0].startswith('BIAS'):
+                ds = (abs(mean2 - mean1)) / intvl
+                sss = abs(mean2) - abs(mean1)
+                if sss is not None and sss < 0:
+                    ds = (-1) * ds
+            elif self.params['list_stat_1'][0].startswith('RMSE') \
+                    or self.params['list_stat_1'][0].startswith('RMSVE'):
+                ds = (mean2 - mean1) / intvl
+            else:
+                ds = (mean1 - mean2) / intvl
+            if ds is not None:
+                ds = round(ds, 3)
+                logger.debug(f"DS value before significance thresholding: {ds}")
+                if self.params['ndays'] >= 80:
+                    alpha1 = 1.960  # 95% confidence level
+                    alpha2 = 2.576  # 99% confidence level
+                    alpha3 = 3.291  # 99.9% confidence level
+                elif self.params['ndays'] >= 40 and self.params['ndays'] < 80:
+                    alpha1 = 2.0  # 95% confidence level
+                    alpha2 = 2.66  # 99% confidence level
+                    alpha3 = 3.46  # 99.9% confidence level
+                elif self.params['ndays'] >= 20 and self.params['ndays'] < 40:
+                    alpha1 = 2.042  # 95% confidence level
+                    alpha2 = 2.75  # 99% confidence level
+                    alpha3 = 3.646  # 99.9% confidence level
+                elif self.params['ndays'] < 20:
+                    alpha1 = 2.228  # 95% confidence level
+                    alpha2 = 3.169  # 99% confidence level
+                    alpha3 = 4.587  # 99.9% confidence level
+                ds95 = ds
+                ds99 = ds * alpha1 / alpha2
+                ds99 = round(ds99, 3)
+                ds999 = ds * alpha1 / alpha3;
+                ds999 = round(ds999, 3)
+                logger.debug(f"DS95: {ds95}, DS99: {ds99}, DS999: {ds999}")
+                if ds999 >= 1:
+                    derived_stat = 1
+                elif ds999 < 1 and ds99 >= 1:
+                    derived_stat = 0.99
+                elif ds99 < 1 and ds95 >= 1:
+                    derived_stat = 0.95
+                elif ds95 > -1 and ds95 < 1:
+                    derived_stat = 0
+                elif ds95 <= -1 and ds99 > -1:
+                    derived_stat = -0.95
+                elif ds99 <= -1 and ds999 > -1:
+                    derived_stat = -0.99
+                elif ds999 <= -1 and ds999 > -100.0:
+                    derived_stat = -1
+                elif ds999 < -100.0:
+                    derived_stat = -1
+        except Exception as err:
+            logger.error(f"Error during EMC calculation: {err}")
+            raise err
+        logger.info(f"EMC DIFF_SIG calculation completed. Derived Statistic: {derived_stat}")
         return derived_stat
 
     def _get_derived_points(self, series_val, indy_vals):
@@ -426,11 +485,13 @@ class Scorecard:
             Returns: a list of all possible values for each derived points
 
         """
-
+        logger = self.logger
+        logger.debug("Starting to calculate derived points.")
         # for each derived series
         result = []
         for derived_serie in self.params['derived_series_1']:
             # series 1 components
+            logger.debug(f"Processing derived series: {derived_serie}")
             ds_1 = derived_serie[0].split(' ')
 
             # series 2 components
@@ -440,6 +501,7 @@ class Scorecard:
             for ind, name in enumerate(ds_1):
                 if name != ds_2[ind]:
                     series_var_vals = (name, ds_2[ind])
+                    logger.debug(f"Identified series variable values: {series_var_vals}")
                     break
 
             series_var = list(series_val.keys())[-1]
@@ -447,6 +509,7 @@ class Scorecard:
                 for var in series_val.keys():
                     if all(elem in series_val[var] for elem in series_var_vals):
                         series_var = var
+                        logger.debug(f"Matched series variable: {series_var}")
                         break
 
             derived_val = series_val.copy()
@@ -459,6 +522,7 @@ class Scorecard:
                     derived_val[var] = intersection(derived_val[var], ds_1)
 
             derived_curve_name = get_derived_curve_name(derived_serie)
+            logger.debug(f"Derived curve name: {derived_curve_name}")
             derived_val[series_var] = [derived_curve_name]
             if len(indy_vals) > 0:
                 derived_val[self.params['indy_var']] = indy_vals
@@ -470,7 +534,8 @@ class Scorecard:
             else:
                 derived_val['stat_name'] = [ds_1[-1] + "," + ds_2[-1]]
             result.append(list(itertools.product(*derived_val.values())))
-
+            
+        logger.debug(f"Total derived points calculated: {len(result)}")
         return [y for x in result for y in x]
 
 

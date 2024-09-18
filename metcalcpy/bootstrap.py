@@ -16,7 +16,7 @@ import numpy as _np
 from collections.abc import Iterable
 import multiprocessing as _multiprocessing
 import scipy.sparse as _sparse
-
+from metcalcpy.logging_config import setup_logging
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
 
@@ -102,7 +102,7 @@ class BootstrapResults(object):
 def bootstrap_and_value(values, stat_func, alpha=0.05,
                         num_iterations=1000, iteration_batch_size=None,
                         num_threads=1, ci_method='perc',
-                        save_data=True, save_distributions=False, block_length: int = 1, eclv: bool = False):
+                        save_data=True, save_distributions=False, block_length: int = 1, eclv: bool = False, logger):
     """Returns bootstrap estimate. Can do the independent and identically distributed (IID)
         or Circular Block Bootstrap (CBB) methods depending on the block_length
         Args:
@@ -155,13 +155,13 @@ def bootstrap_and_value(values, stat_func, alpha=0.05,
                                                 stat_func_lists,
                                                 num_iterations,
                                                 iteration_batch_size,
-                                                num_threads, block_length)
+                                                num_threads, block_length, logger)
 
     bootstrap_dist = do_division(*distributions)
     if eclv:
-        result = _get_confidence_interval_and_value_eclv(bootstrap_dist, stat_val, alpha, ci_method)
+        result = _get_confidence_interval_and_value_eclv(bootstrap_dist, stat_val, alpha, ci_method, logger)
     else:
-        result = _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_method)
+        result = _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_method, logger)
     if save_data:
         result.set_original_values(values)
     if save_distributions:
@@ -170,7 +170,7 @@ def bootstrap_and_value(values, stat_func, alpha=0.05,
 
 
 def _bootstrap_distribution_cbb(values_lists, stat_func_lists,
-                                num_iterations, iteration_batch_size, num_threads, block_length=1):
+                                num_iterations, iteration_batch_size, num_threads, block_length=1, logger):
     '''Returns the simulated bootstrap distribution. The idea is to sample the same
         indexes in a bootstrap re-sample across all arrays passed into values_lists.
 
@@ -205,6 +205,8 @@ def _bootstrap_distribution_cbb(values_lists, stat_func_lists,
         the bootsrapped values.
     '''
 
+    logger.info("Starting circular block bootstrap distribution process.")
+    logger.debug("Validating input arrays.")
     _validate_arrays(values_lists)
 
     if iteration_batch_size is None:
@@ -212,7 +214,7 @@ def _bootstrap_distribution_cbb(values_lists, stat_func_lists,
 
     num_iterations = int(num_iterations)
     iteration_batch_size = int(iteration_batch_size)
-
+    logger.debug(f"Iteration batch size set to {iteration_batch_size}.")
     num_threads = int(num_threads)
 
     if num_threads == -1:
@@ -225,25 +227,27 @@ def _bootstrap_distribution_cbb(values_lists, stat_func_lists,
         pool = _multiprocessing.Pool(num_threads)
 
         iter_per_job = _np.ceil(num_iterations * 1.0 / num_threads)
+        logger.debug(f"Iterations per thread: {iter_per_job}.")
 
         results = []
         for seed in _np.random.randint(0, 2 ** 32 - 1, num_threads):
+            logger.debug(f"Starting thread with seed {seed}.")
             r = pool.apply_async(_bootstrap_sim_cbb, (values_lists, stat_func_lists,
                                                       iter_per_job,
                                                       iteration_batch_size, seed, block_length))
             results.append(r)
-
+        logger.debug("Collecting results from all threads.")
         results = _np.hstack([res.get() for res in results])
 
         pool.close()
-
+    
     return results
 
 
 def bootstrap_and_value_mode(values, cases, stat_func, alpha=0.05,
                              num_iterations=1000, iteration_batch_size=None,
                              num_threads=1, ci_method='perc',
-                             save_data=True, save_distributions=False, block_length=1):
+                             save_data=True, save_distributions=False, block_length=1, logger):
     """Returns bootstrap estimate.
         Args:
             values: numpy array  of values to bootstrap
@@ -288,26 +292,38 @@ def bootstrap_and_value_mode(values, cases, stat_func, alpha=0.05,
     def do_division(distr):
         return distr
 
-    data_cases = _np.asarray(values['case'])
-    flat_cases = cases.flatten()
-    values_current = values[_np.in1d(data_cases, flat_cases)].to_numpy()
-    stat_val = stat_func(values_current)[0]
-    distributions = _bootstrap_distribution_cbb(values_lists,
-                                                stat_func_lists,
-                                                num_iterations,
-                                                iteration_batch_size,
-                                                num_threads, block_length)
+    try:
+        data_cases = _np.asarray(values['case'])
+        flat_cases = cases.flatten()
+        values_current = values[_np.in1d(data_cases, flat_cases)].to_numpy()
+        logger.debug(f"Selected {len(values_current)} cases for calculation.")
+        stat_val = stat_func(values_current)[0]
+        logger.info(f"Calculated statistic value: {stat_val}")
+        distributions = _bootstrap_distribution_cbb(values_lists,
+                                                    stat_func_lists,
+                                                    num_iterations,
+                                                    iteration_batch_size,
+                                                    num_threads, block_length, logger)
+        logger.debug(f"Bootstrap distributions: {distributions}")
 
-    bootstrap_dist = do_division(*distributions)
-    result = _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_method)
-    if save_data:
-        result.set_original_values(values)
-    if save_distributions:
-        result.set_distributions(bootstrap_dist.flatten('F'))
+        bootstrap_dist = do_division(*distributions)
+        logger.debug(f"Result after division operation: {bootstrap_dist}")
+        result = _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_method, logger)
+        logger.info(f"Confidence intervals calculated: {result.lower_bound}, {result.upper_bound}")
+
+        if save_data:
+            logger.debug("Saving original values to the result.")
+            result.set_original_values(values)
+        if save_distributions:
+            logger.debug("Saving bootstrap distributions to the result.")
+            result.set_distributions(bootstrap_dist.flatten('F'))
+        except Exception as e:
+            logger.error(f"An error occurred during the bootstrap and calculation process: {e}", exc_info=True)
+            raise
     return result
 
 
-def _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_method):
+def _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_method, logger):
     """Get the bootstrap confidence interval for a given distribution.
         Args:
             bootstrap_dist: numpy array of bootstrap results from
@@ -323,16 +339,24 @@ def _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_metho
     # TODO Only percentile method for the confident intervals is implemented
 
     if stat_val is None:
+        logger.warning("Statistic value is None. Setting confidence interval method to 'None'.")
         ci_method = "None"
 
     if ci_method == 'pivotal':
-        low = 2 * stat_val - _np.percentile(bootstrap_dist, 100 * (1 - alpha / 2.))
+        logger.info("Using pivotal method to calculate confidence intervals.")
+        try:
+            low = 2 * stat_val - _np.percentile(bootstrap_dist, 100 * (1 - alpha / 2.))
+            high = 2 * stat_val - _np.percentile(bootstrap_dist, 100 * (alpha / 2.))
+        except Exception as e:
+            logger.error(f"An error occurred during the calculation of confidence intervals: {e}", exc_info=True)
+            raise
         val = stat_val
-        high = 2 * stat_val - _np.percentile(bootstrap_dist, 100 * (alpha / 2.))
     elif ci_method == 'perc':
+        logger.info("Using percentile method to calculate confidence intervals.")
         # check if All values of bootstrap_dist are equal and if YES -
         # display a warning and do not calculate CIs - like boot.ci in R
         if _all_the_same(bootstrap_dist):
+            logger.warning(f"All values of the bootstrap distribution are equal to {bootstrap_dist[0]}. Cannot calculate confidence intervals.")
             print(f'All values of t are equal to {bootstrap_dist[0]}. Cannot calculate confidence intervals')
             low = None
             high = None
@@ -340,17 +364,20 @@ def _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_metho
             bd = bootstrap_dist[bootstrap_dist != _np.array([None])]
             low = _np.percentile(bd, 100 * (alpha / 2.), method='linear')
             high = _np.percentile(bd, 100 * (1 - alpha / 2.), method='linear')
+            logger.debug(f"Percentile method results: low={low}, stat_val={stat_val}, high={high}")
         val = stat_val
     else:
+        logger.warning("No valid confidence interval method selected.")
         low = None
         val = None
         high = None
+    logger.info(f"Finished confidence interval calculation: low={low}, value={val}, high={high}")
     return BootstrapResults(lower_bound=low,
                             value=val,
                             upper_bound=high)
 
 
-def _get_confidence_interval_and_value_eclv(bootstrap_dist, stat_val, alpha, ci_method):
+def _get_confidence_interval_and_value_eclv(bootstrap_dist, stat_val, alpha, ci_method, logger):
     """Get the bootstrap confidence interval for a given distribution for the Economic Cost Loss Relative Value
         Args:
             bootstrap_dist: numpy array of bootstrap results from
@@ -364,13 +391,15 @@ def _get_confidence_interval_and_value_eclv(bootstrap_dist, stat_val, alpha, ci_
     """
 
     # TODO Only percentile method for the confident intervals is implemented
-
+    logger = self.logger
     if stat_val is None:
+        logger.warning("Statistic value is None. Skipping confidence interval calculation.")
         val = None
         low = None
         high = None
 
     else:
+        logger.debug("Preparing bootstrap distribution for confidence interval calculation.")
         bd = bootstrap_dist[bootstrap_dist != _np.array([None])]
         all_values = []
         for dist_member in bd:
@@ -381,6 +410,8 @@ def _get_confidence_interval_and_value_eclv(bootstrap_dist, stat_val, alpha, ci_
         none_in_values = len(stat_val['V']) != sum(x is not None for x in stat_val['V'])
         stat_btcl = [None] * steps_len
         stat_btcu = [None] * steps_len
+        logger.debug(f"Calculated steps length: {steps_len}.")
+        logger.debug(f"Checking if values contain None: {none_in_values}.")
 
         for ind in range(steps_len):
             low = None
@@ -389,9 +420,12 @@ def _get_confidence_interval_and_value_eclv(bootstrap_dist, stat_val, alpha, ci_
             if ci_method == 'pivotal':
                 low = 2 * stat_val - _np.percentile(column, 100 * (1 - alpha / 2.))
                 high = 2 * stat_val - _np.percentile(column, 100 * (alpha / 2.))
+                logger.debug(f"Pivotal method result for step {ind}: low={low}, high={high}.")
 
             elif ci_method == 'perc':
+                logger.info("Using percentile method for confidence interval calculation.")
                 if _all_the_same(column):
+                    logger.warning(f"All values of column at step {ind} are equal to {column[0]}. Skipping confidence interval calculation.")
                     print(f'All values of t are equal to {column[0]}. Cannot calculate confidence intervals')
                     low = None
                     high = None
@@ -406,6 +440,7 @@ def _get_confidence_interval_and_value_eclv(bootstrap_dist, stat_val, alpha, ci_
         low = stat_btcl
         high = stat_btcu
 
+    logger.info(f"Finished confidence interval calculation: value={val}, lower_bounds={low}, upper_bounds={high}.")
     return BootstrapResults(lower_bound=low,
                             value=val,
                             upper_bound=high)
@@ -421,7 +456,7 @@ def flatten(lis):
 
 
 def _bootstrap_sim_cbb(values_lists, stat_func_lists, num_iterations,
-                       iteration_batch_size, seed, block_length=1):
+                       iteration_batch_size, seed, block_length=1, logger):
     """Returns simulated bootstrap distribution. Can do the independent and identically distributed (IID)
         or Circular Block Bootstrap (CBB) methods depending on the block_length
         Args:
@@ -448,25 +483,32 @@ def _bootstrap_sim_cbb(values_lists, stat_func_lists, num_iterations,
     """
 
     if seed is not None:
+        logger.debug(f"Setting random seed: {seed}")
         _np.random.seed(seed)
 
     num_iterations = int(num_iterations)
     iteration_batch_size = int(iteration_batch_size)
-
+    logger.info(f"Number of iterations: {num_iterations}, iteration batch size: {iteration_batch_size}, block length: {block_length}.")
     results = [[] for _ in values_lists]
 
     for rng in range(0, num_iterations, iteration_batch_size):
         max_rng = min(iteration_batch_size, num_iterations - rng)
-
-        values_sims = _generate_distributions_cbb(values_lists, max_rng, block_length)
-
+        logger.debug(f"Running bootstrap iteration batch from {rng} to {rng + max_rng}.")
+        try:
+            values_sims = _generate_distributions_cbb(values_lists, max_rng, block_length, logger)
+            logger.debug(f"Generated {max_rng} simulated distributions.")
+        except Exception as e:
+            logger.error(f"Error generating distributions in bootstrap: {e}", exc_info=True)
+            raise
+       
         for i, values_sim, stat_func in zip(range(len(values_sims)), values_sims, stat_func_lists):
+            logger.debug(f"Calculating statistic for distribution set {i}.")
             results[i].extend(stat_func(values_sim))
-
+    logger.info("Completed bootstrap simulation.")
     return _np.array(results)
 
 
-def _generate_distributions_cbb(values_lists, num_iterations, block_length=1):
+def _generate_distributions_cbb(values_lists, num_iterations, block_length=1, logger):
     values_shape = values_lists[0].shape[0]
     ids = _np.random.choice(
         values_shape,
@@ -479,6 +521,7 @@ def _generate_distributions_cbb(values_lists, num_iterations, block_length=1):
         Applyes Circular Block Bootstrap (CBB) method to each row
         :param row:
         """
+        
         counter = 0
         init_val = row[0]
         for ind, val in enumerate(row):
@@ -495,14 +538,16 @@ def _generate_distributions_cbb(values_lists, num_iterations, block_length=1):
             counter = counter + 1
             if counter == block_length:
                 # start a new block
-                counter = 0
+                counter = 
         return row
 
     if block_length > 1:
         # uss CBB
+        logger.info(f"Applying Circular Block Bootstrap (CBB) with block length: {block_length}")
         ids = _np.apply_along_axis(apply_cbb, axis=1, arr=ids)
 
     results = [values[ids] for values in values_lists]
+    logger.info("CBB applied to all rows.")
     return results
 
 
@@ -525,29 +570,37 @@ def _all_the_same(elements):
     return result
 
 
-def _validate_arrays(values_lists):
+def _validate_arrays(values_lists, logger):
+    logger = self.logger
     t = values_lists[0]
     t_type = type(t)
+    logger.debug(f"Validating arrays. First array type: {t_type}, shape: {t.shape}")
     if not isinstance(t, _sparse.csr_matrix) and not isinstance(t, _np.ndarray):
+        logger.error("Arrays must either be of type scipy.sparse.csr_matrix or numpy.array.")
         raise ValueError(('The arrays must either be of type '
                           'scipy.sparse.csr_matrix or numpy.array'))
 
     for _, values in enumerate(values_lists[1:]):
         if not isinstance(values, t_type):
+            logger.error(f"Array at index {index} is not of the same type as the first array.")
             raise ValueError('The arrays must all be of the same type')
 
         if t.shape != values.shape:
+            logger.error(f"Array at index {index} has a different shape: {values.shape}. Expected: {t.shape}.")
             raise ValueError('The arrays must all be of the same shape')
 
         if isinstance(t, _sparse.csr_matrix):
             if values.shape[0] > 1:
+                logger.error("Sparse matrix must have shape 1 row X N columns.")
                 raise ValueError(('The sparse matrix must have shape 1 row X N'
                                   ' columns'))
 
     if isinstance(t, _sparse.csr_matrix):
         if _needs_sparse_unification(values_lists):
+            logger.error("Non-zero entries in the sparse arrays are not aligned.")
             raise ValueError(('The non-zero entries in the sparse arrays'
                               ' must be aligned'))
+    logger.info("Array validation completed successfully.")
 
 
 def _needs_sparse_unification(values_lists):

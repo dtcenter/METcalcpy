@@ -43,4 +43,4 @@ series_val_1:
 series_val_2: {}
 log_dir: !ENV "${TEST_DIR}/logs"
 log_filename: log_agg_stat_val1l2.txt
-log_level: DEBUG
+log_level: WARNING

@@ -17,8 +17,19 @@ import pandas as pd
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
 
-
-def event_equalize_against_values(series_data, input_unique_cases):
+def safe_log(logger, log_method, message):
+    """
+    Safely logs a message using the provided logger and log method.
+    
+    Args:
+        logger (logging.Logger): The logger object. If None, the message will not be logged.
+        log_method (callable): The logging method to use (e.g., logger.info, logger.debug).
+        message (str): The message to log.
+    """
+    if logger:
+        log_method(message)
+        
+def event_equalize_against_values(series_data, input_unique_cases, logger):
     """Performs event equalisation.
 
     event_equalize_against_values assumes that the input series_data contains data
@@ -38,6 +49,8 @@ def event_equalize_against_values(series_data, input_unique_cases):
 
     warning_remove = "WARNING: event equalization removed {} rows"
 
+    safe_log(logger, logger.info, "Starting event equalization.")
+
     column_names = list(series_data)
 
     if 'fcst_valid' in column_names:
@@ -48,6 +61,7 @@ def event_equalize_against_values(series_data, input_unique_cases):
                            + ' '
                            + series_data['fcst_lead'].astype(str))
     else:
+        safe_log(logger, logger.warning, "WARNING: eventEqualize() did not run due to lack of valid time field.")
         print("WARNING: eventEqualize() did not run due to lack of valid time field")
         return pd.DataFrame()
 
@@ -55,13 +69,16 @@ def event_equalize_against_values(series_data, input_unique_cases):
     data_for_unique_cases = series_data[(series_data['equalize'].isin(input_unique_cases))]
     n_row_cases = len(data_for_unique_cases)
     if n_row_cases == 0:
+        safe_log(logger, logger.warning, "WARNING: discarding all members. No matching cases found.")
         print(" WARNING: discarding all members")
         return pd.DataFrame()
 
     n_row_ = len(series_data)
     if n_row_cases != n_row_:
+        safe_log(logger, logger.warning, warning_remove.format(n_row_ - n_row_cases))
         print(warning_remove.format(n_row_ - n_row_cases))
 
     # remove 'equalize' column
     data_for_unique_cases = data_for_unique_cases.drop(['equalize'], axis=1)
+    safe_log(logger, logger.info, "Event equalization completed successfully.")
     return data_for_unique_cases

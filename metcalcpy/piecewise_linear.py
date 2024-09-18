@@ -36,15 +36,20 @@ class PiecewiseLinear():
     """
 
     def __init__(self, x_domain, y_range, xunits='feet',
-                 left=np.nan, right=np.nan, name=""):
+                 left=np.nan, right=np.nan, name="", logger):
+
+        self.logger = logger
         len_x = len(x_domain)
         if len_x < 2:
+            logger.error('Length of x_domain must be at least 2.')
             raise IncompatibleLengths('Length of xdomain must be at least 2.')
         if np.any(np.diff(x_domain)) < 0:
+            logger.error(f"X_domain (in {xunits}) is {x_domain}")
             print("X_domain (in {}) is {}".format(xunits, x_domain))
             raise UnsortedArray('Xdomain must be sorted in ascending order.')
         len_y = len(y_range)
         if len_x != len_y:
+            self.logger.error("X_domain and Y_range must have the same length.")
             raise IncompatibleLengths('X_domain and Y_range must have same ' +
                                       'length.\n Use left and right to set ' +
                                       'value for points outside the x_domain\n')

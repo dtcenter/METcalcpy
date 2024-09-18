@@ -39,7 +39,7 @@ def test_event_equalize_against_values():
                                 & (stats_data[series_var].isin(series_var_vals_no_group))
                                 ]
             ee_stats_equalize_unique = (list(set(ee_stats_equalize['equalize'])))
-            f_plot = event_equalize_against_values(f_plot, ee_stats_equalize_unique)
+            f_plot = event_equalize_against_values(f_plot, ee_stats_equalize_unique, None)
 
             # append EE data to result
             if output_data.empty:

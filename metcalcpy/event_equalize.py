@@ -21,10 +21,22 @@ import numpy as np
 import pandas as pd
 
 from metcalcpy import GROUP_SEPARATOR, DATE_TIME_REGEX
+from metcalcpy.logging_config import setup_logging
 
+def safe_log(logger, log_method, message):
+    """
+    Safely logs a message using the provided logger and log method.
+    
+    Args:
+        logger (logging.Logger): The logger object. If None, the message will not be logged.
+        log_method (callable): The logging method to use (e.g., logger.info, logger.debug).
+        message (str): The message to log.
+    """
+    if logger:
+        log_method(message)
 
 def event_equalize(series_data, indy_var, series_var_vals, fix_vars,
-                   fix_vals_permuted, equalize_by_indep, multi):
+                   fix_vals_permuted, equalize_by_indep, multi, logger):
     """Performs event equalisation.
 
     event_equalize assumes that the input series_data contains data indexed by fcst_valid_beg,
@@ -49,6 +61,7 @@ def event_equalize(series_data, indy_var, series_var_vals, fix_vars,
         A data frame that contains equalized records
     """
     pd.options.mode.chained_assignment = None
+    safe_log(logger, logger.info, "Starting event equalization.")
     column_names = list(series_data)
     exception_columns = ["", "fcst_valid_beg", 'fcst_lead', 'fcst_valid', 'fcst_init', 'fcst_init_beg', 'VALID', 'LEAD']
     if isinstance(fix_vars, str):
@@ -62,11 +75,14 @@ def event_equalize(series_data, indy_var, series_var_vals, fix_vars,
             series_data['equalize'] = series_data.loc[:, 'fcst_valid'].astype(str) + ' ' \
                                           + series_data.loc[:, 'fcst_lead'].astype(str)
 
+        safe_log(logger, logger.debug, "Equalization column added to the data frame.")
+
 
     # add independent variable if needed
     if equalize_by_indep and indy_var not in exception_columns:
         series_data['equalize'] = series_data.loc[:, 'equalize'].astype(str) + " " \
                                       + series_data.loc[:, indy_var].astype(str)
+        safe_log(logger, logger.debug, "Equalization column added to the data frame.")
 
     vars_for_ee = dict()
 
@@ -83,6 +99,7 @@ def event_equalize(series_data, indy_var, series_var_vals, fix_vars,
                         actual_vals = series_val.split(GROUP_SEPARATOR)
                     series_vals_no_groups.extend(actual_vals)
                 vars_for_ee[series_var] = series_vals_no_groups
+        safe_log(logger, logger.debug, f"Series variables added for equalization: {vars_for_ee}")
 
     # add fixed variables if present
     if fix_vars:
@@ -92,6 +109,7 @@ def event_equalize(series_data, indy_var, series_var_vals, fix_vars,
                 if isinstance(vals, str):
                     vals = [vals]
                 vars_for_ee[fix_var] = vals
+        safe_log(logger, logger.debug, f"Fixed variables added for equalization: {vars_for_ee}")
 
     # create a list of permutations representing the all variables for
     vars_for_ee_permuted = list(itertools.product(*vars_for_ee.values()))
@@ -116,6 +134,7 @@ def event_equalize(series_data, indy_var, series_var_vals, fix_vars,
         # if the list contains repetitive values, show a warning
         if multi is False and len(permutation_data['equalize']) \
                 != len(set(permutation_data['equalize'])):
+            safe_log(logger, logger.warning, f"Non-unique events detected for permutation {permutation}.")
             print(
                 f"WARNING: eventEqualize() detected non-unique events for {permutation}"
                 f" using [fcst_valid_beg,fcst_lead)]")
@@ -143,6 +162,7 @@ def event_equalize(series_data, indy_var, series_var_vals, fix_vars,
             discarded_cases = pd.concat([discarded_cases, permutation_cases_not_in_common_cases])
             # report the discarded records
             for discarded_case in discarded_cases:
+                safe_log(logger, logger.warning, f"Discarding series member with case {discarded_case} for {permutation}")
                 print(f"WARNING: discarding series member with case {discarded_case}"
                       f" for {permutation}")
 
@@ -156,6 +176,7 @@ def event_equalize(series_data, indy_var, series_var_vals, fix_vars,
     series_data_ee = series_data[equalization_cases_ind]
 
     if len(series_data_ee) != len(series_data):
+        safe_log(logger, logger.warning, f"Event equalization removed {len(series_data) - len(series_data_ee)} rows.")
         print(f"WARNING: event equalization removed {len(series_data) - len(series_data_ee)} rows")
 
     return series_data_ee

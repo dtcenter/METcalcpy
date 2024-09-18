@@ -90,7 +90,7 @@ def perform_event_equalize(fcst_var_val, fixed_vars_vals_input, indy_var, input_
                 start = time.time()
                 series_data = \
                     event_equalize(series_data, indy_var, series_val, fix_vars,
-                                   fix_vals_permuted, True, bool_multi)
+                                   fix_vals_permuted, True, bool_multi, None)
                 end = time.time()
                 print("one EE:" + str(end - start))
 

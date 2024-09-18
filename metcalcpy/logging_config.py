@@ -55,7 +55,7 @@ def setup_logging(config_params):
     # Set log level from YAML or use default; convert to appropriate logging level
     log_level = config_params.get('log_level')  # No default here, expect it from YAML
     if not log_level:
-        log_level = 'INFO'  # Set default only if not provided
+        log_level = 'WARNING'  # Set default only if not provided
     log_level = log_level.upper()
 
 

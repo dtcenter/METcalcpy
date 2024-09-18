@@ -207,7 +207,8 @@ class AggEclv:
                         ci_method=self.params['method'],
                         save_data=False,
                         block_length=block_length,
-                        eclv=True
+                        eclv=True,
+                        logger=logger
                     )
                     logger.info(f"Bootstrapped statistics calculated for threshold {thresh}.")
                 except KeyError as err:
@@ -342,7 +343,7 @@ class AggEclv:
             self.input_data = event_equalize(self.input_data, 'stat_name',
                                              self.params['series_val_1'],
                                              fix_vals_keys,
-                                             fix_vals_permuted_list, is_equalize_by_indep, False)
+                                             fix_vals_permuted_list, is_equalize_by_indep, False, logger)
             logger.debug("Event equalization completed.")
 
         # Process data to calculate statistics

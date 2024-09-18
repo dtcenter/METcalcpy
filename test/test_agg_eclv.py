@@ -46,7 +46,7 @@ def settings():
               'cl_step': 0.05,
               'log_dir': f'{cwd}/logs/',
               'log_filename': 'log_agg_eclv.txt',
-              'log_level': 'INFO'
+              'log_level': 'WARNING'
               }
     agg_stat = AggEclv(params)
     settings_dict = dict()

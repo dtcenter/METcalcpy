@@ -1166,7 +1166,8 @@ class AggStat:
                     num_threads=self.params['num_threads'],
                     ci_method=self.params['method'],
                     save_data=has_derived_series,
-                    block_length=block_length
+                    block_length=block_length,
+                    logger=logger
                 )
                 logger.info("Bootstrapping and CI calculation completed.")
 
