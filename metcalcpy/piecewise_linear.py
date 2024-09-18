@@ -35,8 +35,8 @@ class PiecewiseLinear():
     Xdomain is a numpy array of knot locations. Yrange is a numpy array.
     """
 
-    def __init__(self, x_domain, y_range, xunits='feet',
-                 left=np.nan, right=np.nan, name="", logger):
+    def __init__(self, logger, x_domain, y_range, xunits='feet',
+                 left=np.nan, right=np.nan, name=""):
 
         self.logger = logger
         len_x = len(x_domain)

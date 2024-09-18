@@ -1066,7 +1066,7 @@ class AggStat:
             try:
                 block_length = int(math.sqrt(len(values_both_arrays))) if 'circular_block_bootstrap' in self.params and parse_bool(self.params['circular_block_bootstrap']) else 1
                 results = bootstrap_and_value(
-                    logger=logger,
+                    logger,
                     values_both_arrays,
                     stat_func=self._calc_stats_derived,
                     num_iterations=self.params['num_iterations'],
@@ -1162,7 +1162,7 @@ class AggStat:
 
                 # Perform bootstrapping and CI calculation
                 results = bootstrap_and_value(
-                    logger=logger,
+                    logger,
                     data,
                     stat_func=self._calc_stats,
                     num_iterations=self.params['num_iterations'],

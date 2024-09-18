@@ -200,7 +200,7 @@ class AggEclv:
                             logger.debug(f"Using circular block bootstrap with block length {block_length}.")
 
                     results = bootstrap_and_value(
-                        logger=logger,
+                        logger,
                         data,
                         stat_func=self._calc_stats,
                         num_iterations=self.params['num_iterations'],

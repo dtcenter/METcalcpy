@@ -317,9 +317,9 @@ def bootstrap_and_value_mode(logger, values, cases, stat_func, alpha=0.05,
         if save_distributions:
             logger.debug("Saving bootstrap distributions to the result.")
             result.set_distributions(bootstrap_dist.flatten('F'))
-        except Exception as e:
-            logger.error(f"An error occurred during the bootstrap and calculation process: {e}", exc_info=True)
-            raise
+    except Exception as e:
+        logger.error(f"An error occurred during the bootstrap and calculation process: {e}", exc_info=True)
+        raise
     return result
 
 
@@ -538,7 +538,7 @@ def _generate_distributions_cbb(logger, values_lists, num_iterations, block_leng
             counter = counter + 1
             if counter == block_length:
                 # start a new block
-                counter = 
+                counter = 0
         return row
 
     if block_length > 1:
