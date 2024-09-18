@@ -221,7 +221,7 @@ def _bootstrap_distribution_cbb(logger, values_lists, stat_func_lists,
         num_threads = _multiprocessing.cpu_count()
 
     if num_threads <= 1:
-        results = _bootstrap_sim_cbb(values_lists, stat_func_lists,
+        results = _bootstrap_sim_cbb(logger, values_lists, stat_func_lists,
                                      num_iterations, iteration_batch_size, None, block_length)
     else:
         pool = _multiprocessing.Pool(num_threads)
@@ -232,7 +232,7 @@ def _bootstrap_distribution_cbb(logger, values_lists, stat_func_lists,
         results = []
         for seed in _np.random.randint(0, 2 ** 32 - 1, num_threads):
             logger.debug(f"Starting thread with seed {seed}.")
-            r = pool.apply_async(_bootstrap_sim_cbb, (values_lists, stat_func_lists,
+            r = pool.apply_async(_bootstrap_sim_cbb, (logger, values_lists, stat_func_lists,
                                                       iter_per_job,
                                                       iteration_batch_size, seed, block_length))
             results.append(r)
