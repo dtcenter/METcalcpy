@@ -777,11 +777,11 @@ def equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axi
             # perform EE on filtered data
             # for SSVAR line_type use equalization of multiple events
             series_data_after_ee = \
-                event_equalize(None, series_data_for_ee, params['indy_var'],
+                event_equalize(series_data_for_ee, params['indy_var'],
                                params['series_val_' + axis],
                                fix_vals_keys,
                                fix_vals_permuted, True,
-                               params['line_type'] == "ssvar")
+                               params['line_type'] == "ssvar", logger=logger)
 
             # append EE data to result
             if output_ee_data.empty:
@@ -860,11 +860,11 @@ def perform_event_equalization(params, input_data, logger=None):
 
         safe_log(logger, "debug", "Performing combined event equalization on Y1 and Y2.")
         # run EE on run event equalizer on Y1 and Y2
-        output_ee_data = event_equalize(None, all_ee_records, params['indy_var'],
+        output_ee_data = event_equalize(all_ee_records, params['indy_var'],
                                         all_series,
                                         fix_vals_keys,
                                         fix_vals_permuted_list, True,
-                                        params['line_type'] == "ssvar")
+                                        params['line_type'] == "ssvar", logger=logger)
 
         output_ee_data = output_ee_data.drop('equalize', axis=1)
 
