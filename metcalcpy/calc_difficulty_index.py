@@ -189,7 +189,7 @@ def forecast_difficulty(sigmaij, muij, threshold, fieldijn,
         A6_1_xlist = [3.0, 9.0, 12.0, 21.0]                                                         
         A6_1_ylist = [0.0, 1.5, 1.5, 0.0]                                                   
         Aplin =\
-                plin(None, A6_1_xlist, A6_1_ylist, xunits=xunits,
+                plin(A6_1_xlist, A6_1_ylist, xunits=xunits,
                         right=A6_1_right, left=A6_1_left,                                       
                         name=A6_1_name)
         safe_log(logger, "debug", "Default Aplin object created.")
