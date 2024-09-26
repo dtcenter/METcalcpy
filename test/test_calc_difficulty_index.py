@@ -46,11 +46,11 @@ def test_forecast_difficulty():
     thresh_eps = 2.0
     kwargs = {'thresh_eps': thresh_eps, 'threshold_type': 'proximity'}
 
-    assert 0.9095608641027515 == forecast_difficulty(None, sigmaij, muij, threshold, fieldijn,
+    assert 0.9095608641027515 == forecast_difficulty(sigmaij, muij, threshold, fieldijn,
             Aplin=None, sigma_over_mu_ref=EPS)[0][0]
-    assert 0.8191620255148825 == forecast_difficulty(None, sigmaij, muij, threshold, fieldijn,
+    assert 0.8191620255148825 == forecast_difficulty(sigmaij, muij, threshold, fieldijn,
             Aplin=None, sigma_over_mu_ref=EPS)[8][17]
-    assert 1.227707670365556 == forecast_difficulty(None, sigmaij, muij, threshold, fieldijn,
+    assert 1.227707670365556 == forecast_difficulty(sigmaij, muij, threshold, fieldijn,
             Aplin=None, sigma_over_mu_ref=EPS)[4][9]
 
 

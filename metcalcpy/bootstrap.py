@@ -319,7 +319,7 @@ def bootstrap_and_value_mode(values, cases, stat_func, alpha=0.05,
             safe_log(logger, "debug","Saving bootstrap distributions to the result.")
             result.set_distributions(bootstrap_dist.flatten('F'))
     except Exception as e:
-        safe_log(logger, "error", f"An error occurred during the bootstrap and calculation process: {e}", exc_info=True)
+        safe_log(logger, "error", f"An error occurred during the bootstrap and calculation process: {e}")
         raise
     return result
 
@@ -349,7 +349,7 @@ def _get_confidence_interval_and_value(bootstrap_dist, stat_val, alpha, ci_metho
             low = 2 * stat_val - _np.percentile(bootstrap_dist, 100 * (1 - alpha / 2.))
             high = 2 * stat_val - _np.percentile(bootstrap_dist, 100 * (alpha / 2.))
         except Exception as e:
-            safe_log(logger, "error", f"An error occurred during the calculation of confidence intervals: {e}", exc_info=True)
+            safe_log(logger, "error", f"An error occurred during the calculation of confidence intervals: {e}")
             raise
         val = stat_val
     elif ci_method == 'perc':
@@ -497,7 +497,7 @@ def _bootstrap_sim_cbb(values_lists, stat_func_lists, num_iterations, iteration_
             values_sims = _generate_distributions_cbb(values_lists, max_rng, block_length, logger=logger)
             safe_log(logger, "debug",f"Generated {max_rng} simulated distributions.")
         except Exception as e:
-            safe_log(logger, "error", f"Error generating distributions in bootstrap: {e}", exc_info=True)
+            safe_log(logger, "error", f"Error generating distributions in bootstrap: {e}")
             raise
        
         for i, values_sim, stat_func in zip(range(len(values_sims)), values_sims, stat_func_lists):

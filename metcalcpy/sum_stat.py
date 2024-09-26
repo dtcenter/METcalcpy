@@ -319,7 +319,7 @@ def calculate_statistic(values, columns_names, stat_name, aggregation=False):
             stat = globals()[func_name](values, columns_names, aggregation, logger=logger)
         safe_log(logger, "info", f"Successfully calculated statistic '{stat_name}'.")
     except Exception as e:
-        safe_log(logger, "error", f"An error occurred while calculating statistic '{stat_name}': {e}", exc_info=True)
+        safe_log(logger, "error", f"An error occurred while calculating statistic '{stat_name}': {e}")
         raise
     return stat
 

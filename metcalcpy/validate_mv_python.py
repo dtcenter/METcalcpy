@@ -171,7 +171,7 @@ def main(params):
                                               + replace_name(plot_name, 'thresh'))
 
             except KeyError as err:
-                safe_log(logger, "error", f'ERROR: For {plot_name} : {err}', exc_info=True)
+                safe_log(logger, "error", f'ERROR: For {plot_name} : {err}')
                 print(f'ERROR: For {plot_name} : {err}')
 
 

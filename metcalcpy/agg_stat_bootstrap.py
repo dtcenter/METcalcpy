@@ -273,7 +273,7 @@ class AggStatBootstrap:
                     )
                 safe.logger(logger, "debug", "Bootstrapping completed successfully.")
             except KeyError as err:
-                safe.logger(logger, "error", f"Error during bootstrapping: {err}", exc_info=True)
+                safe.logger(logger, "error", f"Error during bootstrapping: {err}")
                 results = BootstrapResults(None, None, None)
                 safe.logger(logger, "info", "Returning empty BootstrapResults due to error.")
                 print(err)
@@ -310,7 +310,7 @@ class AggStatBootstrap:
                 stat_values.append([stat_value])
                 safe.logger(logger, "info", f"Statistic calculated for bootstrap iteration: {stat_value}")
             except Exception as e:
-                safe.logger(logger, "error", f"Error calculating statistic for bootstrap iteration: {e}", exc_info=True)
+                safe.logger(logger, "error", f"Error calculating statistic for bootstrap iteration: {e}")
                 raise
             
         elif cases is not None and cases.ndim == 3:
@@ -326,7 +326,7 @@ class AggStatBootstrap:
                     stat_values.append([stat_value])
                     safe.logger(logger, "info", f"Statistic calculated for bootstrap iteration: {stat_value}")
                 except Exception as e:
-                    safe.logger(logger, "error", f"Error calculating statistic for bootstrap iteration: {e}", exc_info=True)
+                    safe.logger(logger, "error", f"Error calculating statistic for bootstrap iteration: {e}")
                     raise
         else:
             safe.logger(logger, "error", "Invalid input for cases. Cannot calculate statistic.")

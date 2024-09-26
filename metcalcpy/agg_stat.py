@@ -109,13 +109,13 @@ class AggStat:
             self.column_names = np.array(lc_cols)
             self.input_data.columns = lc_cols
         except pd.errors.EmptyDataError as e:
-            safe_log(logger, "error", "Input data file is empty, raising EmptyDataError.", exc_info=True)
+            safe_log(logger, "error", "Input data file is empty, raising EmptyDataError."
             raise
         except KeyError as e:
-            safe_log(logger, "error", f"Parameter with key {str(e)} is missing, raising KeyError.", exc_info=True)
+            safe_log(logger, "error", f"Parameter with key {str(e)} is missing, raising KeyError.")
             raise
         except Exception as e:
-            safe_log(logger, "error", f"Unexpected error occurred during data loading: {str(e)}", exc_info=True)
+            safe_log(logger, "error", f"Unexpected error occurred during data loading: {str(e)}")
             raise
         self.group_to_value = {}
         safe_log(logger, "debug", "AggStat initialized successfully.")
@@ -304,7 +304,7 @@ class AggStat:
                     stat_values = [stat_function(values, self.column_names, True, logger=logger)]
 
             except Exception as e:
-                safe_log(logger, "error", f"Failed to calculate statistics: {e}", exc_info=True)
+                safe_log(logger, "error", f"Failed to calculate statistics: {e}")
                 raise
 
         elif values is not None and values.ndim == 3:
@@ -320,7 +320,7 @@ class AggStat:
                     stat_values.append(stat_value)
                 safe_log(logger, "info", "Statistics calculated successfully for all bootstrap samples.")
             except Exception as e:
-                safe_log(logger, "error", f"Failed during bootstrap calculations: {e}", exc_info=True)
+                safe_log(logger, "error", f"Failed during bootstrap calculations: {e}")
                 raise
 
             # pool = mp.Pool(mp.cpu_count())
@@ -413,7 +413,7 @@ class AggStat:
                 if not isinstance(stat_values, list):
                     stat_values = [stat_values]
             except Exception as e:
-                safe_log(logger, "error", f"Error calculating derived statistics: {e}", exc_info=True)
+                safe_log(logger, "error", f"Error calculating derived statistics: {e}")
                 raise
 
         elif values_both_arrays is not None and values_both_arrays.ndim == 3:
@@ -475,7 +475,7 @@ class AggStat:
                     stat_values.append(stat_value)
                     safe_log(logger, "info", "Derived statistics calculated successfully.")
                 except Exception as e:
-                    safe_log(logger, "error", f"Error calculating derived statistics: {e}", exc_info=True)
+                    safe_log(logger, "error", f"Error calculating derived statistics: {e}")
                     raise
 
             # pool = mp.Pool(mp.cpu_count())
@@ -512,7 +512,7 @@ class AggStat:
                     else:
                         safe_log(logger, "warning", f"Column '{column}' or 'total' not found in the DataFrame.")
             except Exception as e:
-                safe_log(logger, "error", f"Failed to prepare data for statistic calculation: {e}", exc_info=True)
+                safe_log(logger, "error", f"Failed to prepare data for statistic calculation: {e}")
                 raise
         else:
             error_message = f"Statistic '{self.statistic}' is not recognized or lacks associated fields."
@@ -549,7 +549,7 @@ class AggStat:
                     missing_columns = [col for col in [column, 'total'] if col not in data_for_prepare.columns]
                     safe_log(logger, "warning", f"Missing columns {missing_columns} in DataFrame. Multiplication skipped.")
         except Exception as e:
-            safe_log(logger, "error", f"Failed to prepare data for statistic calculation: {e}", exc_info=True)
+            safe_log(logger, "error", f"Failed to prepare data for statistic calculation: {e}")
             raise
 
         safe_log(logger, "info", "sal1l2 data preparation completed successfully.")
@@ -582,7 +582,7 @@ class AggStat:
                     missing_columns = [col for col in [column, 'total'] if col not in data_for_prepare.columns]
                     safe_log(logger, "warning", f"Missing columns {missing_columns} in DataFrame. Multiplication skipped.")
         except Exception as e:
-            safe_log(logger, "error", f"Failed to prepare data for statistic calculation: {e}", exc_info=True)
+            safe_log(logger, "error", f"Failed to prepare data for statistic calculation: {e}")
             raise
 
         safe_log(logger, "info", "Grad data preparation completed successfully.")
@@ -609,7 +609,7 @@ class AggStat:
             major = int(met_version.major)
             safe_log(logger, "debug", f"Detected MET version: {major}")
         except Exception as e:
-            safe_log(logger, "error", f"Failed to determine MET version from data: {e}", exc_info=True)
+            safe_log(logger, "error", f"Failed to determine MET version from data: {e}")
             raise
 
         if self.statistic not in self.STATISTIC_TO_FIELDS:
@@ -629,7 +629,7 @@ class AggStat:
                         = data_for_prepare[column].values * data_for_prepare['total'].values
                         safe_log(logger, "debug", f"Column '{column}' successfully multiplied by 'total'.")
             except Exception as e:
-                safe_log(logger, "error", f"Error during data preparation: {e}", exc_info=True)
+                safe_log(logger, "error", f"Error during data preparation: {e}")
                 raise
 
         safe_log(logger, "info", "vl1l2 data preparation completed successfully.")
@@ -656,7 +656,7 @@ class AggStat:
             major = int(met_version.major)
             safe_log(logger, "debug", f"Detected MET version: {major}")
         except Exception as e:
-            safe_log(logger, "error", f"Failed to determine MET version from data: {e}", exc_info=True)
+            safe_log(logger, "error", f"Failed to determine MET version from data: {e}")
             raise
 
         if self.statistic not in self.STATISTIC_TO_FIELDS:
@@ -676,7 +676,7 @@ class AggStat:
                             = data_for_prepare[column].values * data_for_prepare['total'].values
                         safe_log(logger, "debug", f"Column '{column}' successfully multiplied by 'total'.")
             except Exception as e:
-                safe_log(logger, "error", f"Error during data preparation: {e}", exc_info=True)
+                safe_log(logger, "error", f"Error during data preparation: {e}")
                 raise
 
         safe_log(logger, "info", "val1l2 data preparation completed successfully.")
@@ -701,7 +701,7 @@ class AggStat:
             major = int(met_version.major)
             safe_log(logger, "debug", f"Detected MET version: {major}")
         except Exception as e:
-            safe_log(logger, "error", f"Failed to determine MET version from data: {e}", exc_info=True)
+            safe_log(logger, "error", f"Failed to determine MET version from data: {e}")
             raise
 
         if self.statistic not in self.STATISTIC_TO_FIELDS:
@@ -721,7 +721,7 @@ class AggStat:
                             = data_for_prepare[column].values * data_for_prepare['total'].values
                         safe_log(logger, "debug", f"Column '{column}' successfully multiplied by 'total'.")
             except Exception as e:
-                safe_log(logger, "error", f"Error during data preparation: {e}", exc_info=True)
+                safe_log(logger, "error", f"Error during data preparation: {e}")
                 raise
 
         safe_log(logger, "info", "vcnt data preparation completed successfully.")
@@ -780,10 +780,10 @@ class AggStat:
 
 
         except KeyError as e:
-            safe_log(logger, "error", f"Key error during data preparation: {e}", exc_info=True)
+            safe_log(logger, "error", f"Key error during data preparation: {e}")
             raise
         except Exception as e:
-            safe_log(logger, "error", f"Unexpected error during data preparation: {e}", exc_info=True)
+            safe_log(logger, "error", f"Unexpected error during data preparation: {e}")
             raise
         print(self.statistic)
         print('786')
@@ -814,10 +814,10 @@ class AggStat:
             safe_log(logger, "debug", f"Column 'rps_comp' successfully multiplied by 'total'.")
             self.column_names = data_for_prepare.columns.values
         except KeyError as e:
-            safe_log(logger, "error", f"Key error during data preparation: {e}", exc_info=True)
+            safe_log(logger, "error", f"Key error during data preparation: {e}")
             raise
         except Exception as e:
-            safe_log(logger, "error", f"Unexpected error during data preparation: {e}", exc_info=True)
+            safe_log(logger, "error", f"Unexpected error during data preparation: {e}")
             raise
 
     def _prepare_ssvar_data(self, data_for_prepare):
@@ -997,7 +997,7 @@ class AggStat:
                     permute_for_second_series[i] = self.group_to_value[perm]
 
         except KeyError as err:
-            safe_log(logger, "error", f"Error during derived component lookup: {err}", exc_info=True)
+            safe_log(logger, "error", f"Error during derived component lookup: {err}")
             return BootstrapResults(None, None, None)
             
         safe_log(logger, "debug", f"First series components: {permute_for_first_series}")
@@ -1079,7 +1079,7 @@ class AggStat:
                     logger=logger
                     )
             except KeyError as err:
-                safe_log(logger, "error", f"Error during bootstrapping: {err}", exc_info=True)
+                safe_log(logger, "error", f"Error during bootstrapping: {err}")
                 return BootstrapResults(None, None, None)
 
         # Post-processing for DIFF_SIG
@@ -1148,7 +1148,7 @@ class AggStat:
                     safe_log(logger, "debug", "Saving original data for derived series.")
                     results.set_original_values(data)
             except Exception as e:
-                safe_log(logger, "error", "Error during statistic calculation: %s", e, exc_info=True)
+                safe_log(logger, "error", "Error during statistic calculation: %s", e)
                 raise
         else:
             # Bootstrapping required with CI calculation
@@ -1175,10 +1175,10 @@ class AggStat:
                 safe_log(logger, "info", "Bootstrapping and CI calculation completed.")
 
             except KeyError as err:
-                safe_log(logger, "error", "KeyError during bootstrapping: %s", err, exc_info=True)
+                safe_log(logger, "error", "KeyError during bootstrapping: %s", err)
                 results = BootstrapResults(None, None, None)
             except Exception as e:
-                safe_log(logger, "error", "Unexpected error during bootstrapping: %s", e, exc_info=True)
+                safe_log(logger, "error", "Unexpected error during bootstrapping: %s", e)
                 raise
 
         safe_log(logger, "debug", "Bootstrapped statistics calculation completed.")
@@ -1227,7 +1227,7 @@ class AggStat:
             safe_log(logger, "debug", f"Unique date-lead-stat combinations found: {unique_date_size}")
 
         except TypeError as err:
-            safe_log(logger, "error", f"Error during filtering columns: {err}", exc_info=True)
+            safe_log(logger, "error", f"Error during filtering columns: {err}")
             unique_date_size = []
 
         # Identify rows with unique combinations
@@ -1238,7 +1238,7 @@ class AggStat:
             series_data = series_data[ind, :]
             safe_log(logger, "debug", f"Series data sorted by valid index, lead, and stat name.")
         except Exception as e:
-            safe_log(logger, "error", f"Error during sorting series data: {e}", exc_info=True)
+            safe_log(logger, "error", f"Error during sorting series data: {e}")
             raise
 
         # Validate if the number of unique combinations matches the data length
@@ -1282,7 +1282,7 @@ class AggStat:
 
             safe_log(logger, "info", "Output frame initialization completed successfully.")
         except Exception as e:
-            safe_log(logger, "error", f"Error during output frame initialization: {e}", exc_info=True)
+            safe_log(logger, "error", f"Error during output frame initialization: {e}")
             raise
 
         return result
@@ -1617,7 +1617,7 @@ class AggStat:
                             sep="\t", na_rep="NA", float_format='%.' + str(PRECISION) + 'f')
             safe_log(logger, "info", f"Successfully wrote results to {output_file}")
         except Exception as e:
-            safe_log(logger, "error", f"Error writing to file {output_file}: {e}", exc_info=True)
+            safe_log(logger, "error", f"Error writing to file {output_file}: {e}")
 
 
 if __name__ == "__main__":

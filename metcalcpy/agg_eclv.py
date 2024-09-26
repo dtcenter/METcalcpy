@@ -102,13 +102,13 @@ class AggEclv:
             self.input_data = pd.read_csv(self.params['agg_stat_input'], header=0, sep='\t')
             safe_log(logger, "info", f"Successfully loaded data from {self.params['agg_stat_input']}")
         except pd.errors.EmptyDataError as e:
-            safe_log(logger, "error", "Input data file is empty, raising EmptyDataError.", exc_info=True)
+            safe_log(logger, "error", "Input data file is empty, raising EmptyDataError.")
             raise
         except KeyError as e:
-            safe_log(logger, "error", f"Parameter with key {str(e)} is missing, raising KeyError.", exc_info=True)
+            safe_log(logger, "error", f"Parameter with key {str(e)} is missing, raising KeyError.")
             raise
         except Exception as e:
-            safe_log(logger, "error", f"Unexpected error occurred during data loading: {str(e)}", exc_info=True)
+            safe_log(logger, "error", f"Unexpected error occurred during data loading: {str(e)}")
             raise
 
         self.group_to_value = {}
@@ -142,7 +142,7 @@ class AggEclv:
                 ]
                 safe_log(logger, "info", "Statistics calculated successfully for single value case.")
             except Exception as e:
-                safe_log(logger, "error", f"Failed to calculate statistics for single value case: {str(e)}", exc_info=True)
+                safe_log(logger, "error", f"Failed to calculate statistics for single value case: {str(e)}")
                 raise
 
         elif values.ndim == 3:
@@ -157,7 +157,7 @@ class AggEclv:
                     stat_values.append(stat_value)
                 safe_log(logger, "info", "Statistics calculated successfully for all bootstrap samples.")
             except Exception as e:
-                safe_log(logger, "error", f"Failed to calculate statistics for bootstrapped case: {str(e)}", exc_info=True)
+                safe_log(logger, "error", f"Failed to calculate statistics for bootstrapped case: {str(e)}")
                 raise
         else:
             safe_log(logger, "error", f"Invalid dimension {values.ndim} for values, expected 2 or 3.")
@@ -213,7 +213,7 @@ class AggEclv:
                         )
                     safe_log(logger, "info", f"Bootstrapped statistics calculated for threshold {thresh}.")
                 except KeyError as err:
-                    safe_log(logger, "error", f"Failed to calculate bootstrapped statistics due to missing key: {err}", exc_info=True)
+                    safe_log(logger, "error", f"Failed to calculate bootstrapped statistics due to missing key: {err}")
                     results = BootstrapResults(None, None, None)
 
             boot_stat_thresh[ind] = results
@@ -365,7 +365,7 @@ class AggEclv:
                                           sep="\t", na_rep="NA", float_format='%.' + str(PRECISION) + 'f')
             safe_log(logger, "info", f"Data successfully written to {self.params['agg_stat_output']} in mode {mode}.")
         except Exception as e:
-            safe_log(logger, "error", f"Failed to write data to file: {str(e)}", exc_info=True)
+            safe_log(logger, "error", f"Failed to write data to file: {str(e)}")
 
 
 if __name__ == "__main__":

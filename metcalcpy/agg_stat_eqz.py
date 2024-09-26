@@ -92,10 +92,10 @@ class AggStatEventEqz:
                 )
                 safe_log(logger, "debug", f"Successfully read previous cases. Number of records: {len(prev_cases)}")
             except FileNotFoundError as e:
-                safe_log(logger, "error", f"File not found: {self.params['agg_stat_input_ee']}", exc_info=True)
+                safe_log(logger, "error", f"File not found: {self.params['agg_stat_input_ee']}")
                 raise
             except Exception as e:
-                safe_log(logger, "error", f"Error reading previous cases: {self.params['agg_stat_input_ee']}", exc_info=True)
+                safe_log(logger, "error", f"Error reading previous cases: {self.params['agg_stat_input_ee']}")
                 raise
 
             # perform for axis 1
