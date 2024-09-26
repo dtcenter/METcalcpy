@@ -45,7 +45,7 @@ class PiecewiseLinear():
             safe_log(logger, "error", f'X_domain (in {xunits})')
             raise IncompatibleLengths('Length of xdomain must be at least 2.')
         if np.any(np.diff(x_domain)) < 0:
-            safe_log(logger, "error", f'X_domain (in {}) is {}".format(xunits, x_domain)')
+            safe_log(logger, "error", "X_domain (in {}) is {}".format(xunits, x_domain))
             print("X_domain (in {}) is {}".format(xunits, x_domain))
             raise UnsortedArray('Xdomain must be sorted in ascending order.')
         len_y = len(y_range)

@@ -269,7 +269,7 @@ class AggStatBootstrap:
                     num_iterations=self.params['num_iterations'],
                     num_threads=self.params['num_threads'],
                     ci_method=self.params['method'],
-                    
+                    logger=logger
                     )
                 safe.logger(logger, "debug", "Bootstrapping completed successfully.")
             except KeyError as err:

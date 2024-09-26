@@ -317,7 +317,7 @@ def calculate_podn(input_data, columns_names, logger=None):
     return result
 
 
-def calculate_far(input_data, , logger=None):
+def calculate_far(input_data, column_names, logger=None):
     """Performs calculation of FAR - false alarms
 
         Args:

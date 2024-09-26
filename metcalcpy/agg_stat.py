@@ -77,7 +77,7 @@ class AggStat:
                 This method will crate and save to the file aggregation statistics
                     agg_stat = AggStat(params)
                     agg_stat.calculate_stats_and_ci()
-            Raises: EmptyDataError or (ValueError when the input DataFrame is empty
+            Raises: EmptyDataError or ValueError when the input DataFrame is empty
                 or doesn't have data
        """
 
@@ -86,7 +86,7 @@ class AggStat:
 
             Args:
                 in_params - input parameters as a dictionary
-            Raises: EmptyDataError or (ValueError when the input DataFrame is empty
+            Raises: EmptyDataError or ValueError when the input DataFrame is empty
                 or doesn't have data
         """
         self.logger = setup_logging(in_params)
@@ -374,7 +374,7 @@ class AggStat:
                 stat_2 = values_2[0, stat_column_index].lower()
                 func_name_1 = f'calculate_{stat_1}'
                 func_name_2 = f'calculate_{stat_2}'
-            except (ValueError:
+            except ValueError as e:
                 func_name_1 = f'calculate_{self.statistic}'
                 func_name_2 = f'calculate_{self.statistic}'
                 safe_log(logger, "error", f"Error finding statistics function: {e}")
@@ -435,7 +435,7 @@ class AggStat:
                     stat_2 = values_2[0, stat_column_index].lower()
                     func_name_1 = f'calculate_{stat_1}'
                     func_name_2 = f'calculate_{stat_2}'
-                except (ValueError:
+                except ValueError:
                     func_name_1 = f'calculate_{self.statistic}'
                     func_name_2 = f'calculate_{self.statistic}'
                     safe_log(logger, "error", f"Error finding statistics function: {e}")

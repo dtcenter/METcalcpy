@@ -208,7 +208,7 @@ class AggEclv:
                         ci_method=self.params['method'],
                         save_data=False,
                         block_length=block_length,
-                        eclv=True
+                        eclv=True,
                         logger=logger
                         )
                     safe.logger(logger, "info", f"Bootstrapped statistics calculated for threshold {thresh}.")
