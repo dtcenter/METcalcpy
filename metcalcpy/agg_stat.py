@@ -1116,7 +1116,7 @@ class AggStat:
         has_derived_series = False
         if self.params.get('derived_series_' + axis):
             has_derived_series = True
-            safe_log(logger, "debug", "Derived series found for axis '%s'.", axis)
+            safe_log(logger, "debug", "Derived series found for axis '%s'.")
 
         # Sort data by dates and reset index
         safe_log(logger, "debug", "Sorting series data.")
@@ -1527,7 +1527,7 @@ class AggStat:
             safe_log(logger, "warning", "Input data is empty. Returning an empty DataFrame.")
             out_frame = pd.DataFrame()
 
-        safe_log(logger, "info", "Completed stat calculations for axis '%s'", axis)
+        safe_log(logger, "info", "Completed stat calculations for axis '%s'")
         return out_frame
 
     def calculate_stats_and_ci(self):
