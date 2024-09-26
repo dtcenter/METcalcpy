@@ -81,7 +81,7 @@ def calc_wind_corr(uf, vf, uo, vo, uvfo, uvff, uvoo, logger=None):
         corr = (uvfo - uf * uo - vf * vo) / (np.sqrt(uvff - uf * uf - vf * vf)
                                              * np.sqrt(uvoo - uo * uo - vo * vo))
     except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
-        safe_log(logger, "error", f"Error during wind correlation calculation: {str(e)}"):
+        safe_log(logger, "error", f"Error during wind correlation calculation: {str(e)}")
         corr = None
     return corr
 
