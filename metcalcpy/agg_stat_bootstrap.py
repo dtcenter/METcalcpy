@@ -330,7 +330,7 @@ class AggStatBootstrap:
                     raise
         else:
             safe.logger(logger, "error", "Invalid input for cases. Cannot calculate statistic.")
-            raise KeyError, "can't calculate statistic")
+            raise KeyError("can't calculate statistic")
         return stat_values
 
     def calculate_values(self):

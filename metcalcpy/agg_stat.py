@@ -77,7 +77,7 @@ class AggStat:
                 This method will crate and save to the file aggregation statistics
                     agg_stat = AggStat(params)
                     agg_stat.calculate_stats_and_ci()
-            Raises: EmptyDataError or ValueError when the input DataFrame is empty
+            Raises: EmptyDataError or (ValueError when the input DataFrame is empty
                 or doesn't have data
        """
 
@@ -86,7 +86,7 @@ class AggStat:
 
             Args:
                 in_params - input parameters as a dictionary
-            Raises: EmptyDataError or ValueError when the input DataFrame is empty
+            Raises: EmptyDataError or (ValueError when the input DataFrame is empty
                 or doesn't have data
         """
         self.logger = setup_logging(in_params)
@@ -282,7 +282,7 @@ class AggStat:
             stat_function = globals()[func_name]
         except KeyError:
             safe_log(logger, "error", f"Statistical function {func_name} not found in globals.")
-            raise KeyError, f"Function {func_name} not defined.")
+            raise KeyError(f"Function {func_name} not defined.")
         # some functions have an extra 3rd parameter that represents
         # if some data preliminary data aggregation was done
         # if this parameter is present we need to add it
@@ -292,7 +292,7 @@ class AggStat:
     
         if values is None:
             safe_log(logger, "error", "Input values array is None.")
-            raise ValueError, "Input values cannot be None.")
+            raise ValueError("Input values cannot be None.")
 
         if values is not None and values.ndim == 2:
             safe_log(logger, "debug", "Processing single value case for statistical calculation.")
@@ -331,7 +331,7 @@ class AggStat:
 
         else:
             safe_log(logger, "error", f"Invalid data dimensions {values.ndim}; expected 2D or 3D array.")
-            raise KeyError, "can't calculate statistic")
+            raise KeyError("can't calculate statistic")
         return stat_values
 
     def _calc_stats_derived(self, values_both_arrays):
@@ -352,11 +352,11 @@ class AggStat:
         
         if values_both_arrays is None:
             safe_log(logger, "error", "Input values array is None.")
-            raise ValueError, "Input values cannot be None.")
+            raise ValueError("Input values cannot be None.")
 
         if values_both_arrays.ndim not in [2, 3]:
             safe_log(logger, "error", f"Invalid data dimensions {values_both_arrays.ndim}; expected 2D or 3D array.")
-            raise KeyError, "Invalid data dimensions")
+            raise KeyError("Invalid data dimensions")
 
         if values_both_arrays is not None and values_both_arrays.ndim == 2:
             # The single value case
@@ -374,11 +374,11 @@ class AggStat:
                 stat_2 = values_2[0, stat_column_index].lower()
                 func_name_1 = f'calculate_{stat_1}'
                 func_name_2 = f'calculate_{stat_2}'
-            except ValueError:
+            except (ValueError:
                 func_name_1 = f'calculate_{self.statistic}'
                 func_name_2 = f'calculate_{self.statistic}'
                 safe_log(logger, "error", f"Error finding statistics function: {e}")
-                raise ValueError, "Error processing statistic names")             
+                raise ValueError("Error processing statistic names")             
  
 
             # some functions have an extra 3rd parameter that represents
@@ -435,11 +435,11 @@ class AggStat:
                     stat_2 = values_2[0, stat_column_index].lower()
                     func_name_1 = f'calculate_{stat_1}'
                     func_name_2 = f'calculate_{stat_2}'
-                except ValueError:
+                except (ValueError:
                     func_name_1 = f'calculate_{self.statistic}'
                     func_name_2 = f'calculate_{self.statistic}'
                     safe_log(logger, "error", f"Error finding statistics function: {e}")
-                    raise ValueError, "Error processing statistic names")
+                    raise ValueError("Error processing statistic names")
 
                 # some functions have an extra 3rd parameter that represents
                 # if some data preliminary data aggregation was done
@@ -485,7 +485,7 @@ class AggStat:
             # pool.join()
 
         else:
-            raise KeyError, "can't calculate statistic")
+            raise KeyError("can't calculate statistic")
         return stat_values
 
     def _prepare_sl1l2_data(self, data_for_prepare):
@@ -500,7 +500,7 @@ class AggStat:
        
         if data_for_prepare is None:
             safe_log(logger, "error", "Input data for preparation is None.")
-            raise ValueError, "Input data cannot be None.")
+            raise ValueError("Input data cannot be None.")
 
         if self.statistic in self.STATISTIC_TO_FIELDS.keys():
             try:
@@ -517,7 +517,7 @@ class AggStat:
         else:
             error_message = f"Statistic '{self.statistic}' is not recognized or lacks associated fields."
             safe_log(logger, "error", error_message)
-            raise KeyError, error_message)
+            raise KeyError(error_message)
 
         safe_log(logger, "info", "sl1l2 data preparation completed successfully.")
 
@@ -533,12 +533,12 @@ class AggStat:
 
         if data_for_prepare is None:
             safe_log(logger, "error", "Input data for preparation is None.")
-            raise ValueError, "Input data cannot be None.")
+            raise ValueError("Input data cannot be None.")
 
         if self.statistic not in self.STATISTIC_TO_FIELDS:
             error_message = f"Statistic '{self.statistic}' is not recognized or lacks associated fields."
             safe_log(logger, "error", error_message)
-            raise KeyError, error_message)
+            raise KeyError(error_message)
 
         try:
             for column in self.STATISTIC_TO_FIELDS[self.statistic]:
@@ -566,12 +566,12 @@ class AggStat:
 
         if data_for_prepare is None:
             safe_log(logger, "error", "Input data for preparation is None.")
-            raise ValueError, "Input data cannot be None.")
+            raise ValueError("Input data cannot be None.")
 
         if self.statistic not in self.STATISTIC_TO_FIELDS:
             error_message = f"Statistic '{self.statistic}' is not recognized or lacks associated fields."
             safe_log(logger, "error", error_message)
-            raise KeyError, error_message)
+            raise KeyError(error_message)
 
         try:
             for column in self.STATISTIC_TO_FIELDS[self.statistic]:
@@ -600,7 +600,7 @@ class AggStat:
 
         if data_for_prepare is None:
             safe_log(logger, "error", "Input data for preparation is None.")
-            raise ValueError, "Input data cannot be None.")
+            raise ValueError("Input data cannot be None.")
 
         # Determine the MET version for this data.  If MET v12.0 or above, use the 'total_dir' column rather than
         # the 'total' column.
@@ -615,7 +615,7 @@ class AggStat:
         if self.statistic not in self.STATISTIC_TO_FIELDS:
             error_message = f"Statistic '{self.statistic}' is not recognized or lacks associated fields."
             safe_log(logger, "error", error_message)
-            raise KeyError, error_message)
+            raise KeyError(error_message)
 
         if self.statistic in self.STATISTIC_TO_FIELDS.keys():
             try:
@@ -649,7 +649,7 @@ class AggStat:
 
         if data_for_prepare is None:
             safe_log(logger, "error", "Input data for preparation is None.")
-            raise ValueError, "Input data cannot be None.")
+            raise ValueError("Input data cannot be None.")
 
         try:
             met_version = get_met_version(data_for_prepare, logger=logger)
@@ -662,7 +662,7 @@ class AggStat:
         if self.statistic not in self.STATISTIC_TO_FIELDS:
             error_message = f"Statistic '{self.statistic}' is not recognized or lacks associated fields."
             safe_log(logger, "error", error_message)
-            raise KeyError, error_message)
+            raise KeyError(error_message)
 
         if self.statistic in self.STATISTIC_TO_FIELDS.keys():
             try:
@@ -694,7 +694,7 @@ class AggStat:
         # the 'total' column.
         if data_for_prepare is None:
             safe_log(logger, "error", "Input data for preparation is None.")
-            raise ValueError, "Input data cannot be None.")
+            raise ValueError("Input data cannot be None.")
 
         try:
             met_version = get_met_version(data_for_prepare, logger=logger)
@@ -707,7 +707,7 @@ class AggStat:
         if self.statistic not in self.STATISTIC_TO_FIELDS:
             error_message = f"Statistic '{self.statistic}' is not recognized or lacks associated fields."
             safe_log(logger, "error", error_message)
-            raise KeyError, error_message)
+            raise KeyError(error_message)
 
         if self.statistic in self.STATISTIC_TO_FIELDS.keys():
             try:
@@ -738,7 +738,7 @@ class AggStat:
 
         if data_for_prepare is None:
             safe_log(logger, "error", "Input data for preparation is None.")
-            raise ValueError, "Input data cannot be None.")
+            raise ValueError("Input data cannot be None.")
 
         try:
             mse = data_for_prepare['rmse'].values * data_for_prepare['rmse'].values
@@ -801,7 +801,7 @@ class AggStat:
         
         if data_for_prepare is None:
             safe_log(logger, "error", "Input data for preparation is None.")
-            raise ValueError, "Input data cannot be None.")
+            raise ValueError("Input data cannot be None.")
 
         try:
             total = data_for_prepare['total'].values
@@ -832,7 +832,7 @@ class AggStat:
 
         if data_for_prepare is None:
             safe_log(logger, "error", "Input data for preparation is None.")
-            raise ValueError, "Input data cannot be None.")
+            raise ValueError("Input data cannot be None.")
 
         # rename bin_n column to total
         data_for_prepare.rename(columns={"total": "total_orig", "bin_n": "total"}, inplace=True)
@@ -841,7 +841,7 @@ class AggStat:
         if self.statistic not in self.STATISTIC_TO_FIELDS:
             error_message = f"Statistic '{self.statistic}' is not recognized or lacks associated fields."
             safe_log(logger, "error", error_message)
-            raise KeyError, error_message)
+            raise KeyError(error_message)
 
         for column in self.STATISTIC_TO_FIELDS[self.statistic]:
             data_for_prepare[column] \
@@ -862,7 +862,7 @@ class AggStat:
 
         if data_for_prepare is None:
             safe_log(logger, "error", "Input data for preparation is None.")
-            raise ValueError, "Input data cannot be None.")
+            raise ValueError("Input data cannot be None.")
 
         total = data_for_prepare['total'].values
         fbs = total * data_for_prepare['fbs'].values
@@ -896,11 +896,11 @@ class AggStat:
 
         if data_for_prepare is None:
             safe_log(logger, "error", "Input data for preparation is None.")
-            raise ValueError, "Input data cannot be None.")
+            raise ValueError("Input data cannot be None.")
 
         if 'ec_value' in data_for_prepare.columns:
             if not (data_for_prepare['ec_value'] == data_for_prepare['ec_value'][0]).all():
-                raise ValueError, 'EC_VALUE is NOT constant across  MCTC lines')
+                raise ValueError('EC_VALUE is NOT constant across  MCTC lines')
 
 
     def _prepare_ctc_data(self, data_for_prepare):
@@ -915,11 +915,11 @@ class AggStat:
 
         if data_for_prepare is None:
             safe_log(logger, "error", "Input data for preparation is None.")
-            raise ValueError, "Input data cannot be None.")
+            raise ValueError("Input data cannot be None.")
 
         if 'ec_value' in data_for_prepare.columns:
             if not (data_for_prepare['ec_value'] == data_for_prepare['ec_value'][0]).all():
-                raise ValueError, 'EC_VALUE is NOT constant across  CTC lines')
+                raise ValueError('EC_VALUE is NOT constant across  CTC lines')
 
 
     def _prepare_cts_data(self, data_for_prepare):
@@ -934,11 +934,11 @@ class AggStat:
 
         if data_for_prepare is None:
             safe_log(logger, "error", "Input data for preparation is None.")
-            raise ValueError, "Input data cannot be None.")
+            raise ValueError("Input data cannot be None.")
 
         if 'ec_value' in data_for_prepare.columns:
             if not (data_for_prepare['ec_value'] == data_for_prepare['ec_value'][0]).all():
-                raise ValueError, 'EC_VALUE is NOT constant across  CTS lines')
+                raise ValueError('EC_VALUE is NOT constant across  CTS lines')
 
     def _prepare_nbr_ctc_data(self, data_for_prepare):
         """Prepares MBR_CTC data.

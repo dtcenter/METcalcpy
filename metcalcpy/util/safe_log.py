@@ -6,7 +6,8 @@
  # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
  # ============================*
  
- def safe_log(logger, log_level, message):
+
+def safe_log(logger, log_level, message):
     """
     Safely logs a message using the provided logger and log level.
     

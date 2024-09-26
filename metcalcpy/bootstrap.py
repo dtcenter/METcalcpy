@@ -576,29 +576,29 @@ def _validate_arrays(values_lists, logger=None):
     safe_log(logger, "debug",f"Validating arrays. First array type: {t_type}, shape: {t.shape}")
     if not isinstance(t, _sparse.csr_matrix) and not isinstance(t, _np.ndarray):
         safe_log(logger, "error", "Arrays must either be of type scipy.sparse.csr_matrix or numpy.array.")
-        raise ValueError, ('The arrays must either be of type '
-                          'scipy.sparse.csr_matrix or numpy.array'))
+        raise ValueError('The arrays must either be of type '
+                          'scipy.sparse.csr_matrix or numpy.array')
 
     for _, values in enumerate(values_lists[1:]):
         if not isinstance(values, t_type):
             safe_log(logger, "error", f"Array at index {index} is not of the same type as the first array.")
-            raise ValueError, 'The arrays must all be of the same type')
+            raise ValueError('The arrays must all be of the same type')
 
         if t.shape != values.shape:
             safe_log(logger, "error", f"Array at index {index} has a different shape: {values.shape}. Expected: {t.shape}.")
-            raise ValueError, 'The arrays must all be of the same shape')
+            raise ValueError('The arrays must all be of the same shape')
 
         if isinstance(t, _sparse.csr_matrix):
             if values.shape[0] > 1:
                 safe_log(logger, "error", "Sparse matrix must have shape 1 row X N columns.")
-                raise ValueError, ('The sparse matrix must have shape 1 row X N'
-                                  ' columns'))
+                raise ValueError('The sparse matrix must have shape 1 row X N'
+                                  ' columns')
 
     if isinstance(t, _sparse.csr_matrix):
         if _needs_sparse_unification(values_lists):
             safe_log(logger, "error", "Non-zero entries in the sparse arrays are not aligned.")
-            raise ValueError, ('The non-zero entries in the sparse arrays'
-                              ' must be aligned'))
+            raise ValueError('The non-zero entries in the sparse arrays'
+                              ' must be aligned')
     safe_log(logger, "info", "Array validation completed successfully.")
 
 

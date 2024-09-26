@@ -507,7 +507,7 @@ def percbend(x, y, beta=.2, logger=None):
 
     # Bend
     a[a <= -1] = -1
-    a[a >= 1] = 
+    a[a >= 1] = 1
     safe_log(logger, "debug", "Applied bending to a")
 
     # Get r, tval and pval

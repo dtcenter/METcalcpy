@@ -130,7 +130,7 @@ class AggEclv:
         safe.logger(logger, "debug", "Starting to calculate statistics for given values.")
         if values is None:
            safe.logger(logger, "error", "Received None as input for values which is not expected.")
-           raise ValueError, "Input values cannot be None.")
+           raise ValueError("Input values cannot be None.")
 
         if values.ndim == 2:
             # The single value case
@@ -161,7 +161,7 @@ class AggEclv:
                 raise
         else:
             safe.logger(logger, "error", f"Invalid dimension {values.ndim} for values, expected 2 or 3.")
-            raise KeyError, f"Invalid data dimensions {values.ndim}; expected 2D or 3D array.")
+            raise KeyError(f"Invalid data dimensions {values.ndim}; expected 2D or 3D array.")
 
         return stat_values
 
