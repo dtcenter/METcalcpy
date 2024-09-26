@@ -217,7 +217,7 @@ def calculate_val1l2_dira_mse(input_data, columns_names, aggregation=False, logg
 
         result = round_half_up(result, PRECISION)
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError, logger=None):
+    except (TypeError, ZeroDivisionError, Warning, ValueError):
         result = None
     warnings.filterwarnings('ignore')
     return result
