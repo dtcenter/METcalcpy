@@ -230,17 +230,17 @@ def corr(x, y, tail='two-sided', method='pearson', logger=None, **kwargs):
 
     # Compute correlation coefficient
     if method == 'pearson':
-        r, pval = pearsonr(x, y, logger=logger)
+        r, pval = pearsonr(x, y)
     elif method == 'spearman':
-        r, pval = spearmanr(x, y, logger=logger, **kwargs)
+        r, pval = spearmanr(x, y, **kwargs)
     elif method == 'kendall':
-        r, pval = kendalltau(x, y, logger=logger, **kwargs)
+        r, pval = kendalltau(x, y, **kwargs)
     elif method == 'bicor':
-        r, pval = bicor(x, y, logger=logger, **kwargs)
+        r, pval = bicor(x, y, **kwargs)
     elif method == 'percbend':
-        r, pval = percbend(x, y, logger=logger, **kwargs)
+        r, pval = percbend(x, y, **kwargs)
     elif method == 'shepherd':
-        r, pval, outliers = shepherd(x, y, logger=logger, **kwargs)
+        r, pval, outliers = shepherd(x, y, **kwargs)
         safe_log(logger, "debug", "Identified outliers in Shepherd's method.")
     else:
         raise ValueError(f'Method "{method}" not recognized.')
@@ -552,13 +552,13 @@ def shepherd(x, y, n_boot=200, logger=None):
     X = np.column_stack((x, y))
     safe_log(logger, "debug", f"Combined x and y into array X: {X}")
     # Bootstrapping on Mahalanobis distance
-    m = bsmahal(X, X, n_boot, logger=logger)
+    m = bsmahal(X, X, n_boot)
     safe_log(logger, "debug", f"Mahalanobis distances (bootstrap): {m}")
     # Determine outliers
     outliers = (m >= 6)
     safe_log(logger, "info", f"Identified outliers: {outliers}")
     # Compute correlation
-    r, pval = spearmanr(x[~outliers], y[~outliers], logger=logger)
+    r, pval = spearmanr(x[~outliers], y[~outliers])
     safe_log(logger, "debug", f"Spearman's rho (without outliers): r={r}, p-value={pval}")
     # (optional) double the p-value to achieve a nominal false alarm rate
     # pval *= 2

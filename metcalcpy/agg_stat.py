@@ -1126,10 +1126,9 @@ class AggStat:
 
         # Prepare data for specific line type if present
         if 'line_type' in self.params and self.params['line_type']:
-            safe_log(logger, "debug", "Preparing data for line type '%s'.", self.params['line_type'])
             func = getattr(self, f"_prepare_{self.params['line_type']}_data")
             func(series_data)
-            safe_log(logger, "debug", "Data preparation for line type '%s' completed.", self.params['line_type'])
+            
 
         # Convert data to numpy format for bootstrapping
         safe_log(logger, "debug", "Converting series data to numpy format.")
@@ -1141,25 +1140,23 @@ class AggStat:
             try:
                 stat_val = self._calc_stats(data)[0]
                 results = BootstrapResults(lower_bound=None, value=stat_val, upper_bound=None)
-                safe_log(logger, "info", "Statistic calculated without bootstrapping. Value: %s", stat_val)
 
                 # Save original data for derived series if needed
                 if has_derived_series:
                     safe_log(logger, "debug", "Saving original data for derived series.")
                     results.set_original_values(data)
             except Exception as e:
-                safe_log(logger, "error", "Error during statistic calculation: %s", e)
+                safe_log(logger, "error", f"Error during statistic calculation: {e}")
                 raise
         else:
             # Bootstrapping required with CI calculation
-            safe_log(logger, "debug", "Bootstrapping with %d iterations.", self.params['num_iterations'])
+            safe_log(logger, "debug", f"Bootstrapping with {self.params['num_iterations']} iterations.")
             try:
                 block_length = 1
                 # Determine whether to use circular block bootstrap
                 is_cbb = self.params.get('circular_block_bootstrap', True)
                 if is_cbb:
                     block_length = int(math.sqrt(len(data)))
-                    safe_log(logger, "debug", "Using circular block bootstrap with block length: %d", block_length)
 
                 # Perform bootstrapping and CI calculation
                 results = bootstrap_and_value(
@@ -1175,10 +1172,10 @@ class AggStat:
                 safe_log(logger, "info", "Bootstrapping and CI calculation completed.")
 
             except KeyError as err:
-                safe_log(logger, "error", "KeyError during bootstrapping: %s", err)
+                safe_log(logger, "error", f"KeyError during bootstrapping: {err}")
                 results = BootstrapResults(None, None, None)
             except Exception as e:
-                safe_log(logger, "error", "Unexpected error during bootstrapping: %s", e)
+                safe_log(logger, "error", f"Unexpected error during bootstrapping: {e}")
                 raise
 
         safe_log(logger, "debug", "Bootstrapped statistics calculation completed.")
@@ -1297,7 +1294,7 @@ class AggStat:
 
         """
         logger = self.logger
-        safe_log(logger, "debug", "Starting derived points calculation for axis '%s'.", axis)
+        safe_log(logger, "debug", f"Starting derived points calculation for axis 'axis'.")
 
         result = []
 
@@ -1366,7 +1363,7 @@ class AggStat:
 
         # Flatten the result list and return it
         flattened_result = [y for x in result for y in x]
-        safe_log(logger, "info", "Derived points calculation completed. Total derived points: %d", len(flattened_result))
+        safe_log(logger, "info", f"Derived points calculation completed. Total derived points: {len(flattened_result)}")
         
         return flattened_result
         
