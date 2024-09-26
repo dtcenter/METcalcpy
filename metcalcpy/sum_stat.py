@@ -57,6 +57,7 @@ from metcalcpy.util.rps_statistics import *
 from metcalcpy.util.utils import is_string_integer, parse_bool, \
     aggregate_field_values, perform_event_equalization, is_string_strictly_float
 from metcalcpy.logging_config import setup_logging
+from metcalcpy.util.safe_log import safe_log
 
 class SumStat:
     """A class that performs event equalisation if needed and statistics calculation
@@ -82,7 +83,7 @@ class SumStat:
         """
         self.logger = setup_logging(in_params)
         logger = self.logger
-        logger.debug("Initializing Scorecard with parameters.")
+        safe_log(logger, "debug", "Initializing Scorecard with parameters.")
         self.params = in_params
         # import pandas
         try:
@@ -93,7 +94,7 @@ class SumStat:
             )
 
             if self.input_data.empty:
-                logger.warning('The input data is empty. The empty output file was created')
+                safe_log(logger, "warning", 'The input data is empty. The empty output file was created')
                 export_csv = self.input_data.to_csv(self.params['sum_stat_output'],
                                                     index=None, header=True, mode="w",
                                                     sep="\t")
@@ -101,10 +102,10 @@ class SumStat:
 
             self.column_names = self.input_data.columns.values
         except pd.errors.EmptyDataError:
-            logger.error('The input data is empty. The empty output file was created')
+            safe_log(logger, "error", 'The input data is empty. The empty output file was created')
             raise
         except KeyError as ex:
-            logger.error('Parameter with key %s is missing', ex)
+            safe_log(logger, "error", 'Parameter with key %s is missing', ex)
             raise
 
     STATISTIC_TO_FIELDS = {'ctc': {"total", "fy_oy", "fy_on", "fn_oy", "fn_on"},
@@ -127,7 +128,7 @@ class SumStat:
             Writes output data to the file
         """
         logger =self.logger
-        logger.debug("Calculating summary statistics.")
+        safe_log(logger, "debug", "Calculating summary statistics.")
         fields = []
         try:
             fields = self.STATISTIC_TO_FIELDS[self.params['line_type']]
@@ -145,7 +146,7 @@ class SumStat:
             # perform EE if needed
             is_event_equal = parse_bool(self.params['event_equal'])
             if is_event_equal:
-                self.input_data = perform_event_equalization(self.params, self.input_data)
+                self.input_data = perform_event_equalization(self.params, self.input_data, logger=logger)
 
             if not self.input_data.empty:
                 # perform aggregation on a special field - needed for scorecard
@@ -159,11 +160,11 @@ class SumStat:
                 # self.process_row, num_of_processes=mp.cpu_count())
                 print("--- %s seconds ---" % (time.time() - start_time))
             else:
-                logger.warning('Event equalisation removed all data. '
+                safe_log(logger, "warning", 'Event equalisation removed all data. '
                                 'The empty output file is created')
 
         except KeyError as ex:
-            logger.error('Parameter with key %s is missing. The empty output file is created', ex)
+            safe_log(logger, "error", 'Parameter with key %s is missing. The empty output file is created', ex)
 
         # remove the original fields to save the space
         for column in fields:
@@ -191,33 +192,33 @@ class SumStat:
         """
         warnings.filterwarnings('error')
         logger = self.logger
-        logger.debug("Aggregating special fields.")
+        safe_log(logger, "debug", "Aggregating special fields.")
 
         # check if indy_vals have a field that need to be aggregated - the field with ';'
         has_agg_indy_field = any(any(GROUP_SEPARATOR in i for i in item) for item in self.params['indy_vals'])
-        logger.debug(f"Independent variable field with ';' detected: {has_agg_indy_field}")
+        safe_log(logger, "debug", f"Independent variable field with ';' detected: {has_agg_indy_field}")
         # look if there is a field that need to be aggregated first - the field with ';'
         series_var_val = self.params['series_val_' + axis]
         has_agg_series_field = any(any(GROUP_SEPARATOR in i for i in item) for item in series_var_val)
-        logger.debug(f"Series variable field with ';' detected: {has_agg_series_field}")
+        safe_log(logger, "debug", f"Series variable field with ';' detected: {has_agg_series_field}")
         if series_var_val and (has_agg_indy_field or has_agg_series_field):
             # the special field was detected
-            logger.info("Special fields detected for aggregation. Starting aggregation process.")
+            safe_log(logger, "info", "Special fields detected for aggregation. Starting aggregation process.")
             all_points = list(itertools.product(*series_var_val.values()))
             aggregated_values = pd.DataFrame()
             series_vars = list(series_var_val.keys())
-            logger.debug(f"All points for aggregation: {all_points}")
+            safe_log(logger, "debug", f"All points for aggregation: {all_points}")
 
             for indy_val in self.params['indy_vals']:
                 # filter the input frame by each indy value
                 if indy_val is None:
                     filtered_by_indy = self.input_data
-                    logger.debug(f"Using all input data for indy_val: {indy_val}")
+                    safe_log(logger, "debug", f"Using all input data for indy_val: {indy_val}")
                 else:
                     # filter by value or split the value and filter by multiple values
                     filtered_by_indy = self.input_data[
                         self.input_data[self.params['indy_var']].isin(indy_val.split(';'))]
-                    logger.debug(f"Filtered data for indy_val {indy_val}. Rows remaining: {len(filtered_by_indy)}")
+                    safe_log(logger, "debug", f"Filtered data for indy_val {indy_val}. Rows remaining: {len(filtered_by_indy)}")
 
                 for point in all_points:
                     point_data = filtered_by_indy
@@ -228,7 +229,7 @@ class SumStat:
                             actual_series_vals = point[index].split(';')
                         else:
                             actual_series_vals = point[index].split(GROUP_SEPARATOR)
-                        logger.debug(f"Actual series values for {series_var}: {actual_series_vals}")
+                        safe_log(logger, "debug", f"Actual series values for {series_var}: {actual_series_vals}")
 
                         for ind, val in enumerate(actual_series_vals):
                             if is_string_integer(val):
@@ -237,12 +238,12 @@ class SumStat:
                                 actual_series_vals[ind] = float(val)
                         point_data = \
                             point_data[point_data[series_vars[index]].isin(actual_series_vals)]
-                        logger.debug(f"Filtered point data for series_var {series_var}. Rows remaining: {len(point_data)}")
+                        safe_log(logger, "debug", f"Filtered point data for series_var {series_var}. Rows remaining: {len(point_data)}")
 
 
                     # aggregate point data
                     if any(';' in series_val for series_val in point):
-                        logger.debug("Aggregating data based on series values.")
+                        safe_log(logger, "debug", "Aggregating data based on series values.")
                         point_data = aggregate_field_values(series_var_val,
                                                             point_data,
                                                             self.params['line_type'])
@@ -257,16 +258,16 @@ class SumStat:
                     aggregated_values = pd.concat([aggregated_values, point_data])
             self.input_data = aggregated_values
             self.input_data.reset_index(inplace=True, drop=True)
-            logger.info(f"Aggregation completed. Rows after aggregation: {len(self.input_data)}")
+            safe_log(logger, "info", f"Aggregation completed. Rows after aggregation: {len(self.input_data)}")
         else:
-            logger.debug("No special fields detected for aggregation.")
+            safe_log(logger, "debug", "No special fields detected for aggregation.")
 
 
     def process_rows(self):
         """For each row in the data frame finds the row statistic name,
             calculates it's value  and stores this value in the corresponding column
         """
-
+        logger = self.logger
         for index, row in self.input_data.iterrows():
             # statistic name
             stat = row['stat_name'].lower()
@@ -275,7 +276,7 @@ class SumStat:
             row_array = np.expand_dims(row.to_numpy(), axis=0)
 
             # calculate the stat value
-            stat_value = [calculate_statistic(row_array, self.column_names, stat)][0]
+            stat_value = [calculate_statistic(row_array, self.column_names, stat, logger=logger)][0]
 
             # save the value to the 'stat_value' column
             self.input_data.at[index, 'stat_value'] = stat_value
@@ -308,17 +309,17 @@ def calculate_statistic(values, columns_names, stat_name, aggregation=False):
             an error
         """
     logger = self.logger
-    logger.debug(f"Calculating statistic '{stat_name}' with aggregation: {aggregation}.")
+    safe_log(logger, "debug", f"Calculating statistic '{stat_name}' with aggregation: {aggregation}.")
     try:
         func_name = f'calculate_{stat_name}'
         num_parameters = len(signature(globals()[func_name]).parameters)
         if num_parameters == 2:
-            stat = globals()[func_name](values, columns_names)
+            stat = globals()[func_name](values, columns_names, logger=logger)
         else:
-            stat = globals()[func_name](values, columns_names, aggregation)
-        logger.info(f"Successfully calculated statistic '{stat_name}'.")
+            stat = globals()[func_name](values, columns_names, aggregation, logger=logger)
+        safe_log(logger, "info", f"Successfully calculated statistic '{stat_name}'.")
     except Exception as e:
-        logger.error(f"An error occurred while calculating statistic '{stat_name}': {e}", exc_info=True)
+        safe_log(logger, "error", f"An error occurred while calculating statistic '{stat_name}': {e}", exc_info=True)
         raise
     return stat
 

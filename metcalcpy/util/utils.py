@@ -32,7 +32,7 @@ from metcalcpy.util.correlation import corr, remove_none, acf
 from metcalcpy import GROUP_SEPARATOR, DATE_TIME_REGEX
 from metcalcpy.event_equalize import event_equalize
 from metcalcpy.util.wald_wolfowitz_runs_test import runs_test
-
+from metcalcpy.util.safe_log import safe_log
 
 OPERATION_TO_SIGN = {
     'DIFF': '-',
@@ -62,11 +62,11 @@ class DerivedCurveComponent:
     """ Holds components and the operation for a derived series
     """
 
-    def __init__(self, first_component, second_component, derived_operation):
+    def __init__(self, first_component, second_component, derived_operation, logger=None):
         self.first_component = first_component
         self.second_component = second_component
         self.derived_operation = derived_operation
-
+        self.logger = logger
 
 def represents_int(possible_int):
     """Checks if the value is integer.
@@ -136,7 +136,7 @@ def get_derived_curve_name(list_of_names):
     return f"{operation}({list_of_names[0]}{OPERATION_TO_SIGN[operation]}{list_of_names[1]})"
 
 
-def calc_derived_curve_value(val1, val2, operation):
+def calc_derived_curve_value(val1, val2, operation, logger=None):
     """Performs the operation with two numpy arrays.
         Operations can be
             'DIFF' - difference between elements of array 1 and 2
@@ -155,9 +155,11 @@ def calc_derived_curve_value(val1, val2, operation):
             or None if one of arrays is None or one of the elements
             is None or arrays have different size
        """
+    safe_log(logger, "debug", f"Starting operation {operation} with val1: {val1} and val2: {val2}")
 
     if val1 is None or val2 is None or None in val1 \
             or None in val2 or len(val1) != len(val2):
+        safe_log(logger, "warning", "Input values are invalid: None detected or lengths mismatch.")
         return None
 
     result_val = None
@@ -181,6 +183,7 @@ def calc_derived_curve_value(val1, val2, operation):
                                  corr_val,
                                  -0.001, 0.001
                                  )
+    safe_log(logger, "debug", f"Operation {operation} completed. Result: {result_val}")
     return result_val
 
 
@@ -276,7 +279,6 @@ def sum_column_data_by_name(input_data, columns, column_name, rm_none=True):
             calculated SUM as float
             or None if all of the data values are non
     """
-
     data_array = column_data_by_name(input_data, columns, column_name)
 
     if data_array is None or np.isnan(data_array).all():
@@ -377,7 +379,7 @@ def nrow_column_data_by_name_value(input_data, columns, filters):
     return input_data_filtered.shape[0]
 
 
-def perfect_score_adjustment(mean_stats_1, mean_stats_2, statistic, pval):
+def perfect_score_adjustment(mean_stats_1, mean_stats_2, statistic, pval, logger=None):
     """ Adjusts the perfect score depending on the statistic
 
         Args:
@@ -422,17 +424,21 @@ def perfect_score_adjustment(mean_stats_1, mean_stats_2, statistic, pval):
 
     if statistic.upper() in na_perf_score_stats:
         result = None
+        safe_log(logger, "debug", f"Statistic {statistic} falls under NA perfect score stats. Returning None.")
     elif statistic.upper() in zero_perf_score_stats \
             and abs(mean_stats_1) > abs(mean_stats_2):
         result = pval * -1
+        safe_log(logger, "debug", f"Statistic {statistic} falls under zero perfect score stats. Adjusted p-value: {result}")
     elif statistic.upper() in one_perf_score_stats \
             and abs(mean_stats_1 - 1) > abs(mean_stats_2 - 1):
         result = pval * -1
+        safe_log(logger, "debug", f"Statistic {statistic} falls under one perfect score stats. Adjusted p-value: {result}")
     else:
-        print(
-            f"WARNING: statistic {statistic} doesn't belong to any of the perfect score groups. Returning unprocessed p-value")
+        safe_log(logger, "warning",
+                 f"Statistic {statistic} doesn't belong to any of the perfect score groups. Returning unprocessed p-value.")
         result = pval
 
+    safe_log(logger, "debug", f"Final adjusted p-value for statistic {statistic}: {result}")
     return result
 
 
@@ -482,7 +488,7 @@ def get_total_dir_values(input_data, columns_names, aggregation):
         total = sum_column_data_by_name(input_data, columns_names, 'total_dir')
     return total
 
-def aggregate_field_values(series_var_val, input_data_frame, line_type):
+def aggregate_field_values(series_var_val, input_data_frame, line_type, logger=None):
     """Finds and aggregates statistics for fields with values containing ';'.
       Aggregation  happens by valid and lead times
         These fields are coming from the scorecard and looks like this: vx_mask : ['EAST;NMT'].
@@ -504,9 +510,11 @@ def aggregate_field_values(series_var_val, input_data_frame, line_type):
     unique_lead = input_data_frame.fcst_lead.unique()
 
     for series_var, series_vals in series_var_val.items():
+        safe_log(logger, "info", f"Processing series variable: {series_var}")
         for series_val in series_vals:
             if ';' in series_val:
                 # found the aggregated field
+                safe_log(logger, "debug", f"Found aggregated field: {series_val}")
                 single_values = series_val.split(';')
 
                 # for each valid
@@ -527,7 +535,7 @@ def aggregate_field_values(series_var_val, input_data_frame, line_type):
                             input_data_frame = input_data_frame.drop(index=rows_indexes)
 
                             aggregated_result = calc_series_sums(rows_for_agg, line_type)
-
+                            safe_log(logger, "debug", f"Aggregated result for {series_var}: {aggregated_result}")
                             # record the result as a first row in the old selection
                             for field in input_data_frame.columns:
                                 if field in aggregated_result.columns.values:
@@ -566,6 +574,7 @@ def aggregate_field_values(series_var_val, input_data_frame, line_type):
 
                         aggregated_result = calc_series_sums(rows_for_agg, line_type)
 
+                        safe_log(logger, "debug", f"Aggregated result for fcst_lead: {aggregated_result}")
                         # record the result as a first row in the old selection
                         for field in input_data_frame.columns:
                             if field in aggregated_result.columns.values:
@@ -587,11 +596,11 @@ def aggregate_field_values(series_var_val, input_data_frame, line_type):
 
                         # add it to the result
                         input_data_frame = pd.concat([input_data_frame,(rows_for_agg.iloc[:1])])
-
+    safe_log(logger, "debug", "Completed aggregation of field values.")
     return input_data_frame
 
 
-def calc_series_sums(input_df, line_type):
+def calc_series_sums(input_df, line_type, logger=None):
     """ Aggregates column values of the input data frame. Aggregation depends on the line type.
         Following line types are currently supported : ctc, sl1l2, sal1l2, vl1l2,
         val1l2, grad, nbrcnt, ecnt, rps
@@ -602,13 +611,16 @@ def calc_series_sums(input_df, line_type):
            Returns:
                Pandas DataFrame with aggregated values
        """
+
+    safe_log(logger, "debug", f"Starting aggregation for line type: {line_type}")
     # create an array from the dataframe
     sums_data_frame = pd.DataFrame()
 
     # calculate aggregated total value and add it to the result
     total = sum_column_data_by_name(input_df.to_numpy(), input_df.columns, 'total')
     sums_data_frame['total'] = [total]
-
+    safe_log(logger, "debug", f"Total calculated: {total}")
+    
     # proceed for the line type
     if line_type in ('ctc', 'nbrctc'):
         column_names = ['fy_oy', 'fy_on', 'fn_oy', 'fn_on']
@@ -621,6 +633,7 @@ def calc_series_sums(input_df, line_type):
         for column in column_names:
             sums_data_frame[column] = [np.nansum(input_df[column] * input_df.total.astype(float))
                                        / total]
+            safe_log(logger, "debug", f"Aggregated {column} for line type {line_type}")
 
     elif line_type == 'sal1l2':
         sums_data_frame['fbar'] = [np.nansum(input_df['fabar'] * input_df.total.astype(float))
@@ -633,6 +646,7 @@ def calc_series_sums(input_df, line_type):
                                     / total]
         sums_data_frame['oobar'] = [np.nansum(input_df['ooabar'] * input_df.total.astype(float))
                                     / total]
+        safe_log(logger, "debug", f"Aggregated all columns for line type sal1l2")
 
     elif line_type == 'vl1l2':
         column_names = ['ufbar', 'vfbar', 'uobar', 'vobar', 'uvfobar',
@@ -640,18 +654,21 @@ def calc_series_sums(input_df, line_type):
         for column in column_names:
             sums_data_frame[column] = [np.nansum(input_df[column] * input_df.total.astype(float))
                                        / total]
+            safe_log(logger, "debug", f"Aggregated {column} for line type {line_type}")
 
     elif line_type == 'val1l2':
         column_names = ['ufabar', 'vfabar', 'uoabar', 'voabar', 'uvfoabar', 'uvffabar', 'uvooabar']
         for column in column_names:
             sums_data_frame[column] = [np.nansum(input_df[column] * input_df.total.astype(float))
                                        / total]
+            safe_log(logger, "debug", f"Aggregated {column} for line type {line_type}")
 
     elif line_type == 'grad':
         column_names = ['fgbar', 'ogbar', 'mgbar', 'egbar']
         for column in column_names:
             sums_data_frame[column] = [np.nansum(input_df[column] * input_df.total.astype(float))
                                        / total]
+            safe_log(logger, "debug", f"Aggregated {column} for line type {line_type}")
 
     elif line_type == 'nbrcnt':
         dbl_fbs = np.nansum(input_df['fbs'] * input_df.total.astype(float)) / total
@@ -671,6 +688,7 @@ def calc_series_sums(input_df, line_type):
         sums_data_frame['ufss'] = [dbl_u_fss]
         sums_data_frame['f_rate'] = [dbl_f_rate]
         sums_data_frame['o_rate'] = [dbl_o_rate]
+        safe_log(logger, "debug", f"Aggregated all columns for line type nbrcnt")
 
     elif line_type == 'ecnt':
         mse = input_df['rmse'] * input_df['rmse']
@@ -684,6 +702,8 @@ def calc_series_sums(input_df, line_type):
         for column in column_names:
             sums_data_frame[column] = [np.nansum(input_df[column] * input_df.total.astype(float))
                                        / total]
+            safe_log(logger, "debug", f"Aggregated {column} for line type ecnt")
+
     elif line_type == 'rps':
         d_rps_climo = input_df['rps'] / (1 - input_df['rpss'])
         sums_data_frame['rps'] = [np.nansum(input_df["rps"] * input_df.total.astype(float))
@@ -692,11 +712,12 @@ def calc_series_sums(input_df, line_type):
                                        / total]
         sums_data_frame['rps_climo'] = [np.nansum(d_rps_climo * input_df.total.astype(float))
                                         / total]
+        safe_log(logger, "debug", f"Aggregated all columns for line type rps")
 
     return sums_data_frame
 
 
-def equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axis='1'):
+def equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axis='1', logger=None):
     """ Performs event equalisation on the specified axis on input data.
         Args:
             fix_vals_permuted - fixed values
@@ -708,6 +729,8 @@ def equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axi
     output_ee_data = pd.DataFrame()
 
     # for each statistic for the specified axis
+
+    safe_log(logger, "debug", f"Starting event equalization for axis: {axis}")
 
     if 'fcst_var_val_' + axis in params:
         fcst_var_val = params['fcst_var_val_' + axis]
@@ -724,6 +747,7 @@ def equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axi
         # requested statistics but instead should do it only ones to avoid data multiplication
         if 'stat_name' not in input_data.keys():
             fcst_var_stats_current = [fcst_var_stats[0]]
+        safe_log(logger, "debug", f"Processing forecast variable: {fcst_var} with stats: {fcst_var_stats_current}")
 
         for fcst_var_stat in fcst_var_stats_current:
             # for each series for the specified axis
@@ -749,7 +773,7 @@ def equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axi
                         series_data_for_ee = series_data_for_ee[series_data_for_ee['fcst_var'] == fcst_var]
                     if 'stat_name' in input_data.keys():
                         series_data_for_ee = series_data_for_ee[series_data_for_ee["stat_name"] == fcst_var_stat]
-
+            safe_log(logger, "debug", f"Filtered data for forecast variable: {fcst_var} and statistic: {fcst_var_stat}")
             # perform EE on filtered data
             # for SSVAR line_type use equalization of multiple events
             series_data_after_ee = \
@@ -765,6 +789,7 @@ def equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axi
             else:
                 warnings.simplefilter(action="error", category=FutureWarning)
                 output_ee_data = pd.concat([output_ee_data, series_data_after_ee])
+            safe_log(logger, "debug", f"Appended equalized data for forecast variable: {fcst_var}")
 
     try:
         output_ee_data_valid = output_ee_data.drop('equalize', axis=1)
@@ -772,19 +797,21 @@ def equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axi
         # It is possible to produce an empty data frame after applying event equalization. Print an informational
         # message before returning the data frame.
         if output_ee_data_valid.empty:
+            safe_log(logger, "warning", "Event equalization produced no results. Data frame is empty.")
             print(f"\nINFO: Event equalization has produced no results.  Data frame is empty.")
 
         return output_ee_data_valid
-    except (KeyError, AttributeError):
+    except (KeyError, AttributeError) as e:
         # Two possible exceptions are raised when the data frame is empty *and* is missing the 'equalize' column
         # following event equalization. Return the empty dataframe
         # without dropping the 'equalize' column, and print an informational message.
         print(f"\nINFO: No resulting data after performing event equalization of axis", axis)
+        safe_log(logger, "warning", f"No resulting data after performing event equalization on axis {axis}: {e}")
 
     return output_ee_data
 
 
-def perform_event_equalization(params, input_data):
+def perform_event_equalization(params, input_data, logger=None):
     """ Performs event equalisation on input data. If there ara 2 axis:
         perform EE on each and then on both
         Args:
@@ -794,10 +821,12 @@ def perform_event_equalization(params, input_data):
             DataFrame with equalised data
     """
 
+    safe_log(logger, "debug", "Starting event equalization process.")
     # list all fixed variables
     fix_vals_permuted_list = []
     fix_vals_keys = []
     if 'fixed_vars_vals_input' in params:
+        safe_log(logger, "debug", "Processing fixed variables for equalization.")
         for key in params['fixed_vars_vals_input']:
             if type(params['fixed_vars_vals_input'][key]) is dict:
                 list_for_permut = params['fixed_vars_vals_input'][key].values()
@@ -809,7 +838,8 @@ def perform_event_equalization(params, input_data):
 
         fix_vals_keys = list(params['fixed_vars_vals_input'].keys())
 
-    # perform EE for each forecast variable on the axis 1
+    # perform EE for each forecast variable on the axis 
+    safe_log(logger, "debug", "Performing event equalization on axis 1.")
     output_ee_data = \
         equalize_axis_data(fix_vals_keys, fix_vals_permuted_list, params, input_data, axis='1')
 
@@ -828,6 +858,7 @@ def perform_event_equalization(params, input_data):
         for key in all_series:
             all_series[key] = list(set(all_series[key]))
 
+        safe_log(logger, "debug", "Performing combined event equalization on Y1 and Y2.")
         # run EE on run event equalizer on Y1 and Y2
         output_ee_data = event_equalize(None, all_ee_records, params['indy_var'],
                                         all_series,
@@ -837,6 +868,7 @@ def perform_event_equalization(params, input_data):
 
         output_ee_data = output_ee_data.drop('equalize', axis=1)
 
+    safe_log(logger, "debug", "Event equalization process completed.")
     return output_ee_data
 
 
@@ -1175,7 +1207,7 @@ def qt(p, df, ncp=0):
 
 
 def tost_paired(n: int, m1: float, m2: float, sd1: float, sd2: float, r12: float, low_eqbound_dz: float,
-                high_eqbound_dz: float, alpha: float = None) -> dict:
+                high_eqbound_dz: float, alpha: float = None, logger=None) -> dict:
     """
     TOST function for a dependent t-test (Cohen's dz). Based on Rscript function TOSTpaired
 
@@ -1208,21 +1240,27 @@ def tost_paired(n: int, m1: float, m2: float, sd1: float, sd2: float, r12: float
     if not alpha:
         alpha = 0.05
     if low_eqbound_dz >= high_eqbound_dz:
+        safe_log(logger, "warning", 
+                 "The lower bound is equal to or larger than the upper bound. Check the bounds specification.")
         print(
             'WARNING: The lower bound is equal to or larger than the upper bound.'
             ' Check the plot and output to see if the bounds are specified as you intended.')
 
     if n < 2:
+        safe_log(logger, "error", "The sample size should be larger than 1.")
         print("The sample size should be larger than 1.")
         sys.exit()
 
     if 1 <= alpha or alpha <= 0:
+        safe_log(logger, "error", "The alpha level should be a positive value between 0 and 1.")
         print("The alpha level should be a positive value between 0 and 1.")
         sys.exit()
     if sd1 <= 0 or sd2 <= 0:
+        safe_log(logger, "error", "The standard deviation should be a positive value.")
         print("The standard deviation should be a positive value.")
         sys.exit()
     if 1 < r12 or r12 < -1:
+        safe_log(logger, "error", "The correlation should be a value between -1 and 1.")
         print("The correlation should be a value between -1 and 1.")
         sys.exit()
 
@@ -1241,6 +1279,7 @@ def tost_paired(n: int, m1: float, m2: float, sd1: float, sd2: float, r12: float
         p2 = pt(t2, degree_f, lower_tail=True)
         ptost = max(p1, p2)
     else:
+        safe_log(logger, "warning", "Standard error is zero; cannot compute TOST statistics.")
         pttest = None
         t1 = None
         p1 = None
@@ -1289,7 +1328,7 @@ def tost_paired(n: int, m1: float, m2: float, sd1: float, sd2: float, r12: float
         t = (None, None)
         p = (None, None)
 
-    return {
+    result = {
         'dif': round_half_up(dif, PRECISION),
         't': t,
         'p': p,
@@ -1302,9 +1341,11 @@ def tost_paired(n: int, m1: float, m2: float, sd1: float, sd2: float, r12: float
         'test_outcome': test_outcome,
         'tost_outcome': tost_outcome
     }
+    safe_log(logger, "debug", f"TOST paired calculation completed. Result: {result}")
+    return result
 
 
-def calculate_mtd_revision_stats(series_data: DataFrame, lag_max: Union[int, None] = None) -> dict:
+def calculate_mtd_revision_stats(series_data: DataFrame, lag_max: Union[int, None] = None, logger=None) -> dict:
     """
     Calculates Mode-TD revision stats
     :param series_data - DataFrame with columns 'stat_value' and 'revision_id'
@@ -1319,14 +1360,18 @@ def calculate_mtd_revision_stats(series_data: DataFrame, lag_max: Union[int, Non
             auto_cor_p - p-value of autocorrelation
             auto_cor_r - estimated  autocorrelation for lag_max
     """
+    safe_log(logger, "debug", "Starting calculation of Mode-TD revision stats.")
+
     result = {
         'ww_run': None,
         'auto_cor_p': None,
         'auto_cor_r': None
     }
     if len(series_data) == 0:
+        safe_log(logger, "warning", "Input series_data is empty. Returning default result.")
         return result
     if not {'stat_value', 'revision_id'}.issubset(series_data.columns):
+        safe_log(logger, "error", "DataFrame doesn't have correct columns. Expected 'stat_value' and 'revision_id'.")
         print("DataFrame doesn't have correct columns")
         return result
 
@@ -1353,13 +1398,16 @@ def calculate_mtd_revision_stats(series_data: DataFrame, lag_max: Union[int, Non
     acf_value = acf(data_for_stats, 'correlation', lag_max)
     if acf_value is not None:
         result['auto_cor_r'] = round(acf_value[-1], 2)
+        safe_log(logger, "debug", f"Calculated autocorrelation: {result['auto_cor_r']}")
 
     # qnorm((1 + 0.05)/2) = 0.06270678
     result['auto_cor_p'] = round(0.06270678 / math.sqrt(np.size(data_for_stats)), 2)
+    safe_log(logger, "debug", f"Calculated p-value for autocorrelation: {result['auto_cor_p']}")
 
     p_value = runs_test(data_for_stats, 'left.sided', 'median')['p_value']
     if p_value is not None:
         result['ww_run'] = round(p_value, 2)
+        safe_log(logger, "debug", f"Calculated Wald-Wolfowitz runs test p-value: {result['ww_run']}")
 
     return result
 
@@ -1419,7 +1467,7 @@ def autocor_coef(data: list) -> Union[None, float]:
     return sx * sy / (sx - (n - 1) * sxx) + sxy / (sxx - sx * sx / (n - 1))
 
 
-def get_met_version(input_data:Union[pd.DataFrame, np.array], column_names:list=None) -> str:
+def get_met_version(input_data:Union[pd.DataFrame, np.array], column_names:list=None, logger=None) -> str:
     """
         Determines the version of MET for this data
         Args:
@@ -1432,8 +1480,10 @@ def get_met_version(input_data:Union[pd.DataFrame, np.array], column_names:list=
                version: a dataclass containing the major, minor, and bugfix values of the version
     """
 
+    safe_log(logger, "debug", "Starting to determine MET version.")
     if isinstance(input_data, np.ndarray):
         if column_names is None:
+            safe_log(logger, "error", "numpy array input requires a list of column names.")
             raise ValueError("numpy array input requires a list of column names.")
         else:
             lc_column_names = [cur_col.lower() for cur_col in column_names]
@@ -1444,12 +1494,15 @@ def get_met_version(input_data:Union[pd.DataFrame, np.array], column_names:list=
         cols = df.columns.to_list()
         lc_cols = [cur_col.lower() for cur_col in cols]
         df.columns = lc_cols
+        safe_log(logger, "debug", "Converted DataFrame column names to lowercase.")
     else:
+        safe_log(logger, "error", "Input data must be either a numpy array or pandas dataframe.")
         raise ValueError("input data must be either a numpy array or pandas dataframe")
 
     # Get the version from the data (the first row)
     versions = df['version'].to_list()
     full_version = versions[0]
+    safe_log(logger, "debug", f"Extracted full version string: {full_version}")
 
     # Use an immutable (frozen=True) dataclass to hold the major,
     # minor, and bugfix values that make up the version number.
@@ -1469,7 +1522,8 @@ def get_met_version(input_data:Union[pd.DataFrame, np.array], column_names:list=
             bugfix = 0
 
     version = Version(major, minor, bugfix)
-
+    safe_log(logger, "debug", f"Created version dataclass: {version}")
+    
     return version
 
 

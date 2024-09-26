@@ -41,7 +41,7 @@ import yaml
 
 from metcalcpy.compare_images import CompareImages
 from metcalcpy.logging_config import setup_logging
-
+from metcalcpy.util.safe_log import safe_log
 
 def replace_name(old_name, postfix):
     """Adds postfix to the end of a file name but before the extension
@@ -85,16 +85,16 @@ def main(params):
     """
     # remove old output
     logger = setup_logging(params)
-    logger.info("Cleaning old outputs.")
+    safe_log(logger, "info", "Cleaning old outputs.")
     clean(params)
 
     # find XML files
     test_xml = get_test_xml(params)
-    logger.info(f"Found {len(test_xml)} XML files to process.")
+    safe_log(logger, "info", f"Found {len(test_xml)} XML files to process.")
 
     # rerun each XML with Python
     for file in test_xml:
-        logger.info(f'Checking {file}')
+        safe_log(logger, "info", f'Checking {file}')
         print(f'\nChecking {file}')
         doc = xml.dom.minidom.parse(file)
 
@@ -121,7 +121,7 @@ def main(params):
         new_xml_file = params['output_xml_dir'] + os.path.basename(replace_name(file, 'py'))
         with open(new_xml_file, "w") as xml_file:
             doc.writexml(xml_file)
-        logger.info(f"New XML saved: {new_xml_file}")
+        safe_log(logger, "info", f"New XML saved: {new_xml_file}")
 
         # run METviewer with the new XML and wait till it is done
         process = subprocess.Popen([params['mv_home'] + '/bin/mv_batch.sh', new_xml_file],
@@ -137,7 +137,7 @@ def main(params):
         if not os.path.exists(original_plot_path) \
                 and not os.path.exists(new_image_path):
             # if both images don't exist - success
-            logger.info(f'SUCCESS: For {plot_name} both images do not exist.')
+            safe_log(logger, "info", f'SUCCESS: For {plot_name} both images do not exist.')
             print(f'SUCCESS: For {plot_name} both images don\'t exist')
             # remove new XML
             os.remove(new_xml_file)
@@ -152,7 +152,7 @@ def main(params):
                 compare = CompareImages(original_plot_path, new_image_path)
                 ssim = compare.get_mssim()
                 if ssim == 1.0:
-                    logger.info(f'SUCCESS: For {plot_name} images are identical.')
+                    safe_log(logger, "info", f'SUCCESS: For {plot_name} images are identical.')
                     print(f'SUCCESS: For {plot_name} images are identical')
                     # remove new image
                     os.remove(new_image_path)
@@ -164,14 +164,14 @@ def main(params):
                     delete_similar_files(params['output_data_dir'], plot_name)
 
                 else:
-                    logger.error(f'ERROR: For {plot_name} images are different.')
+                    safe_log(logger, "error", f'ERROR: For {plot_name} images are different.')
                     print(f'ERROR: For {plot_name} images are different')
                     # add more diagnostic images
                     compare.save_thresh_image(params['output_plots_dir']
                                               + replace_name(plot_name, 'thresh'))
 
             except KeyError as err:
-                logger.error(f'ERROR: For {plot_name} : {err}', exc_info=True)
+                safe_log(logger, "error", f'ERROR: For {plot_name} : {err}', exc_info=True)
                 print(f'ERROR: For {plot_name} : {err}')
 
 

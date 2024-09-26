@@ -22,22 +22,10 @@ import pandas as pd
 
 from metcalcpy import GROUP_SEPARATOR, DATE_TIME_REGEX
 from metcalcpy.logging_config import setup_logging
+from metcalcpy.util.safe_log import safe_log
 
-def safe_log(logger, log_level, message):
-    """
-    Safely logs a message using the provided logger and log level.
-    
-    Args:
-        logger (logging.Logger): The logger object. If None, the message will not be logged.
-        log_level (str): The logging level to use (e.g., "info", "debug").
-        message (str): The message to log.
-    """
-    if logger:
-        log_method = getattr(logger, log_level, None)
-        if callable(log_method):
-            log_method(message)
 
-def event_equalize(logger, series_data, indy_var, series_var_vals, fix_vars, fix_vals_permuted, equalize_by_indep, multi):
+def event_equalize(series_data, indy_var, series_var_vals, fix_vars, fix_vals_permuted, equalize_by_indep, multi, logger=None):
     """Performs event equalisation.
 
     event_equalize assumes that the input series_data contains data indexed by fcst_valid_beg,

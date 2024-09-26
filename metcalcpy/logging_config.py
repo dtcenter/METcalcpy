@@ -49,7 +49,8 @@ def setup_logging(config_params):
     # Set log filename, incorporating the log directory path from the config
     log_filename = config_params.get('log_filename')  # No default here, expect it from YAML
     if not log_filename:
-        log_filename = 'application.log'  # Set default only if not provided
+        #log_filename = 'application.log'  # Set default only if not provided
+        return None
     log_file = os.path.join(log_dir, log_filename)
 
     # Set log level from YAML or use default; convert to appropriate logging level

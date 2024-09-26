@@ -15,6 +15,7 @@ Piecewise linear function class.
 """
 
 import numpy as np
+from metcalcpy.util.safe_log import safe_log
 
 __author__ = 'Bill Campbell (NRL)'
 __version__ = '0.1.0'
@@ -35,21 +36,21 @@ class PiecewiseLinear():
     Xdomain is a numpy array of knot locations. Yrange is a numpy array.
     """
 
-    def __init__(self, logger, x_domain, y_range, xunits='feet',
-                 left=np.nan, right=np.nan, name=""):
+    def __init__(self, x_domain, y_range, xunits='feet',
+                 left=np.nan, right=np.nan, name="", logger=None):
 
         self.logger = logger
         len_x = len(x_domain)
         if len_x < 2:
-            logger.error('Length of x_domain must be at least 2.')
+            safe_log(logger, "error", f'X_domain (in {xunits})')
             raise IncompatibleLengths('Length of xdomain must be at least 2.')
         if np.any(np.diff(x_domain)) < 0:
-            logger.error(f"X_domain (in {xunits}) is {x_domain}")
+            safe_log(logger, "error", f'X_domain (in {}) is {}".format(xunits, x_domain)')
             print("X_domain (in {}) is {}".format(xunits, x_domain))
             raise UnsortedArray('Xdomain must be sorted in ascending order.')
         len_y = len(y_range)
         if len_x != len_y:
-            self.logger.error("X_domain and Y_range must have the same length.")
+            safe_log(logger, "error", "X_domain and Y_range must have the same length.")
             raise IncompatibleLengths('X_domain and Y_range must have same ' +
                                       'length.\n Use left and right to set ' +
                                       'value for points outside the x_domain\n')

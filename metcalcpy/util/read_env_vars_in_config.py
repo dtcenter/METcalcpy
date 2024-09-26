@@ -11,9 +11,9 @@
 import os
 import re
 import yaml
+from metcalcpy.util.safe_log import safe_log
 
-
-def parse_config(path=None, data=None, tag='!ENV'):
+def parse_config(path=None, data=None, tag='!ENV',logger=None):
     """
     Load a yaml configuration file and resolve any environment variables
     The environment variables must have !ENV before them and be in this format
@@ -48,6 +48,7 @@ def parse_config(path=None, data=None, tag='!ENV'):
         variable
         """
         value = loader.construct_scalar(node)
+        safe_log(logger, "debug", f"Processing value: {value}")
         match = pattern.findall(value)  # to find all env variables in line
         if match:
             full_value = value
@@ -55,15 +56,20 @@ def parse_config(path=None, data=None, tag='!ENV'):
                 full_value = full_value.replace(
                     f'${{{g}}}', os.environ.get(g, g)
                 )
+                safe_log(logger, "debug", f"Replaced {g} with {full_value}")
             return full_value
         return value
 
     loader.add_constructor(tag, constructor_env_variables)
 
     if path:
+        safe_log(logger, "debug", f"Loading YAML configuration from path: {path}")
         with open(path) as conf_data:
             return yaml.load(conf_data, Loader=loader)
     elif data:
+        safe_log(logger, "debug", "Loading YAML configuration from provided data stream.")
         return yaml.load(data, Loader=loader)
     else:
         raise ValueError('Either a path or data should be defined as input')
+
+    safe_log(logger, "debug", "YAML configuration loaded and processed successfully.")

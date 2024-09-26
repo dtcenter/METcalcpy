@@ -48,6 +48,7 @@ from datetime import datetime
 import numpy as np
 import xarray as xr  # http://xarray.pydata.org/
 import netCDF4 as nc
+from metcalcpy.util.safe_log import safe_log
 
 """
 Import Pint and MetPy modules

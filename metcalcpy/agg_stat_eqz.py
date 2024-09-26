@@ -42,6 +42,7 @@ from metcalcpy import GROUP_SEPARATOR
 from metcalcpy.event_equalize_against_values import event_equalize_against_values
 from metcalcpy.util.utils import parse_bool
 from metcalcpy.logging_config import setup_logging
+from metcalcpy.util.safe_log import safe_log
 
 class AggStatEventEqz:
     """A class that performs event equalisation logic on input data
@@ -60,7 +61,7 @@ class AggStatEventEqz:
     def __init__(self, in_params):
         self.logger = setup_logging(in_params)
         logger = self.logger
-        logger.debug("Initializing AggStatEventEqz with parameters.")
+        safe_log(logger, "debug", "Initializing AggStatEventEqz with parameters.")
         self.params = in_params
 
         self.input_data = pd.read_csv(
@@ -77,40 +78,40 @@ class AggStatEventEqz:
         """
         logger = self.logger
         is_event_equal = parse_bool(self.params['event_equal'])
-        logger.debug(f"Event equalization flag is set to: {is_event_equal}")
+        safe_log(logger, "debug", f"Event equalization flag is set to: {is_event_equal}")
 
         # check if EE is needed
         if not self.input_data.empty and is_event_equal:
-            logger.info("Event equalization is required. Starting EE process.")
+            safe_log(logger, "info", "Event equalization is required. Starting EE process.")
             try:
-                logger.debug(f"Reading previous cases from: {self.params['agg_stat_input_ee']}")
+                safe_log(logger, "debug", f"Reading previous cases from: {self.params['agg_stat_input_ee']}")
                 prev_cases = pd.read_csv(
                     self.params['agg_stat_input_ee'],
                     header=[0],
                     sep='\t'
                 )
-                logger.debug(f"Successfully read previous cases. Number of records: {len(prev_cases)}")
+                safe_log(logger, "debug", f"Successfully read previous cases. Number of records: {len(prev_cases)}")
             except FileNotFoundError as e:
-                logger.error(f"File not found: {self.params['agg_stat_input_ee']}", exc_info=True)
+                safe_log(logger, "error", f"File not found: {self.params['agg_stat_input_ee']}", exc_info=True)
                 raise
             except Exception as e:
-                logger.error(f"Error reading previous cases: {self.params['agg_stat_input_ee']}", exc_info=True)
+                safe_log(logger, "error", f"Error reading previous cases: {self.params['agg_stat_input_ee']}", exc_info=True)
                 raise
 
             # perform for axis 1
-            logger.info("Performing event equalization for axis 1.")
+            safe_log(logger, "info", "Performing event equalization for axis 1.")
             output_ee_data = self.perform_ee_on_axis(prev_cases, '1')
-            logger.debug("Event equalization for axis 1 completed.")
+            safe_log(logger, "debug", "Event equalization for axis 1 completed.")
 
             # perform for axis 2
             if self.params['series_val_2']:
-                logger.info("Series values for axis 2 detected. Performing event equalization for axis 2.")
+                safe_log(logger, "info", "Series values for axis 2 detected. Performing event equalization for axis 2.")
                 output_ee_data = pd.concat([output_ee_data, self.perform_ee_on_axis(prev_cases, '2')])
-                logger.debug("Event equalization for axis 2 completed.")
+                safe_log(logger, "debug", "Event equalization for axis 2 completed.")
         else:
             output_ee_data = self.input_data
             if self.input_data.empty:
-                logger.warning(
+                safe_log(logger, "warning", 
                     'Event equalisation was not performed because the input data is empty.'
                 )
 
@@ -118,7 +119,7 @@ class AggStatEventEqz:
                               index=None, header=True, mode='w',
                               sep="\t", na_rep="NA")
         output_file = self.params['agg_stat_output']
-        logger.info(f"Data successfully saved to {output_file}.")
+        safe_log(logger, "info", f"Data successfully saved to {output_file}.")
 
     def perform_ee_on_axis(self, prev_cases, axis='1'):
         """Performs event equalisation against previously calculated cases for the selected axis
@@ -127,23 +128,23 @@ class AggStatEventEqz:
         """
         warnings.filterwarnings('error')
         logger = self.logger
-        logger.debug(f"Performing event equalization for axis {axis}.")
+        safe_log(logger, "debug", f"Performing event equalization for axis {axis}.")
 
         output_ee_data = pd.DataFrame()
         for fcst_var, fcst_var_stats in self.params['fcst_var_val_' + axis].items():
-            logger.debug(f"Processing forecast variable: {fcst_var}")
+            safe_log(logger, "debug", f"Processing forecast variable: {fcst_var}")
 
             for series_var, series_var_vals in self.params['series_val_' + axis].items():
-                logger.debug(f"Processing series variable: {series_var}")
+                safe_log(logger, "debug", f"Processing series variable: {series_var}")
                 # remove group separator from series values
                 series_var_vals_no_group = []
                 for val in series_var_vals:
                     split_val = val.split(GROUP_SEPARATOR)
                     series_var_vals_no_group.extend(split_val)
-                logger.debug(f"Series variable values (no group): {series_var_vals_no_group}")
+                safe_log(logger, "debug", f"Series variable values (no group): {series_var_vals_no_group}")
 
                 # filter input data based on fcst_var, statistic and all series variables values
-                logger.debug("Filtering input data for event equalization.")
+                safe_log(logger, "debug", "Filtering input data for event equalization.")
                 series_data_for_ee = self.input_data[
                     (self.input_data['fcst_var'] == fcst_var)
                     & (self.input_data[series_var].isin(series_var_vals_no_group))
@@ -154,28 +155,28 @@ class AggStatEventEqz:
                     (prev_cases['fcst_var'] == fcst_var)
                     & (prev_cases[series_var].isin(series_var_vals_no_group))
                     ]
-                logger.debug(f"Number of records after filtering input data: {len(series_data_for_ee)}")
+                safe_log(logger, "debug", f"Number of records after filtering input data: {len(series_data_for_ee)}")
                 # get unique cases from filtered previous cases
-                logger.debug("Filtering previous cases for event equalization.")
+                safe_log(logger, "debug", "Filtering previous cases for event equalization.")
                 series_data_for_prev_cases_unique = series_data_for_prev_cases['equalize'].unique()
-                logger.debug(f"Unique previous cases for event equalization: {len(series_data_for_prev_cases_unique)}")
+                safe_log(logger, "debug", f"Unique previous cases for event equalization: {len(series_data_for_prev_cases_unique)}")
 
                 # perform ee
-                logger.info("Performing event equalization against previous cases.")
+                safe_log(logger, "info", "Performing event equalization against previous cases.")
                 series_data_after_ee = event_equalize_against_values(
                     series_data_for_ee,
-                    series_data_for_prev_cases_unique, logger)
-                logger.debug(f"Number of records after event equalization: {len(series_data_after_ee)}")
+                    series_data_for_prev_cases_unique, logger=logger)
+                safe_log(logger, "debug", f"Number of records after event equalization: {len(series_data_after_ee)}")
 
                 # append EE data to result
                 if output_ee_data.empty:
                     output_ee_data = series_data_after_ee
-                    logger.debug("Initialized output data with first set of event equalized data.")
+                    safe_log(logger, "debug", "Initialized output data with first set of event equalized data.")
                 else:
                     output_ee_data = pd.concat([output_ee_data, series_data_after_ee])
-                    logger.debug("Appended event equalized data to the output.")
+                    safe_log(logger, "debug", "Appended event equalized data to the output.")
 
-        logger.info(f"Event equalization for axis {axis} completed. Total records: {len(output_ee_data)}")
+        safe_log(logger, "info", f"Event equalization for axis {axis} completed. Total records: {len(output_ee_data)}")
         return output_ee_data
 
 

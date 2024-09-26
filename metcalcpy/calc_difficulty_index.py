@@ -21,6 +21,7 @@ definite quantities such as wind speed and wave height.
 
 import numpy as np
 from metcalcpy.piecewise_linear import PiecewiseLinear as plin
+from metcalcpy.util.safe_log import safe_log
 
 __author__ = 'Bill Campbell (NRL) and Lindsay Blank (NCAR)'
 __version__ = '0.1.0'
@@ -31,21 +32,8 @@ EPS = np.finfo(np.float32).eps
 # Only allow 2D fields for now
 FIELD_DIM = 2
 
-def safe_log(logger, log_level, message):
-    """
-    Safely logs a message using the provided logger and log level.
-    
-    Args:
-        logger (logging.Logger): The logger object. If None, the message will not be logged.
-        log_level (str): The logging level to use (e.g., "info", "debug").
-        message (str): The message to log.
-    """
-    if logger:
-        log_method = getattr(logger, log_level, None)
-        if callable(log_method):
-            log_method(message)
 
-def _input_check(logger, sigmaij, muij, threshold, fieldijn, sigma_over_mu_ref, under_factor):
+def _input_check(sigmaij, muij, threshold, fieldijn, sigma_over_mu_ref, under_factor, logger=None):
     """
     Check for valid input to _difficulty_index.
 
@@ -95,7 +83,7 @@ def _input_check(logger, sigmaij, muij, threshold, fieldijn, sigma_over_mu_ref, 
     assert 0.0 <= under_factor <= 1.0
     safe_log(logger, "debug", "under_factor is valid and within range.")
 
-def _difficulty_index(logger, sigmaij, muij, threshold, fieldijn, Aplin, sigma_over_mu_ref=EPS, under_factor=0.5):
+def _difficulty_index(sigmaij, muij, threshold, fieldijn, Aplin, sigma_over_mu_ref=EPS, under_factor=0.5, logger=None):
     """
     Calculates version 6.1 of forecast difficulty index.
     The threshold terms all penalize equal (or slightly unequal) spread.
@@ -126,7 +114,7 @@ def _difficulty_index(logger, sigmaij, muij, threshold, fieldijn, Aplin, sigma_o
 
     """
     # Check for valid input
-    _input_check(logger, sigmaij, muij, threshold, fieldijn, sigma_over_mu_ref, under_factor)
+    _input_check(sigmaij, muij, threshold, fieldijn, sigma_over_mu_ref, under_factor, logger=logger)
     safe_log(logger, "debug", "Input check passed successfully.")
     # Variance term in range 0 to 1
     safe_log(logger, "debug", "Calculating variance term.")
@@ -160,8 +148,8 @@ def _difficulty_index(logger, sigmaij, muij, threshold, fieldijn, Aplin, sigma_o
     return dij
 
 
-def forecast_difficulty(logger, sigmaij, muij, threshold, fieldijn,
-                        Aplin, sigma_over_mu_ref=EPS):
+def forecast_difficulty(sigmaij, muij, threshold, fieldijn,
+                        Aplin, sigma_over_mu_ref=EPS, logger=None):
     """
     Calls private function _difficulty_index, 
     to calculate version (v6.1) of forecast difficulty index.
@@ -206,8 +194,8 @@ def forecast_difficulty(logger, sigmaij, muij, threshold, fieldijn,
                         name=A6_1_name)
         safe_log(logger, "debug", "Default Aplin object created.")
     safe_log(logger, "debug", "Calling _difficulty_index function.")                                                                  
-    dij = _difficulty_index(logger, sigmaij, muij, threshold, fieldijn,
-                       Aplin, sigma_over_mu_ref)
+    dij = _difficulty_index(sigmaij, muij, threshold, fieldijn,
+                       Aplin, sigma_over_mu_ref, logger=logger)
     safe_log(logger, "info", "Forecast difficulty index calculation completed.")
     return dij
 

@@ -9,7 +9,7 @@ import os
 import numpy as np
 
 
-def write_mpr_file(data_fcst,data_obs,lats_in,lons_in,fcst_lead,fcst_valid,obs_lead,obs_valid,mod_name,desc,fcst_var,fcst_unit,fcst_lev,obs_var,obs_unit,obs_lev,maskname,obsslev,outdir,outfile_prefix):
+def write_mpr_file(data_fcst,data_obs,lats_in,lons_in,fcst_lead,fcst_valid,obs_lead,obs_valid,mod_name,desc,fcst_var,fcst_unit,fcst_lev,obs_var,obs_unit,obs_lev,maskname,obsslev,outdir,outfile_prefix, logger=None):
 
     """
     Function to write an output mpr file given a 1d array of observation and forecast data
@@ -62,6 +62,7 @@ def write_mpr_file(data_fcst,data_obs,lats_in,lons_in,fcst_lead,fcst_valid,obs_l
     """
     Get the data length to create the INDEX and TOTAL variables in the MPR line
     """
+    safe_log(logger, "info", "Starting to write MPR file.")
     dlength = len(data_obs)
     index_num = np.arange(0,dlength,1)+1
 
@@ -93,6 +94,7 @@ def write_mpr_file(data_fcst,data_obs,lats_in,lons_in,fcst_lead,fcst_valid,obs_l
     Create the output directory if it doesn't exist
     """
     if not os.path.exists(outdir):
+        safe_log(logger, "info", f"Created output directory: {outdir}")
         os.makedirs(outdir)
 
     """
@@ -101,6 +103,8 @@ def write_mpr_file(data_fcst,data_obs,lats_in,lons_in,fcst_lead,fcst_valid,obs_l
     fcst_valid_str = fcst_valid[0]
     ft_stamp = fcst_lead[0]+'L_'+fcst_valid_str[0:8]+'_'+fcst_valid_str[9:15]+'V'
     full_outfile = os.path.join(outdir,outfile_prefix+'_'+ft_stamp+'.stat')
+
+    safe_log(logger, "info", f"Writing output MPR file: {full_outfile}")
 
     """
     Write the file
@@ -120,3 +124,4 @@ def write_mpr_file(data_fcst,data_obs,lats_in,lons_in,fcst_lead,fcst_valid,obs_l
                 str(dlength),str(index_num[dpt]),'NA',lats_in[dpt],lons_in[dpt],obsslev[dpt],'NA',data_fcst[dpt],
                 data_obs[dpt],'NA','NA','NA','NA'))
 
+    safe_log(logger, "info", f"Successfully wrote MPR file: {full_outfile}")

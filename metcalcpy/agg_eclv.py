@@ -47,6 +47,7 @@ from metcalcpy.util.eclv_statistics import *
 
 from metcalcpy.util.utils import is_string_integer, parse_bool
 from metcalcpy.logging_config import setup_logging
+from metcalcpy.util.safe_log import safe_log
 
 __author__ = 'Tatiana Burek'
 
@@ -82,7 +83,7 @@ class AggEclv:
 
         self.logger = setup_logging(in_params)
         logger = self.logger
-        logger.debug("Initializing AggEclv with parameters.")
+        safe.logger(logger, "debug", "Initializing AggEclv with parameters.")
     
         self.statistic = None
         self.current_thresh = None
@@ -93,25 +94,25 @@ class AggEclv:
 
         if self.add_base_rate not in [0, 1]:
             self.add_base_rate = 0
-            logger.warning(f"add_base_rate parameter was invalid. Reset to 0. Received value: {self.params.get('add_base_rate')}")
+            safe.logger(logger, "warning", f"add_base_rate parameter was invalid. Reset to 0. Received value: {self.params.get('add_base_rate')}")
 
-        logger.debug(f"Parameters set: Steps: {self.steps}, Column Names: {self.column_names}, Add Base Rate: {self.add_base_rate}")
+        safe.logger(logger, "debug", f"Parameters set: Steps: {self.steps}, Column Names: {self.column_names}, Add Base Rate: {self.add_base_rate}")
     
         try:
             self.input_data = pd.read_csv(self.params['agg_stat_input'], header=0, sep='\t')
-            logger.info(f"Successfully loaded data from {self.params['agg_stat_input']}")
+            safe.logger(logger, "info", f"Successfully loaded data from {self.params['agg_stat_input']}")
         except pd.errors.EmptyDataError as e:
-            logger.error("Input data file is empty, raising EmptyDataError.", exc_info=True)
+            safe.logger(logger, "error", "Input data file is empty, raising EmptyDataError.", exc_info=True)
             raise
         except KeyError as e:
-            logger.error(f"Parameter with key {str(e)} is missing, raising KeyError.", exc_info=True)
+            safe.logger(logger, "error", f"Parameter with key {str(e)} is missing, raising KeyError.", exc_info=True)
             raise
         except Exception as e:
-            logger.error(f"Unexpected error occurred during data loading: {str(e)}", exc_info=True)
+            safe.logger(logger, "error", f"Unexpected error occurred during data loading: {str(e)}", exc_info=True)
             raise
 
         self.group_to_value = {}
-        logger.debug("AggEclv initialized successfully.")
+        safe.logger(logger, "debug", "AggEclv initialized successfully.")
 
     def _calc_stats(self, values):
         """Calculate the statistic of values for each bootstrap sample
@@ -126,41 +127,41 @@ class AggEclv:
 
         """
         logger = self.logger
-        logger.debug("Starting to calculate statistics for given values.")
+        safe.logger(logger, "debug", "Starting to calculate statistics for given values.")
         if values is None:
-           logger.error("Received None as input for values which is not expected.")
-           raise ValueError("Input values cannot be None.")
+           safe.logger(logger, "error", "Received None as input for values which is not expected.")
+           raise ValueError, "Input values cannot be None.")
 
         if values.ndim == 2:
             # The single value case
-            logger.debug("Processing single value case for statistical calculation.")
+            safe.logger(logger, "debug", "Processing single value case for statistical calculation.")
             try:
                 stat_values = [
                     calculate_eclv(values, self.column_names, self.current_thresh, self.params['line_type'], self.steps,
-                                   self.add_base_rate)
+                                   self.add_base_rate, logger=logger)
                 ]
-                logger.info("Statistics calculated successfully for single value case.")
+                safe.logger(logger, "info", "Statistics calculated successfully for single value case.")
             except Exception as e:
-                logger.error(f"Failed to calculate statistics for single value case: {str(e)}", exc_info=True)
+                safe.logger(logger, "error", f"Failed to calculate statistics for single value case: {str(e)}", exc_info=True)
                 raise
 
         elif values.ndim == 3:
             # Bootstrapped case
-            logger.debug("Processing bootstrapped case for statistical calculation.")
+            safe.logger(logger, "debug", "Processing bootstrapped case for statistical calculation.")
             stat_values = []
             try:
                 for row in values:
                     stat_value = [
-                        calculate_eclv(row, self.column_names, self.current_thresh, self.params['line_type'], self.steps)
+                        calculate_eclv(row, self.column_names, self.current_thresh, self.params['line_type'], self.steps, logger=logger)
                     ]
                     stat_values.append(stat_value)
-                logger.info("Statistics calculated successfully for all bootstrap samples.")
+                safe.logger(logger, "info", "Statistics calculated successfully for all bootstrap samples.")
             except Exception as e:
-                logger.error(f"Failed to calculate statistics for bootstrapped case: {str(e)}", exc_info=True)
+                safe.logger(logger, "error", f"Failed to calculate statistics for bootstrapped case: {str(e)}", exc_info=True)
                 raise
         else:
-            logger.error(f"Invalid dimension {values.ndim} for values, expected 2 or 3.")
-            raise KeyError(f"Invalid data dimensions {values.ndim}; expected 2D or 3D array.")
+            safe.logger(logger, "error", f"Invalid dimension {values.ndim} for values, expected 2 or 3.")
+            raise KeyError, f"Invalid data dimensions {values.ndim}; expected 2D or 3D array.")
 
         return stat_values
 
@@ -173,23 +174,23 @@ class AggEclv:
 
         """
         logger = self.logger
-        logger.debug("Starting the calculation of bootstrapped statistics.")
+        safe.logger(logger, "debug", "Starting the calculation of bootstrapped statistics.")
 
         # if the data frame is empty - do nothing and return an empty object
         if series_data.empty:
-            logger.warning("Received an empty DataFrame, returning empty results.")
+            safe.logger(logger, "warning", "Received an empty DataFrame, returning empty results.")
             return BootstrapResults(lower_bound=None, value=None, upper_bound=None)
  
         data = series_data[self.column_names].to_numpy()
         boot_stat_thresh = {}
         for ind, thresh in enumerate(thresholds):
             self.current_thresh = thresh
-            logger.debug(f"Processing threshold {thresh}.")
+            safe.logger(logger, "debug", f"Processing threshold {thresh}.")
             if self.params['num_iterations'] == 1:
-                logger.info("Single iteration mode: no bootstrapping required.")
+                safe.logger(logger, "info", "Single iteration mode: no bootstrapping required.")
                 stat_val = self._calc_stats(data)[0]
                 results = BootstrapResults(lower_bound=None, value=stat_val, upper_bound=None)
-                logger.debug(f"Statistics calculated for threshold {thresh} without bootstrapping.")
+                safe.logger(logger, "debug", f"Statistics calculated for threshold {thresh} without bootstrapping.")
             else:
                 try:
                     block_length = 1
@@ -197,10 +198,9 @@ class AggEclv:
                         is_cbb = parse_bool(self.params['circular_block_bootstrap'])
                         if is_cbb:
                             block_length = int(math.sqrt(len(data)))
-                            logger.debug(f"Using circular block bootstrap with block length {block_length}.")
+                            safe.logger(logger, "debug", f"Using circular block bootstrap with block length {block_length}.")
 
                     results = bootstrap_and_value(
-                        logger,
                         data,
                         stat_func=self._calc_stats,
                         num_iterations=self.params['num_iterations'],
@@ -209,10 +209,11 @@ class AggEclv:
                         save_data=False,
                         block_length=block_length,
                         eclv=True
+                        logger=logger
                         )
-                    logger.info(f"Bootstrapped statistics calculated for threshold {thresh}.")
+                    safe.logger(logger, "info", f"Bootstrapped statistics calculated for threshold {thresh}.")
                 except KeyError as err:
-                    logger.error(f"Failed to calculate bootstrapped statistics due to missing key: {err}", exc_info=True)
+                    safe.logger(logger, "error", f"Failed to calculate bootstrapped statistics due to missing key: {err}", exc_info=True)
                     results = BootstrapResults(None, None, None)
 
             boot_stat_thresh[ind] = results
@@ -228,18 +229,18 @@ class AggEclv:
                 pandas data frame
         """
         logger = self.logger
-        logger.debug(f"Initializing output frame with fields: {fields} and {row_number} rows.") 
+        safe.logger(logger, "debug", f"Initializing output frame with fields: {fields} and {row_number} rows.") 
         result = pd.DataFrame(index=range(row_number))
         # fill series variables and values
         for field in fields:
             if field == 'nstats':
                 result[field] = 0  # Initialize 'nstats' with 0s
-                logger.debug(f"Field '{field}' initialized with zeros across {row_number} rows.")
+                safe.logger(logger, "debug", f"Field '{field}' initialized with zeros across {row_number} rows.")
             else:
                 result[field] = None  # Initialize other fields with None
-                logger.debug(f"Field '{field}' initialized with None across {row_number} rows.")
+                safe.logger(logger, "debug", f"Field '{field}' initialized with None across {row_number} rows.")
 
-        logger.info(f"Output DataFrame initialized successfully with fields: {fields}.")
+        safe.logger(logger, "info", f"Output DataFrame initialized successfully with fields: {fields}.")
         return result
 
     def _proceed_with_axis(self):
@@ -250,29 +251,29 @@ class AggEclv:
 
         """
         logger = self.logger
-        logger.debug("Starting calculation of stat values for the requested Y axis.")
+        safe.logger(logger, "debug", "Starting calculation of stat values for the requested Y axis.")
     
         if self.input_data.empty:
-            logger.warning("Input data frame is empty. Exiting calculation.")
+            safe.logger(logger, "warning", "Input data frame is empty. Exiting calculation.")
             return pd.DataFrame()
         series_val = self.params['series_val_1']
         if len(series_val) > 0:
             current_header = list(series_val.keys())
             current_header.extend(self.HEADER)
-            logger.debug(f"Headers set with series values: {current_header}")
+            safe.logger(logger, "debug", f"Headers set with series values: {current_header}")
         else:
             current_header = self.HEADER.copy()
-            logger.debug("No series values provided; using default headers.")
+            safe.logger(logger, "debug", "No series values provided; using default headers.")
 
         all_points = list(itertools.product(*series_val.values()))
-        logger.info(f"Generated all combinations for points to be processed: {len(all_points)} combinations.")
+        safe.logger(logger, "info", f"Generated all combinations for points to be processed: {len(all_points)} combinations.")
 
         out_frame = self._init_out_frame(current_header, 0)
-        logger.debug("Initialized output DataFrame for storing results.")
+        safe.logger(logger, "debug", "Initialized output DataFrame for storing results.")
         # for each point
         for point in all_points:
             out_frame_local = self._init_out_frame(current_header, len(self.steps) + self.add_base_rate)
-            logger.debug(f"Processing point: {point}")
+            safe.logger(logger, "debug", f"Processing point: {point}")
              # filter point data
             all_filters = []
             for field_ind, field in enumerate(series_val.keys()):
@@ -296,7 +297,7 @@ class AggEclv:
                 thresholds = [0]
 
             bootstrap_results = self._get_bootstrapped_stats(point_data, thresholds)
-            logger.debug(f"Bootstrap results obtained for point {point}")
+            safe.logger(logger, "debug", f"Bootstrap results obtained for point {point}")
 
             for thresh_ind, thresh in enumerate(thresholds):
                 out_frame_local['thresh_i'] = [thresh] * (len(self.steps) + self.add_base_rate)
@@ -309,10 +310,10 @@ class AggEclv:
                 frames = [out_frame, out_frame_local]
                 out_frame = pd.concat(frames)
 
-            logger.info(f"Completed processing for point {point}")
+            safe.logger(logger, "info", f"Completed processing for point {point}")
 
         out_frame.reset_index(drop=True, inplace=True)
-        logger.info("All data processed successfully. Returning compiled DataFrame.")
+        safe.logger(logger, "info", "All data processed successfully. Returning compiled DataFrame.")
         return out_frame
 
     def calculate_stats_and_ci(self):
@@ -322,16 +323,16 @@ class AggEclv:
 
         """
         logger = self.logger
-        logger.debug("Starting calculation of statistics and confidence intervals.")
+        safe.logger(logger, "debug", "Starting calculation of statistics and confidence intervals.")
     
         # set random seed if present
         if self.params['random_seed'] is not None and self.params['random_seed'] != 'None':
             np.random.seed(self.params['random_seed'])
-            logger.info(f"Random seed set to {self.params['random_seed']}.")
+            safe.logger(logger, "info", f"Random seed set to {self.params['random_seed']}.")
 
         # perform EE if needed
         if parse_bool(self.params.get('event_equal', False)):
-            logger.info("Event equalization enabled.")
+            safe.logger(logger, "info", "Event equalization enabled.")
             fix_vals_permuted_list = []
 
             for key in self.params['fixed_vars_vals_input']:
@@ -343,12 +344,12 @@ class AggEclv:
             self.input_data = event_equalize(self.input_data, 'stat_name',
                                              self.params['series_val_1'],
                                              fix_vals_keys,
-                                             fix_vals_permuted_list, is_equalize_by_indep, False, logger)
-            logger.debug("Event equalization completed.")
+                                             fix_vals_permuted_list, is_equalize_by_indep, False, logger=logger)
+            safe.logger(logger, "debug", "Event equalization completed.")
 
         # Process data to calculate statistics
         out_frame = self._proceed_with_axis()
-        logger.info("Statistics and confidence intervals calculation completed.")
+        safe.logger(logger, "info", "Statistics and confidence intervals calculation completed.")
 
         # Determine file writing mode based on configuration
         header = True
@@ -356,15 +357,15 @@ class AggEclv:
         if parse_bool(self.params.get('append_to_file', False)):
             header = False
             mode = 'a'
-            logger.debug("Appending to existing file.")
+            safe.logger(logger, "debug", "Appending to existing file.")
 
         # Write output data to file
         try:
             export_csv = out_frame.to_csv(self.params['agg_stat_output'], index=None, header=header, mode=mode,
                                           sep="\t", na_rep="NA", float_format='%.' + str(PRECISION) + 'f')
-            logger.info(f"Data successfully written to {self.params['agg_stat_output']} in mode {mode}.")
+            safe.logger(logger, "info", f"Data successfully written to {self.params['agg_stat_output']} in mode {mode}.")
         except Exception as e:
-            logger.error(f"Failed to write data to file: {str(e)}", exc_info=True)
+            safe.logger(logger, "error", f"Failed to write data to file: {str(e)}", exc_info=True)
 
 
 if __name__ == "__main__":

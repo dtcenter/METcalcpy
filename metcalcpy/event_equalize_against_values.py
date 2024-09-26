@@ -13,25 +13,12 @@ Program Name: event_equalize_against_values.py
 """
 
 import pandas as pd
-
+from metcalcpy.util.safe_log import safe_log
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
 
-def safe_log(logger, log_level, message):
-    """
-    Safely logs a message using the provided logger and log level.
-    
-    Args:
-        logger (logging.Logger): The logger object. If None, the message will not be logged.
-        log_level (str): The logging level to use (e.g., "info", "debug").
-        message (str): The message to log.
-    """
-    if logger:
-        log_method = getattr(logger, log_level, None)
-        if callable(log_method):
-            log_method(message)
         
-def event_equalize_against_values(logger, series_data, input_unique_cases):
+def event_equalize_against_values(series_data, input_unique_cases, logger=None):
     """Performs event equalisation.
 
     event_equalize_against_values assumes that the input series_data contains data
