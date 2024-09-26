@@ -1244,7 +1244,7 @@ class AggStat:
         # Validate if the number of unique combinations matches the data length
         if len(series_data) / num_diff_vals != unique_date_size and self.params['list_stat_' + axis] not in self.EXEMPTED_VARS:
             safe_log(logger, "error", "Validation failed. Derived curve can't be calculated due to multiple values for one valid date/fcst_lead.")
-            raise Name"error", "Derived curve can't be calculated. Multiple values for one valid date/fcst_lead")
+            raise NameError("Derived curve can't be calculated. Multiple values for one valid date/fcst_lead")
         
         safe_log(logger, "info", "Series validation for derived operation completed successfully.")
 

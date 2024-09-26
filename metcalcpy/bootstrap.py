@@ -235,7 +235,7 @@ def _bootstrap_distribution_cbb(values_lists, stat_func_lists,
             safe_log(logger, "debug",f"Starting thread with seed {seed}.")
             r = pool.apply_async(_bootstrap_sim_cbb, (values_lists, stat_func_lists,
                                                       iter_per_job,
-                                                      iteration_batch_size, seed, block_length, logger=logger))
+                                                      iteration_batch_size, seed, block_length))
             results.append(r)
         safe_log(logger, "debug","Collecting results from all threads.")
         results = _np.hstack([res.get() for res in results])
@@ -455,8 +455,7 @@ def flatten(lis):
             yield item
 
 
-def _bootstrap_sim_cbb(values_lists, stat_func_lists, num_iterations,
-                       iteration_batch_size, seed, block_length=1, logger=None):
+def _bootstrap_sim_cbb(values_lists, stat_func_lists, num_iterations, iteration_batch_size, seed, block_length=1, logger=None):
     """Returns simulated bootstrap distribution. Can do the independent and identically distributed (IID)
         or Circular Block Bootstrap (CBB) methods depending on the block_length
         Args:
