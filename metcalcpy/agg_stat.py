@@ -299,9 +299,9 @@ class AggStat:
             # The single value case
             try:
                 if num_parameters == 2:
-                    stat_values = [stat_function(values, self.column_names, logger=logger)]
+                    stat_values = [stat_function(values, self.column_names)]
                 else:
-                    stat_values = [stat_function(values, self.column_names, True, logger=logger)]
+                    stat_values = [stat_function(values, self.column_names, True)]
 
             except Exception as e:
                 safe_log(logger, "error", f"Failed to calculate statistics: {e}")
@@ -314,9 +314,9 @@ class AggStat:
             try:
                 for row in values:
                     if num_parameters == 2:
-                        stat_value = [stat_function(row, self.column_names, logger=logger)]
+                        stat_value = [stat_function(row, self.column_names)]
                     else:
-                        stat_value = [stat_function(row, self.column_names, True, logger=logger)]
+                        stat_value = [stat_function(row, self.column_names, True)]
                     stat_values.append(stat_value)
                 safe_log(logger, "info", "Statistics calculated successfully for all bootstrap samples.")
             except Exception as e:
