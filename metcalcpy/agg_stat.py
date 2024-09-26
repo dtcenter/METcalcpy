@@ -109,7 +109,7 @@ class AggStat:
             self.column_names = np.array(lc_cols)
             self.input_data.columns = lc_cols
         except pd.errors.EmptyDataError as e:
-            safe_log(logger, "error", "Input data file is empty, raising EmptyDataError."
+            safe_log(logger, "error", "Input data file is empty, raising EmptyDataError.")
             raise
         except KeyError as e:
             safe_log(logger, "error", f"Parameter with key {str(e)} is missing, raising KeyError.")
