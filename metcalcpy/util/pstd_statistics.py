@@ -38,17 +38,10 @@ def calculate_pstd_brier(input_data, columns_names, logger=None):
     """
     warnings.filterwarnings('error')
     try:
-        safe_log(logger, "debug", "Starting Brier Score calculation.")
-        
         df_pct_perm = _calc_common_stats(columns_names, input_data, logger=logger)
-        safe_log(logger, "debug", "Calculated common stats.")
-
         t_table = df_pct_perm['n_i'].sum()
         o_bar_table = df_pct_perm['oy_i'].sum() / t_table
         o_bar = input_data[0, get_column_index_by_name(columns_names, 'o_bar', logger=logger)]
-        
-        safe_log(logger, "debug", f"t_table: {t_table}, o_bar_table: {o_bar_table}, o_bar: {o_bar}")
-
         reliability = calc_reliability(t_table, df_pct_perm, logger=logger)
         resolution = calc_resolution(t_table, df_pct_perm, o_bar, logger=logger)
         uncertainty = calc_uncertainty(o_bar_table, logger=logger)
@@ -82,16 +75,10 @@ def calculate_pstd_bss_smpl(input_data, columns_names, logger=None):
     """
     warnings.filterwarnings('error')
     try:
-        safe_log(logger, "debug", "Starting Brier Skill Score (BSS_SMPL) calculation.")
-        
         df_pct_perm = _calc_common_stats(columns_names, input_data, logger=logger)
-        safe_log(logger, "debug", "Calculated common stats.")
-        
         t_table = df_pct_perm['n_i'].sum()
         o_bar_table = df_pct_perm['oy_i'].sum() / t_table
         o_bar = input_data[0, get_column_index_by_name(columns_names, 'o_bar', logger=logger)]
-        
-        safe_log(logger, "debug", f"t_table: {t_table}, o_bar_table: {o_bar_table}, o_bar: {o_bar}")
 
         reliability = calc_reliability(t_table, df_pct_perm, logger=logger)
         resolution = calc_resolution(t_table, df_pct_perm, o_bar, logger=logger)
@@ -125,17 +112,11 @@ def calculate_pstd_baser(input_data, columns_names, logger=None):
     """
     warnings.filterwarnings('error')
     try:
-        safe_log(logger, "debug", "Starting Base Rate (BASER) calculation.")
-
         df_pct_perm = _calc_common_stats(columns_names, input_data, logger=logger)
-        safe_log(logger, "debug", "Calculated common stats.")
-
         t_table = df_pct_perm['n_i'].sum()
         baser = df_pct_perm['oy_i'].sum() / t_table
         result = round_half_up(baser, PRECISION)
-
         safe_log(logger, "debug", f"Calculated BASER: {result}")
-
     except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during BASER calculation: {str(e)}")
         result = None
@@ -158,15 +139,10 @@ def calculate_pstd_reliability(input_data, columns_names, logger=None):
     """
     warnings.filterwarnings('error')
     try:
-        safe_log(logger, "debug", "Starting Reliability (RELIABILITY) calculation.")
-
         df_pct_perm = _calc_common_stats(columns_names, input_data, logger=logger)
-        safe_log(logger, "debug", "Calculated common stats for reliability.")
-
         t_table = df_pct_perm['n_i'].sum()
         reliability = calc_reliability(t_table, df_pct_perm, logger=logger)
         result = round_half_up(reliability, PRECISION)
-
         safe_log(logger, "debug", f"Calculated RELIABILITY: {result}")
 
     except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
@@ -191,21 +167,12 @@ def calculate_pstd_resolution(input_data, columns_names, logger=None):
     """
     warnings.filterwarnings('error')
     try:
-        safe_log(logger, "debug", "Starting Resolution (RESOLUTION) calculation.")
-
         df_pct_perm = _calc_common_stats(columns_names, input_data, logger=logger)
-        safe_log(logger, "debug", "Calculated common stats for resolution.")
-
         o_bar = input_data[0, get_column_index_by_name(columns_names, 'o_bar', logger=logger)]
         t_table = df_pct_perm['n_i'].sum()
-
-        safe_log(logger, "debug", f"o_bar: {o_bar}, t_table: {t_table}")
-
         resolution = calc_resolution(t_table, df_pct_perm, o_bar, logger=logger)
         result = round_half_up(resolution, PRECISION)
-
         safe_log(logger, "debug", f"Calculated RESOLUTION: {result}")
-
     except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during RESOLUTION calculation: {str(e)}")
         result = None
@@ -228,19 +195,11 @@ def calculate_pstd_uncertainty(input_data, columns_names, logger=None):
     """
     warnings.filterwarnings('error')
     try:
-        safe_log(logger, "debug", "Starting Uncertainty (UNCERTAINTY) calculation.")
-
         df_pct_perm = _calc_common_stats(columns_names, input_data, logger=logger)
-        safe_log(logger, "debug", "Calculated common stats for uncertainty.")
-
         t_table = df_pct_perm['n_i'].sum()
         o_bar_table = df_pct_perm['oy_i'].sum() / t_table
-
-        safe_log(logger, "debug", f"t_table: {t_table}, o_bar_table: {o_bar_table}")
-
         uncertainty = calc_uncertainty(o_bar_table, logger=logger)
         result = round_half_up(uncertainty, PRECISION)
-
         safe_log(logger, "debug", f"Calculated UNCERTAINTY: {result}")
 
     except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
@@ -265,14 +224,8 @@ def calculate_pstd_calibration(input_data, columns_names, logger=None):
     """
     warnings.filterwarnings('error')
     try:
-        safe_log(logger, "debug", "Starting calibration calculation.")
-
         oy_i = sum(input_data[:, get_column_index_by_name(columns_names, 'oy_i', logger=logger)])
-        safe_log(logger, "debug", f"Calculated oy_i: {oy_i}")
-
         n_i = calculate_pstd_ni(input_data, columns_names, logger=logger)
-        safe_log(logger, "debug", f"Calculated n_i: {n_i}")
-
         calibration = oy_i / n_i
         result = round_half_up(calibration, PRECISION)
         safe_log(logger, "debug", f"Calculated calibration: {result}")
@@ -299,14 +252,8 @@ def calculate_pstd_ni(input_data, columns_names, logger=None):
     """
     warnings.filterwarnings('error')
     try:
-        safe_log(logger, "debug", "Starting ni calculation.")
-
         oy_i = sum(input_data[:, get_column_index_by_name(columns_names, 'oy_i', logger=logger)])
-        safe_log(logger, "debug", f"Calculated oy_i: {oy_i}")
-
         on_i = sum(input_data[:, get_column_index_by_name(columns_names, 'on_i', logger=logger)])
-        safe_log(logger, "debug", f"Calculated on_i: {on_i}")
-
         n_i = oy_i + on_i
         result = round_half_up(n_i, PRECISION)
         safe_log(logger, "debug", f"Calculated ni: {result}")
@@ -334,13 +281,8 @@ def calculate_pstd_roc_auc(input_data, columns_names, logger=None):
     warnings.filterwarnings('error')
 
     try:
-        safe_log(logger, "debug", "Starting ROC_AUC calculation.")
-        
         df_pct_perm = _calc_common_stats(columns_names, input_data, logger=logger)
-        safe_log(logger, "debug", "Calculated common stats for ROC.")
-
         roc = _calc_pct_roc(df_pct_perm, logger=logger)
-        safe_log(logger, "debug", "Calculated ROC curve data.")
 
         # Add first and last rows
         final_roc = pd.DataFrame(
@@ -379,7 +321,6 @@ def calc_uncertainty(o_bar_table, logger=None):
          Returns: uncertainty
     """
     try:
-        safe_log(logger, "debug", f"Calculating uncertainty with o_bar_table value: {o_bar_table}")
         uncertainty = o_bar_table * (1 - o_bar_table)
         safe_log(logger, "debug", f"Calculated uncertainty: {uncertainty}")
         return uncertainty
@@ -397,7 +338,6 @@ def calc_resolution(t_table, df_pct_perm, o_bar, logger=None):
          Returns: resolution
     """
     try:
-        safe_log(logger, "debug", f"Calculating resolution with t_table: {t_table}, o_bar: {o_bar}")
         resolution = sum([row.n_i * (row.o_bar_i - o_bar) ** 2 
                           for index, row in df_pct_perm.iterrows()]) / t_table
         safe_log(logger, "debug", f"Calculated resolution: {resolution}")
@@ -416,7 +356,6 @@ def calc_reliability(t_table, df_pct_perm, logger=None):
          Returns: reliability
     """
     try:
-        safe_log(logger, "debug", f"Calculating reliability with t_table: {t_table}")
         reliability = sum([row.n_i * (row.thresh_i - row.o_bar_i) ** 2
                            for index, row in df_pct_perm.iterrows()]) / t_table
         safe_log(logger, "debug", f"Calculated reliability: {reliability}")
@@ -443,7 +382,6 @@ def _calc_common_stats(columns_names, input_data, logger=None):
                     - o_bar_i
     """
     try:
-        safe_log(logger, "debug", "Starting calculation of common stats.")
         pct_perm = {'thresh_i': [], 'oy_i': [], 'on_i': []}
         
         for column in columns_names:
@@ -560,7 +498,6 @@ def calculate_pct_total(input_data, columns_names, logger=None):
             or None if some of the data values are missing or invalid
     """
     try:
-        safe_log(logger, "debug", "Starting calculation of total matched pairs.")
 
         # Summing up the 'total' column data
         total = sum_column_data_by_name(input_data, columns_names, 'total')
