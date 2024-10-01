@@ -23,16 +23,16 @@ settings across all modules within METcalcpy.
 * Key Feature: :code:`setup_logging` Function
 
   * The :code:`setup_logging` function is the core of **logging_config.py**. It initializes 
-and configures the logger instance based on parameters specified in a YAML configuration 
-file. This function reads logging settings such as :code:`log_dir`, 
-:code:`log_filename`, and :code:`log_level` from the YAML file and sets 
-up Python's logging module accordingly.
+    and configures the logger instance based on parameters specified in a YAML configuration 
+    file. This function reads logging settings such as :code:`log_dir`, 
+    :code:`log_filename`, and :code:`log_level` from the YAML file and sets 
+    up Python's logging module accordingly.
   * By isolating the logging configuration in this script, it becomes easier to 
-manage and update logging behavior without altering the core logic of other modules.
+    manage and update logging behavior without altering the core logic of other modules.
 
 Example Integration in **agg_stat.py**:
 
-.. code-block:: ini
+.. code-block:: py
 
   from metcalcpy.logging_config import setup_logging
   
@@ -46,6 +46,8 @@ In this example, when an :code:`AggStat object` is instantiated, it invokes the
 which contains logging configurations from a YAML file such as 
 **val1l2_agg_stat.yaml**. This ensures the logger is configured according to 
 the user's settings.
+
+
 
 
 
