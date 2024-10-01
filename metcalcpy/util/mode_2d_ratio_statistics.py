@@ -38,7 +38,7 @@ def calculate_2d_ratio_fsa_asa(input_data, columns_names, logger=None):
         filtered_data = column_data_by_name_value(input_data, columns_names, TWO_D_DATA_FILTER)
         
         safe_log(logger, "debug", "Calculating percentage of 2D simple objects that are forecast.")
-        result = calculate_ratio_fsa_asa(filtered_data, columns_names)
+        result = calculate_ratio_fsa_asa(filtered_data, columns_names, logger=logger)
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result

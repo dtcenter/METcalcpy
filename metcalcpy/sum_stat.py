@@ -105,7 +105,7 @@ class SumStat:
             safe_log(logger, "error", 'The input data is empty. The empty output file was created')
             raise
         except KeyError as ex:
-            safe_log(logger, "error", 'Parameter with key %s is missing', ex)
+            safe_log(logger, "error", f'Parameter with key {ex} is missing')
             raise
 
     STATISTIC_TO_FIELDS = {'ctc': {"total", "fy_oy", "fy_on", "fn_oy", "fn_on"},
@@ -160,11 +160,10 @@ class SumStat:
                 # self.process_row, num_of_processes=mp.cpu_count())
                 print("--- %s seconds ---" % (time.time() - start_time))
             else:
-                safe_log(logger, "warning", 'Event equalisation removed all data. '
-                                'The empty output file is created')
+                safe_log(logger, "warning", 'Event equalisation removed all data. The empty output file is created')
 
         except KeyError as ex:
-            safe_log(logger, "error", 'Parameter with key %s is missing. The empty output file is created', ex)
+            safe_log(logger, "error", f'Parameter with key {ex} is missing. The empty output file is created')
 
         # remove the original fields to save the space
         for column in fields:
@@ -276,7 +275,7 @@ class SumStat:
             row_array = np.expand_dims(row.to_numpy(), axis=0)
 
             # calculate the stat value
-            stat_value = [calculate_statistic(row_array, self.column_names, stat, logger=logger)][0]
+            stat_value = [calculate_statistic(row_array, self.column_names, stat)][0]
 
             # save the value to the 'stat_value' column
             self.input_data.at[index, 'stat_value'] = stat_value

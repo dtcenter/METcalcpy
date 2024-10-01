@@ -103,7 +103,7 @@ class Scorecard:
         except pd.errors.EmptyDataError:
             raise
         except KeyError as ex:
-            safe_log(logger, "error", 'Parameter with key %s is missing', ex)
+            safe_log(logger, "error", f'Parameter with key {ex} is missing')
             raise
         self.group_to_value = {}
 

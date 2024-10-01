@@ -63,7 +63,7 @@ def calculate_nbr_acc(input_data, columns_names, logger=None):
 
     try:
         safe_log(logger, "debug", "Starting calculation of NBR_ACC.")
-        result = calculate_acc(input_data, columns_names, logger=logger)
+        result = calculate_acc(input_data, columns_names)
         safe_log(logger, "debug", f"Calculated NBR_ACC: {result}")
     except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during NBR_ACC calculation: {str(e)}")
