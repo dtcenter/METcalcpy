@@ -51,7 +51,7 @@ YAML-Driven Configuration
 -------------------------
 
 METcalcpy now allows users to customize logging behavior directly within 
-their YAML configuration files, eliminating the need for hardcoding 
+the user's YAML configuration files, eliminating the need for hardcoding 
 logging settings in Python scripts.
 
 **Key Parameters in YAML Configuration:**
@@ -113,7 +113,7 @@ improving readability and facilitating easier analysis of log data.
 Safe Logging Utility (safe_log.py)
 ----------------------------------
 
-A utility function, :code:`safe_log`, is introduced in safe_log.py to 
+A utility function, :code:`safe_log`, is introduced in **safe_log.py** to 
 enhance the robustness of logging operations.
 
   * **Functionality:**
