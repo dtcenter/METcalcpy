@@ -47,6 +47,52 @@ which contains logging configurations from a YAML file such as
 **val1l2_agg_stat.yaml**. This ensures the logger is configured according to 
 the user's settings.
 
+YAML-Driven Configuration
+-------------------------
+
+METcalcpy now allows users to customize logging behavior directly within 
+their YAML configuration files, eliminating the need for hardcoding 
+logging settings in Python scripts.
+
+**Key Parameters in YAML Configuration:**
+
+:code:`log_dir:` Specifies the directory where log files are stored.
+:code:`log_filename:` Defines the name of the log file.
+:code:`log_level:` Determines the verbosity of the log output. 
+Available levels are DEBUG, INFO, WARNING, and ERROR.
+:code:`log_level:` By setting the appropriate log level in your YAML configuration 
+file (e.g., log_level: WARNING), you can control the verbosity of the log output, 
+ensuring that only the necessary information is recorded.
+
+METcalcpy supports the following log levels:
+
+  1. **DEBUG:**
+    * **Purpose:** Captures detailed information for diagnosing issues.
+    * **Use Case:** Ideal during development or troubleshooting to see all 
+      the internal workings of the application.
+
+  2. **INFO:**
+    * **Purpose:** Records general information about the application's execution.
+    * **Use Case:** Suitable for tracking the progress and key events 
+      in the application's workflow without overwhelming detail.
+
+  3. **WARNING:**
+    * **Purpose:** Logs potential issues that are not immediately critical but 
+      could lead to problems.
+    * **Use Case:** Useful for highlighting areas that may require attention 
+      but don't stop the application from running.
+
+  4. **ERROR:**
+    * **Purpose:** Captures serious issues that prevent parts of the 
+      application from functioning correctly.
+    * **Use Case:** Necessary for logging events that require immediate 
+      attention and could cause the application to fail or produce incorrect results.
+
+Informative Log Formatting
+--------------------------
+
+Log messages in METcalcpy are meticulously formatted to include detailed information, 
+improving readability and facilitating easier analysis of log data.
 
 
 
