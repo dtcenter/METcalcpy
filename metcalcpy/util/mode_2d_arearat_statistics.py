@@ -545,7 +545,7 @@ def calculate_2d_arearat_fsa_osa(input_data, columns_names, logger=None):
             calculated statistic
             or None if some of the data values are missing or invalid
     """
-     try:
+   try:
         safe_log(logger, "debug", "Filtering data based on TWO_D_DATA_FILTER.")
         filtered_data = column_data_by_name_value(input_data, columns_names, TWO_D_DATA_FILTER)
         
