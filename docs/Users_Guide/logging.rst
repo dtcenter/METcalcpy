@@ -56,16 +56,13 @@ logging settings in Python scripts.
 
 **Key Parameters in YAML Configuration:**
 
-:code:`log_dir:` Specifies the directory where log files are stored.
-
-:code:`log_filename:` Defines the name of the log file.
-
-:code:`log_level:` Determines the verbosity of the log output. 
-Available levels are :code:`DEBUG, INFO, WARNING, and ERROR:`.
-
-:code:`log_level:` By setting the appropriate log level in your YAML configuration 
-file (e.g., log_level: WARNING), you can control the verbosity of the log output, 
-ensuring that only the necessary information is recorded.
+| :code:`log_dir:` Specifies the directory where log files are stored.
+| :code:`log_filename:` Defines the name of the log file.
+| :code:`log_level:` Determines the verbosity of the log output. 
+  Available levels are :code:`DEBUG, INFO, WARNING, and ERROR:`.
+| :code:`log_level:` By setting the appropriate log level in your YAML configuration 
+  file (e.g., log_level: WARNING), you can control the verbosity of the log output, 
+  ensuring that only the necessary information is recorded.
 
 METcalcpy supports the following log levels:
 
@@ -108,7 +105,7 @@ improving readability and facilitating easier analysis of log data.
   * **User ID:** The User ID of the script initiator is included, aiding traceability, 
     particularly in multi-user environments.
   * **Log Level:** Indicates the severity of the message 
-    (e.g., :code:`DEBUG, INFO, WARNING, ERROR`).
+    (e.g., :code:`DEBUG`, :code:`INFO`, :code:`WARNING`, :code:`ERROR`).
   * **Log Message:** The main content of the log entry, which may provide context 
     about events or operations within the script.
 
