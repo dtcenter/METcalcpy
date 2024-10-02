@@ -101,10 +101,52 @@ Informative Log Formatting
 Log messages in METcalcpy are meticulously formatted to include detailed information, 
 improving readability and facilitating easier analysis of log data.
 
+**Standard Log Format Includes:**
 
+  * **Timestamp (UTC):** Each log message is tagged with a UTC timestamp 
+    (e.g., :code:`2023-12-19 18:20:00 UTC`), ensuring consistent timekeeping across systems.
+  * **User ID:** The User ID of the script initiator is included, aiding traceability, 
+    particularly in multi-user environments.
+  * **Log Level:** Indicates the severity of the message 
+    (e.g., :code:`DEBUG, INFO, WARNING, ERROR`).
+  * **Log Message:** The main content of the log entry, which may provide context 
+    about events or operations within the script.
 
+Safe Logging Utility (safe_log.py)
+----------------------------------
 
+A utility function, :code:`safe_log`, is introduced in safe_log.py to 
+enhance the robustness of logging operations.
 
+  * **Functionality:**
+
+    * The :code:`safe_log` function ensures that logging does not become a point of failure. 
+      It checks if a logger object is properly configured before logging any message. If a logger 
+      is not available or an error occurs during logging, :code:`safe_log` handles the 
+      situation gracefully without interrupting the application's core functionality.
+
+Example Usage in **agg_stat.py**:
+
+.. code-block:: py
+
+  from metcalcpy.util.safe_log import safe_log
+
+  safe_log(self.logger, "info", "Successfully loaded data from ...")
+
+Signal Handling for Graceful Shutdown
+-------------------------------------
+
+The **logging_config.py** script is equipped to handle unexpected 
+program terminations gracefully by setting up signal handlers.
+
+  * **Supported Signals:**
+
+    * **SIGINT:** Typically triggered by pressing :code:`CTRL+C` to interrupt the program.
+    * **SIGTERM:** Sent by other processes to request the program to stop gracefully.
+
+When these signals are intercepted, a message like "Received signal ... Shutting down." 
+is logged, providing insight into the cause of the termination. This feature is valuable 
+for debugging and system monitoring.
 
 
 
