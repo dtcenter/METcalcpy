@@ -2,8 +2,8 @@ import pytest
 import numpy as np
 import pandas as pd
 
-import metcalcpy.util.mode_2d_arearat_statistics as m2as
 import metcalcpy.util.mode_2d_ratio_statistics as m2rs
+import metcalcpy.util.mode_2d_arearat_statistics as m2as
 
 def prepare_data(obj_type = "2d"):
     """
@@ -78,10 +78,10 @@ OBJ_FSU = 22067
             # The values below should be derived from
             # the FSU, OSU, and HITS. However, the
             # formulas described in the doc strings
-            # do not appear to give these answers. 
+            # do not appear to give these answers.
             ("objacsi", 0.8108331),
             ("objapody", 0.8996478),
-            ("objafar", 0.0295392),                
+            ("objafar", 0.0295392),
         ]
 )
 def test_m2as(pair, expected):
