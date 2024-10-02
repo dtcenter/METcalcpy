@@ -20,7 +20,7 @@ configurations. This approach ensures consistency and simplifies the maintenance
 settings across all modules within METcalcpy.
 
 
-* Key Feature: :code:`setup_logging` function
+* **Key Feature:** :code:`setup_logging` **Function**
 
   * The :code:`setup_logging` function is the core of **logging_config.py**. It initializes 
     and configures the logger instance based on parameters specified in a YAML configuration 
@@ -59,8 +59,7 @@ logging settings in Python scripts.
 | :code:`log_dir:` Specifies the directory where log files are stored.
 | :code:`log_filename:` Defines the name of the log file.
 | :code:`log_level:` Determines the verbosity of the log output. 
-  Available levels are :code:`DEBUG`, :code:`INFO`, :code:`WARNING`, 
-  and :code:`ERROR:`.
+  Available levels are DEBUG, INFO, WARNING, and ERROR.
 | :code:`log_level:` By setting the appropriate log level in the YAML configuration 
   file (e.g., log_level: WARNING), the user can control the verbosity of the log output, 
   ensuring that only the necessary information is recorded.
@@ -106,7 +105,7 @@ improving readability and facilitating easier analysis of log data.
   * **User ID:** The User ID of the script initiator is included, aiding traceability, 
     particularly in multi-user environments.
   * **Log Level:** Indicates the severity of the message 
-    (e.g., :code:`DEBUG`, :code:`INFO`, :code:`WARNING`, :code:`ERROR`).
+    (e.g., DEBUG, INFO, WARNING, ERROR).
   * **Log Message:** The main content of the log entry, which may provide context 
     about events or operations within the script.
 
