@@ -148,6 +148,33 @@ When these signals are intercepted, a message like "Received signal ... Shutting
 is logged, providing insight into the cause of the termination. This feature is valuable 
 for debugging and system monitoring.
 
+How to Use Logging in METcalcpy
+-------------------------------
+
+**Step 1: Configure Logging in Your YAML File**
+
+Begin by opening your YAML configuration file (e.g., **val1l2_agg_stat.yaml**) 
+and insert the logging parameters at the top level of your YAML file:
+
+| :code:`log_dir: /path/to/your/log/directory`
+| :code:`log_filename: my_application_log.txt`
+| :code:`log_level: INFO`
+
+**Step 2: Execute METcalcpy Scripts**
+
+With logging configured in your YAML file, run your METcalcpy scripts as usual. 
+The logging system will automatically manage log files according to your specified settings.
+
+**Additional Notes**
+
+  * **UTC Timestamps:** METcalcpy uses UTC for all log timestamps, 
+    ensuring consistency across systems and time zones.
+  * **Log File Appending:** Logs are appended to existing files when scripts 
+    are executed multiple times with the same configuration.
+
+**Example Log Entry:**
+
+:code:`2023-12-19 18:20:00 UTC | user123 | INFO | Data loading completed successfully.`
 
 
 
