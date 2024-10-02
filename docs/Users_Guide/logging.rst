@@ -20,7 +20,7 @@ configurations. This approach ensures consistency and simplifies the maintenance
 settings across all modules within METcalcpy.
 
 
-* Key Feature: :code:`setup_logging` Function
+* Key Feature: :code:`setup_logging` function
 
   * The :code:`setup_logging` function is the core of **logging_config.py**. It initializes 
     and configures the logger instance based on parameters specified in a YAML configuration 
