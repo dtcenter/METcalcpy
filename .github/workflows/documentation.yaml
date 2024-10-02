@@ -33,7 +33,7 @@ jobs:
         with:
           name: documentation
           path: artifact/documentation
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: documentation_warnings.log

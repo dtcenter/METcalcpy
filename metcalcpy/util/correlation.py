@@ -26,9 +26,9 @@ from scipy.optimize import brenth
 from scipy.integrate import quad
 from scipy import stats
 from scipy.special import gamma, betaln, hyp2f1
+from metcalcpy.util.safe_log import safe_log
 
-
-def corr(x, y, tail='two-sided', method='pearson', **kwargs):
+def corr(x, y, tail='two-sided', method='pearson', logger=None, **kwargs):
     """(Robust) correlation between two variables.
     This method was the patrt of pingouin package and was moved from it to METcalcpy
 
@@ -217,12 +217,16 @@ def corr(x, y, tail='two-sided', method='pearson', **kwargs):
     y = np.asarray(y)
     assert x.ndim == y.ndim == 1, 'x and y must be 1D array.'
     assert x.size == y.size, 'x and y must have the same length.'
+    safe_log(logger, "debug", "Validated that x and y are 1D arrays and have the same length.")
     _msg = 'tail must be "two-sided" or "one-sided".'
     assert tail in ['two-sided', 'one-sided'], _msg
 
     # Remove rows with missing values
-    x, y = remove_na(x, y, paired=True)
+    x, y = remove_na(x, y, paired=True, logger=logger)
     nx = x.size
+    safe_log(logger, "debug", f"Removed missing values. Size of x and y is now {nx}.")
+
+    safe_log(logger, "debug", f"Computing correlation using method '{method}'.")
 
     # Compute correlation coefficient
     if method == 'pearson':
@@ -237,10 +241,14 @@ def corr(x, y, tail='two-sided', method='pearson', **kwargs):
         r, pval = percbend(x, y, **kwargs)
     elif method == 'shepherd':
         r, pval, outliers = shepherd(x, y, **kwargs)
+        safe_log(logger, "debug", "Identified outliers in Shepherd's method.")
     else:
         raise ValueError(f'Method "{method}" not recognized.')
 
+    safe_log(logger, "debug", f"Correlation coefficient (r): {r}, p-value: {pval}.")
+
     if np.isnan(r):
+        safe_log(logger, "warning", "Correlation computation failed. Returning a DataFrame of NaNs.")
         # Correlation failed -- new in version v0.3.4, instead of raising an
         # error we just return a dataframe full of NaN (except sample size).
         # This avoid sudden stop in pingouin.pairwise_corr.
@@ -251,10 +259,11 @@ def corr(x, y, tail='two-sided', method='pearson', **kwargs):
     # Compute r2 and adj_r2
     r2 = r ** 2
     adj_r2 = 1 - (((1 - r2) * (nx - 1)) / (nx - 3))
+    safe_log(logger, "debug", f"Computed r2: {r2}, adjusted r2: {adj_r2}.")
 
     # Compute the parametric 95% confidence interval and power
-    ci = compute_esci(stat=r, nx=nx, ny=nx, eftype='r', decimals=6)
-    pr = power_corr(r=r, n=nx, power=None, alpha=0.05, tail=tail)
+    ci = compute_esci(stat=r, nx=nx, ny=nx, eftype='r', decimals=6, logger=logger)
+    pr = power_corr(r=r, n=nx, power=None, alpha=0.05, tail=tail, logger=logger)
 
     # Create dictionary
     stats_dict = \
@@ -269,7 +278,8 @@ def corr(x, y, tail='two-sided', method='pearson', **kwargs):
 
     # Compute the BF10 for Pearson correlation only
     if method == 'pearson':
-        stats_dict['BF10'] = bayesfactor_pearson(r, nx, tail=tail)
+        stats_dict['BF10'] = bayesfactor_pearson(r, nx, tail=tail, logger=logger)
+        safe_log(logger, "debug", f"Computed Bayes Factor (BF10): {stats_dict['BF10']}.")
 
     # Convert to DataFrame
     stats_df = pd.DataFrame.from_records(stats_dict, index=[method])
@@ -278,10 +288,11 @@ def corr(x, y, tail='two-sided', method='pearson', **kwargs):
     col_keep = ['n', 'outliers', 'r', 'CI95%', 'r2', 'adj_r2', 'p-val',
                 'BF10', 'power']
     col_order = [k for k in col_keep if k in stats_df.keys().tolist()]
-    return _postprocess_dataframe(stats_df)[col_order]
+    safe_log(logger, "debug", "Finished correlation calculations.")
+    return _postprocess_dataframe(stats_df, logger=logger)[col_order]
 
 
-def acf(x: Union[list, np.array], acf_type: str = 'correlation', lag_max: Union[int, None] = None) \
+def acf(x: Union[list, np.array], acf_type: str = 'correlation', lag_max: Union[int, None] = None, logger=None) \
         -> Union[list, None]:
     """
     The function acf computes estimates of the autocovariance or autocorrelation function.
@@ -302,33 +313,46 @@ def acf(x: Union[list, np.array], acf_type: str = 'correlation', lag_max: Union[
     """
     # validate acf type
     if acf_type not in ['covariance', 'correlation']:
+        safe_log(logger, "error", f"Incorrect acf_type provided: {acf_type}")
         print('ERROR  incorrect acf_type')
-        return None
+        return 
+    safe_log(logger, "debug", f"acf_type is set to: {acf_type}")
     if x is None or len(x) == 0:
+        safe_log(logger, "warning", "Input array x is None or empty. Returning None.")
         return None
+    safe_log(logger, "debug", f"Input array size: {len(x)}")
 
     acf_result = []
     size = np.size(x)
 
     # calculate mean of the array excluding None
-    mean_val = mean(remove_none(x))
+    mean_val = mean(remove_none(x, logger=logger))
+    safe_log(logger, "debug", f"Mean of the array (excluding None): {mean_val}")
 
     # calculate lag if not provided
     if lag_max is None:
         lag_max = math.floor(10 * (math.log10(size) - math.log10(1)))
+        safe_log(logger, "debug", f"lag_max not provided, calculated lag_max: {lag_max}")
     lag_max = int(min(lag_max, size - 1))
+    safe_log(logger, "debug", f"Final lag_max after adjustment: {lag_max}")
 
-    cov_0 = autocovariance(x, size, 0, mean_val)
+    cov_0 = autocovariance(x, size, 0, mean_val, logger=logger)
+    safe_log(logger, "debug", f"Autocovariance at lag 0: {cov_0}")
+
     for i in range(lag_max+1):
-        cov = autocovariance(x, size, i, mean_val)
+        cov = autocovariance(x, size, i, mean_val, logger=logger)
         if acf_type == 'covariance':
             acf_result.append(cov)
+            safe_log(logger, "debug", f"Covariance at lag {i}: {cov}")
         elif acf_type == 'correlation':
             acf_result.append(cov / cov_0)
+            safe_log(logger, "debug", f"Correlation at lag {i}: {cov / cov_0}")
+
+    safe_log(logger, "info", "Autocorrelation function calculation completed.")
     return acf_result
 
 
-def autocovariance(x, list_size, n_lag, mean_val):
+def autocovariance(x, list_size, n_lag, mean_val, logger=None):
     """
     The function that computes  autocovariance for the first n_lag elements of the list
     :param x: numeric array
@@ -337,6 +361,8 @@ def autocovariance(x, list_size, n_lag, mean_val):
     :param mean_val:  mean value of the array
     :return:  autocovariance
     """
+    safe_log(logger, "debug", f"Calculating autocovariance with list_size={list_size}, n_lag={n_lag}, mean_val={mean_val}")
+
     total_autocov = 0
     count_autocov = 0
     for i in np.arange(0, list_size - n_lag):
@@ -346,7 +372,7 @@ def autocovariance(x, list_size, n_lag, mean_val):
     return (1 / (count_autocov + n_lag)) * total_autocov
 
 
-def bicor(x, y, c=9):
+def bicor(x, y, c=9, logger=None):
     """
     Biweight midcorrelation.
 
@@ -379,23 +405,31 @@ def bicor(x, y, c=9):
     46(11). https://www.ncbi.nlm.nih.gov/pubmed/23050260
     """
 
+    safe_log(logger, "debug", f"Starting bicor computation with c={c}")
     # Calculate median
     nx = x.size
     x_median = np.median(x)
     y_median = np.median(y)
+    safe_log(logger, "debug", f"Calculated medians: x_median={x_median}, y_median={y_median}")
     # Raw median absolute deviation
     x_mad = np.median(np.abs(x - x_median))
     y_mad = np.median(np.abs(y - y_median))
+    safe_log(logger, "debug", f"Calculated MAD: x_mad={x_mad}, y_mad={y_mad}")
+
     if x_mad == 0 or y_mad == 0:
         # From Langfelder and Horvath 2012:
         # "Strictly speaking, a call to bicor in R should return a missing
         # value if mad(x) = 0 or mad(y) = 0." This avoids division by zero.
+        safe_log(logger, "warning", "MAD of x or y is zero, returning (np.nan, np.nan)")
         return np.nan, np.nan
     # Calculate weights
     u = (x - x_median) / (c * x_mad)
     v = (y - y_median) / (c * y_mad)
     w_x = (1 - u ** 2) ** 2 * ((1 - np.abs(u)) > 0)
     w_y = (1 - v ** 2) ** 2 * ((1 - np.abs(v)) > 0)
+
+    safe_log(logger, "debug", f"Calculated weights for x and y.")
+
     # Normalize x and y by weights
     x_norm = (x - x_median) * w_x
     y_norm = (y - y_median) * w_y
@@ -404,10 +438,13 @@ def bicor(x, y, c=9):
     r = (x_norm * y_norm).sum() / denom
     tval = r * np.sqrt((nx - 2) / (1 - r ** 2))
     pval = 2 * t.sf(abs(tval), nx - 2)
+
+    safe_log(logger, "info", f"Correlation coefficient r={r}, p-value={pval}")
+
     return r, pval
 
 
-def percbend(x, y, beta=.2):
+def percbend(x, y, beta=.2, logger=None):
     """
     Percentage bend correlation (Wilcox 1994).
 
@@ -439,15 +476,21 @@ def percbend(x, y, beta=.2):
        Toolbox. Frontiers in Psychology. 2012;3:606.
        doi:10.3389/fpsyg.2012.00606.
     """
+    safe_log(logger, "debug", f"Starting percbend computation with beta={beta}")
     X = np.column_stack((x, y))
     nx = X.shape[0]
     M = np.tile(np.median(X, axis=0), nx).reshape(X.shape)
     W = np.sort(np.abs(X - M), axis=0)
     m = int((1 - beta) * nx)
     omega = W[m - 1, :]
+
+    safe_log(logger, "debug", f"Calculated omega: {omega}")
+
     P = (X - M) / omega
     P[np.isinf(P)] = 0
     P[np.isnan(P)] = 0
+
+    safe_log(logger, "debug", "Removed infinite and NaN values from P")
 
     # Loop over columns
     a = np.zeros((2, nx))
@@ -460,20 +503,23 @@ def percbend(x, y, beta=.2):
         s[np.where(psi > 1)[0]] = 0
         pbos = (np.sum(s) + omega[c] * (i2 - i1)) / (s.size - i1 - i2)
         a[c] = (X[:, c] - pbos) / omega[c]
+        safe_log(logger, "debug", f"Processed column {c} of X, calculated pbos={pbos}")
 
     # Bend
     a[a <= -1] = -1
     a[a >= 1] = 1
+    safe_log(logger, "debug", "Applied bending to a")
 
     # Get r, tval and pval
     a, b = a
     r = (a * b).sum() / np.sqrt((a ** 2).sum() * (b ** 2).sum())
     tval = r * np.sqrt((nx - 2) / (1 - r ** 2))
     pval = 2 * t.sf(abs(tval), nx - 2)
+    safe_log(logger, "info", f"Calculated percentage bend correlation r={r}, pval={pval}")
     return r, pval
 
 
-def shepherd(x, y, n_boot=200):
+def shepherd(x, y, n_boot=200, logger=None):
     """
     Shepherd's Pi correlation, equivalent to Spearman's rho after outliers
     removal.
@@ -501,20 +547,27 @@ def shepherd(x, y, n_boot=200):
 
     Pi is Spearman's Rho after outlier removal.
     """
+    safe_log(logger, "info", "Starting Shepherd's Pi correlation calculation.")
+    
     X = np.column_stack((x, y))
+    safe_log(logger, "debug", f"Combined x and y into array X: {X}")
     # Bootstrapping on Mahalanobis distance
     m = bsmahal(X, X, n_boot)
+    safe_log(logger, "debug", f"Mahalanobis distances (bootstrap): {m}")
     # Determine outliers
     outliers = (m >= 6)
+    safe_log(logger, "info", f"Identified outliers: {outliers}")
     # Compute correlation
     r, pval = spearmanr(x[~outliers], y[~outliers])
+    safe_log(logger, "debug", f"Spearman's rho (without outliers): r={r}, p-value={pval}")
     # (optional) double the p-value to achieve a nominal false alarm rate
     # pval *= 2
-    # pval = 1 if pval > 1 else pval
+    # pval = 1 if pval > 1 else 
+    safe_log(logger, "info", "Completed Shepherd's Pi correlation calculation.")
     return r, pval, outliers
 
 
-def bsmahal(a, b, n_boot=200):
+def bsmahal(a, b, n_boot=200, logger=None):
     """
     Bootstraps Mahalanobis distances for Shepherd's pi correlation.
 
@@ -533,24 +586,33 @@ def bsmahal(a, b, n_boot=200):
         Mahalanobis distance for each row in a, averaged across all the
         bootstrap resamples.
     """
+    safe_log(logger, "info", "Starting Mahalanobis distance bootstrapping.")
     n, m = b.shape
+    safe_log(logger, "debug", f"Input matrix b has shape: {b.shape}")
+
     MD = np.zeros((n, n_boot))
     nr = np.arange(n)
     xB = np.random.choice(nr, size=(n_boot, n), replace=True)
+    safe_log(logger, "debug", f"Bootstrap indices generated: {xB.shape}")
+
     # Bootstrap the MD
     for i in np.arange(n_boot):
+        safe_log(logger, "debug", f"Processing bootstrap sample {i+1}/{n_boot}.")
         s1 = b[xB[i, :], 0]
         s2 = b[xB[i, :], 1]
         X = np.column_stack((s1, s2))
         mu = X.mean(0)
+        safe_log(logger, "debug", f"Mean of bootstrap sample {i+1}: {mu}")
         _, R = np.linalg.qr(X - mu)
         sol = np.linalg.solve(R.T, (a - mu).T)
         MD[:, i] = np.sum(sol ** 2, 0) * (n - 1)
     # Average across all bootstraps
+    safe_log(logger, "info", "Completed Mahalanobis distance bootstrapping.")
+    safe_log(logger, "debug", f"Mahalanobis distances averaged across bootstraps: {MD_mean}")
     return MD.mean(1)
 
 
-def bayesfactor_pearson(r, n, tail='two-sided', method='ly', kappa=1.):
+def bayesfactor_pearson(r, n, tail='two-sided', method='ly', kappa=1., logger=None):
     """
     Bayes Factor of a Pearson correlation.
 
@@ -647,22 +709,29 @@ def bayesfactor_pearson(r, n, tail='two-sided', method='ly', kappa=1.):
 
 
     """
+    safe_log(logger, "info", f"Starting Bayes factor calculation with method: {method}, tail: {tail}, r: {r}, n: {n}")
     assert method.lower() in ['ly', 'wetzels'], 'Method not recognized.'
+    safe_log(logger, "debug", f"Method {method} is recognized.")
     assert tail.lower() in ['two-sided', 'one-sided', 'greater', 'less',
                             'g', 'l', 'positive', 'negative', 'pos', 'neg']
+    safe_log(logger, "debug", f"Tail {tail} is recognized.")
 
     # Wrong input
     if not np.isfinite(r) or n < 2:
+        safe_log(logger, "warning", "Invalid input: r is not finite or sample size n is too small.")
         return np.nan
     assert -1 <= r <= 1, 'r must be between -1 and 1.'
+    safe_log(logger, "debug", "r is within the valid range (-1 to 1).")
 
     if tail.lower() != 'two-sided' and method.lower() == 'wetzels':
         warnings.warn("One-sided Bayes Factor are not supported by the "
                       "Wetzels's method. Switching to method='ly'.")
         method = 'ly'
+        safe_log(logger, "info", "Switching method to 'ly' due to one-sided test.")
 
     if method.lower() == 'wetzels':
         # Wetzels & Wagenmakers, 2012. Integral solving
+        safe_log(logger, "debug", "Using Wetzels method for Bayes factor calculation.")
 
         def fun(g, r, n):
             return math.exp(((n - 2) / 2) * math.log(1 + g) + (-(n - 1) / 2)
@@ -671,8 +740,10 @@ def bayesfactor_pearson(r, n, tail='two-sided', method='ly', kappa=1.):
 
         integr = quad(fun, 0, np.inf, args=(r, n))[0]
         bf10 = np.sqrt((n / 2)) / gamma(1 / 2) * integr
+        safe_log(logger, "debug", f"Bayes factor (Wetzels) calculated: {bf10}")
 
     else:
+        safe_log(logger, "debug", "Using Ly method for Bayes factor calculation.")
         # Ly et al, 2016. Analytical solution.
         k = kappa
         lbeta = betaln(1 / k, 1 / k)
@@ -681,12 +752,13 @@ def bayesfactor_pearson(r, n, tail='two-sided', method='ly', kappa=1.):
         bf10 = math.exp((1 - 2 / k) * math.log(2) + 0.5 * math.log(math.pi) - lbeta
                         + math.lgamma((n + 2 / k - 1) / 2) - math.lgamma((n + 2 / k) / 2) +
                         log_hyperterm)
+        safe_log(logger, "debug", f"Bayes factor (Ly) calculated: {bf10}")
 
     return bf10
 
 
 def compute_esci(stat=None, nx=None, ny=None, paired=False, eftype='cohen',
-                 confidence=.95, decimals=2):
+                 confidence=.95, decimals=2, logger=None):
     """Parametric confidence intervals around a Cohen d or a
     correlation coefficient.
 
@@ -798,6 +870,7 @@ def compute_esci(stat=None, nx=None, ny=None, paired=False, eftype='cohen',
     >>> print(round(stat, 4), ci)
     0.1538 [-0.737  1.045]
     """
+    safe_log(logger, "debug", f"Validating input: eftype={eftype}, stat={stat}, nx={nx}, confidence={confidence}")
     assert eftype.lower() in ['r', 'pearson', 'spearman', 'cohen',
                               'd', 'g', 'hedges']
     assert stat is not None and nx is not None
@@ -805,12 +878,15 @@ def compute_esci(stat=None, nx=None, ny=None, paired=False, eftype='cohen',
     assert 0 < confidence < 1, 'confidence must be between 0 and 1.'
 
     if eftype.lower() in ['r', 'pearson', 'spearman']:
+        safe_log(logger, "info", f"Computing confidence interval for correlation with nx={nx}")
         z = np.arctanh(stat)  # R-to-z transform
         se = 1 / np.sqrt(nx - 3)
         crit = np.abs(norm.ppf((1 - confidence) / 2))
         ci_z = np.array([z - crit * se, z + crit * se])
         ci = np.tanh(ci_z)  # Transform back to r
+        safe_log(logger, "info", f"Confidence interval computed: {ci}")
     else:
+        safe_log(logger, "info", f"Computing confidence interval for effect size: {eftype}")
         # Cohen d. Results are different than JASP which uses a non-central T
         # distribution. See github.com/jasp-stats/jasp-issues/issues/525
         if ny == 1 or paired:
@@ -830,10 +906,12 @@ def compute_esci(stat=None, nx=None, ny=None, paired=False, eftype='cohen',
             dof = nx + ny - 2
         crit = np.abs(t.ppf((1 - confidence) / 2, dof))
         ci = np.array([stat - crit * se, stat + crit * se])
+        safe_log(logger, "info", f"Confidence interval computed: {ci}")
+
     return np.round(ci, decimals)
 
 
-def power_corr(r=None, n=None, power=None, alpha=0.05, tail='two-sided'):
+def power_corr(r=None, n=None, power=None, alpha=0.05, tail='two-sided', logger=None):
     """
     Evaluate power, sample size, correlation coefficient or
     significance level of a correlation test.
@@ -892,6 +970,7 @@ def power_corr(r=None, n=None, power=None, alpha=0.05, tail='two-sided'):
     ...                                    alpha=None))
     alpha: 0.1377
     """
+    safe_log(logger, "debug", "Checking the number of None arguments for r, n, power, and alpha.")
     # Check the number of arguments that are None
     n_none = sum([v is None for v in [r, n, power, alpha]])
     if n_none != 1:
@@ -899,20 +978,26 @@ def power_corr(r=None, n=None, power=None, alpha=0.05, tail='two-sided'):
 
     # Safety checks
     if r is not None:
+        safe_log(logger, "debug", f"Validating r: {r}.")
         assert -1 <= r <= 1
         r = abs(r)
     if alpha is not None:
+        safe_log(logger, "debug", f"Validating alpha: {alpha}.")
         assert 0 < alpha <= 1
     if power is not None:
+        safe_log(logger, "debug", f"Validating power: {power}.")
         assert 0 < power <= 1
     if n is not None:
+        safe_log(logger, "debug", f"Validating sample size n: {n}.")
         if n <= 4:
+            safe_log(logger, "warning", "Sample size is too small to estimate power (n <= 4). Returning NaN.")
             warnings.warn("Sample size is too small to estimate power "
                           "(n <= 4). Returning NaN.")
             return np.nan
 
     # Define main function
     if tail == 'two-sided':
+        safe_log(logger, "debug", "Defining power function for two-sided test.")
 
         def func(r, n, power, alpha):
             dof = n - 2
@@ -925,7 +1010,7 @@ def power_corr(r=None, n=None, power=None, alpha=0.05, tail='two-sided'):
             return power
 
     else:
-
+        safe_log(logger, "debug", "Defining power function for one-sided test.")
         def func(r, n, power, alpha):
             dof = n - 2
             ttt = stats.t.ppf(1 - alpha, dof)
@@ -938,43 +1023,52 @@ def power_corr(r=None, n=None, power=None, alpha=0.05, tail='two-sided'):
     # Evaluate missing variable
     if power is None and n is not None and r is not None:
         # Compute achieved power given r, n and alpha
+        safe_log(logger, "info", "Calculating achieved power given r, n, and alpha.")
         return func(r, n, power=None, alpha=alpha)
 
     elif n is None and power is not None and r is not None:
+        safe_log(logger, "info", "Calculating required sample size given r, power, and alpha.")
         # Compute required sample size given r, power and alpha
 
         def _eval_n(n, r, power, alpha):
             return func(r, n, power, alpha) - power
 
         try:
-            return brenth(_eval_n, 4 + 1e-10, 1e+09, args=(r, power, alpha))
-        except ValueError:  # pragma: no cover
+            result = brenth(_eval_n, 4 + 1e-10, 1e+09, args=(r, power, alpha))
+            safe_log(logger, "info", f"Calculated sample size: {result}")
+            return result
+        except ValueError as e:  # pragma: no cover
+            safe_log(logger, "error", f"Error calculating sample size: {e}") 
             return np.nan
 
     elif r is None and power is not None and n is not None:
         # Compute achieved r given sample size, power and alpha level
-
+        safe_log(logger, "info", "Calculating achieved r given sample size, power, and alpha.")
         def _eval_r(r, n, power, alpha):
             return func(r, n, power, alpha) - power
 
         try:
-            return brenth(_eval_r, 1e-10, 1 - 1e-10, args=(n, power, alpha))
+            result = brenth(_eval_r, 1e-10, 1 - 1e-10, args=(n, power, alpha))
+            safe_log(logger, "info", f"Calculated correlation coefficient r: {result}")
+            return result
         except ValueError:  # pragma: no cover
             return np.nan
 
     else:
         # Compute achieved alpha (significance) level given r, n and power
-
+        safe_log(logger, "info", "Calculating achieved alpha given r, n, and power.")
         def _eval_alpha(alpha, r, n, power):
             return func(r, n, power, alpha) - power
-
         try:
-            return brenth(_eval_alpha, 1e-10, 1 - 1e-10, args=(r, n, power))
-        except ValueError:  # pragma: no cover
+            result = brenth(_eval_alpha, 1e-10, 1 - 1e-10, args=(r, n, power))
+            safe_log(logger, "info", f"Calculated alpha level: {result}")
+            return result
+        except ValueError as e:  # pragma: no cover
+            safe_log(logger, "error", f"Error calculating alpha level: {e}")
             return np.nan
 
 
-def _postprocess_dataframe(df):
+def _postprocess_dataframe(df, logger=None):
     """Apply some post-processing to an ouput dataframe (e.g. rounding).
 
     Whether and how rounding is applied is governed by options specified in
@@ -1008,47 +1102,63 @@ def _postprocess_dataframe(df):
         Dataframe with post-processing applied
     """
     df = df.copy()
+    safe_log(logger, "info", "Starting the rounding process for the DataFrame.")
     for row, col in it.product(df.index, df.columns):
-        round_option = _get_round_setting_for(row, col)
+        round_option = _get_round_setting_for(row, col, logger=logger)
         if round_option is None:
+            safe_log(logger, "debug", f"Skipping rounding for row {row}, column {col} as no round option is provided.")
             continue
         if callable(round_option):
             newval = round_option(df.at[row, col])
+            safe_log(logger, "debug", f"Applying callable rounding for row {row}, column {col}: {newval}")
             # ensure that dtype changes are processed
             df[col] = df[col].astype(type(newval))
             df.at[row, col] = newval
             continue
         if isinstance(df.at[row, col], bool):
+            safe_log(logger, "debug", f"Skipping rounding for boolean value at row {row}, column {col}.")
             # No rounding if value is a boolean
             continue
         is_number = isinstance(df.at[row, col], numbers.Number)
         is_array = isinstance(df.at[row, col], np.ndarray)
         if not any([is_number, is_array]):
+            safe_log(logger, "debug", f"Skipping non-numeric or non-array value at row {row}, column {col}.")
             # No rounding if value is not a Number or an array
             continue
         if is_array:
             is_float_array = issubclass(df.at[row, col].dtype.type,
                                         np.floating)
             if not is_float_array:
+                safe_log(logger, "debug", f"Skipping rounding for non-float array at row {row}, column {col}.")
                 # No rounding if value is not a float array
                 continue
         df.at[row, col] = np.round(df.at[row, col], decimals=round_option)
+        safe_log(logger, "info", f"Rounded value at row {row}, column {col} to {round_option} decimal places.")
+    
+    safe_log(logger, "info", "Completed the rounding process for the DataFrame.")
     return df
 
 
-def _format_bf(bf, precision=3, trim='0'):
+def _format_bf(bf, precision=3, trim='0', logger=None):
     """Format BF10 to floating point or scientific notation.
     """
+    safe_log(logger, "info", f"Formatting Bayes Factor with value: {bf}, precision: {precision}, trim: {trim}")
     if type(bf) == str:
+        safe_log(logger, "debug", "Bayes Factor is already a string, returning as is.")
         return bf
     if bf >= 1e4 or bf <= 1e-4:
         out = np.format_float_scientific(bf, precision=precision, trim=trim)
+        safe_log(logger, "debug", f"Bayes Factor formatted in scientific notation: {out}")
     else:
         out = np.format_float_positional(bf, precision=precision, trim=trim)
+        safe_log(logger, "debug", f"Bayes Factor formatted in floating-point notation: {out}")
+
+    safe_log(logger, "info", f"Formatted Bayes Factor: {out}")
     return out
 
 
-def _get_round_setting_for(row, col):
+def _get_round_setting_for(row, col, logger=None):
+    safe_log(logger, "info", f"Retrieving rounding setting for row: {row}, column: {col}")
     options = {
         'round': None,
         'round.column.CI95%': 2,
@@ -1058,14 +1168,19 @@ def _get_round_setting_for(row, col):
         'round.cell.[{}]x[{}]'.format(row, col),
         'round.column.{}'.format(col), 'round.row.{}'.format(row))
     for key in keys_to_check:
+        safe_log(logger, "debug", f"Checking for rounding option with key: {key}")
         try:
+            rounding_option = options[key]
+            safe_log(logger, "debug", f"Rounding option found: {rounding_option} for key: {key}")
             return options[key]
         except KeyError:
+            safe_log(logger, "debug", f"No rounding option found for key: {key}")
             pass
+    safe_log(logger, "info", f"No specific rounding option found. Using default: {options['round']}")
     return options['round']
 
 
-def remove_na(x, y=None, paired=False, axis='rows'):
+def remove_na(x, y=None, paired=False, axis='rows', logger=None):
     """Remove missing values along a given axis in one or more (paired) numpy
     arrays.
 
@@ -1107,25 +1222,33 @@ def remove_na(x, y=None, paired=False, axis='rows'):
     >>> y = np.array([[6, np.nan], [3, 2], [2, 2]])
     >>> x_no_nan, y_no_nan = remove_na(x, y, paired=False)
     """
+    safe_log(logger, "debug", f"remove_na called with axis={axis}, paired={paired}.")
+    safe_log(logger, "debug", f"Initial x shape: {np.shape(x)}, Initial y shape: {np.shape(y) if y is not None else 'None'}.")
     # Safety checks
     x = np.asarray(x)
     assert x.size > 1, 'x must have more than one element.'
     assert axis in ['rows', 'columns'], 'axis must be rows or columns.'
 
     if y is None:
-        return _remove_na_single(x, axis=axis)
+        safe_log(logger, "debug", "Removing NA from x only.")
+        return _remove_na_single(x, axis=axis, logger=logger)
     elif isinstance(y, (int, float, str)):
-        return _remove_na_single(x, axis=axis), y
+        safe_log(logger, "debug", f"y is a scalar: {y}. Removing NA from x only.")
+        return _remove_na_single(x, axis=axis, logger=logger), y
     else:  # y is list, np.array, pd.Series
         y = np.asarray(y)
         # Make sure that we just pass-through if y have only 1 element
         if y.size == 1:
-            return _remove_na_single(x, axis=axis), y
+            safe_log(logger, "debug", "y has only one element. Passing y through.")
+            return _remove_na_single(x, axis=axis, logger=logger), y
         if x.ndim != y.ndim or paired is False:
+            safe_log(logger, "debug", "x and y do not have the same dimension or paired is False. Removing NA separately.")
             # x and y do not have the same dimension
-            x_no_nan = _remove_na_single(x, axis=axis)
-            y_no_nan = _remove_na_single(y, axis=axis)
+            x_no_nan = _remove_na_single(x, axis=axis, logger=logger)
+            y_no_nan = _remove_na_single(y, axis=axis, logger=logger)
             return x_no_nan, y_no_nan
+
+    safe_log(logger, "debug", "x and y are paired with the same dimensions. Removing NA from both.")
 
     # At this point, we assume that x and y are paired and have same dimensions
     if x.ndim == 1:
@@ -1140,6 +1263,7 @@ def remove_na(x, y=None, paired=False, axis='rows'):
 
     # Check if missing values are present
     if ~x_mask.all() or ~y_mask.all():
+        safe_log(logger, "info", "Missing values found in x or y. Removing missing values.")
         ax = 0 if axis == 'rows' else 1
         ax = 0 if x.ndim == 1 else ax
         both = np.logical_and(x_mask, y_mask)
@@ -1148,31 +1272,43 @@ def remove_na(x, y=None, paired=False, axis='rows'):
     return x, y
 
 
-def _remove_na_single(x, axis='rows'):
+def _remove_na_single(x, axis='rows', logger=None):
     """Remove NaN in a single np.ndarray numpy array.
     This is an internal Pingouin function.
     """
+    safe_log(logger, "debug", f"Starting _remove_na_single with axis={axis}.")
+    safe_log(logger, "debug", f"Initial shape of x: {np.shape(x)}")
+
     if x.ndim == 1:
         # 1D arrays
         x_mask = ~np.isnan(x)
+        safe_log(logger, "debug", "Array is 1D. Generated mask for NaN values.")
     else:
         # 2D arrays
         ax = 1 if axis == 'rows' else 0
         x_mask = ~np.any(np.isnan(x), axis=ax)
+        safe_log(logger, "debug", "Array is 2D. Generated mask for NaN values along the specified axis.")
     # Check if missing values are present
     if ~x_mask.all():
+        safe_log(logger, "info", "Missing values found. Removing missing values.")
         ax = 0 if axis == 'rows' else 1
         ax = 0 if x.ndim == 1 else ax
         x = x.compress(x_mask, axis=ax)
+        safe_log(logger, "debug", f"Shape of x after removing NaN values: {np.shape(x)}")
     return x
 
 
-def remove_none(x):
+def remove_none(x, logger=None):
     """ Remove missing (None, nan) values from the list
     :param x: numeric list
     :return: a list without None  or empty array
     """
-    if x is None:
-        return []
+    safe_log(logger, "debug", f"Starting remove_none with input list: {x}")
 
-    return [elem for elem in x if elem is not None and not pd.isna(elem)]
+    if x is None:
+        safe_log(logger, "info", "Input list is None, returning an empty list.")
+        return []
+    filtered_list = [elem for elem in x if elem is not None and not pd.isna(elem)]
+    
+    safe_log(logger, "debug", f"Filtered list (without None/nan): {filtered_list}")
+    return filtered_list

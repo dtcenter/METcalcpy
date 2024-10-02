@@ -62,6 +62,9 @@ from metcalcpy.util.utils import is_string_integer, get_derived_curve_name, \
     OPERATION_TO_SIGN, perfect_score_adjustment, perform_event_equalization, \
     aggregate_field_values, sort_data, DerivedCurveComponent, is_string_strictly_float
 
+from metcalcpy.logging_config import setup_logging
+from metcalcpy.util.safe_log import safe_log
+
 __author__ = 'Tatiana Burek'
 
 
@@ -86,7 +89,9 @@ class AggStat:
             Raises: EmptyDataError or ValueError when the input DataFrame is empty
                 or doesn't have data
         """
-
+        self.logger = setup_logging(in_params)
+        logger = self.logger
+        safe_log(logger, "debug", "Initializing AggStat with parameters")
         self.statistic = None
         self.derived_name_to_values = {}
         self.params = in_params
@@ -97,19 +102,23 @@ class AggStat:
                 header=[0],
                 sep='\t'
             )
-
+            safe_log(logger, "info", f"Successfully loaded data from {self.params['agg_stat_input']}")
             cols = self.input_data.columns.to_list()
             # Convert all col headers to lower case
             lc_cols = [lc_cols.lower() for lc_cols in cols]
             self.column_names = np.array(lc_cols)
             self.input_data.columns = lc_cols
-
-        except pandas.errors.EmptyDataError:
+        except pd.errors.EmptyDataError as e:
+            safe_log(logger, "error", "Input data file is empty, raising EmptyDataError.")
             raise
-        except KeyError as er:
-            print(f'ERROR: parameter with key {er} is missing')
+        except KeyError as e:
+            safe_log(logger, "error", f"Parameter with key {str(e)} is missing, raising KeyError.")
+            raise
+        except Exception as e:
+            safe_log(logger, "error", f"Unexpected error occurred during data loading: {str(e)}")
             raise
         self.group_to_value = {}
+        safe_log(logger, "debug", "AggStat initialized successfully.")
 
     EXEMPTED_VARS = ['SSVAR_Spread', 'SSVAR_RMSE']
     STATISTIC_TO_FIELDS = {
@@ -267,29 +276,52 @@ class AggStat:
                 an error
 
         """
+        logger = self.logger
         func_name = f'calculate_{self.statistic}'
+        try:
+            stat_function = globals()[func_name]
+        except KeyError:
+            safe_log(logger, "error", f"Statistical function {func_name} not found in globals.")
+            raise KeyError(f"Function {func_name} not defined.")
         # some functions have an extra 3rd parameter that represents
         # if some data preliminary data aggregation was done
         # if this parameter is present we need to add it
+     
         num_parameters = len(signature(globals()[func_name]).parameters)
+        safe_log(logger, "debug", f"Function {func_name} expects {num_parameters} parameters.")
+    
+        if values is None:
+            safe_log(logger, "error", "Input values array is None.")
+            raise ValueError("Input values cannot be None.")
 
         if values is not None and values.ndim == 2:
-
+            safe_log(logger, "debug", "Processing single value case for statistical calculation.")
             # The single value case
-            if num_parameters == 2:
-                stat_values = [globals()[func_name](values, self.column_names)]
-            else:
-                stat_values = [globals()[func_name](values, self.column_names, True)]
+            try:
+                if num_parameters == 2:
+                    stat_values = [stat_function(values, self.column_names)]
+                else:
+                    stat_values = [stat_function(values, self.column_names, True)]
+
+            except Exception as e:
+                safe_log(logger, "error", f"Failed to calculate statistics: {e}")
+                raise
+
         elif values is not None and values.ndim == 3:
             # bootstrapped case
+            safe_log(logger, "debug", "Processing bootstrapped case for statistical calculation.")
             stat_values = []
-            for row in values:
-                if num_parameters == 2:
-                    stat_value = [globals()[func_name](row, self.column_names)]
-                else:
-                    stat_value = [globals()[func_name](row, self.column_names, True)]
-
-                stat_values.append(stat_value)
+            try:
+                for row in values:
+                    if num_parameters == 2:
+                        stat_value = [stat_function(row, self.column_names)]
+                    else:
+                        stat_value = [stat_function(row, self.column_names, True)]
+                    stat_values.append(stat_value)
+                safe_log(logger, "info", "Statistics calculated successfully for all bootstrap samples.")
+            except Exception as e:
+                safe_log(logger, "error", f"Failed during bootstrap calculations: {e}")
+                raise
 
             # pool = mp.Pool(mp.cpu_count())
             # stat_values = pool.map(partial(globals()['calculate_{}'.format(stat)],
@@ -298,6 +330,7 @@ class AggStat:
             # pool.join()
 
         else:
+            safe_log(logger, "error", f"Invalid data dimensions {values.ndim}; expected 2D or 3D array.")
             raise KeyError("can't calculate statistic")
         return stat_values
 
@@ -314,6 +347,16 @@ class AggStat:
             a list of calculated derived statistics
 
         """
+        logger = self.logger
+        safe_log(logger, "debug", "Starting calculation of derived statistics.")
+        
+        if values_both_arrays is None:
+            safe_log(logger, "error", "Input values array is None.")
+            raise ValueError("Input values cannot be None.")
+
+        if values_both_arrays.ndim not in [2, 3]:
+            safe_log(logger, "error", f"Invalid data dimensions {values_both_arrays.ndim}; expected 2D or 3D array.")
+            raise KeyError("Invalid data dimensions")
 
         if values_both_arrays is not None and values_both_arrays.ndim == 2:
             # The single value case
@@ -331,11 +374,12 @@ class AggStat:
                 stat_2 = values_2[0, stat_column_index].lower()
                 func_name_1 = f'calculate_{stat_1}'
                 func_name_2 = f'calculate_{stat_2}'
-            except ValueError:
+            except ValueError as e:
                 func_name_1 = f'calculate_{self.statistic}'
                 func_name_2 = f'calculate_{self.statistic}'
-
-
+                safe_log(logger, "error", f"Error finding statistics function: {e}")
+                raise ValueError("Error processing statistic names")             
+ 
 
             # some functions have an extra 3rd parameter that represents
             # if some data preliminary data aggregation was done
@@ -345,24 +389,33 @@ class AggStat:
 
 
             # calculate stat for the 1st array
-            if num_parameters_1 == 2:
-                stat_values_1 = [globals()[func_name_1](values_1, self.column_names)]
-            else:
-                stat_values_1 = [globals()[func_name_1](values_1, self.column_names, True)]
+            try:
+                if num_parameters_1 == 2:
+                    stat_values_1 = [globals()[func_name_1](values_1, self.column_names, logger=logger)]
+                else:
+                    stat_values_1 = [globals()[func_name_1](values_1, self.column_names, True, logger=logger)]
 
-            # calculate stat for the 2nd array
-            if num_parameters_2 == 2:
-                stat_values_2 = [globals()[func_name_2](values_2, self.column_names)]
-            else:
-                stat_values_2 = [globals()[func_name_2](values_2, self.column_names, True)]
+                # calculate stat for the 2nd array
+                if num_parameters_2 == 2:
+                    stat_values_2 = [globals()[func_name_2](values_2, self.column_names, logger=logger)]
+                else:
+                    stat_values_2 = [globals()[func_name_2](values_2, self.column_names, True, logger=logger)]
+            except Exception as e:
+                safe_log(logger, "error", f"Error calculating statistics: {e}")
+                raise
 
             # calculate derived stat
-            stat_values = calc_derived_curve_value(
-                stat_values_1,
-                stat_values_2,
-                values_both_arrays[0, -1])
-            if not isinstance(stat_values, list):
-                stat_values = [stat_values]
+            try:
+                stat_values = calc_derived_curve_value(
+                    stat_values_1,
+                    stat_values_2,
+                    values_both_arrays[0, -1])
+                if not isinstance(stat_values, list):
+                    stat_values = [stat_values]
+            except Exception as e:
+                safe_log(logger, "error", f"Error calculating derived statistics: {e}")
+                raise
+
         elif values_both_arrays is not None and values_both_arrays.ndim == 3:
             # bootstrapped case
             stat_values = []
@@ -385,6 +438,8 @@ class AggStat:
                 except ValueError:
                     func_name_1 = f'calculate_{self.statistic}'
                     func_name_2 = f'calculate_{self.statistic}'
+                    safe_log(logger, "error", f"Error finding statistics function: {e}")
+                    raise ValueError("Error processing statistic names")
 
                 # some functions have an extra 3rd parameter that represents
                 # if some data preliminary data aggregation was done
@@ -393,26 +448,35 @@ class AggStat:
                 num_parameters_2 = len(signature(globals()[func_name_2]).parameters)
 
                 # calculate stat for the 1st array
-                if num_parameters_1 == 2:
-                    stat_values_1 = [globals()[func_name_1](values_1, self.column_names)]
-                else:
-                    stat_values_1 = [globals()[func_name_1](values_1, self.column_names, True)]
+                try:
+                    if num_parameters_1 == 2:
+                        stat_values_1 = [globals()[func_name_1](values_1, self.column_names, logger=logger)]
+                    else:
+                        stat_values_1 = [globals()[func_name_1](values_1, self.column_names, True, logger=logger)]
 
-                # calculate stat for the 2nd array
-                if num_parameters_2 == 2:
-                    stat_values_2 = [globals()[func_name_2](values_2, self.column_names)]
-                else:
-                    stat_values_2 = [globals()[func_name_2](values_2, self.column_names, True)]
+                    # calculate stat for the 2nd array
+                    if num_parameters_2 == 2:
+                        stat_values_2 = [globals()[func_name_2](values_2, self.column_names, logger=logger)]
+                    else:
+                        stat_values_2 = [globals()[func_name_2](values_2, self.column_names, True, logger=logger)]
 
+                except Exception as e:
+                    safe_log(logger, "error", f"Error calculating statistics: {e}")
+                    raise
 
                 # calculate derived stat
-                stat_value = calc_derived_curve_value(
-                    stat_values_1,
-                    stat_values_2,
-                    row[0, -1])
-                if not isinstance(stat_value, list):
-                    stat_value = [stat_value]
-                stat_values.append(stat_value)
+                try:
+                    stat_value = calc_derived_curve_value(
+                        stat_values_1,
+                        stat_values_2,
+                        row[0, -1])
+                    if not isinstance(stat_value, list):
+                        stat_value = [stat_value]
+                    stat_values.append(stat_value)
+                    safe_log(logger, "info", "Derived statistics calculated successfully.")
+                except Exception as e:
+                    safe_log(logger, "error", f"Error calculating derived statistics: {e}")
+                    raise
 
             # pool = mp.Pool(mp.cpu_count())
             # stat_values = pool.map(partial(globals()['calculate_{}'.format(stat)],
@@ -431,10 +495,31 @@ class AggStat:
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
+        logger = self.logger
+        safe_log(logger, "debug", "Starting preparation of sl1l2 data.")
+       
+        if data_for_prepare is None:
+            safe_log(logger, "error", "Input data for preparation is None.")
+            raise ValueError("Input data cannot be None.")
+
         if self.statistic in self.STATISTIC_TO_FIELDS.keys():
-            for column in self.STATISTIC_TO_FIELDS[self.statistic]:
-                data_for_prepare[column] \
-                    = data_for_prepare[column].values * data_for_prepare['total'].values
+            try:
+                for column in self.STATISTIC_TO_FIELDS[self.statistic]:
+                    if column in data_for_prepare.columns and 'total' in data_for_prepare.columns:
+                        data_for_prepare[column] \
+                            = data_for_prepare[column].values * data_for_prepare['total'].values
+                        safe_log(logger, "debug", f"Data for column '{column}' multiplied by 'total'.")
+                    else:
+                        safe_log(logger, "warning", f"Column '{column}' or 'total' not found in the DataFrame.")
+            except Exception as e:
+                safe_log(logger, "error", f"Failed to prepare data for statistic calculation: {e}")
+                raise
+        else:
+            error_message = f"Statistic '{self.statistic}' is not recognized or lacks associated fields."
+            safe_log(logger, "error", error_message)
+            raise KeyError(error_message)
+
+        safe_log(logger, "info", "sl1l2 data preparation completed successfully.")
 
     def _prepare_sal1l2_data(self, data_for_prepare):
         """Prepares sal1l2 data.
@@ -443,11 +528,32 @@ class AggStat:
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
-        if self.statistic in self.STATISTIC_TO_FIELDS.keys():
-            for column in self.STATISTIC_TO_FIELDS[self.statistic]:
-                data_for_prepare[column] \
-                    = data_for_prepare[column].values * data_for_prepare['total'].values
+        logger = self.logger
+        safe_log(logger, "debug", f"Starting preparation of sal1l2 data for statistic '{self.statistic}'.")
 
+        if data_for_prepare is None:
+            safe_log(logger, "error", "Input data for preparation is None.")
+            raise ValueError("Input data cannot be None.")
+
+        if self.statistic not in self.STATISTIC_TO_FIELDS:
+            error_message = f"Statistic '{self.statistic}' is not recognized or lacks associated fields."
+            safe_log(logger, "error", error_message)
+            raise KeyError(error_message)
+
+        try:
+            for column in self.STATISTIC_TO_FIELDS[self.statistic]:
+                if column in data_for_prepare.columns and 'total' in data_for_prepare.columns:
+                    data_for_prepare[column] = data_for_prepare[column] * data_for_prepare['total']
+                    safe_log(logger, "debug", f"Column '{column}' successfully multiplied by 'total'.")
+                else:
+                    missing_columns = [col for col in [column, 'total'] if col not in data_for_prepare.columns]
+                    safe_log(logger, "warning", f"Missing columns {missing_columns} in DataFrame. Multiplication skipped.")
+        except Exception as e:
+            safe_log(logger, "error", f"Failed to prepare data for statistic calculation: {e}")
+            raise
+
+        safe_log(logger, "info", "sal1l2 data preparation completed successfully.")
+    
     def _prepare_grad_data(self, data_for_prepare):
         """Prepares grad data.
             Multiplies needed for the statistic calculation columns to the 'total'value
@@ -455,10 +561,31 @@ class AggStat:
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
-        if self.statistic in self.STATISTIC_TO_FIELDS.keys():
+        logger = self.logger
+        safe_log(logger, "debug", f"Starting preparation of grad data for statistic '{self.statistic}'.")
+
+        if data_for_prepare is None:
+            safe_log(logger, "error", "Input data for preparation is None.")
+            raise ValueError("Input data cannot be None.")
+
+        if self.statistic not in self.STATISTIC_TO_FIELDS:
+            error_message = f"Statistic '{self.statistic}' is not recognized or lacks associated fields."
+            safe_log(logger, "error", error_message)
+            raise KeyError(error_message)
+
+        try:
             for column in self.STATISTIC_TO_FIELDS[self.statistic]:
-                data_for_prepare[column] \
-                    = data_for_prepare[column].values * data_for_prepare['total'].values
+                if column in data_for_prepare.columns and 'total' in data_for_prepare.columns:
+                    data_for_prepare[column] = data_for_prepare[column] * data_for_prepare['total']
+                    safe_log(logger, "debug", f"Column '{column}' successfully multiplied by 'total'.")
+                else:
+                    missing_columns = [col for col in [column, 'total'] if col not in data_for_prepare.columns]
+                    safe_log(logger, "warning", f"Missing columns {missing_columns} in DataFrame. Multiplication skipped.")
+        except Exception as e:
+            safe_log(logger, "error", f"Failed to prepare data for statistic calculation: {e}")
+            raise
+
+        safe_log(logger, "info", "Grad data preparation completed successfully.")
 
     def _prepare_vl1l2_data(self, data_for_prepare):
         """Prepares vl1l2 data.
@@ -468,19 +595,44 @@ class AggStat:
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
+        logger = self.logger
+        safe_log(logger, "debug", "Starting preparation of vl1l2 data.")
+
+        if data_for_prepare is None:
+            safe_log(logger, "error", "Input data for preparation is None.")
+            raise ValueError("Input data cannot be None.")
+
         # Determine the MET version for this data.  If MET v12.0 or above, use the 'total_dir' column rather than
         # the 'total' column.
-        met_version = get_met_version(data_for_prepare)
-        major = int(met_version.major)
+        try:
+            met_version = get_met_version(data_for_prepare, logger=logger)
+            major = int(met_version.major)
+            safe_log(logger, "debug", f"Detected MET version: {major}")
+        except Exception as e:
+            safe_log(logger, "error", f"Failed to determine MET version from data: {e}")
+            raise
+
+        if self.statistic not in self.STATISTIC_TO_FIELDS:
+            error_message = f"Statistic '{self.statistic}' is not recognized or lacks associated fields."
+            safe_log(logger, "error", error_message)
+            raise KeyError(error_message)
 
         if self.statistic in self.STATISTIC_TO_FIELDS.keys():
-            for column in self.STATISTIC_TO_FIELDS[self.statistic]:
-                if major >= int(12):
-                    data_for_prepare[column] \
-                        = data_for_prepare[column].values * data_for_prepare['total_dir'].values
-                else:
-                    data_for_prepare[column] \
+            try:
+                for column in self.STATISTIC_TO_FIELDS[self.statistic]:
+                    if major >= int(12):
+                        data_for_prepare[column] \
+                            = data_for_prepare[column].values * data_for_prepare['total_dir'].values
+                        safe_log(logger, "debug", f"Column '{column}' successfully multiplied by 'total_dir'.")
+                    else:
+                        data_for_prepare[column] \
                         = data_for_prepare[column].values * data_for_prepare['total'].values
+                        safe_log(logger, "debug", f"Column '{column}' successfully multiplied by 'total'.")
+            except Exception as e:
+                safe_log(logger, "error", f"Error during data preparation: {e}")
+                raise
+
+        safe_log(logger, "info", "vl1l2 data preparation completed successfully.")
 
     def _prepare_val1l2_data(self, data_for_prepare):
         """Prepares val1l2 data.
@@ -492,17 +644,43 @@ class AggStat:
         """
         # Determine the MET version for this data.  If MET v12.0 or above, use the 'total_dir' column rather than
         # the 'total' column.
-        met_version = get_met_version(data_for_prepare)
-        major = int(met_version.major)
+        logger = self.logger
+        safe_log(logger, "debug", "Starting preparation of val1l2 data.")
+
+        if data_for_prepare is None:
+            safe_log(logger, "error", "Input data for preparation is None.")
+            raise ValueError("Input data cannot be None.")
+
+        try:
+            met_version = get_met_version(data_for_prepare, logger=logger)
+            major = int(met_version.major)
+            safe_log(logger, "debug", f"Detected MET version: {major}")
+        except Exception as e:
+            safe_log(logger, "error", f"Failed to determine MET version from data: {e}")
+            raise
+
+        if self.statistic not in self.STATISTIC_TO_FIELDS:
+            error_message = f"Statistic '{self.statistic}' is not recognized or lacks associated fields."
+            safe_log(logger, "error", error_message)
+            raise KeyError(error_message)
 
         if self.statistic in self.STATISTIC_TO_FIELDS.keys():
-            for column in self.STATISTIC_TO_FIELDS[self.statistic]:
-                if major >= int(12):
-                    data_for_prepare[column] \
-                        = data_for_prepare[column].values * data_for_prepare['total_dir'].values
-                else:
-                    data_for_prepare[column] \
-                        = data_for_prepare[column].values * data_for_prepare['total'].values
+            try:
+                for column in self.STATISTIC_TO_FIELDS[self.statistic]:
+                    if major >= int(12):
+                        data_for_prepare[column] \
+                            = data_for_prepare[column].values * data_for_prepare['total_dir'].values
+                        safe_log(logger, "debug", f"Column '{column}' successfully multiplied by 'total_dir'.")
+                    else:
+                        data_for_prepare[column] \
+                            = data_for_prepare[column].values * data_for_prepare['total'].values
+                        safe_log(logger, "debug", f"Column '{column}' successfully multiplied by 'total'.")
+            except Exception as e:
+                safe_log(logger, "error", f"Error during data preparation: {e}")
+                raise
+
+        safe_log(logger, "info", "val1l2 data preparation completed successfully.")
+
     def _prepare_vcnt_data(self, data_for_prepare):
         """Prepares vcnt data.
             Multiplies needed for the statistic calculation columns to the 'total_dir' value
@@ -510,19 +688,43 @@ class AggStat:
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
+        logger = self.logger
+        safe_log(logger, "debug", "Starting preparation of vcnt data.")
         # Determine the MET version for this data.  If MET v12.0 or above, use the 'total_dir' column rather than
         # the 'total' column.
-        met_version = get_met_version(data_for_prepare)
-        major = int(met_version.major)
+        if data_for_prepare is None:
+            safe_log(logger, "error", "Input data for preparation is None.")
+            raise ValueError("Input data cannot be None.")
+
+        try:
+            met_version = get_met_version(data_for_prepare, logger=logger)
+            major = int(met_version.major)
+            safe_log(logger, "debug", f"Detected MET version: {major}")
+        except Exception as e:
+            safe_log(logger, "error", f"Failed to determine MET version from data: {e}")
+            raise
+
+        if self.statistic not in self.STATISTIC_TO_FIELDS:
+            error_message = f"Statistic '{self.statistic}' is not recognized or lacks associated fields."
+            safe_log(logger, "error", error_message)
+            raise KeyError(error_message)
 
         if self.statistic in self.STATISTIC_TO_FIELDS.keys():
-            for column in self.STATISTIC_TO_FIELDS[self.statistic]:
-                if major >= int(12):
-                    data_for_prepare[column] \
-                        = data_for_prepare[column].values * data_for_prepare['total_dir'].values
-                else:
-                    data_for_prepare[column] \
-                        = data_for_prepare[column].values * data_for_prepare['total'].values
+            try:
+                for column in self.STATISTIC_TO_FIELDS[self.statistic]:
+                    if major >= int(12):
+                        data_for_prepare[column] \
+                            = data_for_prepare[column].values * data_for_prepare['total_dir'].values
+                        safe_log(logger, "debug", f"Column '{column}' successfully multiplied by 'total_dir'.")
+                    else:
+                        data_for_prepare[column] \
+                            = data_for_prepare[column].values * data_for_prepare['total'].values
+                        safe_log(logger, "debug", f"Column '{column}' successfully multiplied by 'total'.")
+            except Exception as e:
+                safe_log(logger, "error", f"Error during data preparation: {e}")
+                raise
+
+        safe_log(logger, "info", "vcnt data preparation completed successfully.")
 
     def _prepare_ecnt_data(self, data_for_prepare):
         """Prepares ecnt data.
@@ -531,43 +733,92 @@ class AggStat:
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
-        mse = data_for_prepare['rmse'].values * data_for_prepare['rmse'].values
-        mse_oerr = data_for_prepare['rmse_oerr'].values * data_for_prepare['rmse_oerr'].values
-        # crps_climo = data_for_prepare['crps'].values * data_for_prepare['crps'].values
+        logger = self.logger
+        safe_log(logger, "debug", "Starting preparation of ECNT data.")
 
-        variance = data_for_prepare['spread'].values * data_for_prepare['spread'].values
-        variance_oerr = data_for_prepare['spread_oerr'].values * data_for_prepare['spread_oerr'].values
-        variance_plus_oerr = data_for_prepare['spread_oerr'].values * data_for_prepare['spread_oerr'].values
+        if data_for_prepare is None:
+            safe_log(logger, "error", "Input data for preparation is None.")
+            raise ValueError("Input data cannot be None.")
 
-        data_for_prepare['mse'] = mse * data_for_prepare['total'].values
-        data_for_prepare['mse_oerr'] = mse_oerr * data_for_prepare['total'].values
-        # data_for_prepare['crps_climo'] = crps_climo * data_for_prepare['total'].values
+        try:
+            mse = data_for_prepare['rmse'].values * data_for_prepare['rmse'].values
+            mse_oerr = data_for_prepare['rmse_oerr'].values * data_for_prepare['rmse_oerr'].values
+            # crps_climo = data_for_prepare['crps'].values * data_for_prepare['crps'].values
 
-        data_for_prepare['variance'] = variance * data_for_prepare['total'].values
-        data_for_prepare['variance_oerr'] = variance_oerr * data_for_prepare['total'].values
-        data_for_prepare['variance_plus_oerr'] = variance_plus_oerr * data_for_prepare['total'].values
+            variance = data_for_prepare['spread'].values * data_for_prepare['spread'].values
+            variance_oerr = data_for_prepare['spread_oerr'].values * data_for_prepare['spread_oerr'].values
+            variance_plus_oerr = data_for_prepare['spread_oerr'].values * data_for_prepare['spread_oerr'].values
 
-        self.column_names = data_for_prepare.columns.values
+            data_for_prepare['mse'] = mse * data_for_prepare['total'].values
+            data_for_prepare['mse_oerr'] = mse_oerr * data_for_prepare['total'].values
+            # data_for_prepare['crps_climo'] = crps_climo * data_for_prepare['total'].values
 
-        if self.statistic in self.STATISTIC_TO_FIELDS.keys():
-            for column in self.STATISTIC_TO_FIELDS[self.statistic]:
-                if column == 'me_ge_obs':
-                    data_for_prepare[column] \
-                        = data_for_prepare[column].values * data_for_prepare['n_ge_obs'].values
-                elif column == 'me_lt_obs':
-                    data_for_prepare[column] \
-                        = data_for_prepare[column].values * data_for_prepare['n_lt_obs'].values
-                else:
-                    data_for_prepare[column] \
-                        = data_for_prepare[column].values * data_for_prepare['total'].values
+            data_for_prepare['variance'] = variance * data_for_prepare['total'].values
+            data_for_prepare['variance_oerr'] = variance_oerr * data_for_prepare['total'].values
+            data_for_prepare['variance_plus_oerr'] = variance_plus_oerr * data_for_prepare['total'].values
+            safe_log(logger, "debug", "Basic statistical calculations completed.")
+
+            self.column_names = data_for_prepare.columns.values
+
+            if self.statistic in self.STATISTIC_TO_FIELDS.keys():
+                for column in self.STATISTIC_TO_FIELDS[self.statistic]:
+                    if column == 'me_ge_obs':
+                        data_for_prepare[column] \
+                            = data_for_prepare[column].values * data_for_prepare['n_ge_obs'].values
+                        safe_log(logger, "debug", f"Column '{column}' successfully multiplied by 'n_ge_obs'.")
+                    elif column == 'me_lt_obs':
+                        data_for_prepare[column] \
+                            = data_for_prepare[column].values * data_for_prepare['n_lt_obs'].values
+                        safe_log(logger, "debug", f"Column '{column}' successfully multiplied by 'n_lt_obs'.")
+                    else:
+                        data_for_prepare[column] \
+                            = data_for_prepare[column].values * data_for_prepare['total'].values
+                        safe_log(logger, "debug", f"Column '{column}' successfully multiplied by 'total'.")
+            else:
+                safe_log(logger, "warning", f"Statistic '{self.statistic}' does not have associated fields for ECNT preparation.")
+            safe_log(logger, "info", "ECNT data preparation completed successfully.")
+
+
+        except KeyError as e:
+            safe_log(logger, "error", f"Key error during data preparation: {e}")
+            raise
+        except Exception as e:
+            safe_log(logger, "error", f"Unexpected error during data preparation: {e}")
+            raise
+        print(self.statistic)
+        print('786')
 
     def _prepare_rps_data(self, data_for_prepare):
-        total = data_for_prepare['total'].values
-        d_rps_climo = data_for_prepare['rps'].values / (1 - data_for_prepare['rpss'].values)
-        data_for_prepare['rps_climo'] = d_rps_climo * total
-        data_for_prepare['rps'] = data_for_prepare['rps'].values * total
-        data_for_prepare['rps_comp'] = data_for_prepare['rps_comp'].values * total
-        self.column_names = data_for_prepare.columns.values
+        """Prepares rps data.
+            Multiplies needed for the statistic calculation columns to the 'total' value
+
+            Args:
+                data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
+        """
+        logger = self.logger
+        safe_log(logger, "debug", "Starting preparation of RPS data.")
+
+        
+        if data_for_prepare is None:
+            safe_log(logger, "error", "Input data for preparation is None.")
+            raise ValueError("Input data cannot be None.")
+
+        try:
+            total = data_for_prepare['total'].values
+            d_rps_climo = data_for_prepare['rps'].values / (1 - data_for_prepare['rpss'].values)
+            data_for_prepare['rps_climo'] = d_rps_climo * total
+            safe_log(logger, "debug", f"Column 'rps_climo' successfully calculated.")
+            data_for_prepare['rps'] = data_for_prepare['rps'].values * total
+            safe_log(logger, "debug", f"Column 'rps' successfully multiplied by 'total'.")
+            data_for_prepare['rps_comp'] = data_for_prepare['rps_comp'].values * total
+            safe_log(logger, "debug", f"Column 'rps_comp' successfully multiplied by 'total'.")
+            self.column_names = data_for_prepare.columns.values
+        except KeyError as e:
+            safe_log(logger, "error", f"Key error during data preparation: {e}")
+            raise
+        except Exception as e:
+            safe_log(logger, "error", f"Unexpected error during data preparation: {e}")
+            raise
 
     def _prepare_ssvar_data(self, data_for_prepare):
         """Prepares ssvar data.
@@ -576,14 +827,28 @@ class AggStat:
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
+        logger = self.logger
+        safe_log(logger, "debug", f"Starting preparation of ssvar data for statistic '{self.statistic}'.")
+
+        if data_for_prepare is None:
+            safe_log(logger, "error", "Input data for preparation is None.")
+            raise ValueError("Input data cannot be None.")
 
         # rename bin_n column to total
         data_for_prepare.rename(columns={"total": "total_orig", "bin_n": "total"}, inplace=True)
         self.column_names = data_for_prepare.columns.values
 
+        if self.statistic not in self.STATISTIC_TO_FIELDS:
+            error_message = f"Statistic '{self.statistic}' is not recognized or lacks associated fields."
+            safe_log(logger, "error", error_message)
+            raise KeyError(error_message)
+
         for column in self.STATISTIC_TO_FIELDS[self.statistic]:
             data_for_prepare[column] \
                 = data_for_prepare[column].values * data_for_prepare['total'].values
+            safe_log(logger, "debug", f"Column '{column}' successfully multiplied by 'total'.")
+
+        safe_log(logger, "info", "ssvar data preparation completed successfully.")
 
     def _prepare_nbr_cnt_data(self, data_for_prepare):
         """Prepares nbrcnt data.
@@ -592,6 +857,12 @@ class AggStat:
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
+        logger = self.logger
+        safe_log(logger, "debug", f"Starting preparation of nbrcnt data for statistic '{self.statistic}'.")
+
+        if data_for_prepare is None:
+            safe_log(logger, "error", "Input data for preparation is None.")
+            raise ValueError("Input data cannot be None.")
 
         total = data_for_prepare['total'].values
         fbs = total * data_for_prepare['fbs'].values
@@ -602,6 +873,8 @@ class AggStat:
         data_for_prepare['fss'] = fss_den
         data_for_prepare['f_rate'] = f_rate
 
+        safe_log(logger, "info", "nbrcnt data preparation completed successfully.")
+
     def _prepare_pct_data(self, data_for_prepare):
         """Prepares pct data.
             Multiplies needed for the statistic calculation columns to the 'total'value
@@ -610,16 +883,25 @@ class AggStat:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
 
+
     def _prepare_mctc_data(self, data_for_prepare):
         """Prepares mctc data.
-           Nothing needs to be done
+           Nothingneeds to be done
 
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
+        logger = self.logger
+        safe_log(logger, "debug", "Starting preparation of MCTC data.")
+
+        if data_for_prepare is None:
+            safe_log(logger, "error", "Input data for preparation is None.")
+            raise ValueError("Input data cannot be None.")
+
         if 'ec_value' in data_for_prepare.columns:
             if not (data_for_prepare['ec_value'] == data_for_prepare['ec_value'][0]).all():
                 raise ValueError('EC_VALUE is NOT constant across  MCTC lines')
+
 
     def _prepare_ctc_data(self, data_for_prepare):
         """Prepares CTC data.
@@ -628,6 +910,12 @@ class AggStat:
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
+        logger = self.logger
+        safe_log(logger, "debug", "Starting preparation of CTC data.")
+
+        if data_for_prepare is None:
+            safe_log(logger, "error", "Input data for preparation is None.")
+            raise ValueError("Input data cannot be None.")
 
         if 'ec_value' in data_for_prepare.columns:
             if not (data_for_prepare['ec_value'] == data_for_prepare['ec_value'][0]).all():
@@ -641,6 +929,12 @@ class AggStat:
             Args:
                 data_for_prepare: a 2d numpy array of values we want to calculate the statistic on
         """
+        logger = self.logger
+        safe_log(logger, "debug", "Starting preparation of CTS data.")
+
+        if data_for_prepare is None:
+            safe_log(logger, "error", "Input data for preparation is None.")
+            raise ValueError("Input data cannot be None.")
 
         if 'ec_value' in data_for_prepare.columns:
             if not (data_for_prepare['ec_value'] == data_for_prepare['ec_value'][0]).all():
@@ -655,19 +949,20 @@ class AggStat:
         """
 
     def _get_bootstrapped_stats_for_derived(self, series, distributions, axis="1"):
-        """ Calculates aggregation derived statistic value and CI intervals if needed for input data
-            Args:
-                series: array of length = 3 where
-                1st element - derived series title,
-                    ex. 'DIFF(ENS001v3.6.1_d01 DPT FBAR-ENS001v3.6.1_d02 DPT FBAR)'
-                others  - additional values like indy val and statistic
-                distributions - dictionary of the series title
-                    to it's BootstrapDistributionResult object
-
-            Returns:
-                BootstrapDistributionResults object
-
         """
+        Calculates aggregation derived statistic value and CI intervals if needed for input data.
+        
+        Args:
+            series: array of length = 3 where
+                1st element - derived series title,
+                others  - additional values like indy val and statistic.
+            distributions: dictionary of the series title to its BootstrapDistributionResult object.
+            
+        Returns:
+            BootstrapDistributionResults object.
+        """
+        logger = self.logger
+        safe_log(logger, "debug", "Starting bootstrapped statistics calculation for derived series.")
 
         # get derived name
         derived_name = ''
@@ -676,32 +971,41 @@ class AggStat:
                 if point_component.startswith((operation + '(', operation + ' (')):
                     derived_name = point_component
                     break
-        # find all components for the 1st and 2nd series
-        derived_curve_component = self.derived_name_to_values[derived_name]
-        permute_for_first_series = derived_curve_component.first_component.copy()
-        for series_comp in series[1:]:
-            if series_comp not in permute_for_first_series:
-                permute_for_first_series.append(series_comp)
+        safe_log(logger, "debug", f"Derived name identified: {derived_name}")
 
-        # replace first_series components group names to values
-        for i, perm in enumerate(permute_for_first_series):
-            if perm in self.group_to_value:
-                permute_for_first_series[i] = self.group_to_value[perm]
+        try:
+            # find all components for the 1st and 2nd series
+            derived_curve_component = self.derived_name_to_values[derived_name]
+            permute_for_first_series = derived_curve_component.first_component.copy()
+            for series_comp in series[1:]:
+                if series_comp not in permute_for_first_series:
+                    permute_for_first_series.append(series_comp)
 
-        permute_for_second_series = derived_curve_component.second_component.copy()
-        for series_comp in series[1:]:
-            if series_comp not in permute_for_second_series:
-                permute_for_second_series.append(series_comp)
+            # replace first_series components group names to values
+            for i, perm in enumerate(permute_for_first_series):
+                if perm in self.group_to_value:
+                    permute_for_first_series[i] = self.group_to_value[perm]
 
-        # replace second_series components group names to values
-        for i, perm in enumerate(permute_for_second_series):
-            if perm in self.group_to_value:
-                permute_for_second_series[i] = self.group_to_value[perm]
+            permute_for_second_series = derived_curve_component.second_component.copy()
+            for series_comp in series[1:]:
+                if series_comp not in permute_for_second_series:
+                    permute_for_second_series.append(series_comp)
 
-        ds_1 = None
-        ds_2 = None
+            # replace second_series components group names to values
+            for i, perm in enumerate(permute_for_second_series):
+                if perm in self.group_to_value:
+                    permute_for_second_series[i] = self.group_to_value[perm]
 
-        # for each component find  its BootstrapDistributionResult object
+        except KeyError as err:
+            safe_log(logger, "error", f"Error during derived component lookup: {err}")
+            return BootstrapResults(None, None, None)
+            
+        safe_log(logger, "debug", f"First series components: {permute_for_first_series}")
+        safe_log(logger, "debug", f"Second series components: {permute_for_second_series}")
+
+        ds_1 = ds_2 = None
+
+        # for each component find its BootstrapDistributionResult object
         for series_to_distrib_key in distributions.keys():
             if all(elem in permute_for_first_series for elem in series_to_distrib_key):
                 ds_1 = distributions[series_to_distrib_key]
@@ -710,47 +1014,37 @@ class AggStat:
             if ds_1 is not None and ds_2 is not None:
                 break
 
-        # if BootstrapDistributionResult object doesn't exist
-        # or the original series data size is 0 return an empty object
-        if ds_1.values is None or ds_2.values is None \
-                or ds_1.values.size == 0 or ds_2.values.size == 0:
-            return BootstrapResults(lower_bound=None,
-                                    value=None,
-                                    upper_bound=None)
-        # calculate the number of values in the group if the series has a group
-        # it is need d for the validation
-        num_diff_vals_first = 0
-        num_diff_vals_second = 0
-        for val in permute_for_first_series:
-            size = len(val.split(GROUP_SEPARATOR))
-            if size > 1:
-                num_diff_vals_first = num_diff_vals_first + size
-        for val in permute_for_second_series:
-            size = len(val.split(GROUP_SEPARATOR))
-            if size > 1:
-                num_diff_vals_second = num_diff_vals_second + size
-        if num_diff_vals_first == 0:
-            num_diff_vals_first = 1
-        if num_diff_vals_second == 0:
-            num_diff_vals_second = 1
+        if ds_1 is None or ds_2 is None:
+            safe_log(logger, "warning", "Could not find BootstrapDistributionResult objects for one or both series.")
+        
+        # if BootstrapDistributionResult object doesn't exist or the original series data size is 0, return empty object
+        if ds_1.values is None or ds_2.values is None or ds_1.values.size == 0 or ds_2.values.size == 0:
+            safe_log(logger, "warning", "One or both series have no values. Returning empty BootstrapResults object.")
+            return BootstrapResults(lower_bound=None, value=None, upper_bound=None)
+
+        # calculate the number of values in the group if the series has a group, needed for validation
+        num_diff_vals_first = sum(len(val.split(GROUP_SEPARATOR)) for val in permute_for_first_series if len(val.split(GROUP_SEPARATOR)) > 1)
+        num_diff_vals_second = sum(len(val.split(GROUP_SEPARATOR)) for val in permute_for_second_series if len(val.split(GROUP_SEPARATOR)) > 1)
+        num_diff_vals_first = max(num_diff_vals_first, 1)
+        num_diff_vals_second = max(num_diff_vals_second, 1)
 
         # validate data
         if derived_curve_component.derived_operation != 'SINGLE':
+            safe_log(logger, "debug", "Validating series for derived operation.")
             self._validate_series_cases_for_derived_operation(ds_1.values, axis, num_diff_vals_first)
             self._validate_series_cases_for_derived_operation(ds_2.values, axis, num_diff_vals_second)
 
+        # handle bootstrapping
         if self.params['num_iterations'] == 1 or derived_curve_component.derived_operation == 'ETB':
-            # don't need bootstrapping and CI calculation -
-            # calculate the derived statistic and exit
-
+            safe_log(logger, "debug", "No bootstrapping required; calculating derived statistic.")
             if derived_curve_component.derived_operation == 'ETB':
                 index_array = np.where(self.column_names == 'stat_value')[0]
                 func_name = f'calculate_{self.statistic}'
                 for row in ds_1.values:
-                    stat = [globals()[func_name](row[np.newaxis, ...], self.column_names)]
+                    stat = [globals()[func_name](row[np.newaxis, ...], self.column_names, logger=logger)]
                     row[index_array] = stat
                 for row in ds_2.values:
-                    stat = [globals()[func_name](row[np.newaxis, ...], self.column_names)]
+                    stat = [globals()[func_name](row[np.newaxis, ...], self.column_names, logger=logger)]
                     row[index_array] = stat
 
                 ds_1_value = ds_1.values[:, index_array].flatten().tolist()
@@ -759,38 +1053,19 @@ class AggStat:
                 ds_1_value = [ds_1.value]
                 ds_2_value = [ds_2.value]
 
-            stat_val = calc_derived_curve_value(
-                ds_1_value,
-                ds_2_value,
-                derived_curve_component.derived_operation)
+            stat_val = calc_derived_curve_value(ds_1_value, ds_2_value, derived_curve_component.derived_operation)
             if stat_val is not None:
-                results = BootstrapResults(lower_bound=None,
-                                       value=round_half_up(stat_val[0], 5),
-                                       upper_bound=None)
+                results = BootstrapResults(lower_bound=None, value=round_half_up(stat_val[0], 5), upper_bound=None)
             else:
-                results = BootstrapResults(lower_bound=None,
-                                           value=None,
-                                           upper_bound=None)
+                results = BootstrapResults(lower_bound=None, value=None, upper_bound=None)
             results.set_distributions([results.value])
         else:
-            # need bootstrapping and CI calculation in addition to the derived statistic
-
-            # construct joined array with data for series 1 and 2 and operation
+            safe_log(logger, "debug", "Performing bootstrapping with CI calculation.")
             operation = np.full((len(ds_1.values), 1), derived_curve_component.derived_operation)
-            values_both_arrays = np.concatenate((ds_1.values, ds_2.values), axis=1)
-            values_both_arrays = np.concatenate((values_both_arrays, operation), axis=1)
+            values_both_arrays = np.concatenate((ds_1.values, ds_2.values, operation), axis=1)
 
             try:
-                # calculate a block length for the circular temporal block bootstrap if needed
-                block_length = 1
-
-                # to use circular block bootstrap or not
-                is_cbb = True
-                if 'circular_block_bootstrap' in self.params.keys():
-                    is_cbb = parse_bool(self.params['circular_block_bootstrap'])
-
-                if is_cbb:
-                    block_length = int(math.sqrt(len(values_both_arrays)))
+                block_length = int(math.sqrt(len(values_both_arrays))) if 'circular_block_bootstrap' in self.params and parse_bool(self.params['circular_block_bootstrap']) else 1
                 results = bootstrap_and_value(
                     values_both_arrays,
                     stat_func=self._calc_stats_derived,
@@ -799,24 +1074,26 @@ class AggStat:
                     ci_method=self.params['method'],
                     alpha=self.params['alpha'],
                     save_data=False,
-                    save_distributions=derived_curve_component.derived_operation == 'DIFF_SIG',
-                    block_length=block_length)
+                    save_distributions=(derived_curve_component.derived_operation == 'DIFF_SIG'),
+                    block_length=block_length,
+                    logger=logger
+                    )
             except KeyError as err:
-                results = BootstrapResults(None, None, None)
-                print(err)
+                safe_log(logger, "error", f"Error during bootstrapping: {err}")
+                return BootstrapResults(None, None, None)
 
+        # Post-processing for DIFF_SIG
         if derived_curve_component.derived_operation == 'DIFF_SIG':
-            # remove None values in distributions
+            safe_log(logger, "debug", "Processing DIFF_SIG operation for derived statistics.")
             distributions = [i for i in results.distributions if i is not None]
-            diff_sig = None
             if distributions and results.value is not None:
                 distribution_mean = np.mean(distributions)
                 distribution_under_h0 = distributions - distribution_mean
                 pval = np.mean(np.absolute(distribution_under_h0) <= np.absolute(results.value))
-                diff_sig = perfect_score_adjustment(ds_1.value, ds_2.value, self.statistic, pval)
+                diff_sig = perfect_score_adjustment(ds_1.value, ds_2.value, self.statistic, pval, logger=logger)
+                results.value = diff_sig
 
-            results.value = diff_sig
-
+        safe_log(logger, "info", "Completed derived statistics calculation.")
         return results
 
     def _get_bootstrapped_stats(self, series_data, axis="1"):
@@ -827,51 +1104,61 @@ class AggStat:
                 BootstrapDistributionResults object
 
         """
+        logger = self.logger
+        safe_log(logger, "debug", "Starting bootstrapped statistics calculation.")
 
-        # if the data frame is empty - do nothing and return an empty object
+        # Check if the data frame is empty
         if series_data.empty:
-            return BootstrapResults(lower_bound=None,
-                                    value=None,
-                                    upper_bound=None)
-        # check if derived series are present
-        has_derived_series = False
-        if self.params['derived_series_' + axis]:
-            has_derived_series = True
+            safe_log(logger, "warning", "Input series data is empty. Returning empty BootstrapResults.")
+            return BootstrapResults(lower_bound=None, value=None, upper_bound=None)
 
-        # sort data by dates
+        # Check for derived series
+        has_derived_series = False
+        if self.params.get('derived_series_' + axis):
+            has_derived_series = True
+            safe_log(logger, "debug", "Derived series found for axis '%s'.")
+
+        # Sort data by dates and reset index
+        safe_log(logger, "debug", "Sorting series data.")
         series_data = sort_data(series_data)
         series_data.reset_index(inplace=True, drop=True)
+        safe_log(logger, "debug", "Data sorting completed and index reset.")
 
-        if 'line_type' in self.params.keys() and self.params['line_type'] is not None and self.params['line_type'] != 'None':
-            # find the function that prepares data and execute it
+        # Prepare data for specific line type if present
+        if 'line_type' in self.params and self.params['line_type']:
             func = getattr(self, f"_prepare_{self.params['line_type']}_data")
             func(series_data)
+            
 
-        # input data has to be in numpy format for bootstrapping
+        # Convert data to numpy format for bootstrapping
+        safe_log(logger, "debug", "Converting series data to numpy format.")
         data = series_data.to_numpy()
 
+        # Perform calculation without bootstrapping if only one iteration
         if self.params['num_iterations'] == 1:
-            # don't need bootstrapping and CI calculation -
-            # calculate the statistic and exit
-            stat_val = self._calc_stats(data)[0]
-            results = BootstrapResults(lower_bound=None,
-                                       value=stat_val,
-                                       upper_bound=None)
-            # save original data only if we need it in the future
-            # for derived series calculation
-            if has_derived_series:
-                results.set_original_values(data)
+            safe_log(logger, "debug", "No bootstrapping needed (num_iterations = 1). Calculating statistics.")
+            try:
+                stat_val = self._calc_stats(data)[0]
+                results = BootstrapResults(lower_bound=None, value=stat_val, upper_bound=None)
+
+                # Save original data for derived series if needed
+                if has_derived_series:
+                    safe_log(logger, "debug", "Saving original data for derived series.")
+                    results.set_original_values(data)
+            except Exception as e:
+                safe_log(logger, "error", f"Error during statistic calculation: {e}")
+                raise
         else:
-            # need bootstrapping and CI calculation in addition to statistic
+            # Bootstrapping required with CI calculation
+            safe_log(logger, "debug", f"Bootstrapping with {self.params['num_iterations']} iterations.")
             try:
                 block_length = 1
-                # to use circular block bootstrap or not
-                is_cbb = True
-                if 'circular_block_bootstrap' in self.params.keys():
-                    is_cbb = parse_bool(self.params['circular_block_bootstrap'])
-
+                # Determine whether to use circular block bootstrap
+                is_cbb = self.params.get('circular_block_bootstrap', True)
                 if is_cbb:
                     block_length = int(math.sqrt(len(data)))
+
+                # Perform bootstrapping and CI calculation
                 results = bootstrap_and_value(
                     data,
                     stat_func=self._calc_stats,
@@ -879,11 +1166,19 @@ class AggStat:
                     num_threads=self.params['num_threads'],
                     ci_method=self.params['method'],
                     save_data=has_derived_series,
-                    block_length=block_length)
+                    block_length=block_length,
+                    logger=logger
+                )
+                safe_log(logger, "info", "Bootstrapping and CI calculation completed.")
 
             except KeyError as err:
+                safe_log(logger, "error", f"KeyError during bootstrapping: {err}")
                 results = BootstrapResults(None, None, None)
-                print(err)
+            except Exception as e:
+                safe_log(logger, "error", f"Unexpected error during bootstrapping: {e}")
+                raise
+
+        safe_log(logger, "debug", "Bootstrapped statistics calculation completed.")
         return results
 
     def _validate_series_cases_for_derived_operation(self, series_data, axis="1", num_diff_vals=1):
@@ -901,41 +1196,54 @@ class AggStat:
             Returns:
                  This method raises an error if this criteria is False
         """
-        # find indexes of columns of interests
-        fcst_lead_index = np.where(self.column_names == 'fcst_lead')[0][0]
-        stat_name_index = np.where(self.column_names == 'stat_name')[0][0]
-        if "fcst_valid_beg" in self.column_names:
-            fcst_valid_ind = np.where(self.column_names == 'fcst_valid_beg')[0][0]
-        elif "fcst_valid" in self.column_names:
-            fcst_valid_ind = np.where(self.column_names == 'fcst_valid')[0][0]
-        elif "fcst_init_beg" in self.column_names:
-            fcst_valid_ind = \
-                np.where(self.column_names == 'fcst_init_beg')[0][0]
-        else:
-            fcst_valid_ind = \
-                np.where(self.column_names == 'fcst_init')[0][0]
+        logger = self.logger
+        safe_log(logger, "debug", "Starting validation of series for derived operation.")
+        safe_log(logger, "debug", f"Axis: {axis}, num_diff_vals: {num_diff_vals}")
+
         try:
-            # filter columns of interest
+            # Find indexes of columns of interest
+            fcst_lead_index = np.where(self.column_names == 'fcst_lead')[0][0]
+            stat_name_index = np.where(self.column_names == 'stat_name')[0][0]
+            safe_log(logger, "debug", f"fcst_lead_index: {fcst_lead_index}, stat_name_index: {stat_name_index}")
+
+            if "fcst_valid_beg" in self.column_names:
+                fcst_valid_ind = np.where(self.column_names == 'fcst_valid_beg')[0][0]
+            elif "fcst_valid" in self.column_names:
+                fcst_valid_ind = np.where(self.column_names == 'fcst_valid')[0][0]
+            elif "fcst_init_beg" in self.column_names:
+                fcst_valid_ind = np.where(self.column_names == 'fcst_init_beg')[0][0]
+            else:
+                fcst_valid_ind = np.where(self.column_names == 'fcst_init')[0][0]
+
+            safe_log(logger, "debug", f"fcst_valid_ind: {fcst_valid_ind}")
+
+            # Filter columns of interest
             date_lead_stat = series_data[:, [fcst_valid_ind, fcst_lead_index, stat_name_index]]
-            # find the number of unique combinations
+            # Find the number of unique combinations
             unique_date_size = len(set(map(tuple, date_lead_stat)))
+            safe_log(logger, "debug", f"Unique date-lead-stat combinations found: {unique_date_size}")
+
         except TypeError as err:
-            print(err)
+            safe_log(logger, "error", f"Error during filtering columns: {err}")
             unique_date_size = []
 
-        # identify rows with unique combinations
-        ind = np.lexsort(
-            (series_data[:, stat_name_index],
-             series_data[:, fcst_lead_index], series_data[:, fcst_valid_ind]))
-        series_data = series_data[ind, :]
+        # Identify rows with unique combinations
+        try:
+            ind = np.lexsort(
+                (series_data[:, stat_name_index],
+                series_data[:, fcst_lead_index], series_data[:, fcst_valid_ind]))
+            series_data = series_data[ind, :]
+            safe_log(logger, "debug", f"Series data sorted by valid index, lead, and stat name.")
+        except Exception as e:
+            safe_log(logger, "error", f"Error during sorting series data: {e}")
+            raise
 
-        # the length of the frame with unique combinations should be the same
-        # as the number of unique combinations calculated before
-
-        if len(series_data) / num_diff_vals != unique_date_size \
-                and self.params['list_stat_' + axis] not in self.EXEMPTED_VARS:
-            raise NameError("Derived curve can't be calculated."
-                            " Multiple values for one valid date/fcst_lead")
+        # Validate if the number of unique combinations matches the data length
+        if len(series_data) / num_diff_vals != unique_date_size and self.params['list_stat_' + axis] not in self.EXEMPTED_VARS:
+            safe_log(logger, "error", "Validation failed. Derived curve can't be calculated due to multiple values for one valid date/fcst_lead.")
+            raise NameError("Derived curve can't be calculated. Multiple values for one valid date/fcst_lead")
+        
+        safe_log(logger, "info", "Series validation for derived operation completed successfully.")
 
     def _init_out_frame(self, series_fields, series):
         """ Initialises the output frame and add series values to each row
@@ -945,18 +1253,35 @@ class AggStat:
             Returns:
                 pandas data frame
         """
-        result = pd.DataFrame()
-        row_number = len(series)
-        # fill series variables and values
-        for field_ind, field in enumerate(series_fields):
-            result[field] = [row[field_ind] for row in series]
+        logger = self.logger
+        safe_log(logger, "debug", "Initializing output frame.")
 
-        # fill the stats  and CI values placeholders with None
-        result['fcst_var'] = [None] * row_number
-        result['stat_value'] = [None] * row_number
-        result['stat_btcl'] = [None] * row_number
-        result['stat_btcu'] = [None] * row_number
-        result['nstats'] = [None] * row_number
+        # Create an empty DataFrame
+        result = pd.DataFrame()
+
+        # Determine the number of rows to be added based on the length of the series
+        row_number = len(series)
+        safe_log(logger, "debug", f"Number of rows to initialize: {row_number}")
+
+        try:
+            # Fill the series variables and values for each field
+            for field_ind, field in enumerate(series_fields):
+                safe_log(logger, "debug", f"Filling field '{field}' with values from series.")
+                result[field] = [row[field_ind] for row in series]
+
+            # Fill the statistical and CI value placeholders with None
+            safe_log(logger, "debug", "Filling placeholder columns with None values.")
+            result['fcst_var'] = [None] * row_number
+            result['stat_value'] = [None] * row_number
+            result['stat_btcl'] = [None] * row_number
+            result['stat_btcu'] = [None] * row_number
+            result['nstats'] = [None] * row_number
+
+            safe_log(logger, "info", "Output frame initialization completed successfully.")
+        except Exception as e:
+            safe_log(logger, "error", f"Error during output frame initialization: {e}")
+            raise
+
         return result
 
     def _get_derived_points(self, series_val, indy_vals, axis="1"):
@@ -968,53 +1293,80 @@ class AggStat:
             Returns: a list of all possible values for the each derived points
 
         """
+        logger = self.logger
+        safe_log(logger, "debug", f"Starting derived points calculation for axis 'axis'.")
 
-        # for each derived series
         result = []
-        for derived_serie in self.params['derived_series_' + axis]:
-            # series 1 components
-            ds_1 = derived_serie[0].split(' ')
 
-            # series 2 components
+        # Loop through each derived series for the specified axis
+        for derived_serie in self.params['derived_series_' + axis]:
+            safe_log(logger, "debug", f"Processing derived series: {derived_serie}")
+
+            # Series 1 components
+            ds_1 = derived_serie[0].split(' ')
+            safe_log(logger, "debug", f"Series 1 components: {ds_1}")
+
+            # Series 2 components
             ds_2 = derived_serie[1].split(' ')
-            # find a variable of the operation by comparing values in each derived series component
+            safe_log(logger, "debug", f"Series 2 components: {ds_2}")
+
+            # Find the variable of the operation by comparing values in each derived series component
             series_var_vals = ()
             for ind, name in enumerate(ds_1):
                 if name != ds_2[ind]:
                     series_var_vals = (name, ds_2[ind])
+                    safe_log(logger, "debug", f"Identified differing components at index {ind}: {series_var_vals}")
                     break
 
+            # Default to the last key in series_val if no matching variable is found
             series_var = list(series_val.keys())[-1]
             if len(series_var_vals) > 0:
                 for var in series_val.keys():
                     if all(elem in series_val[var] for elem in series_var_vals):
                         series_var = var
+                        safe_log(logger, "debug", f"Identified series variable: {series_var}")
                         break
 
+            # Create a copy of series_val and modify it for the derived values
             derived_val = series_val.copy()
             derived_val[series_var] = None
 
+            # Filter values based on intersections with ds_1
             for var in series_val.keys():
-                if derived_val[var] is not None \
-                        and intersection(derived_val[var], ds_1) \
-                        == intersection(derived_val[var], ds_1):
+                if derived_val[var] is not None and intersection(derived_val[var], ds_1) == intersection(derived_val[var], ds_1):
                     derived_val[var] = intersection(derived_val[var], ds_1)
+                    safe_log(logger, "debug", f"Updated '{var}' in derived values: {derived_val[var]}")
 
+            # Generate the derived curve name
             derived_curve_name = get_derived_curve_name(derived_serie)
             derived_val[series_var] = [derived_curve_name]
+            safe_log(logger, "debug", f"Derived curve name: {derived_curve_name}")
+
+            # If there are independent values, assign them to the appropriate variable
             if len(indy_vals) > 0:
                 derived_val[self.params['indy_var']] = indy_vals
+                safe_log(logger, "debug", f"Assigned independent values: {indy_vals}")
 
-            self.derived_name_to_values[derived_curve_name] \
-                = DerivedCurveComponent(ds_1, ds_2, derived_serie[-1])
+            # Store the derived series components in a DerivedCurveComponent
+            self.derived_name_to_values[derived_curve_name] = DerivedCurveComponent(ds_1, ds_2, derived_serie[-1])
+
+            # Set the stat_name field
             if ds_1[-1] == ds_2[-1]:
                 derived_val['stat_name'] = [ds_1[-1]]
             else:
                 derived_val['stat_name'] = [ds_1[-1] + "," + ds_2[-1]]
+            safe_log(logger, "debug", f"Set 'stat_name' for derived values: {derived_val['stat_name']}")
+
+            # Create all possible combinations of the derived values
             result.append(list(itertools.product(*derived_val.values())))
+            safe_log(logger, "debug", f"Derived values appended to result: {derived_val}")
 
-        return [y for x in result for y in x]
-
+        # Flatten the result list and return it
+        flattened_result = [y for x in result for y in x]
+        safe_log(logger, "info", f"Derived points calculation completed. Total derived points: {len(flattened_result)}")
+        
+        return flattened_result
+        
     def _proceed_with_axis(self, axis="1"):
         """Calculates stat values for the requested Y axis
 
@@ -1024,49 +1376,66 @@ class AggStat:
                 pandas dataframe  with calculated stat values and CI
 
         """
+        logger = self.logger
+        safe_log(logger, "debug", f"Starting to calculate stats for axis: {axis}")
+
         if not self.input_data.empty:
-            # replace thresh_i values for reliability plot
+            safe_log(logger, "debug", "Input data is not empty. Proceeding with calculation.")
+
+            # Handle indy_vals for reliability plot if applicable
             indy_vals = self.params['indy_vals']
             if self.params['indy_var'] == 'thresh_i' and self.params['line_type'] == 'pct':
+                safe_log(logger, "debug", "Replacing thresh_i values for reliability plot.")
                 indy_vals_int = self.input_data['thresh_i'].tolist()
                 indy_vals_int.sort()
                 indy_vals_int = np.unique(indy_vals_int).tolist()
                 indy_vals = list(map(str, indy_vals_int))
 
-            # identify all possible points values by adding series values, indy values
-            # and statistics and then permute them
+            # Identify all possible points by adding series values, indy values, and statistics
             series_val = self.params['series_val_' + axis]
             all_fields_values = series_val.copy()
             if indy_vals:
                 all_fields_values[self.params['indy_var']] = indy_vals
             all_fields_values['stat_name'] = self.params['list_stat_' + axis]
             all_points = list(itertools.product(*all_fields_values.values()))
+            safe_log(logger, "debug", f"Total points identified: {len(all_points)}")
 
+            # Add derived points if present
             if self.params['derived_series_' + axis]:
-                # identifies and add all possible derived points values
-                all_points.extend(self._get_derived_points(series_val, indy_vals, axis))
+                safe_log(logger, "debug", "Identifying and adding derived points.")
+                derived_points = self._get_derived_points(series_val, indy_vals, axis)
+                all_points.extend(derived_points)
+                safe_log(logger, "debug", f"Total derived points added: {len(derived_points)}")
 
-            # init the template for output frame
+            # Initialize the output frame
             out_frame = self._init_out_frame(all_fields_values.keys(), all_points)
+            safe_log(logger, "debug", "Initialized output frame.")
 
             point_to_distrib = {}
 
-            # for each point
+            # Process each point
             for point_ind, point in enumerate(all_points):
-                # get statistic. Use reversed because it is more likely that the stat is in the end
+                safe_log(logger, "debug", f"Processing point {point_ind + 1}/{len(all_points)}: {point}")
+                
+                # Determine the statistic for the point
                 for component in reversed(point):
                     if component in set(self.params['list_stat_' + axis]):
                         self.statistic = component.lower()
                         break
+                safe_log(logger, "debug", f"Statistic identified: {self.statistic}")
+
                 is_derived = is_derived_point(point)
+
                 if not is_derived:
-                    # filter point data
+                    safe_log(logger, "debug", f"Processing regular point: {point}")
+                    
+                    # Filtering point data
                     all_filters = []
                     all_filters_pct = []
-                    filters_wihtout_indy = []
+                    filters_without_indy = []
                     indy_val = None
+                    
                     for field_ind, field in enumerate(all_fields_values.keys()):
-
                         filter_value = point[field_ind]
                         if GROUP_SEPARATOR in filter_value:
                             filter_list = re.findall(DATE_TIME_REGEX, filter_value)
@@ -1076,89 +1445,89 @@ class AggStat:
                             filter_list = filter_value.split(';')
                         else:
                             filter_list = [filter_value]
+
+                        # Convert values to appropriate types
                         for i, filter_val in enumerate(filter_list):
                             if is_string_integer(filter_val):
                                 filter_list[i] = int(filter_val)
                             elif is_string_strictly_float(filter_val):
                                 filter_list[i] = float(filter_val)
+
+                        # Apply filters
                         if field in self.input_data.keys():
-                            if field != self.params['indy_var']:  #
-                                filters_wihtout_indy. \
-                                    append((self.input_data[field].isin(filter_list)))
+                            if field != self.params['indy_var']:
+                                filters_without_indy.append((self.input_data[field].isin(filter_list)))
                             else:
                                 indy_val = filter_value
-
                             all_filters.append(self.input_data[field].isin(filter_list))
+                        
                         if field in series_val.keys():
                             all_filters_pct.append((self.input_data[field].isin(filter_list)))
 
-                    # add fcst var
+                    # Apply forecast variable filters
                     fcst_var = None
                     if len(self.params['fcst_var_val_' + axis]) > 0:
                         fcst_var = list(self.params['fcst_var_val_' + axis].keys())[0]
                         if 'fcst_var' in self.input_data.columns:
                             all_filters.append((self.input_data['fcst_var'].isin([fcst_var])))
 
-                    # use numpy to select the rows where any record evaluates to True
+                    # Use numpy to apply filters and select rows
                     mask = np.array(all_filters).all(axis=0)
                     point_data = self.input_data.loc[mask]
 
+                    # Handle percentage line types
                     if self.params['line_type'] == 'pct':
+                        safe_log(logger, "debug", "Processing percentage line type.")
                         if all_filters_pct:
                             mask_pct = np.array(all_filters_pct).all(axis=0)
                             point_data_pct = self.input_data.loc[mask_pct]
                         else:
                             point_data_pct = self.input_data
-                        # collect all columns that starts with oy_i and on_i
+
+                        # Calculate additional metrics for percentage line type
                         filter_oy_i = [col for col in point_data_pct if col.startswith('oy_i')]
                         filter_on_i = [col for col in point_data_pct if col.startswith('on_i')]
-                        # calculate oy_total
                         oy_total = point_data_pct[filter_oy_i].values.sum()
-
-                        # calculate T
                         sum_n_i_orig_T = point_data_pct[filter_on_i].values.sum() + oy_total
-
-                        # calculate o_bar
                         o_bar = oy_total / sum_n_i_orig_T
-
                         point_data.insert(len(point_data.columns), 'T', sum_n_i_orig_T)
                         point_data.insert(len(point_data.columns), 'oy_total', oy_total)
                         point_data.insert(len(point_data.columns), 'o_bar', o_bar)
 
-                    # aggregate point data
+                    # Aggregate point data if necessary
                     series_var_val = self.params['series_val_' + axis]
                     if any(';' in series_val for series_val in series_var_val):
                         point_data = aggregate_field_values(series_var_val, point_data, self.params['line_type'])
                     elif indy_val and ';' in indy_val:
-                        # if aggregated value in indy val - add it to series values add aggregate
                         series_indy_var_val = series_var_val
                         series_indy_var_val[self.params['indy_var']] = [indy_val]
-                        point_data = aggregate_field_values(series_indy_var_val, point_data,
-                                                            self.params['line_type'])
-                    # calculate bootstrap results
+                        point_data = aggregate_field_values(series_indy_var_val, point_data, self.params['line_type'])
+
+                    # Calculate bootstrap results for the point
                     bootstrap_results = self._get_bootstrapped_stats(point_data, axis)
-                    # save bootstrap results
                     point_to_distrib[point] = bootstrap_results
                     n_stats = len(point_data)
+                    safe_log(logger, "debug", f"Bootstrap results calculated for point {point_ind + 1}")
 
                 else:
-                    # calculate bootstrap results for the derived point
-                    bootstrap_results = self._get_bootstrapped_stats_for_derived(
-                        point,
-                        point_to_distrib,
-                        axis)
+                    # Process derived points
+                    safe_log(logger, "debug", f"Processing derived point: {point}")
+                    bootstrap_results = self._get_bootstrapped_stats_for_derived(point, point_to_distrib, axis)
                     n_stats = 0
 
-                # save results to the output data frame
+                # Save results to the output data frame
                 out_frame.loc[point_ind, 'fcst_var'] = fcst_var
                 out_frame.loc[point_ind, 'stat_value'] = bootstrap_results.value
                 out_frame.loc[point_ind, 'stat_btcl'] = bootstrap_results.lower_bound
                 out_frame.loc[point_ind, 'stat_btcu'] = bootstrap_results.upper_bound
                 out_frame.loc[point_ind, 'nstats'] = n_stats
-
+                safe_log(logger, "debug", f"Results saved for point {point_ind + 1}")
 
         else:
+            safe_log(logger, "warning", "Input data is empty. Returning an empty DataFrame.")
             out_frame = pd.DataFrame()
+
+        safe_log(logger, "info", "Completed stat calculations for axis '%s'")
         return out_frame
 
     def calculate_stats_and_ci(self):
@@ -1167,62 +1536,85 @@ class AggStat:
             Writes output data to the file
 
         """
+        logger = self.logger
+        safe_log(logger, "info", "Starting calculation of statistics and confidence intervals.")
 
-        # set random seed if present
+        # Set random seed if present
         if self.params['random_seed'] is not None and self.params['random_seed'] != 'None':
             np.random.seed(self.params['random_seed'])
+            safe_log(logger, "debug", f"Random seed set to: {self.params['random_seed']}")
 
+        # Parse event equalization flag
         is_event_equal = parse_bool(self.params['event_equal'])
+        safe_log(logger, "debug", f"Event equalization flag set to: {is_event_equal}")
 
+        # Handle line type 'pct' by appending specific columns
         if self.params['line_type'] == 'pct':
-            self.column_names = np.append(self.column_names, 'T')
-            self.column_names = np.append(self.column_names, 'oy_total')
-            self.column_names = np.append(self.column_names, 'o_bar')
+            safe_log(logger, "debug", "Adding additional columns for 'pct' line type.")
+            self.column_names = np.append(self.column_names, ['T', 'oy_total', 'o_bar'])
 
-        # perform grouping
+        # Perform grouping for series_val_1
+        safe_log(logger, "debug", "Starting grouping for series_val_1.")
         series_val = self.params['series_val_1']
         group_to_value_index = 1
         if series_val:
             for key in series_val.keys():
                 for val in series_val[key]:
                     if GROUP_SEPARATOR in val:
-                        new_name = 'Group_y1_' + str(group_to_value_index)
+                        new_name = f'Group_y1_{group_to_value_index}'
                         self.group_to_value[new_name] = val
-                        group_to_value_index = group_to_value_index + 1
+                        group_to_value_index += 1
+                        safe_log(logger, "debug", f"Group created: {new_name} -> {val}")
 
+        # Perform grouping for series_val_2
+        safe_log(logger, "debug", "Starting grouping for series_val_2.")
         series_val = self.params['series_val_2']
         if series_val:
             group_to_value_index = 1
-            if series_val:
-                for key in series_val.keys():
-                    for val in series_val[key]:
-                        if GROUP_SEPARATOR in val:
-                            new_name = 'Group_y2_' + str(group_to_value_index)
-                            self.group_to_value[new_name] = val
-                            group_to_value_index = group_to_value_index + 1
+            for key in series_val.keys():
+                for val in series_val[key]:
+                    if GROUP_SEPARATOR in val:
+                        new_name = f'Group_y2_{group_to_value_index}'
+                        self.group_to_value[new_name] = val
+                        group_to_value_index += 1
+                        safe_log(logger, "debug", f"Group created: {new_name} -> {val}")
 
-        # perform EE if needed
+        # Perform event equalization if required
         if is_event_equal:
-            self.input_data = perform_event_equalization(self.params, self.input_data)
+            safe_log(logger, "debug", "Performing event equalization.")
+            self.input_data = perform_event_equalization(self.params, self.input_data, logger=logger)
+            safe_log(logger, "info", "Event equalization completed.")
 
-        # get results for axis1
+        # Calculate statistics for axis 1
+        safe_log(logger, "info", "Calculating statistics for axis 1.")
         out_frame = self._proceed_with_axis("1")
+        safe_log(logger, "debug", f"Axis 1 results shape: {out_frame.shape}")
 
-        # get results for axis2 if needed
+        # Calculate statistics for axis 2 if needed
         if self.params['series_val_2']:
-            axis_2_frame= self._proceed_with_axis("2")
+            safe_log(logger, "info", "Calculating statistics for axis 2.")
+            axis_2_frame = self._proceed_with_axis("2")
             out_frame = pd.concat([out_frame, axis_2_frame], ignore_index=True)
+            safe_log(logger, "debug", f"Axis 2 results shape: {axis_2_frame.shape}")
 
+        # Prepare to write the results to file
         header = True
         mode = 'w'
-
         if 'append_to_file' in self.params.keys() and self.params['append_to_file'] == 'True':
             header = False
             mode = 'a'
-
-        export_csv = out_frame.to_csv(self.params['agg_stat_output'],
-                                      index=None, header=header, mode=mode,
-                                      sep="\t", na_rep="NA", float_format='%.'+ str(PRECISION) +'f')
+        safe_log(logger, "debug", f"Writing mode set to: {mode}, header: {header}")
+        print(out_frame)
+        # Write the output to a CSV file
+        output_file = self.params['agg_stat_output']
+        safe_log(logger, "info", f"Writing results to file: {output_file}")
+        try:
+            out_frame.to_csv(output_file,
+                            index=None, header=header, mode=mode,
+                            sep="\t", na_rep="NA", float_format='%.' + str(PRECISION) + 'f')
+            safe_log(logger, "info", f"Successfully wrote results to {output_file}")
+        except Exception as e:
+            safe_log(logger, "error", f"Error writing to file {output_file}: {e}")
 
 
 if __name__ == "__main__":

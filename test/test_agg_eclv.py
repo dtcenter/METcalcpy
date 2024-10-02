@@ -43,7 +43,10 @@ def settings():
               'agg_stat1': ['ECLV'],
               'circular_block_bootstrap': True,
               'equalize_by_indep': 'True',
-              'cl_step': 0.05
+              'cl_step': 0.05,
+              'log_dir': f'{cwd}/logs/',
+              'log_filename': 'log_agg_eclv.txt',
+              'log_level': 'WARNING'
               }
     agg_stat = AggEclv(params)
     settings_dict = dict()

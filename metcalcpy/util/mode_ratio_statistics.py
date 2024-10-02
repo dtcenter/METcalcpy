@@ -13,12 +13,13 @@ Program Name: mode_ratio_statistics.py
 """
 import warnings
 from metcalcpy.util.utils import round_half_up, PRECISION, nrow_column_data_by_name_value
+from metcalcpy.util.safe_log import safe_log
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
 
 
-def calculate_ratio_asm_asa(input_data, columns_names):
+def calculate_ratio_asm_asa(input_data, columns_names, logger=None):
     """Performs calculation of % of simple objects that are matched
 
         Args:
@@ -35,16 +36,17 @@ def calculate_ratio_asm_asa(input_data, columns_names):
     nominator_filter = {'simple_flag': 1, 'matched_flag': 1}
     denominator_filter = {'simple_flag': 1}
     try:
-        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
+        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter) 
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_ratio_fsa_asa(input_data, columns_names):
+def calculate_ratio_fsa_asa(input_data, columns_names, logger=None):
     """Performs calculation of % of simple objects that are forecast
 
         Args:
@@ -61,16 +63,17 @@ def calculate_ratio_fsa_asa(input_data, columns_names):
     nominator_filter = {'fcst_flag': 1, 'simple_flag': 1}
     denominator_filter = {'simple_flag': 1}
     try:
-        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
-        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
+        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)  
+        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)  
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_ratio_osa_asa(input_data, columns_names):
+def calculate_ratio_osa_asa(input_data, columns_names, logger=None):
     """Performs calculation of % of simple objects that are observation
 
         Args:
@@ -86,17 +89,18 @@ def calculate_ratio_osa_asa(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 0, 'simple_flag': 1}
     denominator_filter = {'simple_flag': 1}
-    try:
-        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
+    try:  
+        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter) 
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_ratio_asu_asa(input_data, columns_names):
+def calculate_ratio_asu_asa(input_data, columns_names, logger=None):
     """Performs calculation of % of simple objects that are unmatched
 
         Args:
@@ -116,13 +120,14 @@ def calculate_ratio_asu_asa(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_ratio_fsm_fsa(input_data, columns_names):
+def calculate_ratio_fsm_fsa(input_data, columns_names, logger=None):
     """Performs calculation of % of simple forecast objects that are matched
 
         Args:
@@ -142,13 +147,14 @@ def calculate_ratio_fsm_fsa(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_ratio_fsu_fsa(input_data, columns_names):
+def calculate_ratio_fsu_fsa(input_data, columns_names, logger=None):
     """Performs calculation of % of simple forecast objects that are unmatched
 
         Args:
@@ -166,15 +172,16 @@ def calculate_ratio_fsu_fsa(input_data, columns_names):
     denominator_filter = {'fcst_flag': 1, 'simple_flag': 1}
     try:
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
-        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
+        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)   
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_ratio_osm_osa(input_data, columns_names):
+def calculate_ratio_osm_osa(input_data, columns_names, logger=None):
     """Performs calculation of % of simple simple observation objects that are matched
 
         Args:
@@ -191,16 +198,18 @@ def calculate_ratio_osm_osa(input_data, columns_names):
     nominator_filter = {'fcst_flag': 0, 'simple_flag': 1, 'matched_flag': 1}
     denominator_filter = {'fcst_flag': 0, 'simple_flag': 1}
     try:
-        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
+        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)  
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_ratio_osu_osa(input_data, columns_names):
+def calculate_ratio_osu_osa(input_data, columns_names, logger=None):
     """Performs calculation of % of simple simple observation objects that are unmatched
 
         Args:
@@ -218,15 +227,16 @@ def calculate_ratio_osu_osa(input_data, columns_names):
     denominator_filter = {'fcst_flag': 0, 'simple_flag': 1}
     try:
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
-        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
+        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter) 
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_ratio_fsm_asm(input_data, columns_names):
+def calculate_ratio_fsm_asm(input_data, columns_names, logger=None):
     """Performs calculation of % of simple matched objects that are forecasts
 
         Args:
@@ -244,15 +254,16 @@ def calculate_ratio_fsm_asm(input_data, columns_names):
     denominator_filter = {'matched_flag': 1, 'simple_flag': 1}
     try:
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
-        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
+        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter) 
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_ratio_osm_asm(input_data, columns_names):
+def calculate_ratio_osm_asm(input_data, columns_names, logger=None):
     """Performs calculation of % of simple matched objects that are observations
 
         Args:
@@ -268,17 +279,18 @@ def calculate_ratio_osm_asm(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 0, 'simple_flag': 1, 'matched_flag': 0}
     denominator_filter = {'matched_flag': 1, 'simple_flag': 1}
-    try:
-        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
-        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
+    try:   
+        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)  
+        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter) 
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_ratio_fsu_asu(input_data, columns_names):
+def calculate_ratio_fsu_asu(input_data, columns_names, logger=None):
     """Performs calculation of % of simple unmatched objects that are forecast
 
         Args:
@@ -294,17 +306,18 @@ def calculate_ratio_fsu_asu(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 1, 'simple_flag': 1, 'matched_flag': 0}
     denominator_filter = {'matched_flag': 0, 'simple_flag': 1}
-    try:
-        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
-        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
+    try:   
+        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)  
+        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)  
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_ratio_osu_asu(input_data, columns_names):
+def calculate_ratio_osu_asu(input_data, columns_names, logger=None):
     """Performs calculation of % of simple unmatched objects that are observation
 
         Args:
@@ -320,17 +333,18 @@ def calculate_ratio_osu_asu(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 0, 'simple_flag': 1, 'matched_flag': 0}
     denominator_filter = {'matched_flag': 0, 'simple_flag': 1}
-    try:
-        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
-        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
+    try:    
+        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)    
+        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)    
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_ratio_fsa_aaa(input_data, columns_names):
+def calculate_ratio_fsa_aaa(input_data, columns_names, logger=None):
     """Performs calculation of ?
 
         Args:
@@ -348,16 +362,17 @@ def calculate_ratio_fsa_aaa(input_data, columns_names):
     nominator_filter = {'fcst_flag': 1, 'simple_flag': 1}
     denominator_filter = {}
     try:
-        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
-        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
-        result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)   
+        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)   
+        result = round_half_up(nominator / denominator, PRECISION)  
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_ratio_osa_aaa(input_data, columns_names):
+def calculate_ratio_osa_aaa(input_data, columns_names, logger=None):
     """Performs calculation of ?
 
         Args:
@@ -374,17 +389,18 @@ def calculate_ratio_osa_aaa(input_data, columns_names):
     ##!!!!!!!! This is the division by the count of all object_id
     nominator_filter = {'fcst_flag': 0, 'simple_flag': 1}
     denominator_filter = {}
-    try:
-        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
-        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
-        result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    try:    
+        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)       
+        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)      
+        result = round_half_up(nominator / denominator, PRECISION)  
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_ratio_fsa_faa(input_data, columns_names):
+def calculate_ratio_fsa_faa(input_data, columns_names, logger=None):
     """Performs calculation of % of all forecast objects that are simple
 
         Args:
@@ -400,17 +416,18 @@ def calculate_ratio_fsa_faa(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 1, 'simple_flag': 1}
     denominator_filter = {'fcst_flag': 1}
-    try:
-        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
-        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
+    try: 
+        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter) 
+        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter) 
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_ratio_fca_faa(input_data, columns_names):
+def calculate_ratio_fca_faa(input_data, columns_names, logger=None):
     """Performs calculation of % of all forecast objects that are cluster
 
         Args:
@@ -427,16 +444,17 @@ def calculate_ratio_fca_faa(input_data, columns_names):
     nominator_filter = {'fcst_flag': 1, 'simple_flag': 0}
     denominator_filter = {'fcst_flag': 1}
     try:
-        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
-        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
+        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter) 
+        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter) 
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_ratio_osa_oaa(input_data, columns_names):
+def calculate_ratio_osa_oaa(input_data, columns_names, logger=None):
     """Performs calculation of % of all observation objects that are simple
 
         Args:
@@ -453,16 +471,17 @@ def calculate_ratio_osa_oaa(input_data, columns_names):
     nominator_filter = {'fcst_flag': 0, 'simple_flag': 1}
     denominator_filter = {'fcst_flag': 0}
     try:
-        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
-        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
+        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter) 
+        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)  
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_ratio_oca_oaa(input_data, columns_names):
+def calculate_ratio_oca_oaa(input_data, columns_names, logger=None):
     """Performs calculation of % of all observation objects that are cluster
 
         Args:
@@ -478,17 +497,18 @@ def calculate_ratio_oca_oaa(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 0, 'simple_flag': 0}
     denominator_filter = {'fcst_flag': 0}
-    try:
-        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
-        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
+    try:   
+        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)  
+        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)  
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_ratio_fca_aca(input_data, columns_names):
+def calculate_ratio_fca_aca(input_data, columns_names, logger=None):
     """Performs calculation of % of cluster objects that are forecast
 
         Args:
@@ -504,17 +524,18 @@ def calculate_ratio_fca_aca(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 1, 'simple_flag': 0}
     denominator_filter = {'simple_flag': 0}
-    try:
-        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
-        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
+    try:  
+        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)   
+        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)  
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_ratio_oca_aca(input_data, columns_names):
+def calculate_ratio_oca_aca(input_data, columns_names, logger=None):
     """Performs calculation of % of cluster objects that are observation
 
         Args:
@@ -530,17 +551,18 @@ def calculate_ratio_oca_aca(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 0, 'simple_flag': 0}
     denominator_filter = {'simple_flag': 0}
-    try:
-        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
-        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
+    try:  
+        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter) 
+        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter) 
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_ratio_fsa_osa(input_data, columns_names):
+def calculate_ratio_fsa_osa(input_data, columns_names, logger=None):
     """Performs calculation of Ratio of simple forecasts to simple observations [frequency bias]
 
         Args:
@@ -558,15 +580,16 @@ def calculate_ratio_fsa_osa(input_data, columns_names):
     denominator_filter = {'fcst_flag': 0, 'simple_flag': 1}
     try:
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
-        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
+        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)   
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_ratio_osa_fsa(input_data, columns_names):
+def calculate_ratio_osa_fsa(input_data, columns_names, logger=None):
     """Performs calculation of Ratio of simple observations to simple forecasts [1 / frequency bias]
 
         Args:
@@ -582,17 +605,18 @@ def calculate_ratio_osa_fsa(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 0, 'simple_flag': 1}
     denominator_filter = {'fcst_flag': 1, 'simple_flag': 1}
-    try:
-        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
-        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
-        result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    try:        
+        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)       
+        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)      
+        result = round_half_up(nominator / denominator, PRECISION)  
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_ratio_aca_asa(input_data, columns_names):
+def calculate_ratio_aca_asa(input_data, columns_names, logger=None):
     """Performs calculation of Ratio of cluster objects to simple objects
 
         Args:
@@ -608,17 +632,18 @@ def calculate_ratio_aca_asa(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'simple_flag': 0}
     denominator_filter = {'simple_flag': 1}
-    try:
-        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
-        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
+    try:   
+        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)    
+        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter) 
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_ratio_asa_aca(input_data, columns_names):
+def calculate_ratio_asa_aca(input_data, columns_names, logger=None):
     """Performs calculation of Ratio of simple objects to cluster objects
 
         Args:
@@ -635,16 +660,17 @@ def calculate_ratio_asa_aca(input_data, columns_names):
     nominator_filter = {'simple_flag': 1}
     denominator_filter = {'simple_flag': 0}
     try:
-        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
-        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
+        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter) 
+        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)  
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_ratio_fca_fsa(input_data, columns_names):
+def calculate_ratio_fca_fsa(input_data, columns_names, logger=None):
     """Performs calculation of Ratio of cluster forecast objects to simple forecast objects
 
         Args:
@@ -661,16 +687,17 @@ def calculate_ratio_fca_fsa(input_data, columns_names):
     nominator_filter = {'fcst_flag': 1, 'simple_flag': 0}
     denominator_filter = {'fcst_flag': 1, 'simple_flag': 1}
     try:
-        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
+        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter) 
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_ratio_fsa_fca(input_data, columns_names):
+def calculate_ratio_fsa_fca(input_data, columns_names, logger=None):
     """Performs calculation of Ratio of simple forecast objects to cluster forecast objects
 
         Args:
@@ -690,13 +717,14 @@ def calculate_ratio_fsa_fca(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_ratio_oca_osa(input_data, columns_names):
+def calculate_ratio_oca_osa(input_data, columns_names, logger=None):
     """Performs calculation of Ratio of cluster observation objects to simple observation objects
 
         Args:
@@ -713,16 +741,17 @@ def calculate_ratio_oca_osa(input_data, columns_names):
     nominator_filter = {'fcst_flag': 0, 'simple_flag': 0}
     denominator_filter = {'fcst_flag': 0, 'simple_flag': 1}
     try:
-        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
-        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
+        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter) 
+        denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter) 
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_ratio_osa_oca(input_data, columns_names):
+def calculate_ratio_osa_oca(input_data, columns_names, logger=None):
     """Performs calculation of Ratio of simple observation objects to cluster observation objects
 
         Args:
@@ -742,13 +771,14 @@ def calculate_ratio_osa_oca(input_data, columns_names):
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter)
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_objhits(input_data, columns_names):
+def calculate_objhits(input_data, columns_names, logger=None):
     """Performs calculation of Hits =/2
 
         Args:
@@ -763,18 +793,18 @@ def calculate_objhits(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     nominator_filter = {'simple_flag': 1, 'matched_flag': 1}
-
-    try:
+    try: 
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator = 2
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_objmisses(input_data, columns_names):
+def calculate_objmisses(input_data, columns_names, logger=None):
     """Performs calculation of Misses = OSU
 
         Args:
@@ -789,17 +819,17 @@ def calculate_objmisses(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 0, 'simple_flag': 1, 'matched_flag': 0}
-
     try:
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
         result = round_half_up(nominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_objfas(input_data, columns_names):
+def calculate_objfas(input_data, columns_names, logger=None):
     """Performs calculation of False Alarms = FSU
 
         Args:
@@ -814,17 +844,17 @@ def calculate_objfas(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 1, 'simple_flag': 1, 'matched_flag': 0}
-
-    try:
-        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
+    try: 
+        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)   
         result = round_half_up(nominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_objcsi(input_data, columns_names):
+def calculate_objcsi(input_data, columns_names, logger=None):
     """Performs calculation of CSI = hits //2 + OSU + FSU]
 
         Args:
@@ -841,21 +871,19 @@ def calculate_objcsi(input_data, columns_names):
     nominator_filter = {'simple_flag': 1, 'matched_flag': 1}
     denominator_filter_1 = {'simple_flag': 1, 'matched_flag': 1}
     denominator_filter_2 = {'simple_flag': 1, 'matched_flag': 0}
-
-    try:
-        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter) / 2
-        denominator_1 = \
-            nrow_column_data_by_name_value(input_data, columns_names, denominator_filter_1) / 2
-        denominator_2 = \
-            nrow_column_data_by_name_value(input_data, columns_names, denominator_filter_2)
-        result = round_half_up(nominator / (denominator_1 + denominator_2), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    try:        
+        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter) / 2       
+        denominator_1 = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter_1) / 2      
+        denominator_2 = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter_2)     
+        result = round_half_up(nominator / (denominator_1 + denominator_2), PRECISION) 
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_objpody(input_data, columns_names):
+def calculate_objpody(input_data, columns_names, logger=None):
     """Performs calculation of Probability of Detecting Yes PODY = hits //2 + OSU]
 
         Args:
@@ -872,21 +900,19 @@ def calculate_objpody(input_data, columns_names):
     nominator_filter = {'simple_flag': 1, 'matched_flag': 1}
     denominator_filter_1 = {'simple_flag': 1, 'matched_flag': 1}
     denominator_filter_2 = {'fcst_flag': 1, 'simple_flag': 1, 'matched_flag': 0}
-
     try:
-        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
-        denominator_1 = \
-            nrow_column_data_by_name_value(input_data, columns_names, denominator_filter_1)
-        denominator_2 = \
-            nrow_column_data_by_name_value(input_data, columns_names, denominator_filter_2)
+        nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)   
+        denominator_1 = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter_1)
+        denominator_2 = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter_2)
         result = round_half_up(nominator / (denominator_1 + 2 * denominator_2), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_objfar(input_data, columns_names):
+def calculate_objfar(input_data, columns_names, logger=None):
     """Performs calculation of False alarm ratio FAR = false alarms //2 + FSU]
 
         Args:
@@ -903,15 +929,13 @@ def calculate_objfar(input_data, columns_names):
     nominator_filter = {'fcst_flag': 1, 'simple_flag': 1, 'matched_flag': 0}
     denominator_filter_1 = {'fcst_flag': 1, 'simple_flag': 1, 'matched_flag': 0}
     denominator_filter_2 = {'simple_flag': 1, 'matched_flag': 1}
-
     try:
         nominator = nrow_column_data_by_name_value(input_data, columns_names, nominator_filter)
-        denominator_1 = \
-            nrow_column_data_by_name_value(input_data, columns_names, denominator_filter_1)
-        denominator_2 = \
-            nrow_column_data_by_name_value(input_data, columns_names, denominator_filter_2)
+        denominator_1 = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter_1)
+        denominator_2 = nrow_column_data_by_name_value(input_data, columns_names, denominator_filter_2)
         result = round_half_up(nominator / (denominator_1 + denominator_2 / 2), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result

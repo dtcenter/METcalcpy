@@ -14,12 +14,13 @@ Program Name: mode_arearat_statistics.py
 import warnings
 from metcalcpy.util.utils import round_half_up, PRECISION, \
     column_data_by_name_value, sum_column_data_by_name
+from metcalcpy.util.safe_log import safe_log
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
 
 
-def calculate_arearat_fsa_asa(input_data, columns_names):
+def calculate_arearat_fsa_asa(input_data, columns_names, logger=None):
     """Performs calculation of Area-weighted % of simple objects that are forecast
 
         Args:
@@ -36,19 +37,19 @@ def calculate_arearat_fsa_asa(input_data, columns_names):
     nominator_filter = {'fcst_flag': 1, 'simple_flag': 1}
     denominator_filter = {'simple_flag': 1}
 
-    try:
+    try:    
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
-        result = round_half_up(nominator / (denominator), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = round_half_up(nominator / denominator, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "error", f"Error during calculation: {str(e)}.")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_arearat_osa_asa(input_data, columns_names):
+def calculate_arearat_osa_asa(input_data, columns_names, logger=None):
     """Performs calculation of Area-weighted % of simple objects that are observation
 
         Args:
@@ -70,14 +71,14 @@ def calculate_arearat_osa_asa(input_data, columns_names):
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
-        result = round_half_up(nominator / (denominator), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = round_half_up(nominator / denominator, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "error", f"Error during calculation: {str(e)}.")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_arearat_asm_asa(input_data, columns_names):
+def calculate_arearat_asm_asa(input_data, columns_names, logger=None):
     """Performs calculation of Area-weighted % of simple objects that are matched
 
         Args:
@@ -93,20 +94,19 @@ def calculate_arearat_asm_asa(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'simple_flag': 1, 'matched_flag': 1}
     denominator_filter = {'simple_flag': 1}
-
     try:
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
-        result = round_half_up(nominator / (denominator), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = round_half_up(nominator / denominator, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "error", f"Error during calculation: {str(e)}.")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_arearat_asu_asa(input_data, columns_names):
+def calculate_arearat_asu_asa(input_data, columns_names, logger=None):
     """Performs calculation of Area-weighted % of simple objects that are unmatched
 
         Args:
@@ -122,20 +122,19 @@ def calculate_arearat_asu_asa(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'simple_flag': 1, 'matched_flag': 0}
     denominator_filter = {'simple_flag': 1}
-
     try:
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
-        result = round_half_up(nominator / (denominator), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = round_half_up(nominator / denominator, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "error", f"Error during calculation: {str(e)}.")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_arearat_fsm_fsa(input_data, columns_names):
+def calculate_arearat_fsm_fsa(input_data, columns_names, logger=None):
     """Performs calculation of Area-weighted % of simple forecast objects that are matched
 
         Args:
@@ -151,20 +150,19 @@ def calculate_arearat_fsm_fsa(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 1, 'simple_flag': 1, 'matched_flag': 1}
     denominator_filter = {'fcst_flag': 1, 'simple_flag': 1}
-
     try:
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
-        result = round_half_up(nominator / (denominator), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = round_half_up(nominator / denominator, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "error", f"Error during calculation: {str(e)}.")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_arearat_fsu_fsa(input_data, columns_names):
+def calculate_arearat_fsu_fsa(input_data, columns_names, logger=None):
     """Performs calculation of Area-weighted % of simple forecast objects that are unmatched
 
         Args:
@@ -180,20 +178,19 @@ def calculate_arearat_fsu_fsa(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 1, 'simple_flag': 1, 'matched_flag': 0}
     denominator_filter = {'fcst_flag': 1, 'simple_flag': 1}
-
     try:
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
-        result = round_half_up(nominator / (denominator), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = round_half_up(nominator / denominator, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "error", f"Error during calculation: {str(e)}.")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_arearat_osm_osa(input_data, columns_names):
+def calculate_arearat_osm_osa(input_data, columns_names, logger=None):
     """Performs calculation of Area-weighted % of simple simple observation objects that are matched
 
         Args:
@@ -209,20 +206,20 @@ def calculate_arearat_osm_osa(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 0, 'simple_flag': 1, 'matched_flag': 1}
     denominator_filter = {'fcst_flag': 0, 'simple_flag': 1}
-
     try:
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
-        result = round_half_up(nominator / (denominator), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = round_half_up(nominator / denominator, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "error", f"Error during calculation: {str(e)}.")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_arearat_osu_osa(input_data, columns_names):
+def calculate_arearat_osu_osa(input_data, columns_names, logger=None):
     """Performs calculation of Area-weighted % of simple simple observation objects
         that are unmatched
 
@@ -239,20 +236,20 @@ def calculate_arearat_osu_osa(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 0, 'simple_flag': 1, 'matched_flag': 0}
     denominator_filter = {'fcst_flag': 0, 'simple_flag': 1}
-
     try:
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
-        result = round_half_up(nominator / (denominator), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = round_half_up(nominator / denominator, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "error", f"Error during calculation: {str(e)}.")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_arearat_fsm_asm(input_data, columns_names):
+def calculate_arearat_fsm_asm(input_data, columns_names, logger=None):
     """Performs calculation of Area-weighted % of simple matched objects that are forecasts
 
         Args:
@@ -268,20 +265,20 @@ def calculate_arearat_fsm_asm(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 1, 'simple_flag': 1, 'matched_flag': 0}
     denominator_filter = {'fcst_flag': 1, 'simple_flag': 1}
-
     try:
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
-        result = round_half_up(nominator / (denominator), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = round_half_up(nominator / denominator, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "error", f"Error during calculation: {str(e)}.")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_arearat_osm_asm(input_data, columns_names):
+def calculate_arearat_osm_asm(input_data, columns_names, logger=None):
     """Performs calculation of Area-weighted % of simple matched objects that are observations
 
         Args:
@@ -297,20 +294,20 @@ def calculate_arearat_osm_asm(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 0, 'simple_flag': 1, 'matched_flag': 1}
     denominator_filter = {'simple_flag': 1, 'matched_flag': 1}
-
-    try:
+    try:    
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
-        result = round_half_up(nominator / (denominator), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = round_half_up(nominator / denominator, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "error", f"Error during calculation: {str(e)}.")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_arearat_osu_asu(input_data, columns_names):
+def calculate_arearat_osu_asu(input_data, columns_names, logger=None):
     """Performs calculation of Area-weighted % of simple unmatched objects that are observation
 
         Args:
@@ -332,14 +329,16 @@ def calculate_arearat_osu_asu(input_data, columns_names):
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
-        result = round_half_up(nominator / (denominator), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = round_half_up(nominator / denominator, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "error", f"Error during calculation: {str(e)}.")
         result = None
+
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_arearat_fsa_aaa(input_data, columns_names):
+def calculate_arearat_fsa_aaa(input_data, columns_names, logger=None):
     """Performs calculation of Area-weighted ?
 
         Args:
@@ -359,14 +358,15 @@ def calculate_arearat_fsa_aaa(input_data, columns_names):
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(input_data, columns_names, 'area')
-        result = round_half_up(nominator / (denominator), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = round_half_up(nominator / denominator, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "error", f"Error during calculation: {str(e)}.")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_arearat_osa_aaa(input_data, columns_names):
+def calculate_arearat_osa_aaa(input_data, columns_names, logger=None):
     """Performs calculation of Area-weighted ?
 
         Args:
@@ -381,19 +381,19 @@ def calculate_arearat_osa_aaa(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 0, 'simple_flag': 1}
-
     try:
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(input_data, columns_names, 'area')
-        result = round_half_up(nominator / (denominator), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        result = round_half_up(nominator / denominator, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "error", f"Error during calculation: {str(e)}.")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_arearat_fsa_faa(input_data, columns_names):
+def calculate_arearat_fsa_faa(input_data, columns_names, logger=None):
     """Performs calculation of Area-weighted % of all forecast objects that are simple
 
         Args:
@@ -409,20 +409,20 @@ def calculate_arearat_fsa_faa(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 1, 'simple_flag': 1}
     denominator_filter = {'fcst_flag': 1}
-
     try:
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "error", f"Error during calculation: {str(e)}.")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_arearat_fca_faa(input_data, columns_names):
+def calculate_arearat_fca_faa(input_data, columns_names, logger=None):
     """Performs calculation of Area-weighted % of all forecast objects that are cluster
 
         Args:
@@ -438,20 +438,20 @@ def calculate_arearat_fca_faa(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 1, 'simple_flag': 0}
     denominator_filter = {'fcst_flag': 1}
-
     try:
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "error", f"Error during calculation: {str(e)}.")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_arearat_osa_oaa(input_data, columns_names):
+def calculate_arearat_osa_oaa(input_data, columns_names, logger=None):
     """Performs calculation of Area-weighted % of all observation objects that are simple
 
         Args:
@@ -467,20 +467,20 @@ def calculate_arearat_osa_oaa(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 0, 'simple_flag': 1}
     denominator_filter = {'fcst_flag': 0}
-
     try:
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "error", f"Error during calculation: {str(e)}.")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_arearat_oca_oaa(input_data, columns_names):
+def calculate_arearat_oca_oaa(input_data, columns_names, logger=None):
     """Performs calculation of Area-weighted % of all observation objects that are cluster
 
         Args:
@@ -496,20 +496,20 @@ def calculate_arearat_oca_oaa(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 0, 'simple_flag': 0}
     denominator_filter = {'fcst_flag': 0}
-
     try:
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "error", f"Error during calculation: {str(e)}.")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_arearat_fca_aca(input_data, columns_names):
+def calculate_arearat_fca_aca(input_data, columns_names, logger=None):
     """Performs calculation of Area-weighted % of cluster objects that are forecast
 
         Args:
@@ -525,20 +525,20 @@ def calculate_arearat_fca_aca(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 1, 'simple_flag': 0}
     denominator_filter = {'simple_flag': 0}
-
     try:
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "error", f"Error during calculation: {str(e)}.")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_arearat_oca_aca(input_data, columns_names):
+def calculate_arearat_oca_aca(input_data, columns_names, logger=None):
     """Performs calculation of Area-weighted % of cluster objects that are observation
 
         Args:
@@ -554,20 +554,20 @@ def calculate_arearat_oca_aca(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 0, 'simple_flag': 0}
     denominator_filter = {'simple_flag': 0}
-
     try:
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "error", f"Error during calculation: {str(e)}.")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_arearat_fsa_osa(input_data, columns_names):
+def calculate_arearat_fsa_osa(input_data, columns_names, logger=None):
     """Performs calculation of Area Ratio of simple forecasts
         to simple observations [frequency bias]
 
@@ -584,20 +584,20 @@ def calculate_arearat_fsa_osa(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 1, 'simple_flag': 1}
     denominator_filter = {'fcst_flag': 0, 'simple_flag': 1}
-
     try:
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
-        nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
+        nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_arearat_osa_fsa(input_data, columns_names):
+def calculate_arearat_osa_fsa(input_data, columns_names, logger=None):
     """Performs calculation of Area Ratio of simple observations
         to simple forecasts [1 / frequency bias]
 
@@ -614,20 +614,20 @@ def calculate_arearat_osa_fsa(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 0, 'simple_flag': 1}
     denominator_filter = {'fcst_flag': 0, 'simple_flag': 1}
-
     try:
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
-        nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
+        nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_arearat_aca_asa(input_data, columns_names):
+def calculate_arearat_aca_asa(input_data, columns_names, logger=None):
     """Performs calculation of Area Ratio of cluster objects to simple objects
 
         Args:
@@ -643,20 +643,20 @@ def calculate_arearat_aca_asa(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'simple_flag': 0}
     denominator_filter = {'simple_flag': 1}
-
     try:
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
-        nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
+        nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_arearat_asa_aca(input_data, columns_names):
+def calculate_arearat_asa_aca(input_data, columns_names, logger=None):
     """Performs calculation of Area Ratio of simple objects to cluster objects
 
         Args:
@@ -672,20 +672,20 @@ def calculate_arearat_asa_aca(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'simple_flag': 1}
     denominator_filter = {'simple_flag': 0}
-
     try:
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
-        nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
+        nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_arearat_fca_fsa(input_data, columns_names):
+def calculate_arearat_fca_fsa(input_data, columns_names, logger=None):
     """Performs calculation of Area Ratio of cluster forecast objects to simple forecast objects
 
         Args:
@@ -701,20 +701,20 @@ def calculate_arearat_fca_fsa(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 1, 'simple_flag': 0}
     denominator_filter = {'fcst_flag': 1, 'simple_flag': 1}
-
     try:
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
-        nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
+        nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_arearat_fsa_fca(input_data, columns_names):
+def calculate_arearat_fsa_fca(input_data, columns_names, logger=None):
     """Performs calculation of Area Ratio of simple forecast objects to cluster forecast objects
 
         Args:
@@ -730,20 +730,20 @@ def calculate_arearat_fsa_fca(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 1, 'simple_flag': 1}
     denominator_filter = {'fcst_flag': 1, 'simple_flag': 0}
-
     try:
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
-        nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
+        nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_arearat_oca_osa(input_data, columns_names):
+def calculate_arearat_oca_osa(input_data, columns_names, logger=None):
     """Performs calculation of Area Ratio of cluster observation objects to
         simple observation objects
 
@@ -760,20 +760,20 @@ def calculate_arearat_oca_osa(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 0, 'simple_flag': 0}
     denominator_filter = {'fcst_flag': 0, 'simple_flag': 1}
-
     try:
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
-        nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
+        nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_arearat_osa_oca(input_data, columns_names):
+def calculate_arearat_osa_oca(input_data, columns_names, logger=None):
     """Performs calculation of Area Ratio of simple observation objects to
         cluster observation objects
 
@@ -790,20 +790,20 @@ def calculate_arearat_osa_oca(input_data, columns_names):
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 0, 'simple_flag': 1}
     denominator_filter = {'fcst_flag': 0, 'simple_flag': 0}
-
     try:
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
-        nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator_data = column_data_by_name_value(input_data, columns_names, denominator_filter)
+        nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = sum_column_data_by_name(denominator_data, columns_names, 'area')
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_objahits(input_data, columns_names):
+def calculate_objahits(input_data, columns_names, logger=None):
     """Performs calculation of Area Hits =/2
 
         Args:
@@ -818,19 +818,19 @@ def calculate_objahits(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     nominator_filter = {'simple_flag': 1, 'matched_flag': 1}
-
     try:
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         denominator = 2
         result = round_half_up(nominator / denominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_objamisses(input_data, columns_names):
+def calculate_objamisses(input_data, columns_names, logger=None):
     """Performs calculation of Area Misses = OSU
 
         Args:
@@ -845,18 +845,18 @@ def calculate_objamisses(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 0, 'simple_flag': 1, 'matched_flag': 0}
-
     try:
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         result = round_half_up(nominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_objafas(input_data, columns_names):
+def calculate_objafas(input_data, columns_names, logger=None):
     """Performs calculation of Area False Alarms = FSU
 
         Args:
@@ -871,18 +871,18 @@ def calculate_objafas(input_data, columns_names):
     """
     warnings.filterwarnings('error')
     nominator_filter = {'fcst_flag': 1, 'simple_flag': 1, 'matched_flag': 0}
-
     try:
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
         result = round_half_up(nominator, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_objacsi(input_data, columns_names):
+def calculate_objacsi(input_data, columns_names, logger=None):
     """Performs calculation of Area critical success index CSI = hits //2 + OSU + FSU]
 
         Args:
@@ -899,26 +899,22 @@ def calculate_objacsi(input_data, columns_names):
     nominator_filter = {'simple_flag': 1, 'matched_flag': 1}
     denominator_filter_1 = {'simple_flag': 1, 'matched_flag': 1}
     denominator_filter_2 = {'simple_flag': 1, 'matched_flag': 0}
-
     try:
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area') / 2
-
-        denominator_1_data = \
-            column_data_by_name_value(input_data, columns_names, denominator_filter_1)
+        denominator_1_data = column_data_by_name_value(input_data, columns_names, denominator_filter_1)
         denominator_1 = sum_column_data_by_name(denominator_1_data, columns_names, 'area') / 2
-
-        denominator_2_data = \
-            column_data_by_name_value(input_data, columns_names, denominator_filter_2)
+        denominator_2_data = column_data_by_name_value(input_data, columns_names, denominator_filter_2)
         denominator_2 = sum_column_data_by_name(denominator_2_data, columns_names, 'area')
         result = round_half_up(nominator / (denominator_1 + denominator_2), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_objapody(input_data, columns_names):
+def calculate_objapody(input_data, columns_names, logger=None):
     """Performs calculation of Area prob of detecting yes PODY = hits //2 + OSU]
 
         Args:
@@ -939,22 +935,19 @@ def calculate_objapody(input_data, columns_names):
     try:
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
-
-        denominator_1_data = \
-            column_data_by_name_value(input_data, columns_names, denominator_filter_1)
+        denominator_1_data = column_data_by_name_value(input_data, columns_names, denominator_filter_1)
         denominator_1 = sum_column_data_by_name(denominator_1_data, columns_names, 'area')
-
-        denominator_2_data = \
-            column_data_by_name_value(input_data, columns_names, denominator_filter_2)
+        denominator_2_data = column_data_by_name_value(input_data, columns_names, denominator_filter_2)
         denominator_2 = sum_column_data_by_name(denominator_2_data, columns_names, 'area')
         result = round_half_up(nominator / (denominator_1 + 2 * denominator_2), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_objafar(input_data, columns_names):
+def calculate_objafar(input_data, columns_names, logger=None):
     """Performs calculation of Area FAR = false alarms //2 + FSU]
 
         Args:
@@ -975,16 +968,13 @@ def calculate_objafar(input_data, columns_names):
     try:
         nominator_data = column_data_by_name_value(input_data, columns_names, nominator_filter)
         nominator = sum_column_data_by_name(nominator_data, columns_names, 'area')
-
-        denominator_1_data = \
-            column_data_by_name_value(input_data, columns_names, denominator_filter_1)
+        denominator_1_data = column_data_by_name_value(input_data, columns_names, denominator_filter_1)
         denominator_1 = sum_column_data_by_name(denominator_1_data, columns_names, 'area')
-
-        denominator_2_data = \
-            column_data_by_name_value(input_data, columns_names, denominator_filter_2)
+        denominator_2_data = column_data_by_name_value(input_data, columns_names, denominator_filter_2)
         denominator_2 = sum_column_data_by_name(denominator_2_data, columns_names, 'area')
         result = round_half_up(nominator / (denominator_1 + 2 * denominator_2), PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result

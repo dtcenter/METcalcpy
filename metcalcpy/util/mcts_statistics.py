@@ -14,11 +14,12 @@ Program Name: mcts_statistics.py
 import warnings
 import numpy as np
 from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION
+from metcalcpy.util.safe_log import safe_log
 
 __author__ = 'Tatiana Burek'
 
 
-def calculate_mcts_hss_ec(input_data, columns_names):
+def calculate_mcts_hss_ec(input_data, columns_names, logger=None):
     """Performs calculation of HSS_EC - a skill score based on Accuracy,
 
         Args:
@@ -38,29 +39,38 @@ def calculate_mcts_hss_ec(input_data, columns_names):
         n_cat = row[np.where(columns_names == 'n_cat')[0][0]]
         ec_value = row[np.where(columns_names == 'ec_value')[0][0]]
 
-        # aggregate all fi_oj in one row
+        safe_log(logger, "debug", f"Number of categories (n_cat): {n_cat}")
+        safe_log(logger, "debug", f"Expected correct (ec_value): {ec_value}")
+
+        # Aggregate all fi_oj in one row
         for index in range(n_cat * n_cat):
             column_name = 'fi_oj_' + str(index)
             row[np.where(columns_names == column_name)[0][0]] = \
                 sum_column_data_by_name(input_data, columns_names, column_name)
 
-        # init contingency table
+        # Initialize contingency table
         cont_table = [[0] * n_cat for _ in range(n_cat)]
 
-        # fill contingency table
+        # Fill contingency table
         for index in range(n_cat * n_cat):
             i_value = row[np.where(columns_names == 'i_value_' + str(index))[0][0]]
             j_value = row[np.where(columns_names == 'j_value_' + str(index))[0][0]]
             fi_oj = row[np.where(columns_names == 'fi_oj_' + str(index))[0][0]]
             cont_table[i_value - 1][j_value - 1] = fi_oj
 
-        # calculate the sum of the counts on the diagonal and
-        # the sum of the counts across the whole MCTC table
+        safe_log(logger, "debug", f"Contingency table: {cont_table}")
+
+        # Calculate the sum of the counts on the diagonal and the sum of the counts across the whole MCTC table
         diag_count = sum([cont_table[i][j] for i in range(n_cat) for j in range(n_cat) if i == j])
         sum_all = sum(sum(cont_table, []))
         result = (diag_count - (ec_value * sum_all)) / (sum_all - (ec_value * sum_all))
         result = round_half_up(result, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+
+        safe_log(logger, "debug", f"Calculated HSS_EC: {result}")
+
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "error", f"Error encountered during calculation: {str(e)}")
         result = None
+
     warnings.filterwarnings('ignore')
     return result
