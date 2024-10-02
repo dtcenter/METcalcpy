@@ -61,8 +61,8 @@ logging settings in Python scripts.
 | :code:`log_level:` Determines the verbosity of the log output. 
   Available levels are :code:`DEBUG`, :code:`INFO`, :code:`WARNING`, 
   and :code:`ERROR:`.
-| :code:`log_level:` By setting the appropriate log level in your YAML configuration 
-  file (e.g., log_level: WARNING), you can control the verbosity of the log output, 
+| :code:`log_level:` By setting the appropriate log level in the YAML configuration 
+  file (e.g., log_level: WARNING), the user can control the verbosity of the log output, 
   ensuring that only the necessary information is recorded.
 
 METcalcpy supports the following log levels:
@@ -149,10 +149,10 @@ for debugging and system monitoring.
 How to Use Logging in METcalcpy
 -------------------------------
 
-**Step 1: Configure Logging in Your YAML File**
+**Step 1: Configure Logging in the YAML File**
 
-Begin by opening your YAML configuration file (e.g., **val1l2_agg_stat.yaml**) 
-and insert the logging parameters at the top level of your YAML file:
+Begin by opening the YAML configuration file (e.g., **val1l2_agg_stat.yaml**) 
+and insert the logging parameters at the top level of the YAML file:
 
 | :code:`log_dir: /path/to/your/log/directory`
 | :code:`log_filename: my_application_log.txt`
@@ -160,8 +160,9 @@ and insert the logging parameters at the top level of your YAML file:
 
 **Step 2: Execute METcalcpy Scripts**
 
-With logging configured in your YAML file, run your METcalcpy scripts as usual. 
-The logging system will automatically manage log files according to your specified settings.
+With logging configured in the YAML file, run the METcalcpy scripts as usual. 
+The logging system will automatically manage log files according to the user's 
+specified settings.
 
 **Additional Notes**
 
