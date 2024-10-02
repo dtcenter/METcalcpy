@@ -57,9 +57,12 @@ logging settings in Python scripts.
 **Key Parameters in YAML Configuration:**
 
 :code:`log_dir:` Specifies the directory where log files are stored.
+
 :code:`log_filename:` Defines the name of the log file.
+
 :code:`log_level:` Determines the verbosity of the log output. 
-Available levels are DEBUG, INFO, WARNING, and ERROR.
+Available levels are :code:`DEBUG, INFO, WARNING, and ERROR:`.
+
 :code:`log_level:` By setting the appropriate log level in your YAML configuration 
 file (e.g., log_level: WARNING), you can control the verbosity of the log output, 
 ensuring that only the necessary information is recorded.
