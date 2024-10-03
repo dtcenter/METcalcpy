@@ -132,7 +132,7 @@ rACA_ASA = 0.3591923
             ("fsa_faa", rFSA_FAA),
             ("fca_faa", 1- rFSA_FAA),
             ("osa_oaa", rOSA_OAA),
-            ("oca_oaa", 1 - rOSA_OAA),
+            ("oca_oaa", rOSA_OAA),
             ("fca_aca", rFCA_ACA),
             ("oca_aca", 1 - rFCA_ACA),
             ("fsa_osa", rFSA_AAA/rOSA_AAA),
