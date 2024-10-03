@@ -563,7 +563,7 @@ def calculate_3d_ratio_osa_fsa(input_data, columns_names, logger=None):
             calculated statistic as float
             or None if some of the data values are missing or invalid
     """
-     try:
+    try:
         safe_log(logger, "debug", "Filtering data based on THREE_D_DATA_FILTER.")
         filtered_data = column_data_by_name_value(input_data, columns_names, THREE_D_DATA_FILTER)
 
