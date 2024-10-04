@@ -127,8 +127,8 @@ program terminations gracefully by setting up signal handlers.
 
   * **Supported Signals:**
 
-    * **SIGINT:** Typically triggered by pressing :code:`CTRL+C` to interrupt the program.
-    * **SIGTERM:** Sent by other processes to request the program to stop gracefully.
+    * **SIGINT:** Typically triggered by pressing :code:`CTRL+C` to interrupt the program
+    * **SIGTERM:** Sent by other processes to request the program to stop gracefully
 
 When these signals are intercepted, a message like "Received signal ... Shutting down." 
 is logged, providing insight into the cause of the termination. This feature is valuable 
