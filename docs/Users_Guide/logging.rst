@@ -8,8 +8,8 @@ within METcalcpy. These enhancements are designed to provide users with valuable
 into the application's execution, aiding in tasks such as debugging, performance monitoring, 
 and understanding the operational flow of the program.
 
-Centralized Logging Configuration (**logging_config.py**)
-=========================================================
+Centralized Logging Configuration
+=================================
 
 A script, **logging_config.py**, has been introduced to centralize the management of logging 
 configurations. This approach ensures consistency and simplifies the maintenance of logging 
@@ -75,7 +75,7 @@ METcalcpy supports the following log levels:
 3. **WARNING:**
 
   * **Purpose:** Logs potential issues that are not immediately critical but could lead to problems
-  * **Use Case:** Useful for highlighting areas that may require attention but don't stop the application from running
+  * **Use Case:** Useful for highlighting areas that may require attention but doesn't stop the application from running
 
 4. **ERROR:**
 
@@ -94,13 +94,12 @@ improving readability and facilitating easier analysis of log data.
     (e.g., :code:`2023-12-19 18:20:00 UTC`), ensuring consistent timekeeping across systems.
   * **User ID:** The User ID of the script initiator is included, aiding traceability, 
     particularly in multi-user environments.
-  * **Log Level:** Indicates the severity of the message 
-    (e.g., DEBUG, INFO, WARNING, ERROR).
+  * **Log Level:** Indicates the severity of the message (e.g., DEBUG, INFO, WARNING, ERROR)
   * **Log Message:** The main content of the log entry, which may provide context 
-    about events or operations within the script.
+    about events or operations within the script
 
-Safe Logging Utility (safe_log.py)
-==================================
+Safe Logging Utility
+====================
 
 A utility function, :code:`safe_log`, is introduced in **safe_log.py** to 
 enhance the robustness of logging operations.
