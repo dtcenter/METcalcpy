@@ -40,13 +40,13 @@ Example Integration in **agg_stat.py**:
 In this example, when an :code:`AggStat object` is instantiated, it invokes the 
 :code:`setup_logging` function, passing in the :code:`in_params` dictionary, 
 which contains logging configurations from a YAML file such as 
-0**val1l2_agg_stat.yaml**. This ensures the logger is configured according to 
+**val1l2_agg_stat.yaml**. This ensures the logger is configured according to 
 the user's settings.
 
 YAML-Driven Configuration
 =========================
 
-METcalcpy now allows users to customize logging behavior directly within 
+METcalcpy allows users to customize logging behavior directly within 
 the user's YAML configuration files, eliminating the need for hardcoding 
 logging settings in Python scripts.
 
