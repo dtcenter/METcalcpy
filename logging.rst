@@ -1,6 +1,6 @@
-****************
-Logging In Guide
-****************
+*******
+Logging
+*******
 
 
 This guide provides a comprehensive overview of the newly integrated logging capabilities 
@@ -66,31 +66,25 @@ logging settings in Python scripts.
 
 METcalcpy supports the following log levels:
 
-  1. **DEBUG:**
+1. **DEBUG:**
 
-    * **Purpose:** Captures detailed information for diagnosing issues.
-    * **Use Case:** Ideal during development or troubleshooting to see all 
-      the internal workings of the application.
+  * **Purpose:** Captures detailed information for diagnosing issues.
+  * **Use Case:** Ideal during development or troubleshooting to see all the internal workings of the application.
 
-  2. **INFO:**
+2. **INFO:**
 
-    * **Purpose:** Records general information about the application's execution.
-    * **Use Case:** Suitable for tracking the progress and key events 
-      in the application's workflow without overwhelming detail.
+  * **Purpose:** Records general information about the application's execution.
+  * **Use Case:** Suitable for tracking the progress and key events in the application's workflow without overwhelming detail.
 
-  3. **WARNING:**
+3. **WARNING:**
 
-    * **Purpose:** Logs potential issues that are not immediately critical but 
-      could lead to problems.
-    * **Use Case:** Useful for highlighting areas that may require attention 
-      but don't stop the application from running.
+  * **Purpose:** Logs potential issues that are not immediately critical but could lead to problems.
+  * **Use Case:** Useful for highlighting areas that may require attention but don't stop the application from running.
 
-  4. **ERROR:**
+4. **ERROR:**
 
-    * **Purpose:** Captures serious issues that prevent parts of the 
-      application from functioning correctly.
-    * **Use Case:** Necessary for logging events that require immediate 
-      attention and could cause the application to fail or produce incorrect results.
+  * **Purpose:** Captures serious issues that prevent parts of the application from functioning correctly.
+  * **Use Case:** Necessary for logging events that require immediate attention and could cause the application to fail or produce incorrect results.
 
 Informative Log Formatting
 --------------------------
@@ -165,15 +159,10 @@ specified settings.
 
 **Additional Notes**
 
-  * **UTC Timestamps:** METcalcpy uses UTC for all log timestamps, 
-    ensuring consistency across systems and time zones.
-  * **Log File Appending:** Logs are appended to existing files when scripts 
-    are executed multiple times with the same configuration.
+  * **UTC Timestamps:** METcalcpy uses UTC for all log timestamps, ensuring consistency across systems and time zones.
+  * **Log File Appending:** Logs are appended to existing files when scripts are executed multiple times with the same configuration.
 
 **Example Log Entry:**
 
 :code:`2023-12-19 18:20:00 UTC | user123 | INFO | Data loading completed successfully.`
-
-
-
 
