@@ -20,7 +20,11 @@ configurations. This approach ensures consistency and simplifies the maintenance
 settings across all modules within METcalcpy.
 
 
+<<<<<<< HEAD
 * **Key Feature:** :code:`setup_logging` **Function**
+=======
+* Key Feature: :code:`setup_logging` function
+>>>>>>> develop
 
   * The :code:`setup_logging` function is the core of **logging_config.py**. It initializes 
     and configures the logger instance based on parameters specified in a YAML configuration 
@@ -51,11 +55,16 @@ YAML-Driven Configuration
 -------------------------
 
 METcalcpy now allows users to customize logging behavior directly within 
+<<<<<<< HEAD
 the user's YAML configuration files, eliminating the need for hardcoding 
+=======
+their YAML configuration files, eliminating the need for hardcoding 
+>>>>>>> develop
 logging settings in Python scripts.
 
 **Key Parameters in YAML Configuration:**
 
+<<<<<<< HEAD
 | :code:`log_dir:` Specifies the directory where log files are stored.
 | :code:`log_filename:` Defines the name of the log file.
 | :code:`log_level:` Determines the verbosity of the log output. 
@@ -63,6 +72,18 @@ logging settings in Python scripts.
 | :code:`log_level:` By setting the appropriate log level in the YAML configuration 
   file (e.g., log_level: WARNING), the user can control the verbosity of the log output, 
   ensuring that only the necessary information is recorded.
+=======
+:code:`log_dir:` Specifies the directory where log files are stored.
+
+:code:`log_filename:` Defines the name of the log file.
+
+:code:`log_level:` Determines the verbosity of the log output. 
+Available levels are :code:`DEBUG, INFO, WARNING, and ERROR:`.
+
+:code:`log_level:` By setting the appropriate log level in your YAML configuration 
+file (e.g., log_level: WARNING), you can control the verbosity of the log output, 
+ensuring that only the necessary information is recorded.
+>>>>>>> develop
 
 METcalcpy supports the following log levels:
 
@@ -98,6 +119,7 @@ Informative Log Formatting
 Log messages in METcalcpy are meticulously formatted to include detailed information, 
 improving readability and facilitating easier analysis of log data.
 
+<<<<<<< HEAD
 **Standard Log Format Includes:**
 
   * **Timestamp (UTC):** Each log message is tagged with a UTC timestamp 
@@ -173,6 +195,13 @@ specified settings.
 **Example Log Entry:**
 
 :code:`2023-12-19 18:20:00 UTC | user123 | INFO | Data loading completed successfully.`
+=======
+
+
+
+
+
+>>>>>>> develop
 
 
 
