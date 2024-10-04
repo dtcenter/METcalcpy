@@ -3,7 +3,7 @@ Logging
 *******
 
 
-This guide provides a comprehensive overview of the newly integrated logging capabilities 
+This guide provides a comprehensive overview of the integrated logging capabilities 
 within METcalcpy. These enhancements are designed to provide users with valuable insights 
 into the application's execution, aiding in tasks such as debugging, performance monitoring, 
 and understanding the operational flow of the program.
@@ -11,7 +11,7 @@ and understanding the operational flow of the program.
 Centralized Logging Configuration (**logging_config.py**)
 =========================================================
 
-A new script, **logging_config.py**, has been introduced to centralize the management of logging 
+A script, **logging_config.py**, has been introduced to centralize the management of logging 
 configurations. This approach ensures consistency and simplifies the maintenance of logging 
 settings across all modules within METcalcpy.
 
