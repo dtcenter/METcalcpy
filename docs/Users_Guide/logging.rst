@@ -64,23 +64,23 @@ METcalcpy supports the following log levels:
 
 1. **DEBUG:**
 
-  * **Purpose:** Captures detailed information for diagnosing issues.
-  * **Use Case:** Ideal during development or troubleshooting to see all the internal workings of the application.
+  * **Purpose:** Captures detailed information for diagnosing issues
+  * **Use Case:** Ideal during development or troubleshooting to see all the internal workings of the application
 
 2. **INFO:**
 
-  * **Purpose:** Records general information about the application's execution.
-  * **Use Case:** Suitable for tracking the progress and key events in the application's workflow without overwhelming detail.
+  * **Purpose:** Records general information about the application's execution
+  * **Use Case:** Suitable for tracking the progress and key events in the application's workflow without overwhelming detail
 
 3. **WARNING:**
 
-  * **Purpose:** Logs potential issues that are not immediately critical but could lead to problems.
-  * **Use Case:** Useful for highlighting areas that may require attention but don't stop the application from running.
+  * **Purpose:** Logs potential issues that are not immediately critical but could lead to problems
+  * **Use Case:** Useful for highlighting areas that may require attention but don't stop the application from running
 
 4. **ERROR:**
 
-  * **Purpose:** Captures serious issues that prevent parts of the application from functioning correctly.
-  * **Use Case:** Necessary for logging events that require immediate attention and could cause the application to fail or produce incorrect results.
+  * **Purpose:** Captures serious issues that prevent parts of the application from functioning correctly
+  * **Use Case:** Necessary for logging events that require immediate attention and could cause the application to fail or produce incorrect results
 
 Informative Log Formatting
 ==========================
