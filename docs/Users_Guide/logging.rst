@@ -1,6 +1,6 @@
-****************
-Logging In Guide
-****************
+*******
+Logging
+*******
 
 
 This guide provides a comprehensive overview of the newly integrated logging capabilities 
@@ -20,11 +20,7 @@ configurations. This approach ensures consistency and simplifies the maintenance
 settings across all modules within METcalcpy.
 
 
-<<<<<<< HEAD
 * **Key Feature:** :code:`setup_logging` **Function**
-=======
-* Key Feature: :code:`setup_logging` function
->>>>>>> develop
 
   * The :code:`setup_logging` function is the core of **logging_config.py**. It initializes 
     and configures the logger instance based on parameters specified in a YAML configuration 
@@ -55,16 +51,11 @@ YAML-Driven Configuration
 -------------------------
 
 METcalcpy now allows users to customize logging behavior directly within 
-<<<<<<< HEAD
 the user's YAML configuration files, eliminating the need for hardcoding 
-=======
-their YAML configuration files, eliminating the need for hardcoding 
->>>>>>> develop
 logging settings in Python scripts.
 
 **Key Parameters in YAML Configuration:**
 
-<<<<<<< HEAD
 | :code:`log_dir:` Specifies the directory where log files are stored.
 | :code:`log_filename:` Defines the name of the log file.
 | :code:`log_level:` Determines the verbosity of the log output. 
@@ -72,46 +63,28 @@ logging settings in Python scripts.
 | :code:`log_level:` By setting the appropriate log level in the YAML configuration 
   file (e.g., log_level: WARNING), the user can control the verbosity of the log output, 
   ensuring that only the necessary information is recorded.
-=======
-:code:`log_dir:` Specifies the directory where log files are stored.
-
-:code:`log_filename:` Defines the name of the log file.
-
-:code:`log_level:` Determines the verbosity of the log output. 
-Available levels are :code:`DEBUG, INFO, WARNING, and ERROR:`.
-
-:code:`log_level:` By setting the appropriate log level in your YAML configuration 
-file (e.g., log_level: WARNING), you can control the verbosity of the log output, 
-ensuring that only the necessary information is recorded.
->>>>>>> develop
 
 METcalcpy supports the following log levels:
 
-  1. **DEBUG:**
+1. **DEBUG:**
 
-    * **Purpose:** Captures detailed information for diagnosing issues.
-    * **Use Case:** Ideal during development or troubleshooting to see all 
-      the internal workings of the application.
+  * **Purpose:** Captures detailed information for diagnosing issues.
+  * **Use Case:** Ideal during development or troubleshooting to see all the internal workings of the application.
 
-  2. **INFO:**
+2. **INFO:**
 
-    * **Purpose:** Records general information about the application's execution.
-    * **Use Case:** Suitable for tracking the progress and key events 
-      in the application's workflow without overwhelming detail.
+  * **Purpose:** Records general information about the application's execution.
+  * **Use Case:** Suitable for tracking the progress and key events in the application's workflow without overwhelming detail.
 
-  3. **WARNING:**
+3. **WARNING:**
 
-    * **Purpose:** Logs potential issues that are not immediately critical but 
-      could lead to problems.
-    * **Use Case:** Useful for highlighting areas that may require attention 
-      but don't stop the application from running.
+  * **Purpose:** Logs potential issues that are not immediately critical but could lead to problems.
+  * **Use Case:** Useful for highlighting areas that may require attention but don't stop the application from running.
 
-  4. **ERROR:**
+4. **ERROR:**
 
-    * **Purpose:** Captures serious issues that prevent parts of the 
-      application from functioning correctly.
-    * **Use Case:** Necessary for logging events that require immediate 
-      attention and could cause the application to fail or produce incorrect results.
+  * **Purpose:** Captures serious issues that prevent parts of the application from functioning correctly.
+  * **Use Case:** Necessary for logging events that require immediate attention and could cause the application to fail or produce incorrect results.
 
 Informative Log Formatting
 --------------------------
@@ -119,7 +92,6 @@ Informative Log Formatting
 Log messages in METcalcpy are meticulously formatted to include detailed information, 
 improving readability and facilitating easier analysis of log data.
 
-<<<<<<< HEAD
 **Standard Log Format Includes:**
 
   * **Timestamp (UTC):** Each log message is tagged with a UTC timestamp 
@@ -187,22 +159,10 @@ specified settings.
 
 **Additional Notes**
 
-  * **UTC Timestamps:** METcalcpy uses UTC for all log timestamps, 
-    ensuring consistency across systems and time zones.
-  * **Log File Appending:** Logs are appended to existing files when scripts 
-    are executed multiple times with the same configuration.
+  * **UTC Timestamps:** METcalcpy uses UTC for all log timestamps, ensuring consistency across systems and time zones.
+  * **Log File Appending:** Logs are appended to existing files when scripts are executed multiple times with the same configuration.
 
 **Example Log Entry:**
 
 :code:`2023-12-19 18:20:00 UTC | user123 | INFO | Data loading completed successfully.`
-=======
-
-
-
-
-
->>>>>>> develop
-
-
-
 
