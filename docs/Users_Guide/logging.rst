@@ -8,12 +8,8 @@ within METcalcpy. These enhancements are designed to provide users with valuable
 into the application's execution, aiding in tasks such as debugging, performance monitoring, 
 and understanding the operational flow of the program.
 
-
-What's New
-==========
-
-Centralized Logging Configuration (**logging_config.py**):
-----------------------------------------------------------
+Centralized Logging Configuration (**logging_config.py**)
+=========================================================
 
 A new script, **logging_config.py**, has been introduced to centralize the management of logging 
 configurations. This approach ensures consistency and simplifies the maintenance of logging 
@@ -44,11 +40,11 @@ Example Integration in **agg_stat.py**:
 In this example, when an :code:`AggStat object` is instantiated, it invokes the 
 :code:`setup_logging` function, passing in the :code:`in_params` dictionary, 
 which contains logging configurations from a YAML file such as 
-**val1l2_agg_stat.yaml**. This ensures the logger is configured according to 
+0**val1l2_agg_stat.yaml**. This ensures the logger is configured according to 
 the user's settings.
 
 YAML-Driven Configuration
--------------------------
+=========================
 
 METcalcpy now allows users to customize logging behavior directly within 
 the user's YAML configuration files, eliminating the need for hardcoding 
@@ -87,7 +83,7 @@ METcalcpy supports the following log levels:
   * **Use Case:** Necessary for logging events that require immediate attention and could cause the application to fail or produce incorrect results.
 
 Informative Log Formatting
---------------------------
+==========================
 
 Log messages in METcalcpy are meticulously formatted to include detailed information, 
 improving readability and facilitating easier analysis of log data.
@@ -104,7 +100,7 @@ improving readability and facilitating easier analysis of log data.
     about events or operations within the script.
 
 Safe Logging Utility (safe_log.py)
-----------------------------------
+==================================
 
 A utility function, :code:`safe_log`, is introduced in **safe_log.py** to 
 enhance the robustness of logging operations.
@@ -125,7 +121,7 @@ Example Usage in **agg_stat.py**:
   safe_log(self.logger, "info", "Successfully loaded data from ...")
 
 Signal Handling for Graceful Shutdown
--------------------------------------
+=====================================
 
 The **logging_config.py** script is equipped to handle unexpected 
 program terminations gracefully by setting up signal handlers.
@@ -140,7 +136,7 @@ is logged, providing insight into the cause of the termination. This feature is 
 for debugging and system monitoring.
 
 How to Use Logging in METcalcpy
--------------------------------
+===============================
 
 **Step 1: Configure Logging in the YAML File**
 
