@@ -295,7 +295,7 @@ class SumStat:
     #     return self.parallelize(data, partial(self.run_on_subset, func), num_of_processes)
 
 
-def calculate_statistic(self, values, columns_names, stat_name, aggregation=False):
+def calculate_statistic(values, columns_names, stat_name, aggregation=False):
     """Calculate the statistic of values
         Args:
             values: a np.array of values we want to calculate the statistic on
