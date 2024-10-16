@@ -8,8 +8,27 @@ describes the bugfix, enhancement, or new feature: `METcalcpy GitHub issues. <ht
 METcalcpy Release Notes
 =======================
 
+METcalcpy Velsion 3.0.0-beta6 release notes (20241017)
+------------------------------------------------------
 
-METcalcpy Velsion 3.0.0-beta5 release notes (20230628)
+  .. dropdown:: New Functionality
+
+     None
+
+  .. dropdown:: Enhancements
+
+     * Improve logging for 5 STIGs (`METplus-Internal#46 <https://github.com/dtcenter/METplus-Internal/issues/46>`_)
+
+  .. dropdown:: Internal
+
+     None
+
+  .. dropdown:: Bugfixes
+
+     * Bugfix: MODE CSI calculations result in spurious results (`#360 <https://github.com/dtcenter/METcalcpy/issues/360>`_)
+
+
+METcalcpy Velsion 3.0.0-beta5 release notes (20240628)
 ------------------------------------------------------
 
 
@@ -31,7 +50,7 @@ METcalcpy Velsion 3.0.0-beta5 release notes (20230628)
   .. dropdown:: Bugfixes
 
 
-METcalcpy Velsion 3.0.0-beta4 release notes (20230417)
+METcalcpy Velsion 3.0.0-beta4 release notes (20240417)
 ------------------------------------------------------
 
 
@@ -57,7 +76,7 @@ METcalcpy Velsion 3.0.0-beta4 release notes (20230417)
 
      * Address negative values returned by calculate_bcmse() and calculate_bcrmse() in sl1l2_statistics module (`#329 <https://github.com/dtcenter/METcalcpy/issues/329>`_)
 
-METcalcpy Velsion 3.0.0-beta3 release notes (20230207)
+METcalcpy Velsion 3.0.0-beta3 release notes (20240207)
 ------------------------------------------------------
 
 
