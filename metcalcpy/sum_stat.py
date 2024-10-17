@@ -295,7 +295,7 @@ class SumStat:
     #     return self.parallelize(data, partial(self.run_on_subset, func), num_of_processes)
 
 
-def calculate_statistic(self, values, columns_names, stat_name, aggregation=False):
+def calculate_statistic(values, columns_names, stat_name, aggregation=False):
     """Calculate the statistic of values
         Args:
             values: a np.array of values we want to calculate the statistic on
@@ -307,19 +307,17 @@ def calculate_statistic(self, values, columns_names, stat_name, aggregation=Fals
         Raises:
             an error
         """
-    logger = self.logger
-    safe_log(logger, "debug", f"Calculating statistic '{stat_name}' with aggregation: {aggregation}.")
     try:
         func_name = f'calculate_{stat_name}'
         num_parameters = len(signature(globals()[func_name]).parameters)
         if num_parameters == 2:
-            stat = globals()[func_name](values, columns_names, logger=logger)
+            stat = globals()[func_name](values, columns_names)
         else:
-            stat = globals()[func_name](values, columns_names, aggregation, logger=logger)
-        safe_log(logger, "info", f"Successfully calculated statistic '{stat_name}'.")
-    except Exception as e:
-        safe_log(logger, "error", f"An error occurred while calculating statistic '{stat_name}': {e}")
-        raise
+            stat = globals()[func_name](values, columns_names, aggregation)
+    except Exception:
+        raise RuntimeError(
+            "Error occurred while calculating statistic using METcalcpy sum_stat module's calculate_statistic(): " +
+            stat_name)
     return stat
 
 
