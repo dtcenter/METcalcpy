@@ -218,7 +218,7 @@ def calculate_pofd(input_data, columns_names, logger=None):
         result = fy_on / oy
         result = round_half_up(result, PRECISION)
         safe_log(logger, "info", f"POFD calculation successful: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
         safe_log(logger, "error", f"Error in POFD calculation: {e}")
         result = None
     warnings.filterwarnings('ignore')
