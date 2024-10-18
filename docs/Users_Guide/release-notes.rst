@@ -8,7 +8,7 @@ describes the bugfix, enhancement, or new feature: `METcalcpy GitHub issues. <ht
 METcalcpy Release Notes
 =======================
 
-METcalcpy Velsion 3.0.0-beta6 release notes (20241017)
+METcalcpy Velsion 3.0.0-beta6 release notes (20241018)
 ------------------------------------------------------
 
   .. dropdown:: New Functionality
