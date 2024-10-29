@@ -6,6 +6,7 @@ from metcalcpy.agg_stat import AggStat
 from metcalcpy.util.read_env_vars_in_config import parse_config
 
 cwd = os.path.dirname(__file__)
+os.environ['TEST_DIR'] = cwd
 
 def test_reformatted_input():
     '''
