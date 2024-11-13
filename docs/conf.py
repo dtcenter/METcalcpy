@@ -22,11 +22,11 @@ project = 'METcalcpy'
 copyright = '2024, NCAR'
 author = 'UCAR/NCAR, NOAA, CSU/CIRA, and CU/CIRES'
 author_list = 'Fisher, H., C. Kalb, D. Adriaansen, D. Fillmore, M. Win-Gildenmeister, T. Burek, M. Smith, and T. Jensen'
-version = '3.0.0-rc1-dev'
+version = '3.0.0-rc1'
 verinfo = version
 release = f'{version}'
 release_year = '2024'
-release_date = f'{release_year}-10-18'
+release_date = f'{release_year}-11-13'
 copyright = f'{release_year}, {author}'
 
 # if set, adds "Last updated on " followed by
