@@ -8,6 +8,7 @@
 import os
 import numpy as np
 
+from metcalcpy.util.safe_log import safe_log
 
 def write_mpr_file(data_fcst,data_obs,lats_in,lons_in,fcst_lead,fcst_valid,obs_lead,obs_valid,mod_name,desc,fcst_var,fcst_unit,fcst_lev,obs_var,obs_unit,obs_lev,maskname,obsslev,outdir,outfile_prefix, logger=None):
 
