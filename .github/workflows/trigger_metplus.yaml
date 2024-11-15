@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - develop
+      - 'main_v[0-9]+.[0-9]+'
     paths-ignore:
       - 'docs/**'
       - '.github/pull_request_template.md'
@@ -16,24 +17,6 @@ jobs:
     name: Trigger METplus testing workflow
     runs-on: ubuntu-latest
     steps:
-      - name: Print GitHub values for reference
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
-      - uses: actions/github-script@v7
+      - uses: dtcenter/metplus-action-trigger-use-cases@v1
         with:
-          github-token: ${{ secrets.METPLUS_BOT_TOKEN }}
-          script: |
-            await github.rest.actions.createWorkflowDispatch({
-              owner: 'dtcenter',
-              repo: 'METplus',
-              workflow_id: 'testing.yml',
-              ref: 'develop',
-              inputs: {
-                repository: '${{ github.repository }}',
-                ref: '${{ github.ref }}',
-                actor: '${{ github.actor }}',
-                sha: '${{ github.sha }}',
-                pusher_email: '${{ github.event.pusher.email }}'
-              },
-            });
+          token: ${{ secrets.METPLUS_BOT_TOKEN }}
