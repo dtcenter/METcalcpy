@@ -5,8 +5,10 @@
  # ** Research Applications Lab (RAL)
  # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
  # ============================*
- 
- 
+
+# set value for metcalcpy.__version__ 
+import importlib.metadata
+__version__ = importlib.metadata.version("metcalcpy")
  
 """This module contains a variety of statistical calculations."""
 GROUP_SEPARATOR = ':'
