@@ -12,4 +12,4 @@ DEFAULT_CONF = {
 
 def test_smoke():
     """Basic test to check object instantiation"""
-    my_asb = asb.AggStatBootstrap(DEFAULT_CONF)
+    asb.AggStatBootstrap(DEFAULT_CONF)
