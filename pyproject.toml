@@ -1,0 +1,62 @@
+[build-system]
+requires = [
+    "setuptools",
+    "wheel",
+    "setuptools-git-versioning>=2.0,<3",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "metcalcpy"
+dynamic = ["version", "dependencies"]
+description = "statistics and util package for METplus"
+authors = [
+    {name = "METplus"},
+]
+requires-python = ">=3.10.4"
+readme = "README.md"
+license = {text = "MIT"}
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+]
+
+[project.urls]
+Homepage = "https://github.com/dtcenter/METcalcpy"
+
+[tool.setuptools.packages]
+find = {include = ["metcalcpy*"]}
+
+[tool.setuptools.package-data]
+metplus = [
+  "docs/version"
+]
+
+[tool.setuptools.exclude-package-data]
+metplus = ["README", "__pycache__", "*~"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[tool.setuptools-git-versioning]
+enabled = true
+version_file = "docs/version"
+
+[tool.pytest.ini_options]
+testpaths = ["test"]
+
+[tool.coverage.run]
+source = ["metcalcpy"]
+omit = [
+    "config.py",
+    "config-3.py",
+    "metcalcpy/contributed/*",
+    ]
+relative_files = true
+
+[tool.coverage.report]
+exclude_also = [
+    "def __repr__",
+    "if __name__ == .__main__.:",
+    ]

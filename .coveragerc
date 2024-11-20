@@ -1,8 +1,0 @@
-[run]
-source = metcalcpy
-relative_files = True
-omit = 
-    config.py
-    config-3.py
-    metcalcpy/contributed/*
-
