@@ -38,7 +38,8 @@ METcalcpy Velsion 3.0.0 release notes (20241217)
      * Enhanced documentation for Difficulty index (`#332 <https://github.com/dtcenter/METcalcpy/issues/332>`_)
 
   .. dropdown:: Bugfixes
-
+     
+     * Bugfix missing safe_log import (`#413 <https://github.com/dtcenter/METcalcpy/issues/413>`_)
      * Bugfix: MODE CSI calculations result in spurious results (`#360 <https://github.com/dtcenter/METcalcpy/issues/360>`_)
      * Address negative values returned by calculate_bcmse() and calculate_bcrmse() in sl1l2_statistics module (`#329 <https://github.com/dtcenter/METcalcpy/issues/329>`_)
      * Address negative values returned by calculate_bcmse() and calculate_bcrmse() in sl1l2_statistics module (`#329 <https://github.com/dtcenter/METcalcpy/issues/329>`_)
@@ -49,5 +50,5 @@ METcalcpy Velsion 3.0.0 release notes (20241217)
 METcalcpy Upgrade Instructions
 ==============================
 
-Upgrade instructions will be listed here if they are applicable
-for this release.
+None
+
