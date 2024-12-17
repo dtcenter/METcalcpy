@@ -21,12 +21,12 @@ print(sys.path)
 project = 'METcalcpy'
 copyright = '2024, NCAR'
 author = 'UCAR/NCAR, NOAA, CSU/CIRA, and CU/CIRES'
-author_list = 'Fisher, H., C. Kalb, D. Adriaansen, D. Fillmore, M. Win-Gildenmeister, T. Burek, M. Smith, and T. Jensen'
-version = '3.0.0-rc1'
+author_list = 'Kalb, C., D. Adriaansen, D. Fillmore, M. Win-Gildenmeister, T. Burek, M. Smith, T. Jensen, and H. Fisher'
+version = '3.0.0'
 verinfo = version
 release = f'{version}'
 release_year = '2024'
-release_date = f'{release_year}-11-13'
+release_date = f'{release_year}-12-17'
 copyright = f'{release_year}, {author}'
 
 # if set, adds "Last updated on " followed by
