@@ -8,7 +8,7 @@ describes the bugfix, enhancement, or new feature: `METcalcpy GitHub issues. <ht
 METcalcpy Release Notes
 =======================
 
-METcalcpy Velsion 3.0.0 release notes (20241217)
+METcalcpy Velsion 3.0.0 release notes (20241218)
 ----------------------------------------------------
 
 
