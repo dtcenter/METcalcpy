@@ -295,6 +295,7 @@ class AggStatBootstrap:
         logger = self.logger
         func_name = f'calculate_{self.statistic}'
         safe_log(logger, "info", f"Starting statistic calculation using function: {func_name}")
+        stat_values = []
         if cases is not None and cases.ndim == 2:
             # The single value case
             safe_log(logger, "debug", "Processing single-value case.")
@@ -305,6 +306,7 @@ class AggStatBootstrap:
             values = self.series_data[np.in1d(data_cases, flat_cases)].to_numpy()
             safe_log(logger, "debug", f"Number of values selected for single case: {len(values)}")
             # Calculate the statistic for each bootstrap iteration
+            stat_values = []
             try:
                 stat_value = globals()[func_name](values, self.column_names, logger=logger)
                 stat_values.append([stat_value])
