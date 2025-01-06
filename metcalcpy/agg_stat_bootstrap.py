@@ -308,7 +308,7 @@ class AggStatBootstrap:
             try:
                 stat_values = []
                 stat_value = globals()[func_name](values, self.column_names, logger=logger)
-                stat_values.append([stat_value])
+                stat_values.append(stat_value)
                 safe_log(logger, "info", f"Statistic calculated for bootstrap iteration: {stat_value}")
             except Exception as e:
                 safe_log(logger, "error", f"Error calculating statistic for bootstrap iteration: {e}")
@@ -324,7 +324,7 @@ class AggStatBootstrap:
                 # Calculate the statistic for each bootstrap iteration
                 try:
                     stat_value = globals()[func_name](values, self.column_names, logger=logger)
-                    stat_values.append([stat_value])
+                    stat_values.append(stat_value)
                     safe_log(logger, "info", f"Statistic calculated for bootstrap iteration: {stat_value}")
                 except Exception as e:
                     safe_log(logger, "error", f"Error calculating statistic for bootstrap iteration: {e}")
