@@ -114,7 +114,7 @@ def calculate_fbias(input_data, columns_names, logger=None):
         result = oyn / oy
         result = round_half_up(result, PRECISION)
         safe_log(logger, "info", f"ACC calculation successful: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
         safe_log(logger, "error", f"Error in ACC calculation: {e}")
         result = None
     warnings.filterwarnings('ignore')
@@ -150,7 +150,7 @@ def calculate_fmean(input_data, columns_names, logger=None):
         result = oyn / total
         result = round_half_up(result, PRECISION)
         safe_log(logger, "info", f"FMEAN calculation successful: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
         safe_log(logger, "error", f"Error in FMEAN calculation: {e}")
         result = None
     warnings.filterwarnings('ignore')
@@ -317,7 +317,7 @@ def calculate_podn(input_data, columns_names, logger=None):
     return result
 
 
-def calculate_far(input_data, column_names, logger=None):
+def calculate_far(input_data, columns_names, logger=None):
     """Performs calculation of FAR - false alarms
 
         Args:
@@ -941,11 +941,15 @@ def calculate_ctc_on(input_data, columns_names, logger=None):
             calculated ON as float
             or None if some data values are missing or invalid
     """
-    safe_log(logger, "debug", "Starting calculation of CTC ON.")
-    fy_on = sum_column_data_by_name(input_data, columns_names, 'fy_on')
-    fn_on = sum_column_data_by_name(input_data, columns_names, 'fn_on')
-    return round_half_up(fy_on + fn_on, PRECISION)
-
+    try:
+        safe_log(logger, "debug", "Starting calculation of CTC ON.")
+        fy_on = sum_column_data_by_name(input_data, columns_names, 'fy_on')
+        fn_on = sum_column_data_by_name(input_data, columns_names, 'fn_on')
+        result = round_half_up(fy_on + fn_on, PRECISION)
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        result = None
+        safe_log(logger, "error", f"Error in calculating CTC ON: {str(e)}")
+    return result
 
 def calculate_ctc_fy(input_data, columns_names, logger=None):
     """Calculates the Total Number of forecast yes and observation no plus
