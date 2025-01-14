@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import patch
 import numpy as np
 import metcalcpy.util.mode_2d_arearat_statistics as m2as
+from test.utils import MODE_TEST_DATA as data
 
 column_names = np.array(
     ["object_type", "area", "fcst_flag", "simple_flag", "matched_flag"]

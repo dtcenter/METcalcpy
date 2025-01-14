@@ -148,7 +148,7 @@ def ctc_data():
     return df.to_numpy(), np.array(df.columns)
 
 
-# TODO: Some of the functions here that
+# Some of the functions here that
 # are evaluating to None could be better 
 # tested with a different dataset. e.g. acc
 # needs a 'total' column in the test data.
