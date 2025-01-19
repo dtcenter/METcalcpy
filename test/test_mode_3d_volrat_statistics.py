@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import patch
 import numpy as np
 import metcalcpy.util.mode_3d_volrat_statistics as m3vs
+from test.utils import MODE_TEST_DATA as data_complex
 
 column_names = np.array(
     ["object_type", "volume", "fcst_flag", "simple_flag", "matched_flag"]
@@ -12,20 +13,6 @@ data_simple = np.array(
     [
         ["3d", 100, 1, 1, 1],
         ["3d", 30, 0, 1, 1],
-    ]
-)
-
-
-data_complex = np.array(
-    [
-        ["3d", 100, 1, 1, 1],
-        ["3d", 30, 0, 1, 1],
-        ["3d", 120, 1, 1, 0],
-        ["3d", 12, 0, 1, 1],
-        ["3d", 1, 1, 0, 1],
-        ["3d", 17, 0, 1, 1],
-        ["2d", 200, 1, 1, 1],
-        ["3d", 66, 0, 1, 0],
     ]
 )
 
