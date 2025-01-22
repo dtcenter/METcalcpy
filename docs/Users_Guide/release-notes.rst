@@ -9,7 +9,7 @@ METcalcpy Release Notes
 =======================
 
 METcalcpy Velsion 3.1.0-beta1 release notes (20250122)
-----------------------------------------------------
+------------------------------------------------------
 
   .. dropdown:: New Functionality
 
