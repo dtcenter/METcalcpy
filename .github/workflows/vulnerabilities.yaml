@@ -28,9 +28,9 @@ jobs:
           python -m venv env/
           source env/bin/activate
           python -m pip install .
-      - uses: pypa/gh-action-pip-audit@v1.0.5
+      - uses: pypa/gh-action-pip-audit@v1.1.0
         with:
-          inputs: requirements.txt
+          inputs: '.'
           virtual-environment: env/
           local: true
           summary: true
