@@ -26,9 +26,3 @@ Instructions for installing the metcalcpy package locally
     - import metcalcpy.util.ctc_statistics as cstats
         - to use the functions in the ctc_statistics module
   
-Instructions for installing the metcalcpy package from PyPI
------------------------------------------------------------
-
-- activate your Python 3.10+ conda environment
-- run the following from the command line:
-   -  pip install metcalcpy==x.y.z  where x.y.z is the version number of interest
