@@ -2,8 +2,7 @@ import os
 import pandas as pd
 import pytest
 
-import metcalcpy.agg_stat_bootstrap as asb
-from agg_stat_bootstrap import AggStatBootstrap
+from metcalcpy.agg_stat_bootstrap import AggStatBootstrap
 from metcalcpy.util.read_env_vars_in_config import parse_config
 
 
@@ -77,25 +76,25 @@ def test_compare_with_rscript():
        Use METviewer to generate the aggregation statistics by de-selecting the 'use python'
 
     Returns: None
-
-
-
     '''
+
+    # Use METcalcpy directly to calculate aggregation bootstrap statistics using
+    # the same input data used by METviewer (SQL query results)
 
     config_file = f'{cwd}/data/mode/aggstatbootstrap.yaml'
     parms = get_parms(config_file)
     assert os.path.isfile(config_file)
     infile = parms['agg_stat_input']
     df: pd.DataFrame = pd.read_csv(infile, sep=r'\s+')
-    assert df
+    # Verify the input data exists
+    assert not df.empty
 
-    # Get the bootstrap stats calculated via the original R implementation
-    aggregated_via_R = f'{cwd}/data/mode/rscript_data/mv_rscript_agg_stat_bootstrap.txt'
-    r_df:pd.DataFrame = pd.read_csv(aggregated_via_R, sep=r'\s+')
+    # Get the bootstrap stats calculated via the original R implementation (from METviewer)
+    aggregated_via_r = f'{cwd}/data/mode/rscript_data/mv_rscript_agg_stat_bootstrap.txt'
+    r_df:pd.DataFrame = pd.read_csv(aggregated_via_r, sep=r'\s+')
+    assert not r_df.empty
 
-
-    # Collect the
-
+    # Invoke METcalcpy (i.e. Python implementation) to calculate the aggregation bootstrap statistics
     try:
        agg_stat_bootstrap(parms)
        # Check for the existence of the output with the requested aggregation statistics computed
@@ -103,3 +102,6 @@ def test_compare_with_rscript():
        assert os.path.isfile(outfile)
     except SyntaxError:
         pytest.fail("Error still persists with _calc_stats code")
+
+    # Compare results from R and Python
+
