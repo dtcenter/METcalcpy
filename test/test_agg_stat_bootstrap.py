@@ -112,7 +112,7 @@ def test_compare_with_rscript():
 
            assert (r_fcst == df_fcst)
 
-           # cleanup(outfile)
+           cleanup(outfile)
 
     except SyntaxError:
         pytest.fail("Error with _calc_stats code")
