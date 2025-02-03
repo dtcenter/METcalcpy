@@ -93,7 +93,6 @@ def test_compare_with_rscript():
        agg_stat_bootstrap(parms)
        # Check for the existence of the output with the requested aggregation statistics computed
        outfile = parms['agg_stat_output']
-       print(f"outfile: {outfile}")
        assert os.path.isfile(outfile)
        # Compare stat_value results from R and Python for various fcst_lead
        # hours
@@ -112,9 +111,12 @@ def test_compare_with_rscript():
 
            assert (r_fcst == df_fcst)
 
-           cleanup(outfile)
+
 
     except SyntaxError:
         pytest.fail("Error with _calc_stats code")
+
+    # Remove temporary files
+    cleanup(parms['agg_stat_output'])
 
 
