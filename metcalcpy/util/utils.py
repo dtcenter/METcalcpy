@@ -347,7 +347,7 @@ def column_data_by_name_value(input_data, columns, filters):
     try:
         # for each filter
         for key, value in filters.items():
-            # get an index og the column
+            # get an index of the column
             index_array = np.where(columns == key)[0]
             if index_array.size == 0:
                 return 0

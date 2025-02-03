@@ -11,6 +11,8 @@
 """
 Program Name: mode_3d_volrat_statistics.py
 """
+import numpy as np
+
 from metcalcpy.util.mode_arearat_statistics import *
 from metcalcpy.util.utils import column_data_by_name_value, THREE_D_DATA_FILTER
 from metcalcpy.util.safe_log import safe_log
@@ -214,7 +216,7 @@ def calculate_3d_volrat_osm_osa(input_data, columns_names, logger=None):
     """
     try:
         safe_log(logger, "debug", "Renaming columns for 3D Volume Ratio OSM/OSA calculation.")
-        columns_names_new = rename_column(column_names, logger=logger)
+        columns_names_new = rename_column(columns_names, logger=logger)
 
         safe_log(logger, "debug", "Filtering data based on THREE_D_DATA_FILTER.")
         filtered_data = column_data_by_name_value(input_data, columns_names_new, THREE_D_DATA_FILTER)
@@ -244,7 +246,7 @@ def calculate_3d_volrat_osu_osa(input_data, columns_names, logger=None):
     """
     try:
         safe_log(logger, "debug", "Renaming columns for 3D Volume Ratio OSU/OSA calculation.")
-        columns_names_new = rename_column(column_names, logger=logger)
+        columns_names_new = rename_column(columns_names, logger=logger)
 
         safe_log(logger, "debug", "Filtering data based on THREE_D_DATA_FILTER.")
         filtered_data = column_data_by_name_value(input_data, columns_names_new, THREE_D_DATA_FILTER)
@@ -273,7 +275,7 @@ def calculate_3d_volrat_fsm_asm(input_data, columns_names, logger=None):
     """
     try:
         safe_log(logger, "debug", "Renaming columns for 3D Volume Ratio FSM/ASM calculation.")
-        columns_names_new = rename_column(column_names, logger=logger)
+        columns_names_new = rename_column(columns_names, logger=logger)
 
         safe_log(logger, "debug", "Filtering data based on THREE_D_DATA_FILTER.")
         filtered_data = column_data_by_name_value(input_data, columns_names_new, THREE_D_DATA_FILTER)
@@ -303,7 +305,7 @@ def calculate_3d_volrat_osm_asm(input_data, columns_names, logger=None):
     """
     try:
         safe_log(logger, "debug", "Renaming columns for 3D Volume Ratio OSM/ASM calculation.")
-        columns_names_new = rename_column(column_names, logger=logger)
+        columns_names_new = rename_column(columns_names, logger=logger)
 
         safe_log(logger, "debug", "Filtering data based on THREE_D_DATA_FILTER.")
         filtered_data = column_data_by_name_value(input_data, columns_names_new, THREE_D_DATA_FILTER)
@@ -333,7 +335,7 @@ def calculate_3d_volrat_osu_asu(input_data, columns_names, logger=None):
     """
     try:
         safe_log(logger, "debug", "Renaming columns for 3D Volume Ratio OSU/ASU calculation.")
-        columns_names_new = rename_column(column_names, logger=logger)
+        columns_names_new = rename_column(columns_names, logger=logger)
 
         safe_log(logger, "debug", "Filtering data based on THREE_D_DATA_FILTER.")
         filtered_data = column_data_by_name_value(input_data, columns_names_new, THREE_D_DATA_FILTER)
@@ -363,7 +365,7 @@ def calculate_3d_volrat_fsa_aaa(input_data, columns_names, logger=None):
     """
     try:
         safe_log(logger, "debug", "Renaming columns for 3D Volume Ratio FSA/AAA calculation.")
-        columns_names_new = rename_column(column_names, logger=logger)
+        columns_names_new = rename_column(columns_names, logger=logger)
 
         safe_log(logger, "debug", "Filtering data based on THREE_D_DATA_FILTER.")
         filtered_data = column_data_by_name_value(input_data, columns_names_new, THREE_D_DATA_FILTER)
@@ -393,7 +395,7 @@ def calculate_3d_volrat_osa_aaa(input_data, columns_names, logger=None):
     """
     try:
         safe_log(logger, "debug", "Renaming columns for 3D Volume Ratio OSA/AAA calculation.")
-        columns_names_new = rename_column(column_names, logger=logger)
+        columns_names_new = rename_column(columns_names, logger=logger)
 
         safe_log(logger, "debug", "Filtering data based on THREE_D_DATA_FILTER.")
         filtered_data = column_data_by_name_value(input_data, columns_names_new, THREE_D_DATA_FILTER)
@@ -424,7 +426,7 @@ def calculate_3d_volrat_fsa_faa(input_data, columns_names, logger=None):
 
     try:
         safe_log(logger, "debug", "Renaming columns for 3D Volume Ratio FSA/FAA calculation.")
-        columns_names_new = rename_column(column_names, logger=logger)
+        columns_names_new = rename_column(columns_names, logger=logger)
 
         safe_log(logger, "debug", "Filtering data based on THREE_D_DATA_FILTER.")
         filtered_data = column_data_by_name_value(input_data, columns_names_new, THREE_D_DATA_FILTER)
@@ -454,7 +456,7 @@ def calculate_3d_volrat_fca_faa(input_data, columns_names, logger=None):
     """
     try:
         safe_log(logger, "debug", "Renaming columns for 3D Volume Ratio FCA/FAA calculation.")
-        columns_names_new = rename_column(column_names, logger=logger)
+        columns_names_new = rename_column(columns_names, logger=logger)
 
         safe_log(logger, "debug", "Filtering data based on THREE_D_DATA_FILTER.")
         filtered_data = column_data_by_name_value(input_data, columns_names_new, THREE_D_DATA_FILTER)
@@ -484,7 +486,7 @@ def calculate_3d_volrat_osa_oaa(input_data, columns_names, logger=None):
     """
     try:
         safe_log(logger, "debug", "Renaming columns for 3D Volume Ratio OSA/OAA calculation.")
-        columns_names_new = rename_column(column_names, logger=logger)
+        columns_names_new = rename_column(columns_names, logger=logger)
 
         safe_log(logger, "debug", "Filtering data based on THREE_D_DATA_FILTER.")
         filtered_data = column_data_by_name_value(input_data, columns_names_new, THREE_D_DATA_FILTER)
@@ -514,7 +516,7 @@ def calculate_3d_volrat_oca_oaa(input_data, columns_names, logger=None):
     """
     try:
         safe_log(logger, "debug", "Renaming columns for 3D Volume Ratio OCA/OAA calculation.")
-        columns_names_new = rename_column(column_names, logger=logger)
+        columns_names_new = rename_column(columns_names, logger=logger)
 
         safe_log(logger, "debug", "Filtering data based on THREE_D_DATA_FILTER.")
         filtered_data = column_data_by_name_value(input_data, columns_names_new, THREE_D_DATA_FILTER)
@@ -544,7 +546,7 @@ def calculate_3d_volrat_fca_aca(input_data, columns_names, logger=None):
     """
     try:
         safe_log(logger, "debug", "Renaming columns for 3D Volume Ratio FCA/ACA calculation.")
-        columns_names_new = rename_column(column_names, logger=logger)
+        columns_names_new = rename_column(columns_names, logger=logger)
 
         safe_log(logger, "debug", "Filtering data based on THREE_D_DATA_FILTER.")
         filtered_data = column_data_by_name_value(input_data, columns_names_new, THREE_D_DATA_FILTER)
@@ -574,7 +576,7 @@ def calculate_3d_volrat_oca_aca(input_data, columns_names, logger=None):
     """
     try:
         safe_log(logger, "debug", "Renaming columns for 3D Volume Ratio OCA/ACA calculation.")
-        columns_names_new = rename_column(column_names, logger=logger)
+        columns_names_new = rename_column(columns_names, logger=logger)
 
         safe_log(logger, "debug", "Filtering data based on THREE_D_DATA_FILTER.")
         filtered_data = column_data_by_name_value(input_data, columns_names_new, THREE_D_DATA_FILTER)
@@ -605,7 +607,7 @@ def calculate_3d_volrat_fsa_osa(input_data, columns_names, logger=None):
     """
     try:
         safe_log(logger, "debug", "Renaming columns for 3D Volume Ratio FSA/OSA calculation.")
-        columns_names_new = rename_column(column_names, logger=logger)
+        columns_names_new = rename_column(columns_names, logger=logger)
 
         safe_log(logger, "debug", "Filtering data based on THREE_D_DATA_FILTER.")
         filtered_data = column_data_by_name_value(input_data, columns_names_new, THREE_D_DATA_FILTER)
@@ -636,7 +638,7 @@ def calculate_3d_volrat_osa_fsa(input_data, columns_names, logger=None):
     """
     try:
         safe_log(logger, "debug", "Renaming columns for 3D Volume Ratio OSA/FSA calculation.")
-        columns_names_new = rename_column(column_names, logger=logger)
+        columns_names_new = rename_column(columns_names, logger=logger)
 
         safe_log(logger, "debug", "Filtering data based on THREE_D_DATA_FILTER.")
         filtered_data = column_data_by_name_value(input_data, columns_names_new, THREE_D_DATA_FILTER)
@@ -666,7 +668,7 @@ def calculate_3d_volrat_aca_asa(input_data, columns_names, logger=None):
     """
     try:
         safe_log(logger, "debug", "Renaming columns for 3D Volume Ratio ACA/ASA calculation.")
-        columns_names_new = rename_column(column_names, logger=logger)
+        columns_names_new = rename_column(columns_names, logger=logger)
 
         safe_log(logger, "debug", "Filtering data based on THREE_D_DATA_FILTER.")
         filtered_data = column_data_by_name_value(input_data, columns_names_new, THREE_D_DATA_FILTER)
@@ -696,7 +698,7 @@ def calculate_3d_volrat_asa_aca(input_data, columns_names, logger=None):
     """
     try:
         safe_log(logger, "debug", "Renaming columns for 3D Volume Ratio ASA/ACA calculation.")
-        columns_names_new = rename_column(column_names, logger=logger)
+        columns_names_new = rename_column(columns_names, logger=logger)
 
         safe_log(logger, "debug", "Filtering data based on THREE_D_DATA_FILTER.")
         filtered_data = column_data_by_name_value(input_data, columns_names_new, THREE_D_DATA_FILTER)
@@ -727,7 +729,7 @@ def calculate_3d_volrat_fca_fsa(input_data, columns_names, logger=None):
     """
     try:
         safe_log(logger, "debug", "Renaming columns for 3D Volume Ratio FCA/FSA calculation.")
-        columns_names_new = rename_column(column_names, logger=logger)
+        columns_names_new = rename_column(columns_names, logger=logger)
 
         safe_log(logger, "debug", "Filtering data based on THREE_D_DATA_FILTER.")
         filtered_data = column_data_by_name_value(input_data, columns_names_new, THREE_D_DATA_FILTER)
@@ -758,7 +760,7 @@ def calculate_3d_volrat_fsa_fca(input_data, columns_names, logger=None):
     """
     try:
         safe_log(logger, "debug", "Renaming columns for 3D Volume Ratio FSA/FCA calculation.")
-        columns_names_new = rename_column(column_names, logger=logger)
+        columns_names_new = rename_column(columns_names, logger=logger)
 
         safe_log(logger, "debug", "Filtering data based on THREE_D_DATA_FILTER.")
         filtered_data = column_data_by_name_value(input_data, columns_names_new, THREE_D_DATA_FILTER)
@@ -789,7 +791,7 @@ def calculate_3d_volrat_oca_osa(input_data, columns_names, logger=None):
     """
     try:
         safe_log(logger, "debug", "Renaming columns for 3D Volume Ratio OCA/OSA calculation.")
-        columns_names_new = rename_column(column_names, logger=logger)
+        columns_names_new = rename_column(columns_names, logger=logger)
 
         safe_log(logger, "debug", "Filtering data based on THREE_D_DATA_FILTER.")
         filtered_data = column_data_by_name_value(input_data, columns_names_new, THREE_D_DATA_FILTER)
@@ -820,7 +822,7 @@ def calculate_3d_volrat_osa_oca(input_data, columns_names, logger=None):
     """
     try:
         safe_log(logger, "debug", "Renaming columns for 3D Volume Ratio OSA/OCA calculation.")
-        columns_names_new = rename_column(column_names, logger=logger)
+        columns_names_new = rename_column(columns_names, logger=logger)
 
         safe_log(logger, "debug", "Filtering data based on THREE_D_DATA_FILTER.")
         filtered_data = column_data_by_name_value(input_data, columns_names_new, THREE_D_DATA_FILTER)
@@ -850,7 +852,7 @@ def calculate_3d_objvhits(input_data, columns_names, logger=None):
     """
     try:
         safe_log(logger, "debug", "Renaming columns for 3D Volume Hits calculation.")
-        columns_names_new = rename_column(column_names, logger=logger)
+        columns_names_new = rename_column(columns_names, logger=logger)
 
         safe_log(logger, "debug", "Filtering data based on THREE_D_DATA_FILTER.")
         filtered_data = column_data_by_name_value(input_data, columns_names_new, THREE_D_DATA_FILTER)
@@ -880,7 +882,7 @@ def calculate_3d_objvmisses(input_data, columns_names, logger=None):
     """
     try:
         safe_log(logger, "debug", "Renaming columns for 3D Volume Misses calculation.")
-        columns_names_new = rename_column(column_names, logger=logger)
+        columns_names_new = rename_column(columns_names, logger=logger)
 
         safe_log(logger, "debug", "Filtering data based on THREE_D_DATA_FILTER.")
         filtered_data = column_data_by_name_value(input_data, columns_names_new, THREE_D_DATA_FILTER)
@@ -909,7 +911,7 @@ def calculate_3d_objvfas(input_data, columns_names, logger=None):
             or None if some of the data values are missing or invalid
     """
     try:
-        columns_names_new = rename_column(column_names, logger=logger)
+        columns_names_new = rename_column(columns_names, logger=logger)
         filtered_data = column_data_by_name_value(input_data, columns_names_new, THREE_D_DATA_FILTER)
         result = calculate_objafas(filtered_data, columns_names_new)
     except Exception as e:
@@ -933,7 +935,7 @@ def calculate_3d_objvcsi(input_data, columns_names, logger=None):
     """
     try:
         safe_log(logger, "debug", "Starting the renaming of columns.")
-        columns_names_new = rename_column(column_names, logger=logger)
+        columns_names_new = rename_column(columns_names, logger=logger)
         safe_log(logger, "debug", f"Renamed columns: {columns_names_new}")
 
         safe_log(logger, "debug", "Filtering data based on the new column names.")
@@ -964,7 +966,7 @@ def calculate_3d_objvpody(input_data, columns_names, logger=None):
     """
     try:
         safe_log(logger, "debug", "Starting the renaming of columns.")
-        columns_names_new = rename_column(column_names, logger=logger)
+        columns_names_new = rename_column(columns_names, logger=logger)
         safe_log(logger, "debug", f"Renamed columns: {columns_names_new}")
 
         safe_log(logger, "debug", "Filtering data based on the new column names.")
@@ -995,7 +997,7 @@ def calculate_3d_objvfar(input_data, columns_names, logger=None):
     """
     try:
         safe_log(logger, "debug", "Starting the renaming of columns.")
-        columns_names_new = rename_column(column_names, logger=logger)
+        columns_names_new = rename_column(columns_names, logger=logger)
         safe_log(logger, "debug", f"Renamed columns: {columns_names_new}")
 
         safe_log(logger, "debug", "Filtering data based on the new column names.")
@@ -1027,4 +1029,4 @@ def rename_column(columns_names, logger=None):
             columns_names_new.insert(index, 'area')
         else:
             columns_names_new.insert(index, name)
-    return columns_names_new
+    return np.array(columns_names_new)
