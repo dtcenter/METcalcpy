@@ -8,9 +8,7 @@
  # ============================*
  
  
- 
 import numpy as np
-import xarray as xr
 
 
 def zonal_mean(dat,dimvar='longitude'):
@@ -52,11 +50,9 @@ def meridional_mean(dat, lat1, lat2, dimvar='latitude'):
     """
 
     # Check inputs
-    if lat1 > lat2:
-        raise ValueError('lat1 is greater than lat2, but it must be less than lat2')
-    elif lat1 == lat2:
-        raise ValueError('lat1 is equal to lat2, but it must be less than lat2')
+    if lat1 >= lat2:
+        raise ValueError('lat1 is greater than or equal to lat2, but it must be less than lat2')
 
-    wgts = np.cos(np.deg2rad(dat[dimvar].where((dat[dimvar] >= 60) & (dat[dimvar] <= 90),drop=True)))
+    wgts = np.cos(np.deg2rad(dat[dimvar].where((dat[dimvar] >= lat1) & (dat[dimvar] <= lat2),drop=True)))
 
-    return dat.where((dat[dimvar] >= 60) & (dat[dimvar] <= 90),drop=True).weighted(wgts).mean(dimvar)
+    return dat.where((dat[dimvar] >= lat1) & (dat[dimvar] <= lat2),drop=True).weighted(wgts).mean(dimvar)

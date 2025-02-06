@@ -17,6 +17,7 @@ import sys
 import math
 
 from metcalcpy.util.utils import round_half_up, PRECISION
+from metcalcpy.util.safe_log import safe_log
 
 CODE_TO_OUTCOME_TO_MESSAGE = {
     'diff_eqv': 'statistically different from zero and statistically equivalent to zero',
@@ -26,7 +27,7 @@ CODE_TO_OUTCOME_TO_MESSAGE = {
 }
 
 
-def pt(q, df, ncp=0, lower_tail=True):
+def pt(q, df, ncp=0, lower_tail=True, logger=None):
     """
     Calculates the cumulative of the t-distribution
 
@@ -46,10 +47,11 @@ def pt(q, df, ncp=0, lower_tail=True):
         result = nct.cdf(x=q, df=df, nc=ncp, loc=0, scale=1)
     if lower_tail is False:
         result = 1 - result
+        safe_log(logger, "debug", f"Adjusted result for upper tail: {result}")
     return result
 
 
-def qt(p, df, ncp=0):
+def qt(p, df, ncp=0, logger=None):
     """
     Calculates the quantile function of the t-distribution
 
@@ -65,10 +67,11 @@ def qt(p, df, ncp=0):
         result = t.ppf(q=p, df=df, loc=0, scale=1)
     else:
         result = nct.ppf(q=p, df=df, nc=ncp, loc=0, scale=1)
+        safe_log(logger, "debug", f"Calculated non-central t-distribution quantile: {result}")
     return result
 
 
-def tost_paired(n, m1, m2, sd1, sd2, r12, low_eqbound_dz, high_eqbound_dz, alpha=None):
+def tost_paired(n, m1, m2, sd1, sd2, r12, low_eqbound_dz, high_eqbound_dz, alpha=None, logger=None):
     """
     TOST function for a dependent t-test (Cohen's dz). Based on Rscript function TOSTpaired
 
@@ -100,86 +103,89 @@ def tost_paired(n, m1, m2, sd1, sd2, r12, low_eqbound_dz, high_eqbound_dz, alpha
     """
     if not alpha:
         alpha = 0.05
+
+    safe_log(logger, "debug", f"Starting TOST paired analysis with alpha={alpha}, n={n}, m1={m1}, m2={m2}, "
+                              f"sd1={sd1}, sd2={sd2}, r12={r12}, low_eqbound_dz={low_eqbound_dz}, "
+                              f"high_eqbound_dz={high_eqbound_dz}")
+
     if low_eqbound_dz >= high_eqbound_dz:
-        print(
-            'WARNING: The lower bound is equal to or larger than the upper bound.'
-            ' Check the plot and output to see if the bounds are specified as you intended.')
+        safe_log(logger, "warning", 'WARNING: The lower bound is equal to or larger than the upper bound. '
+                                    'Check the plot and output to see if the bounds are specified as you intended.')
 
     if n < 2:
-        print("The sample size should be larger than 1.")
+        safe_log(logger, "error", "The sample size should be larger than 1.")
         sys.exit()
 
     if 1 <= alpha or alpha <= 0:
-        print("The alpha level should be a positive value between 0 and 1.")
+        safe_log(logger, "error", "The alpha level should be a positive value between 0 and 1.")
         sys.exit()
+
     if sd1 <= 0 or sd2 <= 0:
-        print("The standard deviation should be a positive value.")
+        safe_log(logger, "error", "The standard deviation should be a positive value.")
         sys.exit()
+
     if 1 < r12 or r12 < -1:
-        print("The correlation should be a value between -1 and 1.")
+        safe_log(logger, "error", "The correlation should be a value between -1 and 1.")
         sys.exit()
 
-    sdif = math.sqrt(sd1 * sd1 + sd2 * sd2 - 2 * r12 * sd1 * sd2)
-    low_eqbound = low_eqbound_dz * sdif
-    high_eqbound = high_eqbound_dz * sdif
-    se = sdif / math.sqrt(n)
-    t = (m1 - m2) / se
-    degree_f = n - 1
+    try:
+        sdif = math.sqrt(sd1 * sd1 + sd2 * sd2 - 2 * r12 * sd1 * sd2)
+        low_eqbound = low_eqbound_dz * sdif
+        high_eqbound = high_eqbound_dz * sdif
+        se = sdif / math.sqrt(n)
+        t = (m1 - m2) / se
+        degree_f = n - 1
 
-    pttest = 2 * pt(abs(t), degree_f, lower_tail=False)
+        pttest = 2 * pt(abs(t), degree_f, lower_tail=False, logger=logger)
 
-    t1 = ((m1 - m2) - (low_eqbound_dz * sdif)) / se
-    p1 = pt(t1, degree_f, lower_tail=False)
-    t2 = ((m1 - m2) - (high_eqbound_dz * sdif)) / se
-    p2 = pt(t2, degree_f, lower_tail=True)
+        t1 = ((m1 - m2) - (low_eqbound_dz * sdif)) / se
+        p1 = pt(t1, degree_f, lower_tail=False, logger=logger)
+        t2 = ((m1 - m2) - (high_eqbound_dz * sdif)) / se
+        p2 = pt(t2, degree_f, lower_tail=True, logger=logger)
 
-    ll90 = ((m1 - m2) - qt(1 - alpha, degree_f) * se)
-    ul90 = ((m1 - m2) + qt(1 - alpha, degree_f) * se)
-    ptost = max(p1, p2)
+        ll90 = ((m1 - m2) - qt(1 - alpha, degree_f, logger=logger) * se)
+        ul90 = ((m1 - m2) + qt(1 - alpha, degree_f, logger=logger) * se)
+        ptost = max(p1, p2)
 
-    dif = (m1 - m2)
-    ll95 = ((m1 - m2) - qt(1 - (alpha / 2), degree_f) * se)
-    ul95 = ((m1 - m2) + qt(1 - (alpha / 2), degree_f) * se)
-    xlim_l = min(ll90, low_eqbound) - max(ul90 - ll90, high_eqbound - low_eqbound) / 10
-    xlim_u = max(ul90, high_eqbound) + max(ul90 - ll90, high_eqbound - low_eqbound) / 10
+        dif = (m1 - m2)
+        ll95 = ((m1 - m2) - qt(1 - (alpha / 2), degree_f, logger=logger) * se)
+        ul95 = ((m1 - m2) + qt(1 - (alpha / 2), degree_f, logger=logger) * se)
+        xlim_l = min(ll90, low_eqbound) - max(ul90 - ll90, high_eqbound - low_eqbound) / 10
+        xlim_u = max(ul90, high_eqbound) + max(ul90 - ll90, high_eqbound - low_eqbound) / 10
 
-    if pttest <= alpha and ptost <= alpha:
-        combined_outcome = 'diff_eqv'
+        combined_outcome = ''
+        if pttest <= alpha and ptost <= alpha:
+            combined_outcome = 'diff_eqv'
 
-    if pttest < alpha and ptost > alpha:
-        combined_outcome = 'diff_no_eqv'
+        if pttest < alpha and ptost > alpha:
+            combined_outcome = 'diff_no_eqv'
 
-    if pttest > alpha and ptost <= alpha:
-        combined_outcome = 'no_diff_eqv'
+        if pttest > alpha and ptost <= alpha:
+            combined_outcome = 'no_diff_eqv'
 
-    if pttest > alpha and ptost > alpha:
-        combined_outcome = 'no_diff_no_eqv'
+        if pttest > alpha and ptost > alpha:
+            combined_outcome = 'no_diff_no_eqv'
 
-    if pttest < alpha:
-        test_outcome = 'significant'
-    else:
-        test_outcome = 'non-significant'
+        test_outcome = 'significant' if pttest < alpha else 'non-significant'
+        tost_outcome = 'significant' if ptost < alpha else 'non-significant'
 
-    if ptost < alpha:
-        tost_outcome = 'significant'
-    else:
-        tost_outcome = 'non-significant'
+        safe_log(logger, "info", f"TOST Paired analysis completed. Test Outcome: {test_outcome}, "
+                                 f"TOST Outcome: {tost_outcome}, Combined Outcome: {combined_outcome}")
 
-    return {
-        'dif': round_half_up(dif, PRECISION),
-        't': (round_half_up(t1, PRECISION), round_half_up(t2, PRECISION)),
-        'p': (round_half_up(p1, PRECISION), round_half_up(p2, PRECISION)),
-        'degrees_of_freedom': round_half_up(degree_f, PRECISION),
-        'ci_tost': (round_half_up(ll90, PRECISION), round_half_up(ul90, PRECISION) ),
-        'ci_ttest': (round_half_up(ll95, PRECISION), round_half_up(ul95, PRECISION)),
-        'eqbound': (round_half_up(low_eqbound, PRECISION), round_half_up(high_eqbound, PRECISION)),
-        'xlim': (round_half_up(xlim_l, PRECISION), round_half_up(xlim_u, PRECISION)),
-        'combined_outcome': combined_outcome,
-        'test_outcome': test_outcome,
-        'tost_outcome': tost_outcome
-    }
+        return {
+            'dif': round_half_up(dif, PRECISION),
+            't': (round_half_up(t1, PRECISION), round_half_up(t2, PRECISION)),
+            'p': (round_half_up(p1, PRECISION), round_half_up(p2, PRECISION)),
+            'degrees_of_freedom': round_half_up(degree_f, PRECISION),
+            'ci_tost': (round_half_up(ll90, PRECISION), round_half_up(ul90, PRECISION)),
+            'ci_ttest': (round_half_up(ll95, PRECISION), round_half_up(ul95, PRECISION)),
+            'eqbound': (round_half_up(low_eqbound, PRECISION), round_half_up(high_eqbound, PRECISION)),
+            'xlim': (round_half_up(xlim_l, PRECISION), round_half_up(xlim_u, PRECISION)),
+            'combined_outcome': combined_outcome,
+            'test_outcome': test_outcome,
+            'tost_outcome': tost_outcome
+        }
 
-
-
-
-
+    except Exception as e:
+        safe_log(logger, "error", f"Exception occurred during TOST Paired analysis: {str(e)}")
+        return None

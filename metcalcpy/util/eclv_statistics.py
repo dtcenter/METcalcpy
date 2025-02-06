@@ -17,12 +17,12 @@ import numpy as np
 
 from metcalcpy.util.ctc_statistics import calculate_economic_value
 from metcalcpy.util.utils import sum_column_data_by_name
-
+from metcalcpy.util.safe_log import safe_log
 __author__ = 'Tatiana Burek'
 
 
 def calculate_eclv(input_data: np.array, columns_names: np.array,
-                   thresh: Union[float, None], line_type: str, cl_pts: list, add_base_rate: int = 0) \
+                   thresh: Union[float, None], line_type: str, cl_pts: list, add_base_rate: int = 0, logger=None) \
         -> Union[dict, None]:
     """Performs calculation of ECLV - The Economic Cost Loss  Value
 
@@ -52,11 +52,14 @@ def calculate_eclv(input_data: np.array, columns_names: np.array,
     """
     warnings.filterwarnings('error')
 
+
     # some validation
     if line_type != 'ctc' and line_type != 'pct':
+        safe_log(logger, "error", f"Incorrect line type {line_type} for calculating ECLV.")
         print(f'ERROR: incorrect line type {line_type} for calculating ECLV  ')
         return None
     if line_type == 'pct' and thresh is None:
+        safe_log(logger, "error", "Threshold is required for line type 'pct' in calculating ECLV.")
         print(f'ERROR: provide thresh for calculating ECLV  ')
         return None
 
@@ -77,9 +80,11 @@ def calculate_eclv(input_data: np.array, columns_names: np.array,
             n10 = sum_column_data_by_name(input_data, columns_names, 'fy_on')
             n01 = sum_column_data_by_name(input_data, columns_names, 'fn_oy')
             n00 = sum_column_data_by_name(input_data, columns_names, 'fn_on')
-
+        safe_log(logger, "debug", f"n11: {n11}, n10: {n10}, n01: {n01}, n00: {n00}")
         result = calculate_economic_value(np.array([n11, n10, n01, n00]), cl_pts, add_base_rate == 1)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+        safe_log(logger, "info", "ECLV calculation completed successfully.")
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "error", f"ECLV calculation failed due to an error: {e}")
         result = None
     warnings.filterwarnings('ignore')
     return result

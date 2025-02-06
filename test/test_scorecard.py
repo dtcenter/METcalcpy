@@ -1,8 +1,10 @@
 import pytest
+import os
 import numpy as np
 
 from metcalcpy.scorecard import Scorecard, pd
 
+cwd = os.path.dirname(__file__)
 
 def test_calculate_scorecard_data(settings):
     scorecard = settings['scorecard']
@@ -81,9 +83,11 @@ def settings():
                       ['AFWAOCv3.5.1_d01',
                        'NoahMPv3.5.1_d01']},
               'stat_flag': 'NCAR',
-              'sum_stat_input': 'data/scorecard.data',
-              'sum_stat_output': 'data/scorecard_output.data'
-
+              'sum_stat_input': f'{cwd}/data/scorecard.data',
+              'sum_stat_output': f'{cwd}/data/scorecard_output.data',
+              'log_dir': f'{cwd}/logs/',
+              'log_filename': 'log_scorecard.txt',
+              'log_level': 'WARNING'
               }
     scorecard = Scorecard(params)
     settings_dict = dict()

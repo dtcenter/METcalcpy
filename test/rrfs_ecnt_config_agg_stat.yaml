@@ -1,5 +1,5 @@
-agg_stat_input: ./data/rrfs_ecnt_for_agg.data
-agg_stat_output: ./rrfs_ecnt_aggregated.data
+agg_stat_input: !ENV "${TEST_DIR}/data/rrfs_ecnt_for_agg.data"
+agg_stat_output: !ENV "${TEST_DIR}/rrfs_ecnt_aggregated.data"
 alpha: 0.05
 append_to_file: null
 circular_block_bootstrap: True
@@ -41,3 +41,6 @@ series_val_1:
   model:
   - RRFS_GEFS_GF.SPP.SPPT
 series_val_2: {}
+log_dir: !ENV "${TEST_DIR}/logs"
+log_filename: log_agg_stat_rrfs_ecnt.txt
+log_level: DEBUG

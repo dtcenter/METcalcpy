@@ -15,10 +15,10 @@ For information about the support provided for releases, see our [Release Suppor
 Instructions for installing the metcalcpy package locally
 ---------------------------------------------------------
 - activate your conda environment (i.e. 'conda activate your-conda-env-name')
-- from within your active conda environment, cd to the METcalcpy/ directory, where you will see the setup.py script
+- from within your active conda environment, cd to the METcalcpy/ directory, where you will see the file pyproject.toml
 - from this directory, run the following on the command line: pip install -e .
 - the -e option stands for editable, which is useful in that you can update your METcalcpy/metcalcpy source without reinstalling it 
-- the . indicates that you should search the current directory for the setup.py script
+- the . indicates that you should search the current directory for the pyproject.toml file.
 
 - use metcalcpy package via import statement:
   - Examples:
@@ -26,9 +26,3 @@ Instructions for installing the metcalcpy package locally
     - import metcalcpy.util.ctc_statistics as cstats
         - to use the functions in the ctc_statistics module
   
-Instructions for installing the metcalcpy package from PyPI
------------------------------------------------------------
-
-- activate your Python 3.10+ conda environment
-- run the following from the command line:
-   -  pip install metcalcpy==x.y.z  where x.y.z is the version number of interest

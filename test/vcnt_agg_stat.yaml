@@ -1,5 +1,5 @@
-agg_stat_input: ./data/stat_analysis/point_stat_GRIB1_NAM_GDAS_120000L_20120409_120000V_vcnt.txt
-agg_stat_output: ./calcpy_vcnt_agg.txt
+agg_stat_input: !ENV "${TEST_DIR}/data/point_stat/point_stat_GRIB2_SREF_GDAS_150000L_20120409_120000V_vcnt.txt"
+agg_stat_output: !ENV "${TEST_DIR}/calcpy_vcnt_agg.txt"
 alpha: 0.05
 append_to_file: null
 circular_block_bootstrap: True
@@ -18,8 +18,8 @@ indy_vals:
 #- '40000'
 #- '60000'
 #- '90000'
-- '120000'
-#- '150000'
+#- '120000'
+- '150000'
 #- '160000'
 #- '170000'
 #- '180000'
@@ -43,3 +43,6 @@ series_val_1:
   model:
   - FCST
 series_val_2: {}
+log_dir: !ENV "${TEST_DIR}/logs"
+log_filename: log_agg_stat_vcnt.txt
+log_level: WARNING

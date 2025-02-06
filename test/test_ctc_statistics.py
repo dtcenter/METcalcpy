@@ -1,8 +1,14 @@
 import pytest
 import pandas as pd
+import numpy as np
 import sys
+import os
+from unittest.mock import patch
+from functools import cache
 sys.path.append("../../")
 from metcalcpy.util import ctc_statistics as ctc
+
+cwd = os.path.dirname(__file__)
 
 def test_asc_sort_by_ctc_fcst_thresh():
    """
@@ -12,7 +18,7 @@ def test_asc_sort_by_ctc_fcst_thresh():
    :return:
 
    """
-   df = pd.read_csv("./data/threshold.csv")
+   df = pd.read_csv(f"{cwd}/data/threshold.csv")
    sorted_df = ctc.sort_by_thresh(df)
    expected_fcst_thresh_list = ['NA','0', '>=0','>=0','>=0', '>0.01',  '<=1', '>=1&<=22.2', '>=1', '==3', '<5', '20', '>35&&<100.0', '>35', '100']
    expected_fcst_thresh = pd.Series(expected_fcst_thresh_list)
@@ -26,7 +32,7 @@ def test_desc_sort_by_ctc_fcst_thresh():
 
    :return:
    """
-   df = pd.read_csv("./data/threshold.csv")
+   df = pd.read_csv(f"{cwd}/data/threshold.csv")
    sorted_df = ctc.sort_by_thresh(df, ascending=False)
    expected_fcst_thresh_list = ['100', '>35', '>35&&<100.0', '20', '<5','==3', '>=1','>=1&<=22.2', '<=1', '>0.01', '>=0', '>=0', '>=0', '0', 'NA']
    expected_fcst_thresh = pd.Series(expected_fcst_thresh_list)
@@ -44,7 +50,7 @@ def test_calculate_ctc_roc_ascending():
     """
 
     # read in the CTC input data
-    df = pd.read_csv("./data/ROC_CTC.data", sep='\t', header='infer')
+    df = pd.read_csv(f"{cwd}/data/ROC_CTC.data", sep='\t', header='infer')
     expected_pody_list = [0.8457663, 0.7634846, 0.5093934, 0.1228585]
     expected_pody = pd.Series(expected_pody_list)
     expected_thresh_list = ['>=1','>=2','>=3','>=4']
@@ -84,7 +90,7 @@ def test_calculate_ctc_roc_descending():
     """
 
     # read in the CTC input data
-    df = pd.read_csv("./data/ROC_CTC.data", sep='\t', header='infer')
+    df = pd.read_csv(f"{cwd}/data/ROC_CTC.data", sep='\t', header='infer')
     ascending = False
     expected_pody_list = [0.1228585,0.5093934,0.7634846,0.8457663]
     expected_pody = pd.Series(expected_pody_list)
@@ -109,7 +115,7 @@ def test_calculate_ctc_roc_descending():
 
 def test_CTC_ROC_thresh():
     # read in the CTC input data
-    df = pd.read_csv("./data/ROC_CTC_SFP.data", sep='\t', header='infer')
+    df = pd.read_csv(f"{cwd}/data/ROC_CTC_SFP.data", sep='\t', header='infer')
     ascending = False
 
     # All fcst_thresh values are >SFP30, so we expect only
@@ -135,6 +141,63 @@ def test_CTC_ROC_thresh():
 
     # if we get here, then all elements matched in value and position
     assert True
+
+@cache
+def ctc_data():
+    df = pd.read_csv(f"{cwd}/data/ROC_CTC.data", sep='\t', header='infer')
+    return df.to_numpy(), np.array(df.columns)
+
+
+# Some of the functions here that
+# are evaluating to None could be better 
+# tested with a different dataset. e.g. acc
+# needs a 'total' column in the test data.
+@pytest.mark.parametrize(
+    "func_name,expected",
+    [
+        ("fbias", 0.8549794),
+        ("acc", None),
+        ("fmean", None),
+        ("pody", 0.5603757),
+        ("pofd", 0.0368738),
+        ("podn", 0.9631262),
+        ("far", 0.3445741),
+        ("csi", 0.432855),
+        ("gss", None),
+        ("hk", 0.5235019),
+        ("hss", None),
+        ("odds", 33.2937647),
+        ("lodds", 3.5053691),
+        ("bagss", None),
+        ("eclv", None),
+        ("ctc_total", None),
+        ("cts_total", None),
+        ("ctc_fn_on", 44984491.0),
+        ("ctc_fn_oy", 2570049.0),
+        ("ctc_fy_on", 1722257.0),
+        ("ctc_fy_oy", 3275963.0),
+        ("ctc_oy", 5846012.0),
+        ("ctc_on", 46706748.0),
+        ("ctc_fy", 46706748.0),
+        ("ctc_fn", 47554540.0),
+        ("odds1", 33.2937647),
+        ("orss", 0.9416803),
+        ("sedi", 0.7397156),
+        ("seds", None),
+        ("edi", 0.7014241),
+        ("eds", None),
+    ]
+)
+def test_ctc_statistics(func_name, expected):
+    func_str = f"calculate_{func_name}"
+    func = getattr(ctc, func_str)
+    actual = func(*ctc_data())
+    assert actual == expected
+
+    # Check None is returned on Exception
+    with patch.object(ctc, "sum_column_data_by_name", side_effect=TypeError):
+        actual = func(*ctc_data())
+    assert actual == None
 
 
     

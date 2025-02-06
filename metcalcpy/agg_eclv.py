@@ -37,16 +37,19 @@ import itertools
 import argparse
 import yaml
 import pandas as pd
-
+import logging
+import signal
+import numpy as np
 from metcalcpy.bootstrap import bootstrap_and_value, BootstrapResults
 from metcalcpy.event_equalize import event_equalize
 from metcalcpy.util.utils import PRECISION, is_string_strictly_float
 from metcalcpy.util.eclv_statistics import *
 
 from metcalcpy.util.utils import is_string_integer, parse_bool
+from metcalcpy.logging_config import setup_logging
+from metcalcpy.util.safe_log import safe_log
 
 __author__ = 'Tatiana Burek'
-
 
 class AggEclv:
     """A class that performs aggregation statistic logic for ECLV data type on input data frame.
@@ -67,39 +70,49 @@ class AggEclv:
     HEADER = ['thresh_i', 'x_pnt_i', 'y_pnt_i', 'stat_btcl', 'stat_btcu', 'nstats']
 
     def __init__(self, in_params):
-        """Initialises the class by saving input parameters and reading data from file
-
-            Args:
-                in_params - input parameters as a dictionary
-            Raises: EmptyDataError or ValueError when the input DataFrame is empty
-                or doesn't have data
         """
+        Initializes the class by saving input parameters and reading data from file.
 
+        Args:
+            in_params (dict): Input parameters as a dictionary.
+        Raises:
+            pd.errors.EmptyDataError: When the input DataFrame is empty.
+            KeyError: When an expected key is missing in parameters.
+        """
+            
+
+        self.logger = setup_logging(in_params)
+        logger = self.logger
+        safe_log(logger, "debug", "Initializing AggEclv with parameters.")
+    
         self.statistic = None
         self.current_thresh = None
         self.params = in_params
         self.steps = np.arange(self.params['cl_step'], 1, self.params['cl_step'])
         self.column_names = np.array(self.LINE_TYPE_COLUMNS[self.params['line_type']])
+        self.add_base_rate = self.params.get('add_base_rate', 0)
 
-        if 'add_base_rate' in self.params.keys():
-            self.add_base_rate = self.params['add_base_rate']
-        else:
+        if self.add_base_rate not in [0, 1]:
             self.add_base_rate = 0
-        if self.add_base_rate != 0 or self.add_base_rate != 1:
-            self.add_base_rate = 0
+            safe_log(logger, "warning", f"add_base_rate parameter was invalid. Reset to 0. Received value: {self.params.get('add_base_rate')}")
 
+        safe_log(logger, "debug", f"Parameters set: Steps: {self.steps}, Column Names: {self.column_names}, Add Base Rate: {self.add_base_rate}")
+    
         try:
-            self.input_data = pd.read_csv(
-                self.params['agg_stat_input'],
-                header=[0],
-                sep='\t'
-            )
-        except pd.errors.EmptyDataError:
+            self.input_data = pd.read_csv(self.params['agg_stat_input'], header=0, sep='\t')
+            safe_log(logger, "info", f"Successfully loaded data from {self.params['agg_stat_input']}")
+        except pd.errors.EmptyDataError as e:
+            safe_log(logger, "error", "Input data file is empty, raising EmptyDataError.")
             raise
-        except KeyError as er:
-            print(f'ERROR: parameter with key {er} is missing')
+        except KeyError as e:
+            safe_log(logger, "error", f"Parameter with key {str(e)} is missing, raising KeyError.")
             raise
+        except Exception as e:
+            safe_log(logger, "error", f"Unexpected error occurred during data loading: {str(e)}")
+            raise
+
         self.group_to_value = {}
+        safe_log(logger, "debug", "AggEclv initialized successfully.")
 
     def _calc_stats(self, values):
         """Calculate the statistic of values for each bootstrap sample
@@ -113,23 +126,43 @@ class AggEclv:
                 an error
 
         """
+        logger = self.logger
+        safe_log(logger, "debug", "Starting to calculate statistics for given values.")
+        if values is None:
+           safe_log(logger, "error", "Received None as input for values which is not expected.")
+           raise ValueError("Input values cannot be None.")
 
-        if values is not None and values.ndim == 2:
+        if values.ndim == 2:
             # The single value case
-            stat_values = [
-                calculate_eclv(values, self.column_names, self.current_thresh, self.params['line_type'], self.steps,
-                               self.add_base_rate)]
+            safe_log(logger, "debug", "Processing single value case for statistical calculation.")
+            try:
+                stat_values = [
+                    calculate_eclv(values, self.column_names, self.current_thresh, self.params['line_type'], self.steps,
+                                   self.add_base_rate, logger=logger)
+                ]
+                safe_log(logger, "info", "Statistics calculated successfully for single value case.")
+            except Exception as e:
+                safe_log(logger, "error", f"Failed to calculate statistics for single value case: {str(e)}")
+                raise
 
-        elif values is not None and values.ndim == 3:
-            # bootstrapped case
+        elif values.ndim == 3:
+            # Bootstrapped case
+            safe_log(logger, "debug", "Processing bootstrapped case for statistical calculation.")
             stat_values = []
-            for row in values:
-                stat_value = [
-                    calculate_eclv(row, self.column_names, self.current_thresh, self.params['line_type'], self.steps)]
-                stat_values.append(stat_value)
-
+            try:
+                for row in values:
+                    stat_value = [
+                        calculate_eclv(row, self.column_names, self.current_thresh, self.params['line_type'], self.steps, logger=logger)
+                    ]
+                    stat_values.append(stat_value)
+                safe_log(logger, "info", "Statistics calculated successfully for all bootstrap samples.")
+            except Exception as e:
+                safe_log(logger, "error", f"Failed to calculate statistics for bootstrapped case: {str(e)}")
+                raise
         else:
-            raise KeyError("can't calculate statistic")
+            safe_log(logger, "error", f"Invalid dimension {values.ndim} for values, expected 2 or 3.")
+            raise KeyError(f"Invalid data dimensions {values.ndim}; expected 2D or 3D array.")
+
         return stat_values
 
     def _get_bootstrapped_stats(self, series_data, thresholds):
@@ -140,37 +173,33 @@ class AggEclv:
                 BootstrapDistributionResults object
 
         """
+        logger = self.logger
+        safe_log(logger, "debug", "Starting the calculation of bootstrapped statistics.")
 
         # if the data frame is empty - do nothing and return an empty object
         if series_data.empty:
-            return BootstrapResults(lower_bound=None,
-                                    value=None,
-                                    upper_bound=None)
-
+            safe_log(logger, "warning", "Received an empty DataFrame, returning empty results.")
+            return BootstrapResults(lower_bound=None, value=None, upper_bound=None)
+ 
         data = series_data[self.column_names].to_numpy()
         boot_stat_thresh = {}
         for ind, thresh in enumerate(thresholds):
             self.current_thresh = thresh
+            safe_log(logger, "debug", f"Processing threshold {thresh}.")
             if self.params['num_iterations'] == 1:
-                # don't need bootstrapping and CI calculation -
-                # calculate the statistic and exit
+                safe_log(logger, "info", "Single iteration mode: no bootstrapping required.")
                 stat_val = self._calc_stats(data)[0]
-
-                results = BootstrapResults(lower_bound=None,
-                                           value=stat_val,
-                                           upper_bound=None)
-
+                results = BootstrapResults(lower_bound=None, value=stat_val, upper_bound=None)
+                safe_log(logger, "debug", f"Statistics calculated for threshold {thresh} without bootstrapping.")
             else:
-                # need bootstrapping and CI calculation in addition to statistic
                 try:
                     block_length = 1
-                    # to use circular block bootstrap or not
-                    is_cbb = True
-                    if 'circular_block_bootstrap' in self.params.keys():
+                    if 'circular_block_bootstrap' in self.params:
                         is_cbb = parse_bool(self.params['circular_block_bootstrap'])
+                        if is_cbb:
+                            block_length = int(math.sqrt(len(data)))
+                            safe_log(logger, "debug", f"Using circular block bootstrap with block length {block_length}.")
 
-                    if is_cbb:
-                        block_length = int(math.sqrt(len(data)))
                     results = bootstrap_and_value(
                         data,
                         stat_func=self._calc_stats,
@@ -179,12 +208,14 @@ class AggEclv:
                         ci_method=self.params['method'],
                         save_data=False,
                         block_length=block_length,
-                        eclv=True
-                    )
-
+                        eclv=True,
+                        logger=logger
+                        )
+                    safe_log(logger, "info", f"Bootstrapped statistics calculated for threshold {thresh}.")
                 except KeyError as err:
+                    safe_log(logger, "error", f"Failed to calculate bootstrapped statistics due to missing key: {err}")
                     results = BootstrapResults(None, None, None)
-                    print(err)
+
             boot_stat_thresh[ind] = results
 
         return boot_stat_thresh
@@ -197,13 +228,19 @@ class AggEclv:
             Returns:
                 pandas data frame
         """
-        result = pd.DataFrame()
+        logger = self.logger
+        safe_log(logger, "debug", f"Initializing output frame with fields: {fields} and {row_number} rows.") 
+        result = pd.DataFrame(index=range(row_number))
         # fill series variables and values
         for field in fields:
             if field == 'nstats':
-                result[field] = [0] * row_number
+                result[field] = 0  # Initialize 'nstats' with 0s
+                safe_log(logger, "debug", f"Field '{field}' initialized with zeros across {row_number} rows.")
             else:
-                result[field] = [None] * row_number
+                result[field] = None  # Initialize other fields with None
+                safe_log(logger, "debug", f"Field '{field}' initialized with None across {row_number} rows.")
+
+        safe_log(logger, "info", f"Output DataFrame initialized successfully with fields: {fields}.")
         return result
 
     def _proceed_with_axis(self):
@@ -213,24 +250,31 @@ class AggEclv:
                 pandas dataframe  with calculated stat values and CI
 
         """
+        logger = self.logger
+        safe_log(logger, "debug", "Starting calculation of stat values for the requested Y axis.")
+    
         if self.input_data.empty:
+            safe_log(logger, "warning", "Input data frame is empty. Exiting calculation.")
             return pd.DataFrame()
-
         series_val = self.params['series_val_1']
         if len(series_val) > 0:
             current_header = list(series_val.keys())
             current_header.extend(self.HEADER)
+            safe_log(logger, "debug", f"Headers set with series values: {current_header}")
         else:
             current_header = self.HEADER.copy()
+            safe_log(logger, "debug", "No series values provided; using default headers.")
 
         all_points = list(itertools.product(*series_val.values()))
+        safe_log(logger, "info", f"Generated all combinations for points to be processed: {len(all_points)} combinations.")
 
         out_frame = self._init_out_frame(current_header, 0)
-
+        safe_log(logger, "debug", "Initialized output DataFrame for storing results.")
         # for each point
         for point in all_points:
             out_frame_local = self._init_out_frame(current_header, len(self.steps) + self.add_base_rate)
-            # filter point data
+            safe_log(logger, "debug", f"Processing point: {point}")
+             # filter point data
             all_filters = []
             for field_ind, field in enumerate(series_val.keys()):
                 filter_value = point[field_ind]
@@ -244,18 +288,16 @@ class AggEclv:
                 if field in self.input_data.keys():
                     all_filters.append((self.input_data[field].isin(filter_list)))
 
-            # use numpy to select the rows where any record evaluates to True
             mask = np.array(all_filters).all(axis=0)
             point_data = self.input_data.loc[mask]
 
-            # calculate bootstrap results
             if 'thresh_i' in point_data.columns:
-                thresholds = point_data['thresh_i'].unique().tolist()
-                thresholds.sort()
+                thresholds = sorted(point_data['thresh_i'].unique().tolist())
             else:
                 thresholds = [0]
 
             bootstrap_results = self._get_bootstrapped_stats(point_data, thresholds)
+            safe_log(logger, "debug", f"Bootstrap results obtained for point {point}")
 
             for thresh_ind, thresh in enumerate(thresholds):
                 out_frame_local['thresh_i'] = [thresh] * (len(self.steps) + self.add_base_rate)
@@ -268,7 +310,10 @@ class AggEclv:
                 frames = [out_frame, out_frame_local]
                 out_frame = pd.concat(frames)
 
-        out_frame.reset_index(inplace=True, drop=True)
+            safe_log(logger, "info", f"Completed processing for point {point}")
+
+        out_frame.reset_index(drop=True, inplace=True)
+        safe_log(logger, "info", "All data processed successfully. Returning compiled DataFrame.")
         return out_frame
 
     def calculate_stats_and_ci(self):
@@ -277,39 +322,50 @@ class AggEclv:
             Writes output data to the file
 
         """
-
+        logger = self.logger
+        safe_log(logger, "debug", "Starting calculation of statistics and confidence intervals.")
+    
         # set random seed if present
         if self.params['random_seed'] is not None and self.params['random_seed'] != 'None':
             np.random.seed(self.params['random_seed'])
+            safe_log(logger, "info", f"Random seed set to {self.params['random_seed']}.")
 
-        is_event_equal = parse_bool(self.params['event_equal'])
         # perform EE if needed
-        if is_event_equal:
+        if parse_bool(self.params.get('event_equal', False)):
+            safe_log(logger, "info", "Event equalization enabled.")
             fix_vals_permuted_list = []
 
             for key in self.params['fixed_vars_vals_input']:
                 vals_permuted = list(itertools.product(*self.params['fixed_vars_vals_input'][key].values()))
-                vals_permuted_list = [item for sublist in vals_permuted for item in sublist]
-                fix_vals_permuted_list.append(vals_permuted_list)
+                fix_vals_permuted_list.extend(vals_permuted)
 
             fix_vals_keys = list(self.params['fixed_vars_vals_input'].keys())
-            is_equalize_by_indep = parse_bool(self.params['equalize_by_indep'])
+            is_equalize_by_indep = parse_bool(self.params.get('equalize_by_indep', False))
             self.input_data = event_equalize(self.input_data, 'stat_name',
                                              self.params['series_val_1'],
                                              fix_vals_keys,
-                                             fix_vals_permuted_list, is_equalize_by_indep, False)
+                                             fix_vals_permuted_list, is_equalize_by_indep, False, logger=logger)
+            safe_log(logger, "debug", "Event equalization completed.")
 
+        # Process data to calculate statistics
         out_frame = self._proceed_with_axis()
+        safe_log(logger, "info", "Statistics and confidence intervals calculation completed.")
+
+        # Determine file writing mode based on configuration
         header = True
         mode = 'w'
-
-        if 'append_to_file' in self.params.keys() and self.params['append_to_file'] == 'True':
+        if parse_bool(self.params.get('append_to_file', False)):
             header = False
             mode = 'a'
+            safe_log(logger, "debug", "Appending to existing file.")
 
-        export_csv = out_frame.to_csv(self.params['agg_stat_output'],
-                                      index=None, header=header, mode=mode,
-                                      sep="\t", na_rep="NA", float_format='%.' + str(PRECISION) + 'f')
+        # Write output data to file
+        try:
+            export_csv = out_frame.to_csv(self.params['agg_stat_output'], index=None, header=header, mode=mode,
+                                          sep="\t", na_rep="NA", float_format='%.' + str(PRECISION) + 'f')
+            safe_log(logger, "info", f"Data successfully written to {self.params['agg_stat_output']} in mode {mode}.")
+        except Exception as e:
+            safe_log(logger, "error", f"Failed to write data to file: {str(e)}")
 
 
 if __name__ == "__main__":

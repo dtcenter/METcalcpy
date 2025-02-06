@@ -21,12 +21,13 @@ from metcalcpy.util.sl1l2_statistics import calculate_fbar, calculate_fstdev, \
     calculate_bcmse, calculate_bcrmse, calculate_rmse, \
     calculate_me2, calculate_msess
 from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION, get_total_values
+from metcalcpy.util.safe_log import safe_log
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
 
 
-def calculate_ssvar_fbar(input_data, columns_names, aggregation=False):
+def calculate_ssvar_fbar(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of SSVAR_FBAR - Average forecast value
 
         Args:
@@ -40,10 +41,17 @@ def calculate_ssvar_fbar(input_data, columns_names, aggregation=False):
             calculated SSVAR_FBAR as float
             or None if some of the data values are missing or invalid
     """
-    return calculate_fbar(input_data, columns_names, aggregation)
+    try:
+        safe_log(logger, "debug", "Starting calculation of SSVAR_FBAR - Average forecast value")
+        result = calculate_fbar(input_data, columns_names, aggregation, logger=logger)
+        safe_log(logger, "debug", f"SSVAR_FBAR calculated: {result}")
+        return result
+    except Exception as e:
+        safe_log(logger, "warning", f"Exception occurred while calculating SSVAR_FBAR: {str(e)}")
+        return None
 
 
-def calculate_ssvar_fstdev(input_data, columns_names, aggregation=False):
+def calculate_ssvar_fstdev(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of SSVAR_FSTDEV - Standard deviation of the error
 
         Args:
@@ -57,10 +65,17 @@ def calculate_ssvar_fstdev(input_data, columns_names, aggregation=False):
             calculated SSVAR_FSTDEV as float
             or None if some of the data values are missing or invalid
     """
-    return calculate_fstdev(input_data, columns_names, aggregation)
+    try:
+        safe_log(logger, "debug", "Starting calculation of SSVAR_FSTDEV - Standard deviation of the forecast")
+        result = calculate_fstdev(input_data, columns_names, aggregation, logger=logger)
+        safe_log(logger, "debug", f"SSVAR_FSTDEV calculated: {result}")
+        return result
+    except Exception as e:
+        safe_log(logger, "warning", f"Exception occurred while calculating SSVAR_FSTDEV: {str(e)}")
+        return None
 
 
-def calculate_ssvar_obar(input_data, columns_names, aggregation=False):
+def calculate_ssvar_obar(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of SSVAR_OBAR - Average observed value
 
         Args:
@@ -74,10 +89,17 @@ def calculate_ssvar_obar(input_data, columns_names, aggregation=False):
             calculated SSVAR_OBAR as float
             or None if some of the data values are missing or invalid
     """
-    return calculate_obar(input_data, columns_names, aggregation)
+    try:
+        safe_log(logger, "debug", "Starting calculation of SSVAR_OBAR - Average observed value")
+        result = calculate_obar(input_data, columns_names, aggregation, logger=logger)
+        safe_log(logger, "debug", f"SSVAR_OBAR calculated: {result}")
+        return result
+    except Exception as e:
+        safe_log(logger, "warning", f"Exception occurred while calculating SSVAR_OBAR: {str(e)}")
+        return None
 
 
-def calculate_ssvar_ostdev(input_data, columns_names, aggregation=False):
+def calculate_ssvar_ostdev(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of SSVAR_OSTDEV - Standard deviation of the error
 
         Args:
@@ -91,10 +113,17 @@ def calculate_ssvar_ostdev(input_data, columns_names, aggregation=False):
             calculated SSVAR_OSTDEV as float
             or None if some of the data values are missing or invalid
     """
-    return calculate_ostdev(input_data, columns_names, aggregation)
+    try:
+        safe_log(logger, "debug", "Starting calculation of SSVAR_OSTDEV - Standard deviation of the error")
+        result = calculate_ostdev(input_data, columns_names, aggregation, logger=logger)
+        safe_log(logger, "debug", f"SSVAR_OSTDEV calculated: {result}")
+        return result
+    except Exception as e:
+        safe_log(logger, "warning", f"Exception occurred while calculating SSVAR_OSTDEV: {str(e)}")
+        return None
 
 
-def calculate_ssvar_pr_corr(input_data, columns_names, aggregation=False):
+def calculate_ssvar_pr_corr(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of SSVAR_PR_CORR - Pearson correlation coefficient
 
         Args:
@@ -108,10 +137,17 @@ def calculate_ssvar_pr_corr(input_data, columns_names, aggregation=False):
             calculated SSVAR_PR_CORR as float
             or None if some of the data values are missing or invalid
     """
-    return calculate_pr_corr(input_data, columns_names, aggregation)
+    try:
+        safe_log(logger, "debug", "Starting calculation of SSVAR_PR_CORR - Pearson correlation coefficient")
+        result = calculate_pr_corr(input_data, columns_names, aggregation, logger=logger)
+        safe_log(logger, "debug", f"SSVAR_PR_CORR calculated: {result}")
+        return result
+    except Exception as e:
+        safe_log(logger, "warning", f"Exception occurred while calculating SSVAR_PR_CORR: {str(e)}")
+        return None
 
 
-def calculate_ssvar_me(input_data, columns_names, aggregation=False):
+def calculate_ssvar_me(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of SSVAR_ME - Mean error
 
         Args:
@@ -125,10 +161,16 @@ def calculate_ssvar_me(input_data, columns_names, aggregation=False):
             calculated SSVAR_ME as float
             or None if some of the data values are missing or invalid
     """
-    return calculate_me(input_data, columns_names, aggregation)
+    try:
+        safe_log(logger, "debug", "Starting calculation of SSVAR_ME - Mean error")
+        result = calculate_me(input_data, columns_names, aggregation, logger=logger)
+        safe_log(logger, "debug", f"SSVAR_ME calculated: {result}")
+        return result
+    except Exception as e:
+        safe_log(logger, "warning", f"Exception occurred while calculating SSVAR_ME: {str(e)}")
+        return None
 
-
-def calculate_ssvar_estdev(input_data, columns_names, aggregation=False):
+def calculate_ssvar_estdev(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of SSVAR_ESTDEV - Standard deviation of the error
 
         Args:
@@ -142,10 +184,17 @@ def calculate_ssvar_estdev(input_data, columns_names, aggregation=False):
             calculated SSVAR_ESTDEV as float
             or None if some of the data values are missing or invalid
     """
-    return calculate_estdev(input_data, columns_names, aggregation)
+    try:
+        safe_log(logger, "debug", "Starting calculation of SSVAR_ESTDEV - Standard deviation of the error")
+        result = calculate_estdev(input_data, columns_names, aggregation, logger=logger)
+        safe_log(logger, "debug", f"SSVAR_ESTDEV calculated: {result}")
+        return result
+    except Exception as e:
+        safe_log(logger, "warning", f"Exception occurred while calculating SSVAR_ESTDEV: {str(e)}")
+        return None
 
 
-def calculate_ssvar_mse(input_data, columns_names, aggregation=False):
+def calculate_ssvar_mse(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of SSVAR_MSE - Mean squared error
 
         Args:
@@ -158,10 +207,17 @@ def calculate_ssvar_mse(input_data, columns_names, aggregation=False):
             calculated SSVAR_MSE as float
             or None if some of the data values are missing or invalid
     """
-    return calculate_mse(input_data, columns_names, aggregation)
+    try:
+        safe_log(logger, "debug", "Starting calculation of SSVAR_MSE - Mean squared error")
+        result = calculate_mse(input_data, columns_names, aggregation, logger=logger)
+        safe_log(logger, "debug", f"SSVAR_MSE calculated: {result}")
+        return result
+    except Exception as e:
+        safe_log(logger, "warning", f"Exception occurred while calculating SSVAR_MSE: {str(e)}")
+        return None
 
 
-def calculate_ssvar_bcmse(input_data, columns_names, aggregation=False):
+def calculate_ssvar_bcmse(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of SSVAR_BCMSE - Bias corrected root mean squared error
 
         Args:
@@ -175,10 +231,17 @@ def calculate_ssvar_bcmse(input_data, columns_names, aggregation=False):
             calculated SSVAR_BCMSE as float
             or None if some of the data values are missing or invalid
     """
-    return calculate_bcmse(input_data, columns_names, aggregation)
+    try:
+        safe_log(logger, "debug", "Starting calculation of SSVAR_BCMSE - Bias corrected root mean squared error")
+        result = calculate_bcmse(input_data, columns_names, aggregation, logger=logger)
+        safe_log(logger, "debug", f"SSVAR_BCMSE calculated: {result}")
+        return result
+    except Exception as e:
+        safe_log(logger, "warning", f"Exception occurred while calculating SSVAR_BCMSE: {str(e)}")
+        return None
 
 
-def calculate_ssvar_bcrmse(input_data, columns_names, aggregation=False):
+def calculate_ssvar_bcrmse(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of SSVAR_BCRMSE - Bias corrected root mean squared error
 
         Args:
@@ -192,10 +255,17 @@ def calculate_ssvar_bcrmse(input_data, columns_names, aggregation=False):
             calculated SSVAR_BCRMSE as float
             or None if some of the data values are missing or invalid
     """
-    return calculate_bcrmse(input_data, columns_names, aggregation)
+    try:
+        safe_log(logger, "debug", "Starting calculation of SSVAR_BCRMSE - Bias corrected root mean squared error")
+        result = calculate_bcrmse(input_data, columns_names, aggregation, logger=logger)
+        safe_log(logger, "debug", f"SSVAR_BCRMSE calculated: {result}")
+        return result
+    except Exception as e:
+        safe_log(logger, "warning", f"Exception occurred while calculating SSVAR_BCRMSE: {str(e)}")
+        return None
 
 
-def calculate_ssvar_rmse(input_data, columns_names, aggregation=False):
+def calculate_ssvar_rmse(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of SSVAR_RMSE - Root mean squared error
 
         Args:
@@ -209,10 +279,17 @@ def calculate_ssvar_rmse(input_data, columns_names, aggregation=False):
             calculated SSVAR_RMSE as float
             or None if some of the data values are missing or invalid
     """
-    return calculate_rmse(input_data, columns_names, aggregation)
+    try:
+        safe_log(logger, "debug", "Starting calculation of SSVAR_RMSE - Root mean squared error")
+        result = calculate_rmse(input_data, columns_names, aggregation, logger=logger)
+        safe_log(logger, "debug", f"SSVAR_RMSE calculated: {result}")
+        return result
+    except Exception as e:
+        safe_log(logger, "warning", f"Exception occurred while calculating SSVAR_RMSE: {str(e)}")
+        return None
 
 
-def calculate_ssvar_anom_corr(input_data, columns_names, aggregation=False):
+def calculate_ssvar_anom_corr(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of SSVAR_ANOM_CORR -
 
         Args:
@@ -226,17 +303,29 @@ def calculate_ssvar_anom_corr(input_data, columns_names, aggregation=False):
             calculated SSVAR_ANOM_CORR as float
             or None if some of the data values are missing or invalid
     """
-    # change the names to comply with sal1l2 names
-    sal1l2_columns_names = np.copy(columns_names)
-    sal1l2_columns_names[sal1l2_columns_names  == 'ffbar'] = 'ffabar'
-    sal1l2_columns_names[sal1l2_columns_names  == 'fbar'] = 'fabar'
-    sal1l2_columns_names[sal1l2_columns_names  == 'oobar'] = 'ooabar'
-    sal1l2_columns_names[sal1l2_columns_names  == 'obar'] = 'oabar'
-    sal1l2_columns_names[sal1l2_columns_names  == 'fobar'] = 'foabar'
-    return calculate_anom_corr(input_data, sal1l2_columns_names, aggregation)
+    try:
+        safe_log(logger, "debug", "Starting calculation of SSVAR_ANOM_CORR")
+        
+        # change the names to comply with sal1l2 names
+        sal1l2_columns_names = np.copy(columns_names)
+        sal1l2_columns_names[sal1l2_columns_names == 'ffbar'] = 'ffabar'
+        sal1l2_columns_names[sal1l2_columns_names == 'fbar'] = 'fabar'
+        sal1l2_columns_names[sal1l2_columns_names == 'oobar'] = 'ooabar'
+        sal1l2_columns_names[sal1l2_columns_names == 'obar'] = 'oabar'
+        sal1l2_columns_names[sal1l2_columns_names == 'fobar'] = 'foabar'
+
+        safe_log(logger, "debug", f"Column names adjusted for sal1l2: {sal1l2_columns_names}")
+
+        result = calculate_anom_corr(input_data, sal1l2_columns_names, aggregation, logger=logger)
+        safe_log(logger, "debug", f"SSVAR_ANOM_CORR calculated: {result}")
+
+        return result
+    except Exception as e:
+        safe_log(logger, "warning", f"Exception occurred while calculating SSVAR_ANOM_CORR: {str(e)}")
+        return None
 
 
-def calculate_ssvar_me2(input_data, columns_names, aggregation=False):
+def calculate_ssvar_me2(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of SSVAR_ME2 -
 
         Args:
@@ -250,10 +339,19 @@ def calculate_ssvar_me2(input_data, columns_names, aggregation=False):
             calculated SSVAR_ME2 as float
             or None if some of the data values are missing or invalid
     """
-    return calculate_me2(input_data, columns_names, aggregation)
+    try:
+        safe_log(logger, "debug", "Starting calculation of SSVAR_ME2")
+
+        result = calculate_me2(input_data, columns_names, aggregation, logger=logger)
+        safe_log(logger, "debug", f"SSVAR_ME2 calculated: {result}")
+
+        return result
+    except Exception as e:
+        safe_log(logger, "warning", f"Exception occurred while calculating SSVAR_ME2: {str(e)}")
+        return None
 
 
-def calculate_ssvar_msess(input_data, columns_names, aggregation=False):
+def calculate_ssvar_msess(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of SSVAR_MSESS -
 
         Args:
@@ -268,10 +366,19 @@ def calculate_ssvar_msess(input_data, columns_names, aggregation=False):
             or None if some of the data values are missing or invalid
     """
 
-    return calculate_msess(input_data, columns_names, aggregation)
+    try:
+        safe_log(logger, "debug", "Starting calculation of SSVAR_MSESS")
+
+        result = calculate_msess(input_data, columns_names, aggregation, logger=logger)
+        safe_log(logger, "debug", f"SSVAR_MSESS calculated: {result}")
+
+        return result
+    except Exception as e:
+        safe_log(logger, "warning", f"Exception occurred while calculating SSVAR_MSESS: {str(e)}")
+        return None
 
 
-def calculate_ssvar_spread(input_data, columns_names, aggregation=False):
+def calculate_ssvar_spread(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of SSVAR_SPREAD -
 
         Args:
@@ -287,17 +394,23 @@ def calculate_ssvar_spread(input_data, columns_names, aggregation=False):
     """
     warnings.filterwarnings('error')
     try:
+        safe_log(logger, "debug", "Starting calculation of SSVAR_SPREAD")
+
         total = get_total_values(input_data, columns_names, aggregation)
         var_mean = sum_column_data_by_name(input_data, columns_names, 'var_mean') / total
         result = np.sqrt(var_mean)
         result = round_half_up(result, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+
+        safe_log(logger, "debug", f"SSVAR_SPREAD calculated: {result}")
+
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred while calculating SSVAR_SPREAD: {str(e)}")
         result = None
     warnings.filterwarnings('ignore')
     return result
 
 
-def calculate_ssvar_total(input_data, columns_names):
+def calculate_ssvar_total(input_data, columns_names, logger=None):
     """Performs calculation of Total number of matched pairs for
         Spread/Skill Variance
         Args:
@@ -310,5 +423,16 @@ def calculate_ssvar_total(input_data, columns_names):
             calculated Total number of matched pairs as float
             or None if some of the data values are missing or invalid
     """
-    total = sum_column_data_by_name(input_data, columns_names, 'total_orig')
-    return round_half_up(total, PRECISION)
+    try:
+        safe_log(logger, "debug", "Starting calculation of SSVAR_TOTAL")
+
+        total = sum_column_data_by_name(input_data, columns_names, 'total_orig')
+        result = round_half_up(total, PRECISION)
+
+        safe_log(logger, "debug", f"SSVAR_TOTAL calculated: {result}")
+
+    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+        safe_log(logger, "warning", f"Exception occurred while calculating SSVAR_TOTAL: {str(e)}")
+        result = None
+
+    return result

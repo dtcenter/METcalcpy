@@ -23,10 +23,13 @@ This is a sub-issue of #*List the parent issue number here*.
 - [ ] Select **scientist(s)** or **no scientist** required
 
 ### Labels ###
+- [ ] Review default **alert** labels
 - [ ] Select **component(s)**
 - [ ] Select **priority**
 - [ ] Select **requestor(s)**
 
-### Projects and Milestone ###
-- [ ] Select **Repository** and/or **Organization** level **Project(s)** or add **alert: NEED CYCLE ASSIGNMENT** label
-- [ ] Select **Milestone** as the next official version or **Future Versions**
+### Milestone and Projects ###
+- [ ] Select **Milestone** as a **METcalcpy-X.Y.Z** version, **Consider for Next Release**, or **Backlog of Development Ideas**
+- [ ] For a **METcalcpy-X.Y.Z** version, select the **METcalcpy-X.Y.Z Development** project
+
+

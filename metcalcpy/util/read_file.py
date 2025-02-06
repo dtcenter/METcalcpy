@@ -27,10 +27,11 @@ from read_env_vars_in_config import parse_config
 from METdatadb import METdbLoad as dbload
 from METdatadb.METdbLoad.ush import read_data_files
 from METdatadb.METdbLoad.ush.read_load_xml import XmlLoadFile
+from metcalcpy.util.safe_log import safe_log
 
 class ReadMETOutput:
 
-    def __init__(self):
+    def __init__(self, logger=None):
         """ Creates a output reader with a list of files to read
         """
         self.flags = {}
@@ -49,6 +50,7 @@ class ReadMETOutput:
         self.flags['drop_indexes'] = False
         self.flags['apply_indexes'] = False
         self.flags['load_xml'] = True
+        self.logger = logger
 
     def readYAMLConfig(self,configFile):
         """ Returns a file or list of files
@@ -59,14 +61,30 @@ class ReadMETOutput:
         Returns: 
             returns a list containing a single or multiple file names including path
         """
-        # Retrieve the contents of a YAML custom config file to over-ride
-        # or augment settings defined by the default config file.
-        #Use a configure file parser that handles environment variables
-        files_dict = parse_config(configFile)
+        logger = self.logger
+        try:
+            # Retrieve the contents of a YAML custom config file to override
+            # or augment settings defined by the default config file.
+            # Use a config file parser that handles environment variables.
+            files_dict = parse_config(configFile, logger=logger)
 
-        #parse_config returns a dictionary, read_data_files wants a list
-        files = files_dict['files']
-        return files
+            if files_dict is None:
+                safe_log(logger, "error", "Failed to parse the YAML configuration. 'files_dict' is None.")
+                return []
+
+            # parse_config returns a dictionary, read_data_files expects a list
+            files = files_dict.get('files', [])
+
+            if not files:
+                safe_log(logger, "warning", "No 'files' entry found in the YAML configuration.")
+            else:
+                safe_log(logger, "debug", f"Files retrieved from YAML configuration: {files}")
+
+            return files
+
+        except Exception as e:
+            safe_log(logger, "error", f"An error occurred while reading the YAML configuration: {str(e)}")
+            return []
 
     def readXMLConfig(self,configFile):
         """ Returns a file or list of files
@@ -75,15 +93,26 @@ class ReadMETOutput:
             Returns: 
                 returns a list containg a single or multiple file names including path
         """
+        logger = self.logger
+        safe_log(logger, "debug", f"Attempting to read XML configuration from file: {configFile}")
 
-        # Retrieve the contents of an XML  custom config file to over-ride
-        # or augment settings defined by the default config file.
-        # Uses XmlLoadFile from METdatadb
+        try:
+            # Retrieve the contents of an XML custom config file to override
+            # or augment settings defined by the default config file.
+            # Uses XmlLoadFile from METdatadb.
+            XML_LOADFILE = XmlLoadFile(configFile)
+            
+            safe_log(logger, "debug", "Reading XML file.")
+            XML_LOADFILE.read_xml()
+            
+            files = XML_LOADFILE.load_files()
+            safe_log(logger, "debug", f"Files retrieved from XML configuration: {files}")
 
-        XML_LOADFILE = XmlLoadFile(configFile)
-        XML_LOADFILE.read_xml()
+            return files
 
-        return XML_LOADFILE.load_files
+        except Exception as e:
+            safe_log(logger, "error", f"An error occurred while reading the XML configuration: {str(e)}")
+            return []
 
     def readData(self,files_from_config):
         """ 
@@ -92,19 +121,29 @@ class ReadMETOutput:
             Returns: 
                 a pandas DataFrame containing MET output contents
         """
+        logger = self.logger
+        safe_log(logger, "debug", f"Starting to read data from the files: {files_from_config}")
 
-        file_data = read_data_files.ReadDataFiles()
+        try:
+            # Initialize the ReadDataFiles class instance
+            file_data = read_data_files.ReadDataFiles()
 
-        # read in the data files, with options specified by XML flags
-        #set load_flags and line_types empty so that everything is read
-        line_types = []
-        file_data.read_data(self.flags,
-                            files_from_config,
-                            line_types)
+            # Read in the data files, with options specified by XML flags
+            # Set load_flags and line_types empty so that everything is read
+            line_types = []
+            safe_log(logger, "debug", f"Reading data with flags: {self.flags} and line_types: {line_types}")
+            
+            file_data.read_data(self.flags, files_from_config, line_types)
 
+            # Retrieve the data as a pandas DataFrame
+            df = file_data.stat_data
+            safe_log(logger, "debug", f"Data reading completed. DataFrame shape: {df.shape}")
 
-        df = file_data.stat_data
-        return df
+            return df
+
+        except Exception as e:
+            safe_log(logger, "error", f"An error occurred while reading data: {str(e)}")
+            return pd.DataFrame()  # Return an empty DataFrame in case of error
 
 def main():
     """

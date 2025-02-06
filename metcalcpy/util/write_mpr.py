@@ -8,8 +8,9 @@
 import os
 import numpy as np
 
+from metcalcpy.util.safe_log import safe_log
 
-def write_mpr_file(data_fcst,data_obs,lats_in,lons_in,fcst_lead,fcst_valid,obs_lead,obs_valid,mod_name,desc,fcst_var,fcst_unit,fcst_lev,obs_var,obs_unit,obs_lev,maskname,obsslev,outdir,outfile_prefix):
+def write_mpr_file(data_fcst,data_obs,lats_in,lons_in,fcst_lead,fcst_valid,obs_lead,obs_valid,mod_name,desc,fcst_var,fcst_unit,fcst_lev,obs_var,obs_unit,obs_lev,maskname,obsslev,outdir,outfile_prefix, logger=None):
 
     """
     Function to write an output mpr file given a 1d array of observation and forecast data
@@ -33,7 +34,7 @@ def write_mpr_file(data_fcst,data_obs,lats_in,lons_in,fcst_lead,fcst_valid,obs_l
             observation valid time
     mod_name: string
             output model name (the MODEL column in MET)
-    desc: string
+    desc: 1D array string
             output description (the DESC column in MET)
     fcst_var: 1D array string
             forecast variable name
@@ -62,6 +63,7 @@ def write_mpr_file(data_fcst,data_obs,lats_in,lons_in,fcst_lead,fcst_valid,obs_l
     """
     Get the data length to create the INDEX and TOTAL variables in the MPR line
     """
+    safe_log(logger, "info", "Starting to write MPR file.")
     dlength = len(data_obs)
     index_num = np.arange(0,dlength,1)+1
 
@@ -69,7 +71,7 @@ def write_mpr_file(data_fcst,data_obs,lats_in,lons_in,fcst_lead,fcst_valid,obs_l
     Get the length of the model, FCST_VAR, FCST_LEV, OBS_VAR, OBS_LEV, VX_MASK, etc for formatting
     """
     mname_len = str(max([5,len(mod_name)])+3)
-    desc_len = str(max([4,len(desc)])+3)
+    desc_len = str(max([4,max([len(l) for l in desc])])+3)
     mask_len = str(max([7,len(maskname)])+3)
     fvar_len = str(max([8,max([len(l) for l in fcst_var])])+3)
     funit_len = str(max([8,max([len(l) for l in fcst_unit])])+3)
@@ -93,6 +95,7 @@ def write_mpr_file(data_fcst,data_obs,lats_in,lons_in,fcst_lead,fcst_valid,obs_l
     Create the output directory if it doesn't exist
     """
     if not os.path.exists(outdir):
+        safe_log(logger, "info", f"Created output directory: {outdir}")
         os.makedirs(outdir)
 
     """
@@ -101,6 +104,8 @@ def write_mpr_file(data_fcst,data_obs,lats_in,lons_in,fcst_lead,fcst_valid,obs_l
     fcst_valid_str = fcst_valid[0]
     ft_stamp = fcst_lead[0]+'L_'+fcst_valid_str[0:8]+'_'+fcst_valid_str[9:15]+'V'
     full_outfile = os.path.join(outdir,outfile_prefix+'_'+ft_stamp+'.stat')
+
+    safe_log(logger, "info", f"Writing output MPR file: {full_outfile}")
 
     """
     Write the file
@@ -114,9 +119,10 @@ def write_mpr_file(data_fcst,data_obs,lats_in,lons_in,fcst_lead,fcst_valid,obs_l
             'OBS_THRESH', 'COV_THRESH', 'ALPHA', 'LINE_TYPE'))
         for dpt in range(dlength):
             # Write the data
-            mf.write(format_string2 % ('V9.1',mod_name,desc,fcst_lead[dpt],fcst_valid[dpt],fcst_valid[dpt],
+            mf.write(format_string2 % ('V9.1',mod_name,desc[dpt],fcst_lead[dpt],fcst_valid[dpt],fcst_valid[dpt],
                 obs_lead[dpt],obs_valid[dpt],obs_valid[dpt],fcst_var[dpt],fcst_unit[dpt],fcst_lev[dpt],
                 obs_var[dpt],obs_unit[dpt],obs_lev[dpt],'ADPUPA',maskname,'NEAREST','1','NA','NA','NA','NA','MPR',
                 str(dlength),str(index_num[dpt]),'NA',lats_in[dpt],lons_in[dpt],obsslev[dpt],'NA',data_fcst[dpt],
                 data_obs[dpt],'NA','NA','NA','NA'))
 
+    safe_log(logger, "info", f"Successfully wrote MPR file: {full_outfile}")

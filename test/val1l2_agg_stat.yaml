@@ -1,5 +1,5 @@
-agg_stat_input:  "./data/stat_analysis/point_stat_GRIB1_NAM_GDAS_120000L_20120409_120000V_val1l2.txt"
-agg_stat_output:  "./calcpy_val1l2_agg.txt"
+agg_stat_input:  !ENV "${TEST_DIR}/data/point_stat/point_stat_GRIB1_NAM_GDAS_MASK_SID_120000L_20120409_120000V_val1l2.txt"
+agg_stat_output:  !ENV "${TEST_DIR}/calcpy_val1l2_agg.txt"
 alpha: 0.05
 append_to_file: null
 circular_block_bootstrap: True
@@ -41,3 +41,6 @@ series_val_1:
   model:
   - FCST
 series_val_2: {}
+log_dir: !ENV "${TEST_DIR}/logs"
+log_filename: log_agg_stat_val1l2.txt
+log_level: WARNING

@@ -2,6 +2,7 @@
 import itertools
 import time
 import re
+import os
 
 import pandas as pd
 import pytest
@@ -10,6 +11,8 @@ from metcalcpy.event_equalize import event_equalize
 from metcalcpy.util.utils import represents_int
 from metcalcpy.util.utils import equalize_axis_data
 from metcalcpy import GROUP_SEPARATOR, DATE_TIME_REGEX
+
+cwd = os.path.dirname(__file__)
 
 def test_event_equalize():
     """Tests event equalization."""
@@ -22,7 +25,7 @@ def test_event_equalize():
     })
 
     fcst_var_val = dict({'TCDC': ["BASER"]})
-    input_data_file = 'data/event_equalize_input.data'
+    input_data_file = f'{cwd}/data/event_equalize_input.data'
 
     # read the input data file into a data frame
     input_data = pd.read_csv(input_data_file, header=[0], sep='\t')
@@ -41,7 +44,7 @@ def test_event_equalize():
     fixed_vars_vals_input = dict()
 
     fcst_var_val = dict({'TMP': ["ME"]})
-    input_data_file = 'data/event_equalize_group_input.data'
+    input_data_file = f'{cwd}/data/event_equalize_group_input.data'
 
     # read the input data file into a data frame
     input_data = pd.read_csv(input_data_file, header=[0], sep='\t')
@@ -153,7 +156,7 @@ def test_equalize_axis_data_no_fix_val(settings_no_fix_vals):
     '''
 
     print("Testing equalize_axis_data with ROC CTC threshold data...")
-    input_file_list = ["data/ROC_CTC_thresh.data", "data/ROC_CTC.data"]
+    input_file_list = [f"{cwd}/data/ROC_CTC_thresh.data", f"{cwd}/data/ROC_CTC.data"]
     for input_file in input_file_list:
         cur_df = pd.read_csv(input_file, sep='\t')
         fix_vals_keys = []
@@ -189,7 +192,7 @@ def test_equalize_axis_data_no_fcst_var(settings_no_fcst_var_vals):
     '''
 
     print("Testing equalize_axis_data with ROC CTC threshold data...")
-    input_file_list = ["data/ROC_CTC_thresh.data", "data/ROC_CTC.data"]
+    input_file_list = [f"{cwd}/data/ROC_CTC_thresh.data", f"{cwd}/data/ROC_CTC.data"]
     for input_file in input_file_list:
         cur_df = pd.read_csv(input_file, sep='\t')
         fix_vals_keys = []

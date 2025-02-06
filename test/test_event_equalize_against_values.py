@@ -1,9 +1,11 @@
 """Tests the operation of METcalcpy's event_equalize_against_values code."""
 
+import os
 import pandas as pd
 
 from metcalcpy.event_equalize_against_values import event_equalize_against_values
 
+cwd = os.path.dirname(__file__)
 
 def test_event_equalize_against_values():
     """Tests event equalization against values."""
@@ -12,9 +14,9 @@ def test_event_equalize_against_values():
     series_val = dict({'model': ["AFWAOCv3.5.1_d01", "NoahMPv3.5.1_d01"]})
 
     fcst_var_val = dict({'APCP_03': ["RATIO_FSA_ASA"]})
-    input_data_file = 'data/ee_av_input.data'
-    stats_input_data_file = 'data/stats_ee_av_input.data'
-    output_data_file = 'data/ee_av_output_py.data'
+    input_data_file = f'{cwd}/data/ee_av_input.data'
+    stats_input_data_file = f'{cwd}/data/stats_ee_av_input.data'
+    output_data_file = f'{cwd}/data/ee_av_output_py.data'
 
     # read the input data file into a data frame
     input_data = pd.read_csv(input_data_file, header=[0], sep='\t')

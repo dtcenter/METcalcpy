@@ -12,7 +12,11 @@ from metpy.units import units
 from numpy.testing import assert_almost_equal
 from xarray.testing import assert_equal
 
+import os
+
 __author__ = "Daniel Adriaansen (NCAR)"
+
+cwd = os.path.dirname(__file__)
 
 def test_calc_ctp():
   """
@@ -24,9 +28,9 @@ def test_calc_ctp():
   """
 
   # Open sounding data for the three test sites
-  site1 = pd.read_csv('data/2023031512_GDAS_Sounding_72210.csv')
-  site2 = pd.read_csv('data/2023031512_GDAS_Sounding_76225.csv')
-  site3 = pd.read_csv('data/2023031512_GDAS_Sounding_76458.csv')
+  site1 = pd.read_csv(f'{cwd}/data/2023031512_GDAS_Sounding_72210.csv')
+  site2 = pd.read_csv(f'{cwd}/data/2023031512_GDAS_Sounding_76225.csv')
+  site3 = pd.read_csv(f'{cwd}/data/2023031512_GDAS_Sounding_76458.csv')
 
   # Save variables with units for testing
   s1prs = site1['pressure'].astype('float').values*units('hPa')
@@ -85,9 +89,9 @@ def test_calc_humidity_index():
   """
 
   # Open sounding data for the three test sites
-  site1 = pd.read_csv('data/2023031512_GDAS_Sounding_72210.csv')
-  site2 = pd.read_csv('data/2023031512_GDAS_Sounding_76225.csv')
-  site3 = pd.read_csv('data/2023031512_GDAS_Sounding_76458.csv')
+  site1 = pd.read_csv(f'{cwd}/data/2023031512_GDAS_Sounding_72210.csv')
+  site2 = pd.read_csv(f'{cwd}/data/2023031512_GDAS_Sounding_76225.csv')
+  site3 = pd.read_csv(f'{cwd}/data/2023031512_GDAS_Sounding_76458.csv')
 
   # Save variables with units for testing
   s1prs = site1['pressure'].astype('float').values*units('hPa')
@@ -137,11 +141,11 @@ def test_calc_tci():
   if doXarray:
     ###### Xarray DataArray case
     # Input data for Xarray case
-    xr_input = xr.open_dataset('data/calc_tci_jja_xarray_input.nc')
+    xr_input = xr.open_dataset(f'{cwd}/data/calc_tci_jja_xarray_input.nc')
 
     # Output data for Xarray case
     xr_truth_var = '__xarray_dataarray_variable__'
-    xr_truth = xr.open_dataset('data/calc_tci_jja_xarray_output.nc')
+    xr_truth = xr.open_dataset(f'{cwd}/data/calc_tci_jja_xarray_output.nc')
  
     # Compute TCI
     xr_test = calc_tci(xr_input['SOILWATER_10CM'],xr_input['LHFLX'])
@@ -152,7 +156,7 @@ def test_calc_tci():
   if doPandas:
     ###### Pandas DataFrame case
     # Input data for Pandas case
-    pd_input = pd.read_csv('data/calc_tci_jja_pandas_input.csv')
+    pd_input = pd.read_csv(f'{cwd}/data/calc_tci_jja_pandas_input.csv')
  
     # There are three sites in the test data, each should have its own TCI value
     pd_test = np.array([])

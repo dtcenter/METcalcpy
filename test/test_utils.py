@@ -2,12 +2,14 @@
 import numpy as np
 import pandas as pd
 import pytest
+import os
 
 from metcalcpy.util.utils import represents_int, is_string_integer, get_derived_curve_name, calc_derived_curve_value, \
     unique, intersection, is_derived_point, parse_bool, round_half_up, sum_column_data_by_name, \
     nrow_column_data_by_name_value, create_permutations_mv, column_data_by_name, calculate_mtd_revision_stats, \
-    autocor_coef, is_string_strictly_float
+    autocor_coef, is_string_strictly_float, get_met_version
 
+cwd = os.path.dirname(__file__)
 
 @pytest.fixture
 def settings():
@@ -194,7 +196,7 @@ def test_create_permutations_mv_list():
 
 
 def test_calculate_mtd_revision_stats():
-    df = pd.read_csv('data/mtd_revision.data', index_col=0)
+    df = pd.read_csv(f'{cwd}/data/mtd_revision.data', index_col=0)
     stats = calculate_mtd_revision_stats(df)
     assert stats.get("ww_run") == 0
     assert stats.get("auto_cor_p") == 0
@@ -221,3 +223,73 @@ if __name__ == "__main__":
     test_sum_column_data_by_name()
     test_calculate_mtd_revision_stats()
     test_autocor_coef()
+
+
+def test_get_met_versions_np():
+    """
+        Verify the get_met_versions code behaves as expected for
+        numpy input data.
+    """
+    data = [["V12.0", "FCST", "1.2"], ["V12.0", "FCST", "3.2"]]
+    uc_column_names = ["VERSION", "MODEL", "SOME_VALUE"]
+    pd_dummy = pd.DataFrame(data, columns=uc_column_names)
+
+    np_dummy = pd_dummy.to_numpy()
+
+    major_expected = int(12)
+    minor_expected = int(0)
+    bugfix_expected = int(0)
+    # test with numpy array and upper case column names
+    np_version = get_met_version(np_dummy, uc_column_names)
+    assert major_expected == int(np_version.major)
+    assert minor_expected == int(np_version.minor)
+    assert bugfix_expected == int(np_version.bugfix)
+
+
+
+
+def test_get_met_versions_np_no_cols():
+    """
+        Verify the get_met_versions code behaves as expected for
+        numpy input data and missing column names by raising a
+        ValueError
+    """
+
+    data = [["V12.0", "FCST", "1.2"], ["V12.0", "FCST", "3.2"]]
+    uc_column_names = ["VERSION", "MODEL", "SOME_VALUE"]
+    pd_dummy = pd.DataFrame(data, columns=uc_column_names)
+
+    np_dummy = pd_dummy.to_numpy()
+
+    # test with numpy array missing the column names
+    with pytest.raises(ValueError):
+        get_met_version(np_dummy)
+
+def test_get_met_versions_pandas():
+    """
+        Verify the get_met_versions code behaves as expected for
+        pandas input data.
+    """
+    data = [["V12.1.1", "FCST", "0.1"], ["V12.0", "FCST", "13.2"]]
+    uc_column_names = ["VERSION", "MODEL", "SOME_STAT"]
+    pd_dummy = pd.DataFrame(data, columns=uc_column_names)
+
+   # Verify pandas input produces correct results
+    major_expected = int(12)
+    minor_expected = int(1)
+    bugfix_expected = int(1)
+    pd_version = get_met_version(pd_dummy)
+    assert major_expected == int(pd_version.major)
+    assert minor_expected == int(pd_version.minor)
+    assert bugfix_expected == int(pd_version.bugfix)
+
+def test_get_met_versions_pandas():
+    """
+        Verify the get_met_versions code behaves as expected for
+        data that isn't pandas or numpy by raising a ValueError
+    """
+
+    data = ["A", 1, "Z"]
+    # Verify that any other input raises an error
+    with pytest.raises(ValueError):
+        get_met_version(data)

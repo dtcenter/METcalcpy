@@ -1,4 +1,5 @@
 import pytest
+import os
 import itertools
 import re
 import pandas as pd
@@ -10,6 +11,8 @@ from metcalcpy.agg_stat_event_equalize import AggStatEventEqualize
 from metcalcpy.util import pstd_statistics as pstd
 from metcalcpy.agg_stat_eqz import AggStatEventEqz
 from metcalcpy import GROUP_SEPARATOR, DATE_TIME_REGEX
+
+cwd = os.path.dirname(__file__)
 
 @pytest.fixture
 def settings():
@@ -41,7 +44,7 @@ def test_equalize_axis_data(settings):
         Test that the FutureWarning is no longer generated when invoking the util.utils.equalize_axis_data() function
     '''
     print("Testing equalize_axis_data with 'dummy' event equalize data for FutureWarning...")
-    input_file = "data/event_equalize_dummy.data"
+    input_file = f"{cwd}/data/event_equalize_dummy.data"
     cur_df = pd.read_csv(input_file, sep='\t')
     fix_vals_keys = []
     fix_vals_permuted_list = []
@@ -67,10 +70,10 @@ def settings_agg_stat():
               'derived_series_1': [
                   ['ENS001v3.6.1_d01 DPT FBAR', 'ENS001v3.6.1_d02 DPT FBAR', 'DIFF']],
               'derived_series_2': [],
-              'agg_stat_input': 'data/agg_stat_and_boot_data.data',
+              'agg_stat_input': f'{cwd}/data/agg_stat_and_boot_data.data',
               'fcst_var_val_1': {'DPT': ['FBAR']},
               'fcst_var_val_2': {},
-              'agg_stat_output': 'data/agg_stat_and_boot_output.data',
+              'agg_stat_output':f'{cwd}/data/agg_stat_and_boot_output.data',
               'fixed_vars_vals_input': {'fcst_lev': {'fcst_lev_0': ['P100']}},
               'series_val_1': {'model': ['ENS001v3.6.1_d01', 'ENS001v3.6.1_d02']},
               'series_val_2': {'model': ['ENS001v3.6.1_d01', 'ENS001v3.6.1_d02']},
@@ -132,8 +135,8 @@ def test_calculate_pstd_roc_auc():
     '''
     columns = np.array(['fcst_var','thresh_i','on_i', 'oy_i'])
     # 'thresh_i': [], 'oy_i': [], 'on_i': []
-    # input_file = "data/reliability.data"
-    input_file = "data/roc_sample.data"
+    # input_file = f"{cwd}/data/reliability.data"
+    input_file = f"{cwd}/data/roc_sample.data"
     cur_df = pd.read_csv(input_file, sep='\t')
     input_data = np.array(cur_df)
     try:
@@ -161,7 +164,7 @@ def test_aggregate_field_values(settings_ee_dummy):
        Test aggregation on field value that is NOT fcst_lead (to exercise one branch of the "if")
        to ensure no FutureWarnings are present (~line 513)
     '''
-    input_file = "data/event_equalize_dummy.data"
+    input_file = f"{cwd}/data/event_equalize_dummy.data"
     cur_df = pd.read_csv(input_file, sep='\t')
     series_var_val = {}
     series_var_val['series_val_1'] = settings_ee_dummy['series_val_1']
@@ -193,7 +196,7 @@ def test_aggregate_field_values_agg_by_fcst_lead(settings_ee_dummy2):
         Test with aggregation based on fcst_lead to exercise the "else"
         to ensure no FutureWarnings are present (~line 562)
     '''
-    input_file = "data/event_equalize_group_input.data"
+    input_file = f"{cwd}/data/event_equalize_group_input.data"
     cur_df = pd.read_csv(input_file, sep='\t')
     series_var_val = {}
     series_var_val['series_val_1'] = settings_ee_dummy2['series_val_1']

@@ -39,7 +39,7 @@ METcalcpy source code, e.g. `/User/someuser/METcalcpy`.  From this directory, ru
 
 `pip install -e .`
 
-This instructs pip to install the package based on instructios in the setup.py file located in the current directory
+This instructs pip to install the package based on instructions in the pyproject.toml file located in the current directory
 (as indicated by the '.').  The `-e` directs pip to install the package in edit mode, so if one wishes to make changes
 to this source code, the changes are automatically applied without the need to re-install the package.
 
