@@ -271,7 +271,7 @@ def test_ecnt():
    lc_cols = [lc_cols.lower() for lc_cols in cols]
    agg_from_met.columns = lc_cols
    met_ign_conv_oerr = float(agg_from_met['ign_conv_oerr'].iloc[0])
-   met_ign_corr_oerr = float(agg_from_met['ign_corr_oerr'].ilor[0])
+   met_ign_corr_oerr = float(agg_from_met['ign_corr_oerr'].iloc[0])
 
    # Retrieve the same stat values above from the METcalcpy agg_stat.py output
    # Read in the yaml config file
