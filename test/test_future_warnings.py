@@ -183,7 +183,7 @@ def settings_ee_dummy2():
     settings_dict['fcst_var_val_1'] = dict({'TC': ["BASER", "CTC"]})
     settings_dict['fcst_var_val_2'] = {}
     settings_dict['fix_vals_permuted'] = {}
-    settings_dict['series_val_1'] = dict({'fcst_lead': ['240000;']})
+    settings_dict['series_val_1'] = dict({'fcst_lead': ['240000']})
     settings_dict['series_val_2'] = {}
     settings_dict['indy_var'] = 'fcst_lead'
     settings_dict['line_type'] = ''
