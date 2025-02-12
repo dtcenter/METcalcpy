@@ -71,9 +71,9 @@ def test_val1l2():
    cols = agg_from_met.columns.to_list()
    lc_cols = [lc_cols.lower() for lc_cols in cols]
    agg_from_met.columns = lc_cols
-   met_dira_me = float(agg_from_met['dira_me'])
-   met_dira_mae = float(agg_from_met['dira_mae'])
-   met_dira_mse = float(agg_from_met['dira_mse'])
+   met_dira_me = float(agg_from_met['dira_me'].iloc[0])
+   met_dira_mae = float(agg_from_met['dira_mae'].iloc[0])
+   met_dira_mse = float(agg_from_met['dira_mse'].iloc[0])
 
    # Retrieve the same stat values above from the METcalcpy agg_stat.py output
    # Read in the yaml config file
