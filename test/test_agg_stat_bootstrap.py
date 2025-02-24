@@ -2,10 +2,17 @@ import os
 import pathlib
 import pandas as pd
 import pytest
+import metcalcpy.agg_stat_bootstrap as asb
+from test.utils import AGG_STAT_AND_BOOT_DATA
 
 from metcalcpy.agg_stat_bootstrap import AggStatBootstrap
 from metcalcpy.util.read_env_vars_in_config import parse_config
 
+DEFAULT_CONF = {
+    "log_filename": "tmp.log",
+    "log_level": "DEBUG",
+    "agg_stat_input": AGG_STAT_AND_BOOT_DATA,
+}
 
 cwd = os.path.dirname(__file__)
 
@@ -120,3 +127,7 @@ def test_compare_with_rscript():
     cleanup(parms['agg_stat_output'])
 
 
+def test_smoke(tmp_path):
+    """Basic test to check object instantiation"""
+    DEFAULT_CONF["log_dir"] = tmp_path
+    asb.AggStatBootstrap(DEFAULT_CONF)
