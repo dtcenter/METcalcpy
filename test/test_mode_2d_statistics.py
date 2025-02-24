@@ -12,7 +12,7 @@ def prepare_data(obj_type = "2d"):
     robust approach would be to use a real MODE export
     from METviewer.
     """
-    file_path = "test/data/ee_av_input.data"
+    file_path = "./data/ee_av_input.data"
     df = pd.read_csv(file_path, sep="\t")
 
     df["object_type"] = obj_type
