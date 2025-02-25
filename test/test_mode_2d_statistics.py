@@ -1,9 +1,14 @@
+
+import os
 import pytest
 import numpy as np
 import pandas as pd
 
 import metcalcpy.util.mode_2d_ratio_statistics as m2rs
 import metcalcpy.util.mode_2d_arearat_statistics as m2as
+
+
+cwd = os.path.dirname(__file__)
 
 def prepare_data(obj_type = "2d"):
     """
@@ -12,7 +17,9 @@ def prepare_data(obj_type = "2d"):
     robust approach would be to use a real MODE export
     from METviewer.
     """
-    file_path = "test/data/ee_av_input.data"
+    os.environ['TEST_DIR'] = cwd
+
+    file_path = f"{cwd}/data/ee_av_input.data"
     df = pd.read_csv(file_path, sep="\t")
 
     df["object_type"] = obj_type
