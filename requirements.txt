@@ -10,7 +10,7 @@ pytest==8.3.4
 PyYAML==6.0.2
 scikit-image==0.25.1
 scipy>=1.15.1
-xarray==2025.1.0
+xarray==2025.1.2
 scikit-learn>=1.6.1
 eofs>=2.0.0
 
