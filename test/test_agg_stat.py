@@ -71,9 +71,9 @@ def test_val1l2():
    cols = agg_from_met.columns.to_list()
    lc_cols = [lc_cols.lower() for lc_cols in cols]
    agg_from_met.columns = lc_cols
-   met_dira_me = float(agg_from_met['dira_me'])
-   met_dira_mae = float(agg_from_met['dira_mae'])
-   met_dira_mse = float(agg_from_met['dira_mse'])
+   met_dira_me = float(agg_from_met['dira_me'].iloc[0])
+   met_dira_mae = float(agg_from_met['dira_mae'].iloc[0])
+   met_dira_mse = float(agg_from_met['dira_mse'].iloc[0])
 
    # Retrieve the same stat values above from the METcalcpy agg_stat.py output
    # Read in the yaml config file
@@ -135,9 +135,8 @@ def test_vl1l2():
    cols = agg_from_met.columns.to_list()
    lc_cols = [lc_cols.lower() for lc_cols in cols]
    agg_from_met.columns = lc_cols
-   met_dir_me = float(agg_from_met['dir_me'])
-   met_dir_mae = float(agg_from_met['dir_mae'])
-   met_dir_mse = float(agg_from_met['dir_mse'])
+   met_dir_mae = float(agg_from_met['dir_mae'].iloc[0])
+   met_dir_mse = float(agg_from_met['dir_mse'].iloc[0])
 
    # Retrieve the same stat values above from the METcalcpy agg_stat.py output
    # Read in the yaml config file
@@ -201,10 +200,10 @@ def test_vcnt():
    cols = agg_from_met.columns.to_list()
    lc_cols = [lc_cols.lower() for lc_cols in cols]
    agg_from_met.columns = lc_cols
-   met_dir_me = float(agg_from_met['dir_me'])
-   met_dir_mae = float(agg_from_met['dir_mae'])
-   met_dir_mse = float(agg_from_met['dir_mse'])
-   met_dir_rmse = float(agg_from_met['dir_rmse'])
+   met_dir_me = float(agg_from_met['dir_me'].iloc[0])
+   met_dir_mae = float(agg_from_met['dir_mae'].iloc[0])
+   met_dir_mse = float(agg_from_met['dir_mse'].iloc[0])
+   met_dir_rmse = float(agg_from_met['dir_rmse'].iloc[0])
 
    # Retrieve the same stat values above from the METcalcpy agg_stat.py output
    # Read in the yaml config file
@@ -270,8 +269,8 @@ def test_ecnt():
    cols = agg_from_met.columns.to_list()
    lc_cols = [lc_cols.lower() for lc_cols in cols]
    agg_from_met.columns = lc_cols
-   met_ign_conv_oerr = float(agg_from_met['ign_conv_oerr'])
-   met_ign_corr_oerr = float(agg_from_met['ign_corr_oerr'])
+   met_ign_conv_oerr = float(agg_from_met['ign_conv_oerr'].iloc[0])
+   met_ign_corr_oerr = float(agg_from_met['ign_corr_oerr'].iloc[0])
 
    # Retrieve the same stat values above from the METcalcpy agg_stat.py output
    # Read in the yaml config file

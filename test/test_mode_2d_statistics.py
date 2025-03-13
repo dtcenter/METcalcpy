@@ -6,6 +6,9 @@ import pandas as pd
 import metcalcpy.util.mode_2d_ratio_statistics as m2rs
 import metcalcpy.util.mode_2d_arearat_statistics as m2as
 
+
+cwd = os.path.dirname(__file__)
+
 def prepare_data(obj_type = "2d"):
     """
     Prepare some data for testing mode ara rations.
@@ -13,7 +16,8 @@ def prepare_data(obj_type = "2d"):
     robust approach would be to use a real MODE export
     from METviewer.
     """
-    cwd = os.path.dirname(__file__)
+    os.environ['TEST_DIR'] = cwd
+
     file_path = f"{cwd}/data/ee_av_input.data"
     df = pd.read_csv(file_path, sep="\t")
 
