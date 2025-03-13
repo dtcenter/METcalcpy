@@ -135,7 +135,6 @@ def test_vl1l2():
    cols = agg_from_met.columns.to_list()
    lc_cols = [lc_cols.lower() for lc_cols in cols]
    agg_from_met.columns = lc_cols
-   met_dir_me = float(agg_from_met['dir_me'].iloc[0])
    met_dir_mae = float(agg_from_met['dir_mae'].iloc[0])
    met_dir_mse = float(agg_from_met['dir_mse'].iloc[0])
 
