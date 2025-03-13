@@ -97,7 +97,7 @@ jobs:
 
 jobs:
   sonarqube_310:
-    name: SonarQube Scan
+    name: SonarQube Scan Python 3.10
     runs-on: ubuntu-latest
 
     steps:
