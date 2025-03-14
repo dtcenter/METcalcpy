@@ -61,14 +61,14 @@ def rmm(olr, u850, u200, time, spd, EOF1, EOF2, rmm_norm, pc_norm):
     ntim = dims[0]
     nlon = dims[1]
 
-    data = xr.DataArray(np.empty([ntim,3*nlon]), dims=('time','lon_ext'))
+    data = xr.DataArray(np.empty([ntim,3*nlon]), dims=('time','lon'))
     data[:,0:nlon] = olr
     data[:,nlon:2*nlon] = u850 
     data[:,2*nlon::] = u200
 
     # add EOFs to single array for all variables
-    eof1 = xr.DataArray(np.empty([3*nlon]), dims=('lon_ext'))
-    eof2 = xr.DataArray(np.empty([3*nlon]), dims=('lon_ext'))
+    eof1 = xr.DataArray(np.empty([3*nlon]), dims=('lon'))
+    eof2 = xr.DataArray(np.empty([3*nlon]), dims=('lon'))
     for i in np.arange(0,3):
         eof1[nlon*(i):nlon*(i+1)] = EOF1[i,:]
         eof2[nlon*(i):nlon*(i+1)] = EOF2[i,:]
@@ -184,7 +184,7 @@ def regress_2dim_data_onto_eofs(data, time, EOF1, EOF2):
     """
     pc1 = np.empty(time.size)
     pc2 = np.empty(time.size)
-    nlon = len(data.lon_ext)
+    nlon = len(data.lon)
 
     for idx, val in enumerate(time):
         olr_singleday = data[idx,:]
