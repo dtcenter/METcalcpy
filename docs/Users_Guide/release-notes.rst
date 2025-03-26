@@ -17,7 +17,6 @@ METcalcpy Version 3.1.0-beta2 release notes (20250326)
 	      
 .. dropdown:: Documentation
 
-   * Update modulefiles used on various machines (`#427 <https://github.com/dtcenter/METcalcpy/issues/427>`_)
    * Enhance the Table of Contents to include all METplus components (`#432 <https://github.com/dtcenter/METcalcpy/pull/432>`_)  
 
 .. dropdown:: Repository, build, and test
@@ -25,7 +24,7 @@ METcalcpy Version 3.1.0-beta2 release notes (20250326)
    * Update code after upgrading the numpy version (`#425 <https://github.com/dtcenter/METcalcpy/pull/425>`_)
    * Update code after upgrading the xarray version (`#431 <https://github.com/dtcenter/METcalcpy/pull/431>`_)  
    * Update infrastructure to reflect move to developing with Python 3.12 (`#430 <https://github.com/dtcenter/METcalcpy/pull/430>`_)
-     
+   * Update modulefiles used on various machines (`#427 <https://github.com/dtcenter/METcalcpy/issues/427>`_)     
 		
 
 METcalcpy Version 3.1.0-beta1 release notes (20250122)
