@@ -41,4 +41,7 @@ METcalcpy Version 3.1.0-beta1 release notes (20250122)
 METcalcpy Upgrade Instructions
 ==============================
 
-     None
+.. note::
+
+   In the METcalcpy-3.1.0-beta2 release, METcalcpy switched from developing
+   with Python 3.10.4 to developing with Python 3.12.
