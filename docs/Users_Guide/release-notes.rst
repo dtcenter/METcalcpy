@@ -9,7 +9,7 @@ describes the bugfix, enhancement, or new feature: `METcalcpy GitHub issues. <ht
 METcalcpy Release Notes
 =======================
 
-METcalcpy Version 3.1.0-beta2 release notes (20250331)
+METcalcpy Version 3.1.0-beta2 release notes (20250330)
 ------------------------------------------------------
 
 .. dropdown:: Bugfixes
