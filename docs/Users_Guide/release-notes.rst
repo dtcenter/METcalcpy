@@ -20,6 +20,10 @@ METcalcpy Version 3.1.0-beta2 release notes (20250330)
 
    * Enhance the Table of Contents to include all METplus components (`#432 <https://github.com/dtcenter/METcalcpy/pull/432>`_)  
 
+.. dropdown:: Enhancements
+
+   None
+
 .. dropdown:: Repository, build, and test
 
    * Update code after upgrading the numpy version (`#425 <https://github.com/dtcenter/METcalcpy/pull/425>`_)
@@ -30,6 +34,18 @@ METcalcpy Version 3.1.0-beta2 release notes (20250330)
 
 METcalcpy Version 3.1.0-beta1 release notes (20250122)
 ------------------------------------------------------
+
+.. dropdown:: Bugfixes
+
+   None
+
+.. dropdown:: Documentation
+
+   None
+
+.. dropdown:: Enhancements
+
+   None
 
 .. dropdown:: Repository, build, and test
 
