@@ -164,14 +164,17 @@ def calc_ctp(pressure,temperature,station_index,start_pressure_hpa=-1,bot_pressu
 
     # Warn if the distance between the closest value to the bottom and top values exceeds max_prs_diff
     if np.abs(pressure[layer_bot_idx]-layer_bot_prs)>=max_prs_diff:
-      print("INFO: ACTUAL BOTTOM PRESSURE IS AT LEAST %3.2f hPa FROM REQUESTED BOTTOM PRESSURE." % (max_prs_diff.m))
+      print("ERROR! ACTUAL BOTTOM PRESSURE IS AT LEAST %3.2f hPa FROM REQUESTED BOTTOM PRESSURE." % (max_prs_diff.m))
       print("requested: layer_bot_prs = %4.2f hPa" % (layer_bot_prs.m))
-      print("actual: layer_bot_prs = %4.2f hPa" % (pressure[layer_bot_idx].m))
+      print("closest: layer_bot_prs = %4.2f hPa" % (pressure[layer_bot_idx].m))
+      print("UNABLE TO COMPUTE CTP.")
+      return(-9999.*units('J/kg'))      
     if np.abs(pressure[layer_top_idx]-layer_top_prs)>=max_prs_diff:
-      print("INFO: ACTUAL TOP PRESSURE IS AT LEAST %3.2f hPa FROM REQUESTED TOP PRESSURE." % (max_prs_diff.m))
+      print("ERROR! ACTUAL TOP PRESSURE IS AT LEAST %3.2f hPa FROM REQUESTED TOP PRESSURE." % (max_prs_diff.m))
       print("requested: layer_top_prs = %4.2f hPa" % (layer_top_prs.m))
-      print("actual: layer_top_prs = %4.2f hPa" % (pressure[layer_top_idx].m))
-    
+      print("closest: layer_top_prs = %4.2f hPa" % (pressure[layer_top_idx].m))
+      print("UNABLE TO COMPUTE CTP.")
+      return(-9999.*units('J/kg'))
     if db:
       print("")
       print("INDEX OF LAYER BOT: %02d" % (int(layer_bot_idx)))
@@ -398,14 +401,17 @@ def calc_humidity_index(pressure,temperature,dewpoint,station_index,start_pressu
 
     # Warn if the distance between the closest value to the bottom and top values exceeds max_prs_diff
     if np.abs(pressure[layer_bot_idx]-layer_bot_prs)>=max_prs_diff:
-      print("INFO: ACTUAL BOTTOM PRESSURE IS AT LEAST %3.2f hPa FROM REQUESTED BOTTOM PRESSURE." % (max_prs_diff.m))
+      print("ERROR! ACTUAL BOTTOM PRESSURE IS AT LEAST %3.2f hPa FROM REQUESTED BOTTOM PRESSURE." % (max_prs_diff.m))
       print("requested: layer_bot_prs = %4.2f hPa" % (layer_bot_prs.m))
-      print("actual: layer_bot_prs = %4.2f hPa" % (pressure[layer_bot_idx].m))
+      print("closest: layer_bot_prs = %4.2f hPa" % (pressure[layer_bot_idx].m))
+      print("UNABLE TO COMPUTE HI.")
+      return(-9999.*units('degK'))
     if np.abs(pressure[layer_top_idx]-layer_top_prs)>=max_prs_diff:
-      print("INFO: ACTUAL TOP PRESSURE IS AT LEAST %3.2f hPa FROM REQUESTED TOP PRESSURE." % (max_prs_diff.m))
+      print("ERROR! ACTUAL TOP PRESSURE IS AT LEAST %3.2f hPa FROM REQUESTED TOP PRESSURE." % (max_prs_diff.m))
       print("requested: layer_top_prs = %4.2f hPa" % (layer_top_prs.m))
-      print("actual: layer_top_prs = %4.2f hPa" % (pressure[layer_top_idx].m))
-    
+      print("closest: layer_top_prs = %4.2f hPa" % (pressure[layer_top_idx].m))
+      print("UNABLE TO COMPUTE HI.")
+      return(-9999.*units('degK'))
     if db:
       print("")
       print("USING DATA AT NEAREST BOTTOM PRESSURE: %f\n" % (pressure[layer_bot_idx].m))
