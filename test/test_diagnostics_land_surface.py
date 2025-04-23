@@ -50,22 +50,22 @@ def test_calc_ctp():
                      calc_ctp(s2prs,s2tmp,-1,start_pressure_hpa=925.0).m,\
                      calc_ctp(s3prs,s3tmp,-1,start_pressure_hpa=925.0).m])
 
-  # Test 3: default, but with interp=True
-  t3test = np.array([calc_ctp(s1prs,s1tmp,-1,interp=True).m,\
-                     calc_ctp(s2prs,s2tmp,-1,interp=True).m,\
-                     calc_ctp(s3prs,s3tmp,-1,interp=True).m])
+  # Test 3: default, but with interp=False
+  t3test = np.array([calc_ctp(s1prs,s1tmp,-1,interp=False).m,\
+                     calc_ctp(s2prs,s2tmp,-1,interp=False).m,\
+                     calc_ctp(s3prs,s3tmp,-1,interp=False).m])
 
-  # Test 4: same as test 2, but with interp=True
-  t4test = np.array([calc_ctp(s1prs,s1tmp,-1,start_pressure_hpa=925.0,interp=True).m,\
-                     calc_ctp(s2prs,s2tmp,-1,start_pressure_hpa=925.0,interp=True).m,\
-                     calc_ctp(s3prs,s3tmp,-1,start_pressure_hpa=925.0,interp=True).m])
+  # Test 4: same as test 2, but with interp=False
+  t4test = np.array([calc_ctp(s1prs,s1tmp,-1,start_pressure_hpa=925.0,interp=False).m,\
+                     calc_ctp(s2prs,s2tmp,-1,start_pressure_hpa=925.0,interp=False).m,\
+                     calc_ctp(s3prs,s3tmp,-1,start_pressure_hpa=925.0,interp=False).m])
  
   # Truth values
   # Ordered by [site1,site2,site3]
-  t1truth = np.array([5.55298893,363.56359537,51.23184928])
-  t2truth = np.array([130.74650626,363.56359537,-17.48742726])
-  t3truth = np.array([2.522522194,247.9370337,65.8421409])
-  t4truth = np.array([80.56827212,-9.99900000e+03,-3.520892874])
+  t1truth = np.array([2.522522194,247.9370337,65.8421409])
+  t2truth = np.array([80.56827212,-9.99900000e+03,-3.520892874])
+  t3truth = np.array([5.55298893,363.56359537,51.23184928])
+  t4truth = np.array([130.74650626,363.56359537,-17.48742726])
   
   # Validate test 1
   assert_almost_equal(t1test,t1truth,decimal=5)
@@ -109,15 +109,15 @@ def test_calc_humidity_index():
                      calc_humidity_index(s2prs,s2tmp,s2dew,-1).m,\
                      calc_humidity_index(s3prs,s3tmp,s3dew,-1).m])
 
-  # Test 2: default, but with interp=True
-  t2test = np.array([calc_humidity_index(s1prs,s1tmp,s1dew,-1,interp=True).m,\
-                     calc_humidity_index(s2prs,s2tmp,s2dew,-1,interp=True).m,\
-                     calc_humidity_index(s3prs,s3tmp,s3dew,-1,interp=True).m])
+  # Test 2: default, but with interp=False
+  t2test = np.array([calc_humidity_index(s1prs,s1tmp,s1dew,-1,interp=False).m,\
+                     calc_humidity_index(s2prs,s2tmp,s2dew,-1,interp=False).m,\
+                     calc_humidity_index(s3prs,s3tmp,s3dew,-1,interp=False).m])
 
   # Truth values
   # Ordered by [site1,site2,site3]
-  t1truth = np.array([27.0415954,48.230834,9.7646789])
-  t2truth = np.array([30.356453,48.6300781,12.8117684])
+  t1truth = np.array([30.356453,48.6300781,12.8117684])
+  t2truth = np.array([27.0415954,48.230834,9.7646789])
 
   # Validate test 1
   assert_almost_equal(t1test,t1truth,decimal=5)
