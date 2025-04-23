@@ -352,12 +352,11 @@ class BlockingCalculation():
                 locbi = np.array([locb[0]])
                 ll1=0
                 pass1 = 0
-                ai=[0]
                 add=0
                 for ll in np.arange(0,len(locb)-1,1):
                     if ((dd[locb[ll+1].astype(int)] - dd[locb[ll1].astype(int)]) >=1) & ((dd[locb[ll+1].astype(int)] - dd[locb[ll1].astype(int)]) <=2):
                         add = datemp[ll1] + datemp[ll+1]
-                    ai = np.where(add==2)[0]
+                    ai = np.where(np.atleast_1d(add == 2))[0]
                     if len(ai)>overlap:
                         locbi=np.append(locbi,locb[ll+1])
                         ll1=ll+1

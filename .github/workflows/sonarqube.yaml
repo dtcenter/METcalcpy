@@ -1,4 +1,4 @@
-name: SonarQube Scan
+name: SonarQube Scan for Python 3.12
 
 # Run SonarQube for Pull Requests and changes to the develop and main_vX.Y branches
 
@@ -48,10 +48,10 @@ jobs:
         # Disable shallow clones for better analysis
         fetch-depth: 0
 
-    - name: Set up Python 3.10
+    - name: Set up Python 3.12
       uses: actions/setup-python@v5
       with:
-        python-version: "3.10"
+        python-version: "3.12"
     - name: Install dependencies
       run: |
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
@@ -93,3 +93,4 @@ jobs:
       env:
        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
