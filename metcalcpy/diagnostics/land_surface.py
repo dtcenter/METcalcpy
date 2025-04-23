@@ -9,7 +9,7 @@ import os
 from pandas.core.series import Series
 from xarray.core.dataarray import DataArray
 
-def calc_ctp(pressure,temperature,station_index,start_pressure_hpa=-1,bot_pressure_hpa=100.0,top_pressure_hpa=300.0,interp=False,db=False,plotskewt=False,plotdir="",station_name=""):
+def calc_ctp(pressure,temperature,station_index,start_pressure_hpa=-1,bot_pressure_hpa=100.0,top_pressure_hpa=300.0,interp=True,db=False,plotskewt=False,plotdir="",station_name=""):
 
   """ Function for computing the Convective Triggering Potential
 
@@ -20,7 +20,7 @@ def calc_ctp(pressure,temperature,station_index,start_pressure_hpa=-1,bot_pressu
       start_pressure_hpa (float, optional): the starting pressure to use. Default: -1 (bottom level in profile).
       bot_pressure_hpa (float, optional): bottom pressure value of the layer, added to start_pressure_hpa. Default: 100 hPa.
       top_pressure_hpa (float, optional): top pressure value of the layer, added to start_pressure_hpa. Default: 300 hPa.
-      interp (bool): Whether to interpolate data to exact pressures or use the closest. Default: False.
+      interp (bool): Whether to interpolate data to exact pressures or use the closest. Default: True.
       db (bool): Print debugging statements. Default: False
       plotskewt (bool): Plot a Skew-T Log-P graphic of the CTP calculation. Default: False.
       plotdir (string, optional): Directory where Skew-T plots should be written. Default: "".
@@ -69,10 +69,9 @@ def calc_ctp(pressure,temperature,station_index,start_pressure_hpa=-1,bot_pressu
       # If the requested starting pressure is greater than all the pressures in the
       # profile, then we won't be able to interpolate to the requested starting pressure.
       if start_pressure_hpa > np.max(pressure.m):
-        if db:
-          print("")
-          print("ERROR! REQUESTED STARTING PRESSURE INVALID")
-          print("UNABLE TO COMPUTE CTP.")
+        print("")
+        print("ERROR! REQUESTED STARTING PRESSURE INVALID")
+        print("UNABLE TO COMPUTE CTP.")
         return(-9999.*units('J/kg'))
       else:
         start_prs = start_pressure_hpa*units('hPa')
@@ -118,9 +117,8 @@ def calc_ctp(pressure,temperature,station_index,start_pressure_hpa=-1,bot_pressu
   
     # Find the top and bottom of the layer, where the interpolated values should be inserted
     if any(np.diff(pressure.m)[np.diff(pressure.m)>=0]):
-      if db:
-        print("ERROR! PRESSURES DO NOT MONOTONICALLY DECREASE!")
-        print("UNABLE TO COMPUTE CTP.")
+      print("ERROR! PRESSURES DO NOT MONOTONICALLY DECREASE!")
+      print("UNABLE TO COMPUTE CTP.")
       return(-9999.*units('J/kg'))
     layer_bot_idx = len(pressure.m)-np.searchsorted(pressure.m[::-1],prsBot,side="left")[0]
     layer_top_idx = len(pressure.m)-np.searchsorted(pressure.m[::-1],prsTop,side="left")[0]
@@ -277,7 +275,7 @@ def calc_tci(soil_data,sfc_flux_data,skipna=True):
   # Return the Terrestrial Coupling Index (TCI)
   return covarTerm/soil_std
 
-def calc_humidity_index(pressure,temperature,dewpoint,station_index,start_pressure_hpa=-1,bot_pressure_hpa=50.0,top_pressure_hpa=150.0,interp=False,db=False):
+def calc_humidity_index(pressure,temperature,dewpoint,station_index,start_pressure_hpa=-1,bot_pressure_hpa=50.0,top_pressure_hpa=150.0,interp=True,db=False):
   """ Function for computing the Humidity Index
   
   Args:
@@ -288,7 +286,7 @@ def calc_humidity_index(pressure,temperature,dewpoint,station_index,start_pressu
       start_pressure_hpa (float, optional): the starting pressure to use. Default: -1 (bottom level in profile).
       bot_pressure_hpa (float, optional): bottom pressure value of the layer, added to start_pressure_hpa. Default: 50 hPa.
       top_pressure_hpa (float, optional): top pressure value of the layer, added to start_pressure_hpa. Default: 150 hPa.
-      interp (bool): perform vertical interpolation to bot_pressure_hpa and top_pressure_hpa or use closest. Default: False.
+      interp (bool): perform vertical interpolation to bot_pressure_hpa and top_pressure_hpa or use closest. Default: True.
       db (bool): Print debugging statements. Default: False
 
   Returns:
@@ -336,10 +334,9 @@ def calc_humidity_index(pressure,temperature,dewpoint,station_index,start_pressu
       # If the requested starting pressure is greater than all the pressures in the
       # profile, then we won't be able to interpolate to the requested starting pressure.
       if start_pressure_hpa > np.max(pressure.m):
-        if db:
-          print("")
-          print("ERROR! REQUESTED STARTING PRESSURE INVALID")
-          print("UNABLE TO COMPUTE CTP.")
+        print("")
+        print("ERROR! REQUESTED STARTING PRESSURE INVALID")
+        print("UNABLE TO COMPUTE CTP.")
         return(-9999.*units('J/kg'))
       else:
         start_prs = start_pressure_hpa*units('hPa')
