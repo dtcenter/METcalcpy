@@ -31,7 +31,7 @@ def find_start_pressure(user_start_pressure,pressure_profile,interp_bool,max_prs
       if user_start_pressure.m > np.max(pressure_profile.m):
         print("")
         print("ERROR! REQUESTED STARTING PRESSURE INVALID.")
-        print("UNABLE TO COMPUTE {metric}.")
+        print(f"UNABLE TO COMPUTE {metric}.")
         return(-1)
       else:
         return(user_start_pressure.m)
