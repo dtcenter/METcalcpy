@@ -11,15 +11,16 @@ from xarray.core.dataarray import DataArray
 
 def calc_ctp(pressure,temperature,station_index,start_pressure_hpa=-1,bot_pressure_hpa=100.0,top_pressure_hpa=300.0,interp=True,db=False,plotskewt=False,plotdir="",station_name=""):
 
-  """ Function for computing the Convective Triggering Potential
+  """ Function for computing the Convective Triggering Potential (CTP), defined as
+      :math:`\\mathrm{CTP} = R_d \\int_{P_s - 100\\,\\text{hPa}}^{P_s - 300\\,\\text{hPa}} \\left( T_{\\text{env}} - T_{\\text{MALR}} \\right) \\, d\\ln p`
 
   Args:
-      pressure (pint.Quantity): the vertical pressure profile
-      temperature (pint.Quantity): the vertical temperature profile
+      pressure (pint.Quantity or xarray.DataArray): the pressure variable with units of Hectopascals (hPa).
+      temperature (pint.Quantity or xarray.DataArray): the temperature variable with units of Kelvin (K).
       station_index (int): the integer index of the station currently being processed. Use -1 if a single station is being passed.
-      start_pressure_hpa (float, optional): the starting pressure to use. Default: -1 (bottom level in profile).
-      bot_pressure_hpa (float, optional): bottom pressure value of the layer, added to start_pressure_hpa. Default: 100 hPa.
-      top_pressure_hpa (float, optional): top pressure value of the layer, added to start_pressure_hpa. Default: 300 hPa.
+      start_pressure_hpa (float, optional): the starting pressure to use. Default: -1 (bottom level in profile). This is :math:`\\, P_s` in the CTP equation.
+      bot_pressure_hpa (float, optional): bottom pressure value of the layer, subtracted from start_pressure_hpa. Default: 100 hPa.
+      top_pressure_hpa (float, optional): top pressure value of the layer, subtracted from start_pressure_hpa. Default: 300 hPa.
       interp (bool): Whether to interpolate data to exact pressures or use the closest. Default: True.
       db (bool): Print debugging statements. Default: False
       plotskewt (bool): Plot a Skew-T Log-P graphic of the CTP calculation. Default: False.
@@ -30,11 +31,15 @@ def calc_ctp(pressure,temperature,station_index,start_pressure_hpa=-1,bot_pressu
       float32
  
   Reference:
-      TBD
+      Findell, K. L., and E. A. B. Eltahir, 2003: Atmospheric Controls on Soil Moisture–Boundary Layer Interactions. Part I: Framework Development. J. Hydrometeor., 4, 552–569, https://doi.org/10.1175/1525-7541(2003)004<0552:ACOSML>2.0.CO;2.
+      
+      Also see: https://www.pauldirmeyer.com/coupling-metrics for a summary of this and other land-atmosphere coupling metrics.
 
   Notes:
-      Lorem Ipsum
-
+      Pressure and temperature can either be a 1D profile or a 3D array of data. If a 3D array, station_index needs to be a non-negative value
+      indicating the single column to extract from the 3D data. If they are 1D profiles, use -1 for the station_index as that will be the only
+      profile to use.
+ 
   """
 
   # If the station index is a non-negative value, then extract the profile at the station index
@@ -279,16 +284,17 @@ def calc_tci(soil_data,sfc_flux_data,skipna=True):
   return covarTerm/soil_std
 
 def calc_humidity_index(pressure,temperature,dewpoint,station_index,start_pressure_hpa=-1,bot_pressure_hpa=50.0,top_pressure_hpa=150.0,interp=True,db=False):
-  """ Function for computing the Humidity Index
+  """ Function for computing the Humidity Index defined as:
+      :math:`\\mathrm{HI_{low}} = (T_{950\\,\\text{hPa}} - D_{950\\,\\text{hPa}}) + (T_{850\\,\\text{hPa}} - D_{850\\,\\text{hPa}})`
   
   Args:
-      pressure (pint.Quantity): the vertical pressure profile
-      temperature (pint.Quantity): the vertical temperature profile
-      dewpoint (pint.Quantity): the vertical dewpoint temperature profile
+      pressure (pint.Quantity or xarray.DataArray): the pressure variable with units of Hectopascals (hPa).
+      temperature (pint.Quantity or xarray.DataArray): the temperature variable with units of Kelvin (K).
+      dewpoint (pint.Quantity or xarray.DataArray): the dewpoint temperature variable with units of Kelvin (K).
       station_index (int): the integer index of the station currently being processed. Use -1 if a single station is being passed.
       start_pressure_hpa (float, optional): the starting pressure to use. Default: -1 (bottom level in profile).
-      bot_pressure_hpa (float, optional): bottom pressure value of the layer, added to start_pressure_hpa. Default: 50 hPa.
-      top_pressure_hpa (float, optional): top pressure value of the layer, added to start_pressure_hpa. Default: 150 hPa.
+      bot_pressure_hpa (float, optional): bottom pressure value of the layer, subtracted from start_pressure_hpa. Default: 50 hPa.
+      top_pressure_hpa (float, optional): top pressure value of the layer, subtracted from start_pressure_hpa. Default: 150 hPa.
       interp (bool): perform vertical interpolation to bot_pressure_hpa and top_pressure_hpa or use closest. Default: True.
       db (bool): Print debugging statements. Default: False
 
@@ -296,10 +302,18 @@ def calc_humidity_index(pressure,temperature,dewpoint,station_index,start_pressu
       float32
  
   Reference:
-      TBD
+      Findell, K. L., and E. A. B. Eltahir, 2003: Atmospheric Controls on Soil Moisture–Boundary Layer Interactions. Part I: Framework Development. J. Hydrometeor., 4, 552–569, https://doi.org/10.1175/1525-7541(2003)004<0552:ACOSML>2.0.CO;2.
+      
+      Also see: https://www.pauldirmeyer.com/coupling-metrics for a summary of this and other land-atmosphere coupling metrics.
 
   Notes:
-      Lorem Ipsum
+      Pressure and temperature can either be a 1D profile or a 3D array of data. If a 3D array, station_index needs to be a non-negative value
+      indicating the single column to extract from the 3D data. If they are 1D profiles, use -1 for the station_index as that will be the only
+      profile to use.
+
+      Note also that the equation denotes 950 and 850 hPa, but the starting pressure in vertical profiles is not always 1000 hPa. Thus,
+      the function is designed to focus on a consistent layer depth of 100 hPa starting at 50 hPa above the bottom pressure value and
+      ending at 150 hP above the bottom pressure value rather than a 100 hPa layer spanning 950 hPa to 850 hPa.
 
   """
 
