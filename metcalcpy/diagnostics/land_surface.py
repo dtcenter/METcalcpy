@@ -41,6 +41,9 @@ def calc_ctp(pressure,temperature,station_index,start_pressure_hpa=-1,bot_pressu
       profile to use.
  
   """
+ 
+  # Import utility functions for CTP/HI 
+  import metcalcpy.diagnostics.land_surface_ctphi_util as land_surface_ctphi_util
 
   # If the station index is a non-negative value, then extract the profile at the station index
   if station_index>=0:
@@ -59,38 +62,11 @@ def calc_ctp(pressure,temperature,station_index,start_pressure_hpa=-1,bot_pressu
   warn_prs_diff = 50.0*units('hPa')
   max_prs_diff = 100.0*units('hPa')
 
-  # Find the starting pressure in the profile
-  if start_pressure_hpa < 0:
-    start_prs = pressure[0]
-    if db:
-      print("")
-      print(f"USING LOWEST STARTING PRESSURE: {start_prs.m}\n")
-  else:
-    if interp:
-      # If the requested starting pressure is greater than all the pressures in the
-      # profile, then we won't be able to interpolate to the requested starting pressure.
-      if start_pressure_hpa > np.max(pressure.m):
-        print("")
-        print("ERROR! REQUESTED STARTING PRESSURE INVALID")
-        print("UNABLE TO COMPUTE CTP.")
-        return(-9999.*units('J/kg'))
-      else:
-        start_prs = start_pressure_hpa*units('hPa')
-      if db:
-        print("")
-        print(f"USING ACTUAL REQUESTED STARTING PRESSURE: {start_prs.m}\n")
-    else:
-      # Find the closest value. We'll just take the difference between the start pressure and pressure
-      # and find the index of the minimum
-      prs_diff = pressure-(start_pressure_hpa*units('hPa'))
-      start_prs = pressure[np.argmin(np.abs(prs_diff))]
-      if np.abs(start_pressure_hpa*units('hPa')-start_prs)>=max_prs_diff:
-        print(f"WARNING: ACTUAL STARTING PRESSURE IS AT LEAST {max_prs_diff.m} hPa FROM REQUESTED START PRESSURE.")
-        print(f"requested: start_pressure_hpa = {start_pressure_hpa} hPa")
-        print(f"closest: start_pressure_hpa = {start_prs.m} hPa")
-      if db:
-        print("")
-        print(f"USING NEAREST STARTING PRESSURE: {start_prs.m}\n")
+  # Find the starting pressure to use
+  start_prs = land_surface_ctphi_util.find_start_pressure(start_pressure_hpa*units('hPa'),pressure,interp,max_prs_diff,db,'CTP')
+  if start_prs < 0:
+    return(-9999.*units('J/kg'))
+  start_prs = start_prs*units('hPa')
 
   # Based on the starting pressure, set the initial layer bottom and top pressures
   layer_bot_prs = start_prs-(bot_pressure_hpa*units('hPa'))
@@ -319,6 +295,9 @@ def calc_humidity_index(pressure,temperature,dewpoint,station_index,start_pressu
 
   """
 
+  # Import utility functions for CTP/HI 
+  import metcalcpy.diagnostics.land_surface_ctphi_util as land_surface_ctphi_util
+
   # If the station index is a non-negative value, then extract the profile at the station index
   if station_index>=0:
     temperature=temperature.isel(sid=station_index).values*units('degK')
@@ -338,38 +317,11 @@ def calc_humidity_index(pressure,temperature,dewpoint,station_index,start_pressu
   warn_prs_diff = 50.0*units('hPa')
   max_prs_diff = 100.0*units('hPa')
 
-  # Find the starting pressure in the profile
-  if start_pressure_hpa < 0:
-    start_prs = pressure[0]
-    if db:
-      print("")
-      print(f"USING LOWEST STARTING PRESSURE: {start_prs.m}\n")
-  else:
-    if interp:
-      # If the requested starting pressure is greater than all the pressures in the
-      # profile, then we won't be able to interpolate to the requested starting pressure.
-      if start_pressure_hpa > np.max(pressure.m):
-        print("")
-        print("ERROR! REQUESTED STARTING PRESSURE INVALID")
-        print("UNABLE TO COMPUTE CTP.")
-        return(-9999.*units('J/kg'))
-      else:
-        start_prs = start_pressure_hpa*units('hPa')
-      if db:
-        print("")
-        print(f"USING ACTUAL REQUESTED STARTING PRESSURE: {start_prs.m}\n")
-    else:
-      # Find the closest value. We'll just take the difference between the start pressure and pressure
-      # and find the index of the minimum
-      prs_diff = pressure-(start_pressure_hpa*units('hPa'))
-      start_prs = pressure[np.argmin(np.abs(prs_diff))]
-      if np.abs(start_pressure_hpa*units('hPa')-start_prs)>=max_prs_diff:
-        print(f"WARNING: ACTUAL STARTING PRESSURE IS AT LEAST {max_prs_diff.m} hPa FROM REQUESTED START PRESSURE.")
-        print(f"requested: start_pressure_hpa = {start_pressure_hpa} hPa")
-        print(f"closest: start_pressure_hpa = {start_prs.m} hPa")
-      if db:
-        print("")
-        print(f"USING NEAREST STARTING PRESSURE: {start_prs.m}\n")
+  # Find the starting pressure to use
+  start_prs = land_surface_ctphi_util.find_start_pressure(start_pressure_hpa*units('hPa'),pressure,interp,max_prs_diff,db,'HI')
+  if start_prs < 0:
+    return(-9999.*units('J/kg'))
+  start_prs = start_prs*units('hPa')
 
   # Based on the starting pressure, set the initial layer bottom and top pressures
   layer_bot_prs = start_prs-(bot_pressure_hpa*units('hPa'))

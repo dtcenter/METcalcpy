@@ -108,22 +108,34 @@ def test_calc_humidity_index():
   t1test = np.array([calc_humidity_index(s1prs,s1tmp,s1dew,-1).m,\
                      calc_humidity_index(s2prs,s2tmp,s2dew,-1).m,\
                      calc_humidity_index(s3prs,s3tmp,s3dew,-1).m])
+  
+  # Test 2: provide a start_pressure_hpa
+  t2test = np.array([calc_humidity_index(s1prs,s1tmp,s1dew,-1,start_pressure_hpa=925.0).m,\
+                     calc_humidity_index(s2prs,s2tmp,s2dew,-1,start_pressure_hpa=925.0).m,\
+                     calc_humidity_index(s3prs,s3tmp,s3dew,-1,start_pressure_hpa=925.0).m])
 
-  # Test 2: default, but with interp=False
-  t2test = np.array([calc_humidity_index(s1prs,s1tmp,s1dew,-1,interp=False).m,\
+  # Test 3: default, but with interp=False
+  t3test = np.array([calc_humidity_index(s1prs,s1tmp,s1dew,-1,interp=False).m,\
                      calc_humidity_index(s2prs,s2tmp,s2dew,-1,interp=False).m,\
                      calc_humidity_index(s3prs,s3tmp,s3dew,-1,interp=False).m])
+
+  # Test 4: same as test 2, but with interp=False
+  t4test = np.array([calc_humidity_index(s1prs,s1tmp,s1dew,-1,start_pressure_hpa=925.0,interp=False).m,\
+                     calc_humidity_index(s2prs,s2tmp,s2dew,-1,start_pressure_hpa=925.0,interp=False).m,\
+                     calc_humidity_index(s3prs,s3tmp,s3dew,-1,start_pressure_hpa=925.0,interp=False).m])
 
   # Truth values
   # Ordered by [site1,site2,site3]
   t1truth = np.array([30.356453,48.6300781,12.8117684])
-  t2truth = np.array([27.0415954,48.230834,9.7646789])
+  t2truth = np.array([20.99006982,-9999.,30.89811178])
+  t3truth = np.array([27.0415954,48.230834,9.7646789])
+  t4truth = np.array([24.027771,48.23083496,27.01660156])
 
   # Validate test 1
   assert_almost_equal(t1test,t1truth,decimal=5)
   
-  # Validate test 2
-  assert_almost_equal(t2test,t2truth,decimal=5)
+  # Validate test 3
+  assert_almost_equal(t3test,t3truth,decimal=5)
 
 @pytest.mark.filterwarnings("ignore:Degrees of freedom")
 def test_calc_tci():
