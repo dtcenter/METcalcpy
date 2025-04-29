@@ -42,11 +42,6 @@ def calc_ctp(pressure,temperature,station_index,start_pressure_hpa=-1,bot_pressu
     temperature=temperature.isel(sid=station_index).values*units('degK')
     pressure=pressure.isel(sid=station_index).values*units('hPa')
 
-  # Ensure there's no missing data values in the profile
-  #print(temperature)
-  #temperature = temperature[~np.isnan(temperature)]
-  #print(temperature)
-
   # Subset the profile to only levels where pressure is > min_prs_profile
   min_prs_profile = 100.0*units('hPa')
   temperature = temperature[pressure>=min_prs_profile]
@@ -104,8 +99,6 @@ def calc_ctp(pressure,temperature,station_index,start_pressure_hpa=-1,bot_pressu
   # Obtain information at the top and bottom of the layer
   if interp:
     
-    #prsBot, tmpBot = log_interp_1d(layer_bot_prs.m,pressure.m,pressure.m,temperature.m)
-    #prsTop, tmpTop = log_interp_1d(layer_top_prs.m,pressure.m,pressure.m,temperature.m)
     tmpBot = log_interp_1d(layer_bot_prs.m,pressure.m,temperature.m)
     tmpTop = log_interp_1d(layer_top_prs.m,pressure.m,temperature.m)
     prsBot = np.array([layer_bot_prs.m])
@@ -315,11 +308,6 @@ def calc_humidity_index(pressure,temperature,dewpoint,station_index,start_pressu
     temperature=temperature.isel(sid=station_index).values*units('degK')
     pressure=pressure.isel(sid=station_index).values*units('hPa')
     dewpoint=dewpoint.isel(sid=station_index).values*units('degK')
-
-  # Ensure there's no missing data values in the profile
-  #print(temperature)
-  #temperature = temperature[~np.isnan(temperature)]
-  #print(temperature)
 
   # Subset the profile to only levels where pressure is > min_prs_profile
   min_prs_profile = 100.0*units('hPa')
