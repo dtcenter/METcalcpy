@@ -52,10 +52,11 @@ def calc_ctp(pressure,temperature,station_index,start_pressure_hpa=-1,bot_pressu
   temperature = temperature[pressure>=min_prs_profile]
   pressure = pressure[pressure>=min_prs_profile]
   
-  # Set a pressure difference for non-interpolation case
-  # If the closest pressure to the bot_pressure_hpa is more
-  # than this amount from the start_pressure_hpa, a warning will be
-  # printed.
+  # A pressure difference for warning and a maximum value where CTP
+  # won't be calculated. If warn_prs_diff is exceeded, a warning is printed but 
+  # calculation proceeds. If max_prs_diff is exeeded, an error is printed
+  # and missing data is returned. These are only used for the non-interpolation case.
+  warn_prs_diff = 50.0*units('hPa')
   max_prs_diff = 100.0*units('hPa')
 
   # Find the starting pressure in the profile
@@ -84,9 +85,9 @@ def calc_ctp(pressure,temperature,station_index,start_pressure_hpa=-1,bot_pressu
       prs_diff = pressure-(start_pressure_hpa*units('hPa'))
       start_prs = pressure[np.argmin(np.abs(prs_diff))]
       if np.abs(start_pressure_hpa*units('hPa')-start_prs)>=max_prs_diff:
-        print("INFO: ACTUAL STARTING PRESSURE IS AT LEAST %3.2f hPa FROM REQUESTED START PRESSURE." % (max_prs_diff.m))
+        print("WARNING: ACTUAL STARTING PRESSURE IS AT LEAST %3.2f hPa FROM REQUESTED START PRESSURE." % (max_prs_diff.m))
         print("requested: start_pressure_hpa = %4.2f hPa" % (start_pressure_hpa))
-        print("actual: start_pressure_hpa = %4.2f hPa" % (start_prs.m))
+        print("closest: start_pressure_hpa = %4.2f hPa" % (start_prs.m))
       if db:
         print("")
         print("USING NEAREST STARTING PRESSURE: %f\n" % (start_prs.m))
@@ -160,7 +161,16 @@ def calc_ctp(pressure,temperature,station_index,start_pressure_hpa=-1,bot_pressu
     layer_bot_idx = np.argmin(np.abs(pressure-layer_bot_prs))
     layer_top_idx = np.argmin(np.abs(pressure-layer_top_prs))
 
-    # Warn if the distance between the closest value to the bottom and top values exceeds max_prs_diff
+    # Warn if the distance between the closest value to the bottom and top values exceeds warn_prs_diff
+    if np.abs(pressure[layer_bot_idx]-layer_bot_prs)>=warn_prs_diff:
+      print("WARNING! ACTUAL BOTTOM PRESSURE IS AT LEAST %3.2f hPa FROM REQUESTED BOTTOM PRESSURE." % (warn_prs_diff.m))
+      print("requested: layer_bot_prs = %4.2f hPa" % (layer_bot_prs.m))
+      print("closest: layer_bot_prs = %4.2f hPa" % (pressure[layer_bot_idx].m))
+    if np.abs(pressure[layer_top_idx]-layer_top_prs)>=warn_prs_diff:
+      print("WARNING! ACTUAL TOP PRESSURE IS AT LEAST %3.2f hPa FROM REQUESTED TOP PRESSURE." % (warn_prs_diff.m))
+      print("requested: layer_top_prs = %4.2f hPa" % (layer_top_prs.m))
+      print("closest: layer_top_prs = %4.2f hPa" % (pressure[layer_top_idx].m))
+    # Return missing data if the distance between the closest value to the bottom and top values exceeds max_prs_diff
     if np.abs(pressure[layer_bot_idx]-layer_bot_prs)>=max_prs_diff:
       print("ERROR! ACTUAL BOTTOM PRESSURE IS AT LEAST %3.2f hPa FROM REQUESTED BOTTOM PRESSURE." % (max_prs_diff.m))
       print("requested: layer_bot_prs = %4.2f hPa" % (layer_bot_prs.m))
@@ -317,10 +327,11 @@ def calc_humidity_index(pressure,temperature,dewpoint,station_index,start_pressu
   dewpoint = dewpoint[pressure>=min_prs_profile]
   pressure = pressure[pressure>=min_prs_profile]
 
-  # Set a pressure difference for non-interpolation case
-  # If the closest pressure to the bot_pressure_hpa is more
-  # than this amount from the start_pressure_hpa, a warning will be
-  # printed.
+  # A pressure difference for warning and a maximum value where the humidity index
+  # won't be calculated. If warn_prs_diff is exceeded, a warning is printed but 
+  # calculation proceeds. If max_prs_diff is exeeded, an error is printed
+  # and missing data is returned. These are only used for the non-interpolation case.
+  warn_prs_diff = 50.0*units('hPa')
   max_prs_diff = 100.0*units('hPa')
 
   # Find the starting pressure in the profile
@@ -349,9 +360,9 @@ def calc_humidity_index(pressure,temperature,dewpoint,station_index,start_pressu
       prs_diff = pressure-(start_pressure_hpa*units('hPa'))
       start_prs = pressure[np.argmin(np.abs(prs_diff))]
       if np.abs(start_pressure_hpa*units('hPa')-start_prs)>=max_prs_diff:
-        print("INFO: ACTUAL STARTING PRESSURE IS AT LEAST %3.2f hPa FROM REQUESTED START PRESSURE." % (max_prs_diff.m))
+        print("WARNING: ACTUAL STARTING PRESSURE IS AT LEAST %3.2f hPa FROM REQUESTED START PRESSURE." % (max_prs_diff.m))
         print("requested: start_pressure_hpa = %4.2f hPa" % (start_pressure_hpa))
-        print("actual: start_pressure_hpa = %4.2f hPa" % (start_prs.m))
+        print("closest: start_pressure_hpa = %4.2f hPa" % (start_prs.m))
       if db:
         print("")
         print("USING NEAREST STARTING PRESSURE: %f\n" % (start_prs.m))
@@ -396,7 +407,16 @@ def calc_humidity_index(pressure,temperature,dewpoint,station_index,start_pressu
     layer_bot_idx = np.argmin(np.abs(pressure-layer_bot_prs))
     layer_top_idx = np.argmin(np.abs(pressure-layer_top_prs))
 
-    # Warn if the distance between the closest value to the bottom and top values exceeds max_prs_diff
+    # Warn if the distance between the closest value to the bottom and top values exceeds warn_prs_diff
+    if np.abs(pressure[layer_bot_idx]-layer_bot_prs)>=warn_prs_diff:
+      print("WARNING! ACTUAL BOTTOM PRESSURE IS AT LEAST %3.2f hPa FROM REQUESTED BOTTOM PRESSURE." % (warn_prs_diff.m))
+      print("requested: layer_bot_prs = %4.2f hPa" % (layer_bot_prs.m))
+      print("closest: layer_bot_prs = %4.2f hPa" % (pressure[layer_bot_idx].m))
+    if np.abs(pressure[layer_top_idx]-layer_top_prs)>=warn_prs_diff:
+      print("WARNING! ACTUAL TOP PRESSURE IS AT LEAST %3.2f hPa FROM REQUESTED TOP PRESSURE." % (warn_prs_diff.m))
+      print("requested: layer_top_prs = %4.2f hPa" % (layer_top_prs.m))
+      print("closest: layer_top_prs = %4.2f hPa" % (pressure[layer_top_idx].m))
+    # Return missing data if the distance between the closest value to the bottom and top values exceeds max_prs_diff
     if np.abs(pressure[layer_bot_idx]-layer_bot_prs)>=max_prs_diff:
       print("ERROR! ACTUAL BOTTOM PRESSURE IS AT LEAST %3.2f hPa FROM REQUESTED BOTTOM PRESSURE." % (max_prs_diff.m))
       print("requested: layer_bot_prs = %4.2f hPa" % (layer_bot_prs.m))
