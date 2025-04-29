@@ -134,8 +134,14 @@ def test_calc_humidity_index():
   # Validate test 1
   assert_almost_equal(t1test,t1truth,decimal=5)
   
+  # Validate test 2
+  assert_almost_equal(t2test,t2truth,decimal=5)
+  
   # Validate test 3
   assert_almost_equal(t3test,t3truth,decimal=5)
+  
+  # Validate test 4
+  assert_almost_equal(t4test,t4truth,decimal=5)
 
 @pytest.mark.filterwarnings("ignore:Degrees of freedom")
 def test_calc_tci():
