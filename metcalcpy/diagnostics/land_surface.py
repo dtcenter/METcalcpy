@@ -104,31 +104,33 @@ def calc_ctp(pressure,temperature,station_index,start_pressure_hpa=-1,bot_pressu
   # Obtain information at the top and bottom of the layer
   if interp:
     
-    tmpBot = log_interp_1d(layer_bot_prs.m,pressure.m,temperature.m)
-    tmpTop = log_interp_1d(layer_top_prs.m,pressure.m,temperature.m)
-    prsBot = np.array([layer_bot_prs.m])
-    prsTop = np.array([layer_top_prs.m])
+    layer_bottom_temperature = log_interp_1d(layer_bot_prs.m,pressure.m,temperature.m)
+    layer_top_temperature = log_interp_1d(layer_top_prs.m,pressure.m,temperature.m)
+    layer_bottom_pressure = np.array([layer_bot_prs.m])
+    layer_top_pressure = np.array([layer_top_prs.m])
     
     if db:
       print("")
-      print(f"USING INTERPOLATED LAYER BOTTOM PRESSURE: {prsBot}")
-      print(f"USING INTERPOLATED LAYER TOP PRESSURE: {prsTop}\n")
+      print(f"USING INTERPOLATED LAYER BOTTOM PRESSURE: {layer_bottom_pressure}")
+      print(f"USING INTERPOLATED LAYER TOP PRESSURE: {layer_top_pressure}\n")
   
     # Find the top and bottom of the layer, where the interpolated values should be inserted
     if any(np.diff(pressure.m)[np.diff(pressure.m)>=0]):
       print("ERROR! PRESSURES DO NOT MONOTONICALLY DECREASE!")
       print("UNABLE TO COMPUTE CTP.")
       return(-9999.*units('J/kg'))
-    layer_bot_idx = len(pressure.m)-np.searchsorted(pressure.m[::-1],prsBot,side="left")[0]
-    layer_top_idx = len(pressure.m)-np.searchsorted(pressure.m[::-1],prsTop,side="left")[0]
+    layer_bot_idx = len(pressure.m)-np.searchsorted(pressure.m[::-1],layer_bottom_pressure,side="left")[0]
+    layer_top_idx = len(pressure.m)-np.searchsorted(pressure.m[::-1],layer_top_pressure,side="left")[0]
     if db:
       print("")
       print(f"INSERTING INTERPOLATED BOT DATA AT INDEX: {layer_bot_idx}")
       print(f"INSERTING INTERPOLATED TOP DATA AT INDEX: {layer_top_idx}")
     
     # Create a new sounding to use, which has the interpolated T/P at bottom/top inserted
-    prs = np.append(np.append(np.append(np.append(pressure.m[0:layer_bot_idx],prsBot),pressure.m[layer_bot_idx:layer_top_idx]),prsTop),pressure.m[layer_top_idx:])
-    tmp = np.append(np.append(np.append(np.append(temperature.m[0:layer_bot_idx],tmpBot),temperature.m[layer_bot_idx:layer_top_idx]),tmpTop),temperature.m[layer_top_idx:])
+    prs = np.append(np.append(np.append(np.append(pressure.m[0:layer_bot_idx],layer_bottom_pressure),\
+                    pressure.m[layer_bot_idx:layer_top_idx]),layer_top_pressure),pressure.m[layer_top_idx:])
+    tmp = np.append(np.append(np.append(np.append(temperature.m[0:layer_bot_idx],layer_bottom_temperature),\
+                    temperature.m[layer_bot_idx:layer_top_idx]),layer_top_temperature),temperature.m[layer_top_idx:])
     # Assign units to the new sounding variables
     prs = prs*units('hPa')
     tmp = tmp*units('degK')
@@ -138,8 +140,8 @@ def calc_ctp(pressure,temperature,station_index,start_pressure_hpa=-1,bot_pressu
     temperature = tmp
 
     # Find the new layer top and bottom indices, which should be the indices of the interpolated values that were inserted above
-    layer_bot_idx = np.where(pressure.m==prsBot)[0][0]
-    layer_top_idx = np.where(pressure.m==prsTop)[0][0]
+    layer_bot_idx = np.where(pressure.m==layer_bottom_pressure)[0][0]
+    layer_top_idx = np.where(pressure.m==layer_top_pressure)[0][0]
     if db:
       print("")
       print(f"INDEX OF LAYER BOT: {layer_bot_idx}")
@@ -147,7 +149,7 @@ def calc_ctp(pressure,temperature,station_index,start_pressure_hpa=-1,bot_pressu
 
     # Compute the moist adiabatic lapse rate
     try:
-      MALR = mpcalc.moist_lapse(pressure[layer_bot_idx:],tmpBot*units('degK'),reference_pressure=prsBot*units('hPa'))
+      MALR = mpcalc.moist_lapse(pressure[layer_bot_idx:],layer_bottom_temperature*units('degK'),reference_pressure=layer_bottom_pressure*units('hPa'))
     except ValueError:
       print("UNABLE TO COMPUTE MALR IN calc_ctp()")
       return(-9999.*units('J/kg'))
@@ -186,19 +188,19 @@ def calc_ctp(pressure,temperature,station_index,start_pressure_hpa=-1,bot_pressu
       print(f"INDEX OF LAYER BOT: {layer_bot_idx}")
       print(f"INDEX OF LAYER TOP: {layer_top_idx}")
 
-    prsBot = pressure.m[layer_bot_idx]
-    prsTop = pressure.m[layer_top_idx]
-    tmpBot = temperature.m[layer_bot_idx]
-    tmpTop = temperature.m[layer_top_idx]
+    layer_bottom_temperature = temperature.m[layer_bot_idx]
+    layer_top_temperature = temperature.m[layer_top_idx]
+    layer_bottom_pressure = pressure.m[layer_bot_idx]
+    layer_top_pressure = pressure.m[layer_top_idx]
 
     if db:
       print("")
-      print("USING NEAREST LAYER BOTTOM PRESSURE: %f\n" % (prsBot))
-      print("USING NEAREST LAYER TOP PRESSURE: %f\n" % (prsTop))
+      print("USING NEAREST LAYER BOTTOM PRESSURE: %f\n" % (layer_bottom_pressure))
+      print("USING NEAREST LAYER TOP PRESSURE: %f\n" % (layer_top_pressure))
 
     # Compute the moist adiabatic lapse rate
     try:
-      MALR = mpcalc.moist_lapse(pressure[layer_bot_idx:],tmpBot*units('degK'),reference_pressure=prsBot*units('hPa'))
+      MALR = mpcalc.moist_lapse(pressure[layer_bot_idx:],layer_bottom_temperature*units('degK'),reference_pressure=layer_bottom_pressure*units('hPa'))
     except ValueError:
       print("UNABLE TO COMPUTE MALR IN calc_ctp()")
       return(-9999.*units('J/kg'))
@@ -394,14 +396,14 @@ def calc_humidity_index(pressure,temperature,dewpoint,station_index,start_pressu
       print(f"INTERPOLATING TO BOTTOM PRESSURE: {layer_bot_prs.m}")
       print(f"INTERPOLATING TO TOP PRESSURE: {layer_top_prs.m}\n")
 
-    tmpBot, dewBot = log_interp_1d(layer_bot_prs,pressure,temperature,dewpoint)
-    tmpTop, dewTop = log_interp_1d(layer_top_prs,pressure,temperature,dewpoint)
+    layer_bottom_temperature, layer_bottom_dewpoint = log_interp_1d(layer_bot_prs,pressure,temperature,dewpoint)
+    layer_top_temperature, layer_top_dewpoint = log_interp_1d(layer_top_prs,pressure,temperature,dewpoint)
     
     # log_interp_1d returns array-like, so get the float values
-    tmpBot = tmpBot[0]
-    dewBot = dewBot[0]
-    tmpTop = tmpTop[0]
-    dewTop = dewTop[0]
+    layer_bottom_temperature = layer_bottom_temperature[0]
+    layer_bottom_dewpoint = layer_bottom_dewpoint[0]
+    layer_top_temperature = layer_top_temperature[0]
+    layer_top_dewpoint = layer_top_dewpoint[0]
 
   else:
 
@@ -436,9 +438,9 @@ def calc_humidity_index(pressure,temperature,dewpoint,station_index,start_pressu
       print(f"USING DATA AT NEAREST BOTTOM PRESSURE: {pressure[layer_bot_idx].m}\n")
       print(f"USING DATA AT NEAREST TOP PRESSURE: {pressure[layer_top_idx].m}\n")
 
-    tmpBot = temperature[layer_bot_idx]
-    dewBot = dewpoint[layer_bot_idx]
-    tmpTop = temperature[layer_top_idx]
-    dewTop = dewpoint[layer_top_idx]
+    layer_bottom_temperature = temperature[layer_bot_idx]
+    layer_bottom_dewpoint = dewpoint[layer_bot_idx]
+    layer_top_temperature = temperature[layer_top_idx]
+    layer_top_dewpoint = dewpoint[layer_top_idx]
 
-  return (tmpBot-dewBot) + (tmpTop-dewTop)
+  return (layer_bottom_temperature-layer_bottom_dewpoint) + (layer_top_temperature-layer_top_dewpoint)
