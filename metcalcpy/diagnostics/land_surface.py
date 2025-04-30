@@ -9,7 +9,7 @@ import os
 from pandas.core.series import Series
 from xarray.core.dataarray import DataArray
 
-def calc_ctp(pressure,temperature,station_index,start_pressure_hpa=-1,bot_pressure_hpa=100.0,top_pressure_hpa=300.0,interp=True,db=True,plotskewt=False,plotdir="",station_name=""):
+def calc_ctp(pressure,temperature,station_index,start_pressure_hpa=-1,bot_pressure_hpa=100.0,top_pressure_hpa=300.0,interp=True,db=False,plotskewt=False,plotdir="",station_name=""):
 
   """ Function for computing the Convective Triggering Potential (CTP), defined as
       :math:`\\mathrm{CTP} = R_d \\int_{P_s - 100\\,\\text{hPa}}^{P_s - 300\\,\\text{hPa}} \\left( T_{\\text{env}} - T_{\\text{MALR}} \\right) \\, d\\ln p`
@@ -120,7 +120,7 @@ def calc_ctp(pressure,temperature,station_index,start_pressure_hpa=-1,bot_pressu
     layer_top_idx = np.where(pressure.m==layer_top_pressure)[0][0]
     if db:
       print("")
-      print(f"INDEX OF LAYER BOT: {layer_bot_idx}")
+      print(f"INDEX OF LAYER BOTTOM: {layer_bot_idx}")
       print(f"INDEX OF LAYER TOP: {layer_top_idx}")
 
     # Compute the moist adiabatic lapse rate
@@ -132,38 +132,12 @@ def calc_ctp(pressure,temperature,station_index,start_pressure_hpa=-1,bot_pressu
 
   else:
 
-    # Find the index of the closest value. 
-    # We'll just take the difference between the top/bottom pressure and find the index of the minimum
-    layer_bot_idx = np.argmin(np.abs(pressure-layer_bot_prs))
-    layer_top_idx = np.argmin(np.abs(pressure-layer_top_prs))
-
-    # Warn if the distance between the closest value to the bottom and top values exceeds warn_prs_diff
-    if np.abs(pressure[layer_bot_idx]-layer_bot_prs)>=warn_prs_diff:
-      print(f"WARNING! ACTUAL BOTTOM PRESSURE IS AT LEAST {warn_prs_diff.m} hPa FROM REQUESTED BOTTOM PRESSURE.")
-      print(f"requested: layer_bot_prs = {layer_bot_prs.m} hPa")
-      print(f"closest: layer_bot_prs = {pressure[layer_bot_idx].m} hPa")
-    if np.abs(pressure[layer_top_idx]-layer_top_prs)>=warn_prs_diff:
-      print(f"WARNING! ACTUAL TOP PRESSURE IS AT LEAST {warn_prs_diff.m} hPa FROM REQUESTED TOP PRESSURE.")
-      print(f"requested: layer_top_prs = {layer_top_prs.m} hPa")
-      print(f"closest: layer_top_prs = {pressure[layer_top_idx].m} hPa")
-    # Return missing data if the distance between the closest value to the bottom and top values exceeds max_prs_diff
-    if np.abs(pressure[layer_bot_idx]-layer_bot_prs)>=max_prs_diff:
-      print(f"ERROR! ACTUAL BOTTOM PRESSURE IS AT LEAST {max_prs_diff.m} hPa FROM REQUESTED BOTTOM PRESSURE.")
-      print(f"requested: layer_bot_prs = {layer_bot_prs.m} hPa")
-      print(f"closest: layer_bot_prs = {pressure[layer_bot_idx].m} hPa")
-      print("UNABLE TO COMPUTE CTP.")
-      return(-9999.*units('J/kg'))      
-    if np.abs(pressure[layer_top_idx]-layer_top_prs)>=max_prs_diff:
-      print(f"ERROR! ACTUAL TOP PRESSURE IS AT LEAST {max_prs_diff.m} hPa FROM REQUESTED TOP PRESSURE.")
-      print(f"requested: layer_top_prs = {layer_top_prs.m} hPa")
-      print(f"closest: layer_top_prs = {pressure[layer_top_idx].m} hPa")
-      print("UNABLE TO COMPUTE CTP.")
+    # Find the indices of the closest pressure to the top and bottom pressure in the pressure profile
+    layer_bot_idx, layer_top_idx = land_surface_ctphi_util.find_closest_bottom_top_index(pressure,layer_bot_prs,layer_top_prs,warn_prs_diff,max_prs_diff,db,'CTP')
+    if layer_bot_idx < 0 or layer_top_idx < 0:
       return(-9999.*units('J/kg'))
-    if db:
-      print("")
-      print(f"INDEX OF LAYER BOT: {layer_bot_idx}")
-      print(f"INDEX OF LAYER TOP: {layer_top_idx}")
 
+    # Extract the temperature and pressure values at those indices to use
     layer_bottom_temperature = temperature.m[layer_bot_idx]
     layer_top_temperature = temperature.m[layer_top_idx]
     layer_bottom_pressure = pressure.m[layer_bot_idx]
@@ -261,7 +235,7 @@ def calc_tci(soil_data,sfc_flux_data,skipna=True):
   # Return the Terrestrial Coupling Index (TCI)
   return covarTerm/soil_std
 
-def calc_humidity_index(pressure,temperature,dewpoint,station_index,start_pressure_hpa=-1,bot_pressure_hpa=50.0,top_pressure_hpa=150.0,interp=True,db=True):
+def calc_humidity_index(pressure,temperature,dewpoint,station_index,start_pressure_hpa=-1,bot_pressure_hpa=50.0,top_pressure_hpa=150.0,interp=True,db=False):
   """ Function for computing the Humidity Index defined as:
       :math:`\\mathrm{HI_{low}} = (T_{950\\,\\text{hPa}} - D_{950\\,\\text{hPa}}) + (T_{850\\,\\text{hPa}} - D_{850\\,\\text{hPa}})`
   
@@ -320,7 +294,7 @@ def calc_humidity_index(pressure,temperature,dewpoint,station_index,start_pressu
   # Find the starting pressure to use
   start_prs = land_surface_ctphi_util.find_start_pressure(start_pressure_hpa*units('hPa'),pressure,interp,max_prs_diff,db,'HI')
   if start_prs < 0:
-    return(-9999.*units('J/kg'))
+    return(-9999.*units('degK'))
   start_prs = start_prs*units('hPa')
 
   # Based on the starting pressure, set the initial layer bottom and top pressures
@@ -359,37 +333,12 @@ def calc_humidity_index(pressure,temperature,dewpoint,station_index,start_pressu
 
   else:
 
-    # Find the index of the closest pressure value to the bottom and top values requested
-    layer_bot_idx = np.argmin(np.abs(pressure-layer_bot_prs))
-    layer_top_idx = np.argmin(np.abs(pressure-layer_top_prs))
-
-    # Warn if the distance between the closest value to the bottom and top values exceeds warn_prs_diff
-    if np.abs(pressure[layer_bot_idx]-layer_bot_prs)>=warn_prs_diff:
-      print(f"WARNING! ACTUAL BOTTOM PRESSURE IS AT LEAST {warn_prs_diff.m} hPa FROM REQUESTED BOTTOM PRESSURE.")
-      print(f"requested: layer_bot_prs = {layer_bot_prs.m} hPa")
-      print(f"closest: layer_bot_prs = {pressure[layer_bot_idx].m} hPa")
-    if np.abs(pressure[layer_top_idx]-layer_top_prs)>=warn_prs_diff:
-      print(f"WARNING! ACTUAL TOP PRESSURE IS AT LEAST {warn_prs_diff.m} hPa FROM REQUESTED TOP PRESSURE.")
-      print(f"requested: layer_top_prs = {layer_top_prs.m} hPa")
-      print(f"closest: layer_top_prs = {pressure[layer_top_idx].m} hPa")
-    # Return missing data if the distance between the closest value to the bottom and top values exceeds max_prs_diff
-    if np.abs(pressure[layer_bot_idx]-layer_bot_prs)>=max_prs_diff:
-      print(f"ERROR! ACTUAL BOTTOM PRESSURE IS AT LEAST {max_prs_diff.m} hPa FROM REQUESTED BOTTOM PRESSURE.")
-      print(f"requested: layer_bot_prs = {layer_bot_prs.m} hPa")
-      print(f"closest: layer_bot_prs = {pressure[layer_bot_idx].m} hPa")
-      print("UNABLE TO COMPUTE HI.")
+    # Find the indices of the closest pressure to the top and bottom pressure in the pressure profile
+    layer_bot_idx, layer_top_idx = land_surface_ctphi_util.find_closest_bottom_top_index(pressure,layer_bot_prs,layer_top_prs,warn_prs_diff,max_prs_diff,db,'HI')
+    if layer_bot_idx < 0 or layer_top_idx < 0:
       return(-9999.*units('degK'))
-    if np.abs(pressure[layer_top_idx]-layer_top_prs)>=max_prs_diff:
-      print(f"ERROR! ACTUAL TOP PRESSURE IS AT LEAST {max_prs_diff.m} hPa FROM REQUESTED TOP PRESSURE.")
-      print(f"requested: layer_top_prs = {layer_top_prs.m} hPa")
-      print(f"closest: layer_top_prs = {pressure[layer_top_idx].m} hPa")
-      print("UNABLE TO COMPUTE HI.")
-      return(-9999.*units('degK'))
-    if db:
-      print("")
-      print(f"USING DATA AT NEAREST BOTTOM PRESSURE: {pressure[layer_bot_idx].m}\n")
-      print(f"USING DATA AT NEAREST TOP PRESSURE: {pressure[layer_top_idx].m}\n")
 
+    # Extract the temperature and dewpoint values at those indices to use
     layer_bottom_temperature = temperature[layer_bot_idx]
     layer_bottom_dewpoint = dewpoint[layer_bot_idx]
     layer_top_temperature = temperature[layer_top_idx]
