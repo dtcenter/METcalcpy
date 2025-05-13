@@ -167,7 +167,7 @@ def calc_ctp(pressure,temperature,station_index,start_pressure_hpa=-1,bot_pressu
   p_mask = (ctp_prs<=pressure[layer_bot_idx])&(ctp_prs>=pressure[layer_top_idx])
   
   # Compute the Convective Triggering Potential (CTP) index
-  CTP = mpconsts.Rd * units.Quantity(np.trapz(tdiff[p_mask].m,np.log(ctp_prs[p_mask].m)),'K')
+  CTP = mpconsts.Rd * units.Quantity(np.trapezoid(tdiff[p_mask].m,np.log(ctp_prs[p_mask].m)),'K')
   
   if plotskewt:
     import matplotlib.pyplot as plt
