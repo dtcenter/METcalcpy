@@ -2,11 +2,12 @@
 
 import metpy.constants as mpconsts
 import numpy as np
+import os
 from metpy import calc as mpcalc
 from metpy.interpolate import log_interpolate_1d as log_interp_1d
 from metpy.units import units
-import os
 from pandas.core.series import Series
+from scipy import integrate
 from xarray.core.dataarray import DataArray
 
 def calc_ctp(pressure,temperature,station_index,start_pressure_hpa=-1,bot_pressure_hpa=100.0,top_pressure_hpa=300.0,interp=True,db=False,plotskewt=False,plotdir="",station_name=""):
@@ -167,7 +168,7 @@ def calc_ctp(pressure,temperature,station_index,start_pressure_hpa=-1,bot_pressu
   p_mask = (ctp_prs<=pressure[layer_bot_idx])&(ctp_prs>=pressure[layer_top_idx])
   
   # Compute the Convective Triggering Potential (CTP) index
-  CTP = mpconsts.Rd * units.Quantity(np.trapz(tdiff[p_mask].m,np.log(ctp_prs[p_mask].m)),'K')
+  CTP = mpconsts.Rd * units.Quantity(integrate.trapezoid(tdiff[p_mask].m,np.log(ctp_prs[p_mask].m)),'K')
   
   if plotskewt:
     import matplotlib.pyplot as plt
