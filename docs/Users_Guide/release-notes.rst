@@ -9,6 +9,22 @@ describes the bugfix, enhancement, or new feature: `METcalcpy GitHub issues. <ht
 METcalcpy Release Notes
 =======================
 
+METcalcpy Version 3.1.0-rc1 release notes (20250522)
+------------------------------------------------------
+
+.. dropdown:: Bugfixes
+
+   None
+
+.. dropdown:: Documentation
+
+  None
+
+.. dropdown:: Enhancements
+
+   * Add CTP and HI functions as new diagnostics in METcalcpy (`#378 <https://github.com/dtcenter/METcalcpy/issues/378>`_)
+
+
 METcalcpy Version 3.1.0-beta2 release notes (20250330)
 ------------------------------------------------------
 
