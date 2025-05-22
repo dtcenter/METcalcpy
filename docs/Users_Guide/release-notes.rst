@@ -10,7 +10,7 @@ METcalcpy Release Notes
 =======================
 
 METcalcpy Version 3.1.0-rc1 release notes (20250522)
-------------------------------------------------------
+----------------------------------------------------
 
 .. dropdown:: Bugfixes
 
@@ -18,7 +18,7 @@ METcalcpy Version 3.1.0-rc1 release notes (20250522)
 
 .. dropdown:: Documentation
 
-  None
+   None
 
 .. dropdown:: Enhancements
 
