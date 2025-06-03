@@ -9,5 +9,5 @@ proc ModulesHelp { } {
 
 prereq intel/2024.2.1
 
-prepend-path PATH /lfs5/HFIP/dtc-hurr/METplus/miniconda/miniconda3/envs/metplus_v5.1_py3.10/bin
+prepend-path PATH /lfs6/HFIP/dtc-hurr/METplus/miniconda/miniconda3/envs/metplus_v6.1_py3.12/bin
 prepend-path PYTHONPATH /contrib/met/METcalcpy/METcalcpy-3.1.0
