@@ -9,24 +9,9 @@ describes the bugfix, enhancement, or new feature: `METcalcpy GitHub issues. <ht
 METcalcpy Release Notes
 =======================
 
-METcalcpy Version 3.1.0-rc1 release notes (20250522)
+METcalcpy Version 3.1.0 release notes (2025630)
 ----------------------------------------------------
 
-.. dropdown:: Bugfixes
-
-   None
-
-.. dropdown:: Documentation
-
-   None
-
-.. dropdown:: Enhancements
-
-   * Add CTP and HI functions as new diagnostics in METcalcpy (`#378 <https://github.com/dtcenter/METcalcpy/issues/378>`_)
-
-
-METcalcpy Version 3.1.0-beta2 release notes (20250330)
-------------------------------------------------------
 
 .. dropdown:: Bugfixes
 
@@ -34,40 +19,24 @@ METcalcpy Version 3.1.0-beta2 release notes (20250330)
 	      
 .. dropdown:: Documentation
 
-   * Enhance the Table of Contents to include all METplus components (`#432 <https://github.com/dtcenter/METcalcpy/pull/432>`_)  
+   * Enhance the Table of Contents to include all METplus components (`#432 <https://github.com/dtcenter/METcalcpy/pull/432>`_)
+   * Update the Code Support Section (`#443 <https://github.com/dtcenter/METcalcpy/issues/443>`_)
 
 .. dropdown:: Enhancements
 
-   None
+   * **Add CTP and HI functions as new diagnostics in METcalcpy** (`#378 <https://github.com/dtcenter/METcalcpy/issues/378>`_)
 
 .. dropdown:: Repository, build, and test
 
+   * Migrate install to pyproject.toml (`#414 <https://github.com/dtcenter/METcalcpy/issues/414>`_)
+   * Add basic tests for untested modules (`#415 <https://github.com/dtcenter/METcalcpy/issues/415>`_)
+   * 3d volrat tests (`#417 <https://github.com/dtcenter/METcalcpy/issues/417>`_)
    * Update code after upgrading the numpy version (`#425 <https://github.com/dtcenter/METcalcpy/pull/425>`_)
    * Update code after upgrading the xarray version (`#431 <https://github.com/dtcenter/METcalcpy/pull/431>`_)  
    * Update infrastructure to reflect move to developing with Python 3.12 (`#430 <https://github.com/dtcenter/METcalcpy/pull/430>`_)
    * Update modulefiles used on various machines (`#427 <https://github.com/dtcenter/METcalcpy/issues/427>`_)     
-		
+   * Update installation modulefiles for Python 3.12 (`#436 <https://github.com/dtcenter/METcalcpy/issues/436>`_)
 
-METcalcpy Version 3.1.0-beta1 release notes (20250122)
-------------------------------------------------------
-
-.. dropdown:: Bugfixes
-
-   None
-
-.. dropdown:: Documentation
-
-   None
-
-.. dropdown:: Enhancements
-
-   None
-
-.. dropdown:: Repository, build, and test
-
-  * Migrate install to pyproject.toml (`#414 <https://github.com/dtcenter/METcalcpy/issues/414>`_)
-  * Add basic tests for untested modules (`#415 <https://github.com/dtcenter/METcalcpy/issues/415>`_)
-  * 3d volrat tests (`#417 <https://github.com/dtcenter/METcalcpy/issues/417>`_)
 
 
 METcalcpy Upgrade Instructions
