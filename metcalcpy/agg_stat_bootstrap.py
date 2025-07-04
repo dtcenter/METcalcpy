@@ -302,7 +302,7 @@ class AggStatBootstrap:
             # build a data frame with the sampled data
             data_cases = np.asarray(self.series_data['case'])
             flat_cases = cases.flatten()
-            values = self.series_data[np.in1d(data_cases, flat_cases)].to_numpy()
+            values = self.series_data[np.isin(data_cases, flat_cases)].to_numpy()
             safe_log(logger, "debug", f"Number of values selected for single case: {len(values)}")
             # Calculate the statistic for each bootstrap iteration
             stat_values = []
