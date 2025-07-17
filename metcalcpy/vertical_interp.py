@@ -129,7 +129,7 @@ def vertical_interp(fieldname, config,
     shape_slice.pop(i_lev_dim)
     shape_slice = tuple(shape_slice)
     logging.debug(shape_slice)
-    field_slice = field.drop(lev_dim)
+    field_slice = field.drop_vars(lev_dim)
     coords_slice = field_slice.coords
     logging.debug(coords_slice)
 
@@ -579,6 +579,7 @@ if __name__ == '__main__':
     parser.add_argument('--output', type=str,
         required=True,
         help='output file name')
+
     parser.add_argument('--logfile', type=str, 
         default=sys.stdout,
         help='log file (default stdout)')
@@ -589,6 +590,10 @@ if __name__ == '__main__':
     parser.add_argument('--ref_time_from_filename', action='store_true',
         help='extract forecast reference time from filename')
     args = parser.parse_args()
+
+    # Create the output directory if it doesn't already exist
+    full_output = args.output
+    os.makedirs( os.path.dirname(full_output), exist_ok=True)
 
     """
     Setup logging
@@ -628,7 +633,7 @@ if __name__ == '__main__':
                 backend_kwargs={'filter_by_keys': {'typeOfLevel': 'isobaricInhPa'}})
         else:
             logging.info('Opening NetCDF ' + filename_in)
-            ds = xr.open_dataset(filename_in)
+            ds = xr.open_dataset(filename_in, decode_timedelta=True)
         logging.debug(ds)
     except:
         ds = xr.Dataset()

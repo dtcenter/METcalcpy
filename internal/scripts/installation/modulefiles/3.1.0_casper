@@ -10,5 +10,5 @@ proc ModulesHelp { } {
 module load ncarenv/24.12
 module load intel/2024.2.1
 
-prepend-path PATH /glade/work/dtcrt/METplus/casper/miniconda/miniconda3/envs/metplus_v5.1_py3.10/bin
+prepend-path PATH /glade/work/dtcrt/METplus/casper/miniconda/miniconda3/envs/metplus_v6.1_py3.12/bin
 prepend-path PYTHONPATH /glade/work/dtcrt/METplus/casper/components/METcalcpy/installations/METcalcpy-3.1.0
