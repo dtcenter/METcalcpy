@@ -30,7 +30,7 @@ METcalcpy Version 3.1.0 release notes (20250716)
 
    * Migrate install to pyproject.toml (`#414 <https://github.com/dtcenter/METcalcpy/issues/414>`_)
    * Add basic tests for untested modules (`#415 <https://github.com/dtcenter/METcalcpy/issues/415>`_)
-   * 3d volrat tests (`#417 <https://github.com/dtcenter/METcalcpy/issues/417>`_)
+   * Add tests for mode_3d_volrat_statistics.py (`#417 <https://github.com/dtcenter/METcalcpy/issues/417>`_)
    * Update code after upgrading the numpy version (`#425 <https://github.com/dtcenter/METcalcpy/pull/425>`_)
    * Update code after upgrading the xarray version (`#431 <https://github.com/dtcenter/METcalcpy/pull/431>`_)  
    * Update infrastructure to reflect move to developing with Python 3.12 (`#430 <https://github.com/dtcenter/METcalcpy/pull/430>`_)
