@@ -39,6 +39,7 @@ fields:
     - 'UGRD'
     - 'VGRD'
     - 'TMP'
+    - 'RH'
 
 #
 # Vertical coordinate information
