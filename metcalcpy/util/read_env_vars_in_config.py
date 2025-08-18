@@ -57,7 +57,8 @@ def parse_config(path=None, data=None, tag='!ENV',logger=None):
                     f'${{{g}}}', os.environ.get(g, g)
                 )
                 safe_log(logger, "debug", f"Replaced {g} with {full_value}")
-            return full_value
+                full_value_fixed = full_value.replace("'", '')
+            return full_value_fixed.replace('"', "")
         return value
 
     loader.add_constructor(tag, constructor_env_variables)
