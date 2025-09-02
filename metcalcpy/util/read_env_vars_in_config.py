@@ -57,7 +57,8 @@ def parse_config(path=None, data=None, tag='!ENV',logger=None):
                     f'${{{g}}}', os.environ.get(g, g)
                 )
                 safe_log(logger, "debug", f"Replaced {g} with {full_value}")
-            return full_value
+                full_value_fixed = full_value.replace("'", '')
+            return full_value_fixed
         return value
 
     loader.add_constructor(tag, constructor_env_variables)
@@ -73,3 +74,4 @@ def parse_config(path=None, data=None, tag='!ENV',logger=None):
         raise ValueError('Either a path or data should be defined as input')
 
     safe_log(logger, "debug", "YAML configuration loaded and processed successfully.")
+
