@@ -9,38 +9,32 @@ describes the bugfix, enhancement, or new feature: `METcalcpy GitHub issues. <ht
 METcalcpy Release Notes
 =======================
 
-METcalcpy Version 3.1.0 release notes (20250716)
+METcalcpy Version 3.2.0-RC1 Release Notes (20250929)
 ----------------------------------------------------
 
 
 .. dropdown:: Bugfixes
 
-   * Initialize stat_vals list in agg_stat_bootstrap code (`#420 <https://github.com/dtcenter/METcalcpy/issues/420>`_) 
+   * None
 	      
 .. dropdown:: Documentation
 
-   * Enhance the Table of Contents to include all METplus components (`#432 <https://github.com/dtcenter/METcalcpy/pull/432>`_)
-   * Update the Code Support Section (`#443 <https://github.com/dtcenter/METcalcpy/issues/443>`_)
+   * None
 
 .. dropdown:: Enhancements
 
-   * **Add CTP and HI functions as new diagnostics in METcalcpy** (`#378 <https://github.com/dtcenter/METcalcpy/issues/378>`_)
+   * **Update METcalcpy vertical_interp.py code for consistency with METplotpy TC-RMW plotting** (`#444 <https://github.com/dtcenter/METcalcpy/issues/444>`_)
+   * Provide support for setting FCST_VAR_VAL1/2 env vars for plotting config files (`#453 <https://github.com/dtcenter/METcalcpy/issues/453>`_)  
 
 .. dropdown:: Repository, build, and test
 
-   * Migrate install to pyproject.toml (`#414 <https://github.com/dtcenter/METcalcpy/issues/414>`_)
-   * Add basic tests for untested modules (`#415 <https://github.com/dtcenter/METcalcpy/issues/415>`_)
-   * Add tests for mode_3d_volrat_statistics.py (`#417 <https://github.com/dtcenter/METcalcpy/issues/417>`_)
-   * Update code after upgrading the numpy version (`#425 <https://github.com/dtcenter/METcalcpy/pull/425>`_)
-   * Update code after upgrading the xarray version (`#431 <https://github.com/dtcenter/METcalcpy/pull/431>`_)  
-   * Update infrastructure to reflect move to developing with Python 3.12 (`#430 <https://github.com/dtcenter/METcalcpy/pull/430>`_)
-   * Update modulefiles used on various machines (`#427 <https://github.com/dtcenter/METcalcpy/issues/427>`_)     
-   * Update installation modulefiles for Python 3.12 (`#436 <https://github.com/dtcenter/METcalcpy/issues/436>`_)
-
+   * None
 
 
 METcalcpy Upgrade Instructions
 ==============================
+
+This section summarizes and highlights important changes to METcalcpy since version 3.1.0, including:
 
 .. note::
 
