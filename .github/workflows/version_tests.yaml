@@ -40,8 +40,8 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        if [ -f test_requirements.txt ]; then pip install -r test_requirements.txt; fi
-        # try installing scikit-image explicitly. Using test_requirements.txt versions doesn't seem to build correctly
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        # try installing scikit-image explicitly. Using requirements.txt versions doesn't seem to build correctly
         python -m pip install -U scikit-image
         # install the coverage.py code coverage tool
         python3 -m pip install pytest-cov
