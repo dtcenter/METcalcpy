@@ -9,8 +9,8 @@ describes the bugfix, enhancement, or new feature: `METcalcpy GitHub issues. <ht
 METcalcpy Release Notes
 =======================
 
-METcalcpy Version 3.2.0-RC1 Release Notes (20250929)
-----------------------------------------------------
+METcalcpy Version 3.2.0 Release Notes (20251114)
+------------------------------------------------
 
 
 .. dropdown:: Bugfixes
