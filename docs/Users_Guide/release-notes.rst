@@ -9,9 +9,8 @@ describes the bugfix, enhancement, or new feature: `METcalcpy GitHub issues. <ht
 METcalcpy Release Notes
 =======================
 
-
-METcalcpy Version 4.0.0-beta1 Release Notes (20260204)
-------------------------------------------------------
+METcalcpy Version 3.2.0 Release Notes (20251114)
+------------------------------------------------
 
 
 .. dropdown:: Bugfixes
@@ -24,7 +23,8 @@ METcalcpy Version 4.0.0-beta1 Release Notes (20260204)
 
 .. dropdown:: Enhancements
 
-   * None
+   * **Update METcalcpy vertical_interp.py code for consistency with METplotpy TC-RMW plotting** (`#444 <https://github.com/dtcenter/METcalcpy/issues/444>`_)
+   * Provide support for setting FCST_VAR_VAL1/2 env vars for plotting config files (`#453 <https://github.com/dtcenter/METcalcpy/issues/453>`_)  
 
 .. dropdown:: Repository, build, and test
 
