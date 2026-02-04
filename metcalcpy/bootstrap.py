@@ -431,8 +431,8 @@ def _get_confidence_interval_and_value_eclv(bootstrap_dist, stat_val, alpha, ci_
                     high = None
                 else:
                     if none_in_values:
-                        low = _np.percentile(column, 100 * (alpha / 2.), interpolation='linear')
-                        high = _np.percentile(column, 100 * (1 - alpha / 2.), interpolation='linear')
+                        low = _np.percentile(column, 100 * (alpha / 2.), method='linear')
+                        high = _np.percentile(column, 100 * (1 - alpha / 2.), method='linear')
             stat_btcl[ind] = low
             stat_btcu[ind] = high
 
