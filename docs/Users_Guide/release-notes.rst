@@ -12,7 +12,7 @@ METcalcpy Release Notes
 
 METcalcpy Version 4.0.0-beta1 Release Notes (20260204)
 
-------------------------------------------------
+------------------------------------------------------
 
 
 .. dropdown:: Bugfixes
