@@ -113,8 +113,8 @@ def test_compare_with_rscript():
            df_fcst_row: pd.DataFrame = df_python[df_python['fcst_lead'] == hr]
            # Set precision to 5 significant figures due to differences in floating point arithmetic
            # in R vs Python
-           r_fcst = float(f"{float(r_fcst_row['stat_value']):.4f}")
-           df_fcst = float(f"{float(df_fcst_row['stat_value']):.4f}")
+           r_fcst = float(f"{float(r_fcst_row['stat_value'].item()):.4f}")
+           df_fcst = float(f"{float(df_fcst_row['stat_value'].item()):.4f}")
 
            assert (r_fcst == df_fcst)
 
