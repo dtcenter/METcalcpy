@@ -126,7 +126,7 @@ def calc_ctp(pressure,temperature,station_index,start_pressure_hpa=-1,bot_pressu
 
     # Compute the moist adiabatic lapse rate
     try:
-      MALR = mpcalc.moist_lapse(pressure[layer_bot_idx:],layer_bottom_temperature*units('degK'),reference_pressure=layer_bottom_pressure*units('hPa'))
+      MALR = mpcalc.moist_lapse(pressure[layer_bot_idx:],layer_bottom_temperature*units('degK'),reference_pressure=layer_bottom_pressure[0]*units('hPa'))
     except ValueError:
       print("UNABLE TO COMPUTE MALR IN calc_ctp()")
       return(-9999.*units('J/kg'))
