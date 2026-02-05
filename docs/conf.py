@@ -23,7 +23,7 @@ copyright = '2026, NSF NCAR'
 author = 'UCAR/NSF NCAR, NOAA, CSU/CIRA, and CU/CIRES'
 author_list = 'Kalb, C., D. Adriaansen, D. Fillmore, M. Win-Gildenmeister, T. Burek, M. Smith, T. Jensen, and H. Fisher'
 
-version = '4.0.0'
+version = '4.0.0-beta2-dev'
 verinfo = version
 release = f'{version}'
 release_year = '2026'
