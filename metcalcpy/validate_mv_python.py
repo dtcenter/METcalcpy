@@ -39,7 +39,6 @@ import xml.dom.minidom
 import subprocess
 import yaml
 
-from metcalcpy.compare_images import CompareImages
 from metcalcpy.logging_config import setup_logging
 from metcalcpy.util.safe_log import safe_log
 
