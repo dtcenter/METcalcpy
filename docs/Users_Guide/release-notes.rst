@@ -10,7 +10,7 @@ METcalcpy Release Notes
 =======================
 
 METcalcpy Version 13.0.0-beta2 Release Notes (20260506)
-------------------------------------------------------
+-------------------------------------------------------
 
 .. dropdown:: Bugfixes
 
@@ -32,7 +32,7 @@ METcalcpy Version 13.0.0-beta2 Release Notes (20260506)
 
 
 METcalcpy Version 13.0.0-beta1 Release Notes (20260204)
-------------------------------------------------------
+-------------------------------------------------------
 
 
 .. dropdown:: Bugfixes
