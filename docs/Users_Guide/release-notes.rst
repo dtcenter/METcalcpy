@@ -62,5 +62,5 @@ This section summarizes and highlights important changes to METcalcpy since vers
    This release has been re-numbered to 13.0.0 to provide consistent versioning with the other METplus components.
 
 
-   The Python version has been updated from Python 3.10 to Python 3.14.  Please refer to the requirements.txt file for version numbers for third-party Python package.
+   The Python version has been updated from Python 3.12 to Python 3.14.  Please refer to the requirements.txt file for version numbers for the third-party Python packages.
    
