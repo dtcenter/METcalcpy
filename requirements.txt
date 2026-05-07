@@ -1,14 +1,14 @@
 imageio>=2.37.0
 imutils>=0.5.4
-metpy>=1.6.3
-netCDF4==1.7.4
-numpy==2.4.3
+metpy>=1.7.1
+netCDF4>=1.7.4
+numpy>=2.4.3
 opencv-python>=4.13.0
-pandas==3.0.2
+pandas>=3.0.2
 pint>=0.24.4
-pytest>=8.3.4
-PyYAML>=6.0.2
+pytest>=9.0.3
+PyYAML>=6.0.3
 scipy==1.17.1
-xarray==2026.4.0
+xarray>=2026.4.0
 eofs>=2.0.0
 
