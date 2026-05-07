@@ -9,7 +9,7 @@ describes the bugfix, enhancement, or new feature: `METcalcpy GitHub issues. <ht
 METcalcpy Release Notes
 =======================
 
-METcalcpy Version 13.0.0-beta2 Release Notes (20260506)
+METcalcpy Version 13.0.0-beta2 Release Notes (20260507)
 -------------------------------------------------------
 
 .. dropdown:: Bugfixes
@@ -59,8 +59,6 @@ This section summarizes and highlights important changes to METcalcpy since vers
 
 .. note::
 
-   This release has been re-numbered to 13.0.0 to provide consistent versioning with the other METplus components.
+   The version numbering for METdataio has been updated to 13.0.0 to provide consistency and clarity with all METplus components.
 
-
-   The Python version has been updated from Python 3.12 to Python 3.14.  Please refer to the requirements.txt file for version numbers for the third-party Python packages.
-   
+   View the requirements.txt/nco_requirements.txt file at the top level of the repository for version numbers for the corresponding third-party packages.
