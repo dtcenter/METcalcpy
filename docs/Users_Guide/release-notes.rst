@@ -9,9 +9,30 @@ describes the bugfix, enhancement, or new feature: `METcalcpy GitHub issues. <ht
 METcalcpy Release Notes
 =======================
 
+METcalcpy Version 13.0.0-beta2 Release Notes (20260507)
+-------------------------------------------------------
 
-METcalcpy Version 4.0.0-beta1 Release Notes (20260204)
-------------------------------------------------------
+.. dropdown:: Bugfixes
+
+   * None
+	      
+.. dropdown:: Documentation
+
+   * None
+
+.. dropdown:: Enhancements
+
+   * None
+
+.. dropdown:: Repository, build, and test
+
+
+   * Add testing for py314 (`#468 <https://github.com/dtcenter/METplotpy/issues/468>`_)
+
+
+
+METcalcpy Version 13.0.0-beta1 Release Notes (20260204)
+-------------------------------------------------------
 
 
 .. dropdown:: Bugfixes
@@ -34,12 +55,10 @@ METcalcpy Version 4.0.0-beta1 Release Notes (20260204)
 METcalcpy Upgrade Instructions
 ==============================
 
-This section summarizes and highlights important changes to METcalcpy since version 3.1.0, including:
+This section summarizes and highlights important changes to METcalcpy since version 3.2.0, including:
 
 .. note::
 
-   In the METcalcpy-3.1.0-beta2 release, METcalcpy switched from development
-   with Python 3.10.4 to development with Python 3.12. View the
-   requirements.txt/nco_requirements.txt file at the top level of the
-   repository for version numbers for the corresponding third-party packages.
-   
+   The version numbering for METdataio has been updated to 13.0.0 to provide consistency and clarity with all METplus components.
+
+   View the requirements.txt/nco_requirements.txt file at the top level of the repository for version numbers for the corresponding third-party packages.
