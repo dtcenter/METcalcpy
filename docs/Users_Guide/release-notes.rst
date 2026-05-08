@@ -59,6 +59,6 @@ This section summarizes and highlights important changes to METcalcpy since vers
 
 .. note::
 
-   The version numbering for METdataio has been updated to 13.0.0 to provide consistency and clarity with all METplus components.
+   The version numbering for METcalcpy has been updated to 13.0.0 to provide consistency and clarity with all METplus components.
 
    View the requirements.txt/nco_requirements.txt file at the top level of the repository for version numbers for the corresponding third-party packages.
