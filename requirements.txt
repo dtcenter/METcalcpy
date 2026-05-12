@@ -8,7 +8,7 @@ pandas>=3.0.2
 pint>=0.24.4
 pytest>=9.0.3
 PyYAML>=6.0.3
-scipy==1.17.1
+scipy>=1.17.1
 xarray>=2026.4.0
 eofs>=2.0.0
 
