@@ -88,7 +88,6 @@ You should see some output like the following::
         agg_stat_event_equalize
         bootstrap_custom
         calc_difficulty_index
-        compare_images
         contributed (package)
         event_equalize
         event_equalize_against_values
@@ -101,12 +100,12 @@ You should see some output like the following::
 Packages (which are directories in the source code that contain Python modules) are indicated by `(package)` next to
 the name. Enter `q` to return to the console prompt. To find out more about a module of interest, explicitly import it
 via `from metcalcpy import <module>` (where <module> is the module of interest).  For example, look at the methods
-that are available in the compare_images module::
+that are available in the event_equalize module::
 
-    >>> from metcalcpy import compare_images
-    >>> help(compare_images)
+    >>> from metcalcpy import event_equalize
+    >>> help(event_equalize)
 
-One can access the pydocs (Python documentation) from the compare_images module (compare_images.py) by entering
+One can access the pydocs (Python documentation) from the event_equalize module (event_equalize.py) by entering
 `help(<module>)`.  This provides valuable information about the module (or package) such as the available methods
 and their method signatures (or in the case of packages, any available modules).  Enter `return` or the spacebar
 to scroll down to the next line or page of the output.  When finished viewing, enter `q`.
