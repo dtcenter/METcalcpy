@@ -9,7 +9,7 @@ other scripts.
 Python Requirements
 ===================
 
-For information about the Python Requirements for METcalcpy, please see the User’s Guide `Python Requirements <https://metplus.readthedocs.io/projects/metcalcpy/en/latest/Users_Guide/installation.html#python-requirements>`_ section in the `https://metplus.readthedocs.io/projects/metcalcpy/en/latest/Users_Guide/installation.html#installation-guide>`_.
+For information about the Python Requirements for METcalcpy, please see the User’s Guide `Python Requirements <https://metplus.readthedocs.io/projects/metcalcpy/en/latest/Users_Guide/installation.html#python-requirements>`_ section in the `Installation <https://metplus.readthedocs.io/projects/metcalcpy/en/latest/Users_Guide/installation.html>`_ section.
 
 Coding Standards
 ================
