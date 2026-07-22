@@ -1,6 +1,6 @@
-**********************
+*********
 Write MPR
-**********************
+*********
 
 Description
 ===========
@@ -18,8 +18,8 @@ listed below.
 
 * `Blocking <https://metplus.readthedocs.io/en/latest/generated/model_applications/s2s_mid_lat/UserScript_fcstGFS_obsERA_Blocking.html#sphx-glr-generated-model-applications-s2s-mid-lat-userscript-fcstgfs-obsera-blocking-py>`_
 * `Weather Regime <https://metplus.readthedocs.io/en/latest/generated/model_applications/s2s_mid_lat/UserScript_fcstGFS_obsERA_WeatherRegime.html#sphx-glr-generated-model-applications-s2s-mid-lat-userscript-fcstgfs-obsera-weatherregime-py>`_
-* `Stratosphere Polar <https://metplus.readthedocs.io/en/latest/generated/model_applications/s2s/UserScript_fcstGFS_obsERA_StratospherePolar.html#sphx-glr-generated-model-applications-s2s-userscript-fcstgfs-obsera-stratospherepolar-py>`_
-* `Stratosphere QBO <https://metplus.readthedocs.io/en/latest/generated/model_applications/s2s/UserScript_fcstGFS_obsERA_StratosphereQBO.html#sphx-glr-generated-model-applications-s2s-userscript-fcstgfs-obsera-stratosphereqbo-py>`_  
+* `Stratosphere Polar <https://metplus.readthedocs.io/en/latest/generated/model_applications/s2s_stratosphere/UserScript_fcstGFS_obsERA_StratospherePolar.html#userscript-and-statanalysis-compute-polar-cap-temperature-and-polar-vortex-u-and-create-plots>`_
+* `Stratosphere QBO <https://metplus.readthedocs.io/en/latest/generated/model_applications/s2s_stratosphere/UserScript_fcstGFS_obsERA_StratosphereQBO.html#userscript-and-statanalysis-compute-qbo-phase-plots-and-qbo-index>`_  
 
 Information about Input Data
 ============================
@@ -79,8 +79,8 @@ INTERP_PNTS =  1, and OBTYPE = ADPUPA.
             be added in MET's format based off the first forecast time
 
 
-Run from a python script
-=========================
+Run from a Python script
+========================
 
 * Make sure you have these required Python packages:
 
@@ -96,4 +96,4 @@ Run from a python script
 
    write_mpr_file(data_fcst,data_obs,lats_in,lons_in,fcst_lead,fcst_valid,obs_lead,obs_valid,mod_name,desc,fcst_var,fcst_unit,fcst_lev,obs_var,obs_unit,obs_lev,maskname,obsslev,outdir,outfile_prefix)
 
-The output fill be a .stat file located in outdir with data in `MET's Matched Pair Format <https://met.readthedocs.io/en/latest/Users_Guide/point-stat.html#id24>`_.  The file will be labeled with outfile_prefix and then have lead time, valid YYYYMMDD, and valid HHMMSS stamped onto the file name.
+The output fill be a .stat file located in outdir with data in `MET's Matched Pair Format <https://metplus.readthedocs.io/projects/met/en/latest/Users_Guide/point-stat.html#id23>`_.  The file will be labeled with outfile_prefix and then have lead time, valid YYYYMMDD, and valid HHMMSS stamped onto the file name.
