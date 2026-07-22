@@ -63,10 +63,12 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'utils/README_util.rst',
 suppress_warnings = ['ref.citation']
 
 # -- Sphinx control -----------------------------------------------------------
-#sphinx_gallery_conf = {
-#      'examples_dirs': [os.path.join('..', 'examples')],
-#      'gallery_dirs': ['examples']
-#}
+sphinx_gallery_conf = {
+      'examples_dirs': [os.path.join('..', 'examples')],
+      'gallery_dirs': ['auto_examples'],
+      'filename_pattern': r'/plot',
+      'ignore_pattern': r'__init__\.py|cross_spectra\.py',
+}
     
 
 # -- Options for HTML output -------------------------------------------------
