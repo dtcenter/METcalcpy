@@ -6,10 +6,10 @@ Aggregation is an option that can be applied to MET stat output (in
 the appropriate format) to calculate aggregation statistics and confidence intervals.
 Input data must first be reformatted using the METdataio METreformat module to
 label all the columns with the corresponding statistic name specified in the
-`MET User's Guide <https://met.readthedocs.io/en/develop/Users_Guide/index.html>`_
-for `point-stat <https://met.readthedocs.io/en/develop/Users_Guide/point-stat.html>`_,
-`grid-stat <https://met.readthedocs.io/en/develop/Users_Guide/grid-stat.html>`_, or
-`ensemble-stat <https://met.readthedocs.io/en/develop/Users_Guide/ensemble-stat.html>`_ .stat output data.
+`MET User's Guide <https://metplus.readthedocs.io/projects/met/en/latest/Users_Guide/index.html>`_
+for `point-stat <https://metplus.readthedocs.io/projects/met/en/latest/Users_Guide/point-stat.html>`_,
+`grid-stat <https://metplus.readthedocs.io/projects/met/en/latest/Users_Guide/grid-stat.html>`_, or
+`ensemble-stat <https://metplus.readthedocs.io/projects/met/en/latest/Users_Guide/ensemble-stat.html>`_ .stat output data.
 
 Python Requirements
 ===================
@@ -29,7 +29,7 @@ in the requirements.txt and nco_requirements.txt files:
 Retrieve Code
 =============
 
-Refer to the `Installation Guide <https://metcalcpy.readthedocs.io/en/develop/Users_Guide/installation.html>`_
+Refer to the `Installation Guide <https://metplus.readthedocs.io/projects/metcalcpy/en/latest/Users_Guide/installation.html>`_
 for instructions.
 
 
@@ -44,7 +44,7 @@ This data was reformatted from the MET .stat output using the METdataio METrefor
 The reformatting step labels the columns with the corresponding statistics, based on the MET tool (point-stat,
 grid-stat, or ensemble-stat).  The ECNT linetype of
 the MET grid-stat output has been reformatted to include the statistics names for all
-`ECNT <https://met.readthedocs.io/en/develop/Users_Guide/ensemble-stat.html#id2>`_ specific columns.
+`ECNT <https://metplus.readthedocs.io/projects/met/en/latest/Users_Guide/ensemble-stat.html#id2>`_ specific columns.
 
 
 Input data **must** be in this format prior to using the aggregation
@@ -53,9 +53,8 @@ module, agg_stat.py.
 The example data can be copied to a working directory, or left in this directory.  The location
 of the data will be specified in the YAML configuration file.
 
-Please refer to the METdataio User's Guide for instructions for reformatting MET .stat files :
-https://metdataio.readthedocs.io/en/develop/Users_Guide/reformat_stat_data.html
-
+Please refer to the METdataio User's Guide for instructions for
+`reformatting MET .stat files <https://metplus.readthedocs.io/projects/metdataio/en/latest/Users_Guide/reformat_stat_data.html#reformat-met-stat-and-tcst-data>`_.
 
 Aggregation
 ===========
@@ -70,7 +69,7 @@ The agg_stat module support the ECNT linetype that are output from the MET
 **ensemble-stat** tool
 
 The input to the agg_stat module must have the appropriate format.  The ECNT linetype must first be
-`reformatted via the METdataio METreformat module <https://metdataio.readthedocs.io/en/develop/Users_Guide/reformat_stat_data.html>`_
+`reformatted via the METdataio METreformat module <https://metplus.readthedocs.io/projects/metcalcpy/en/latest/Users_Guide/installation.html>`_
 by following the instructions under the **Reformatting for computing aggregation statistics with METcalcpy agg_stat**
 header.
 
