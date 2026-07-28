@@ -24,7 +24,7 @@ The Developmental Testbed Center (DTC)
 ======================================
 
 METcalcpy has been developed, and will be maintained and enhanced, by the
-Developmental Testbed Center (`DTC <https://www.dtcenter.org/>`_).
+Developmental Testbed Center (`DTC <https://dtcenter.org/>`_).
 The main goal of the DTC is to serve as a bridge between operations and
 research, to facilitate the activities of these two important components of
 the numerical weather prediction (NWP) community. The DTC provides an
