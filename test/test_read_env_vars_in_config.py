@@ -54,7 +54,7 @@ def test_yaml_file():
     # test with incorrect tag value (!env instead of !ENV)
     cwd = os.getcwd()
     print(f"current working dir: {cwd}")
-    yaml_file = os.path.join(cwd, './data/bad_input.yaml')
+    yaml_file = os.path.join(cwd, './test/data/bad_input.yaml')
     with pytest.raises(yaml.constructor.ConstructorError):
         _ = read_env.parse_config(path=yaml_file)
 
