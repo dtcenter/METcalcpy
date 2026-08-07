@@ -520,7 +520,7 @@ class Scorecard:
                 if derived_val[var] is not None \
                         and intersection(derived_val[var], ds_1) \
                         == intersection(derived_val[var], ds_1):
-                    derived_val[var] = intersection(derived_val[var], ds_1)
+                    derived_val[var] = intersection(derived_val[var], ds_2)
 
             derived_curve_name = get_derived_curve_name(derived_serie)
             safe_log(logger, "debug", f"Derived curve name: {derived_curve_name}")
