@@ -1299,6 +1299,7 @@ class AggStat:
         result = []
 
         # Loop through each derived series for the specified axis
+
         for derived_serie in self.params['derived_series_' + axis]:
             safe_log(logger, "debug", f"Processing derived series: {derived_serie}")
 
@@ -1333,8 +1334,8 @@ class AggStat:
 
             # Filter values based on intersections with ds_1
             for var in series_val.keys():
-                if derived_val[var] is not None and intersection(derived_val[var], ds_1) == intersection(derived_val[var], ds_1):
-                    derived_val[var] = intersection(derived_val[var], ds_1)
+                if derived_val[var] is not None and intersection(derived_val[var], ds_1) == intersection(derived_val[var], ds_2):
+                    derived_val[var] = intersection(derived_val[var], ds_2)
                     safe_log(logger, "debug", f"Updated '{var}' in derived values: {derived_val[var]}")
 
             # Generate the derived curve name
@@ -1362,7 +1363,10 @@ class AggStat:
             safe_log(logger, "debug", f"Derived values appended to result: {derived_val}")
 
         # Flatten the result list and return it
-        flattened_result = [y for x in result for y in x]
+        flattened_result = []
+        for row in result:
+            flattened_result.extend(row)
+
         safe_log(logger, "info", f"Derived points calculation completed. Total derived points: {len(flattened_result)}")
         
         return flattened_result
