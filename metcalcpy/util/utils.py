@@ -162,6 +162,10 @@ def calc_derived_curve_value(val1, val2, operation, logger=None):
         safe_log(logger, "warning", "Input values are invalid: None detected or lengths mismatch.")
         return None
 
+    # make sure the values in val1 and val2 are floats
+    val1 = [float(v) for v in val1]]
+    val2 = [float(v) for v in val2]]
+
     result_val = None
     if operation in ('DIFF', 'DIFF_SIG'):
         result_val = [a - b for a, b in zip(val1, val2)]
