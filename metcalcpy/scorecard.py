@@ -88,7 +88,7 @@ class Scorecard:
         try:
             self.input_data = pd.read_csv(
                 self.params['sum_stat_input'],
-                header=[0]
+               
             )
 
             if self.input_data.empty:
@@ -305,10 +305,15 @@ class Scorecard:
         stat_values_1 = ds_1_values['stat_value'].tolist()
         stat_values_2 = ds_2_values['stat_value'].tolist()
 
+        # ensure stat_values_1 and stat_values_2 vals are float
+        stat_values_1 = [float(s) for s in stat_values_1]
+        stat_values_2 = [float(s) for s in stat_values_2]
+
         # calculate derived statistic based on the operation and stat_flag
         derived_stat = None
         if derived_curve_component.derived_operation == 'DIFF_SIG':
             safe_log(logger, "debug", "Calculating DIFF_SIG.")
+
             if self.params['stat_flag'] == 'EMC':
                 derived_stat = self._calculate_diff_sig_emc(stat_values_1, stat_values_2)
             else:
