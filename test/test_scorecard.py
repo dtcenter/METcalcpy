@@ -11,8 +11,7 @@ def test_calculate_scorecard_data(settings):
     scorecard.calculate_scorecard_data()
     result_frame = pd.read_csv(
         scorecard.params['sum_stat_output'],
-        header=[0],
-        sep='\t'
+        header=[0], sep='\\s+'
     )
     assert result_frame.size == 72
     assert result_frame.shape == (9, 8)
