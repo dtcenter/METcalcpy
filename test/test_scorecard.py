@@ -1,5 +1,6 @@
 import pytest
 import os
+import sys
 import numpy as np
 
 from metcalcpy.scorecard import Scorecard, pd
@@ -9,10 +10,11 @@ cwd = os.path.dirname(__file__)
 def test_calculate_scorecard_data(settings):
     scorecard = settings['scorecard']
     scorecard.calculate_scorecard_data()
+
     result_frame = pd.read_csv(
-        scorecard.params['sum_stat_output'],
-        header=[0], sep='\\s+'
+        scorecard.params['sum_stat_output'], sep='\\s+'
     )
+
     assert result_frame.size == 72
     assert result_frame.shape == (9, 8)
     assert np.allclose(
