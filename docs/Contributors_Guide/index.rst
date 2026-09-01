@@ -9,7 +9,7 @@ other scripts.
 Python Requirements
 ===================
 
-For information about the Python Requirements for METcalcpy, please see the User’s Guide `Python Requirements <https://metcalcpy.readthedocs.io/en/develop/Users_Guide/installation.html#python-requirements>`_ section in the `Installation Guide <https://metcalcpy.readthedocs.io/en/develop/Users_Guide/installation.html#installation-guide>`_.
+For information about the Python Requirements for METcalcpy, please see the User’s Guide `Python Requirements <https://metplus.readthedocs.io/projects/metcalcpy/en/latest/Users_Guide/installation.html#python-requirements>`_ section in the `Installation <https://metplus.readthedocs.io/projects/metcalcpy/en/latest/Users_Guide/installation.html>`_ section.
 
 Coding Standards
 ================
@@ -206,7 +206,3 @@ Incorporate Your Code Into the Repository
 * When your PR has been approved, you (or your reviewer) can merge the code into the *develop* branch
 
 * Close the Github issue you created.
-
-
-
-
