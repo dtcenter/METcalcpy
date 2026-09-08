@@ -272,31 +272,40 @@ class Scorecard:
         # validate data
         if derived_curve_component.derived_operation != 'SINGLE' \
                 and len(ds_1.values) != 0 and len(ds_2.values):
-            fcst_lead_index = np.where(self.column_names == 'fcst_lead')[0][0]
-            stat_name_index = np.where(self.column_names == 'stat_name')[0][0]
-            if "fcst_valid_beg" in self.column_names:
-                fcst_valid_ind = np.where(self.column_names == 'fcst_valid_beg')[0][0]
-            elif "fcst_valid" in self.column_names:
-                fcst_valid_ind = np.where(self.column_names == 'fcst_valid')[0][0]
-            elif "fcst_init_beg" in self.column_names:
-                fcst_valid_ind = \
-                    np.where(self.column_names == 'fcst_init_beg')[0][0]
+            date_cols_present = any(c in self.column_names for c in
+                                     ("fcst_valid_beg", "fcst_valid", "fcst_init_beg", "fcst_init"))
+            if not date_cols_present:
+                # Fully aggregated input (e.g. via METcalcpy agg_stat) has no per-case date
+                # column at all -- one row per (lead, stat), so the "multiple values for one
+                # valid date/fcst_lead" check this block exists for cannot apply. Skip rather
+                # than crash with an IndexError trying to locate a column that was never there.
+                safe_log(logger, "debug",
+                         "No fcst_valid_beg/fcst_valid/fcst_init_beg/fcst_init column found; "
+                         "skipping duplicate-date validation for fully aggregated input.")
             else:
-                fcst_valid_ind = \
-                    np.where(self.column_names == 'fcst_init')[0][0]
-            try:
-                # filter columns of interest
-                date_lead_stat = ds_1.values[:, [fcst_valid_ind, fcst_lead_index, stat_name_index]]
-                # find the number of unique combinations
-                unique_date_size = len(set(map(tuple, date_lead_stat)))
-            except TypeError as err:
-                safe_log(logger, "error", f"Error during validation: {err}")
-                print(err)
-                unique_date_size = []
-            if unique_date_size != len(ds_1.values):
-                safe_log(logger, "error", "Derived curve can't be calculated due to multiple values for one valid date/fcst_lead.")
-                raise NameError("Derived curve can't be calculated."
-                                " Multiple values for one valid date/fcst_lead")
+                fcst_lead_index = np.where(self.column_names == 'fcst_lead')[0][0]
+                stat_name_index = np.where(self.column_names == 'stat_name')[0][0]
+                if "fcst_valid_beg" in self.column_names:
+                    fcst_valid_ind = np.where(self.column_names == 'fcst_valid_beg')[0][0]
+                elif "fcst_valid" in self.column_names:
+                    fcst_valid_ind = np.where(self.column_names == 'fcst_valid')[0][0]
+                elif "fcst_init_beg" in self.column_names:
+                    fcst_valid_ind = \
+                        np.where(self.column_names == 'fcst_init_beg')[0][0]
+                else:
+                    fcst_valid_ind = \
+                        np.where(self.column_names == 'fcst_init')[0][0]
+                try:
+                    date_lead_stat = ds_1.values[:, [fcst_valid_ind, fcst_lead_index, stat_name_index]]
+                    unique_date_size = len(set(map(tuple, date_lead_stat)))
+                except TypeError as err:
+                    safe_log(logger, "error", f"Error during validation: {err}")
+                    print(err)
+                    unique_date_size = []
+                if unique_date_size != len(ds_1.values):
+                    safe_log(logger, "error", "Derived curve can't be calculated due to multiple values for one valid date/fcst_lead.")
+                    raise NameError("Derived curve can't be calculated."
+                                    " Multiple values for one valid date/fcst_lead")
 
         # sort data by dates
         ds_1_values = sort_data(ds_1)

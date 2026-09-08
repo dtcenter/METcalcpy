@@ -15,9 +15,39 @@ import warnings
 import numpy as np
 from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION, get_total_values
 from metcalcpy.util.safe_log import safe_log
+from metcalcpy.util.sl1l2_statistics import calculate_mae
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
+
+
+def calculate_sal1l2_mae(input_data, columns_names, aggregation=False, logger=None):
+    """Thin wrapper so agg_stat's dynamic `calculate_{linetype}_{stat}` lookup
+       (e.g. 'sal1l2_mae') resolves to the same MAE calculation SL1L2 already uses,
+       matching the ecnt_statistics.py convention of prefixing every function name
+       with its line type.
+    """
+    return calculate_mae(input_data, columns_names, aggregation, logger=logger)
+
+
+def calculate_sal1l2_anom_corr(input_data, columns_names, aggregation=False, logger=None):
+    """Thin wrapper for agg_stat's 'sal1l2_anom_corr' lookup -- see calculate_sal1l2_mae."""
+    return calculate_anom_corr(input_data, columns_names, aggregation, logger=logger)
+
+
+def calculate_sal1l2_anom_corr_raw(input_data, columns_names, aggregation=False, logger=None):
+    """Thin wrapper for agg_stat's 'sal1l2_anom_corr_raw' lookup -- see calculate_sal1l2_mae."""
+    return calculate_anom_corr_raw(input_data, columns_names, aggregation, logger=logger)
+
+
+def calculate_sal1l2_rmsfa(input_data, columns_names, aggregation=False, logger=None):
+    """Thin wrapper for agg_stat's 'sal1l2_rmsfa' lookup -- see calculate_sal1l2_mae."""
+    return calculate_rmsfa(input_data, columns_names, aggregation, logger=logger)
+
+
+def calculate_sal1l2_rmsoa(input_data, columns_names, aggregation=False, logger=None):
+    """Thin wrapper for agg_stat's 'sal1l2_rmsoa' lookup -- see calculate_sal1l2_mae."""
+    return calculate_rmsoa(input_data, columns_names, aggregation, logger=logger)
 
 
 def calculate_anom_corr(input_data, columns_names, aggregation=False, logger=None):

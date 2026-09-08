@@ -1415,7 +1415,6 @@ def calculate_mtd_revision_stats(series_data: DataFrame, lag_max: Union[int, Non
 
     return result
 
-
 def sort_data(series_data):
     """ Sorts input data frame by fcst_valid, fcst_lead and stat_name
 
@@ -1429,8 +1428,13 @@ def sort_data(series_data):
         by_fields = ["fcst_valid", "fcst_lead"]
     elif "fcst_init_beg" in fields:
         by_fields = ["fcst_init_beg", "fcst_lead"]
-    else:
+    elif "fcst_init" in fields:
         by_fields = ["fcst_init", "fcst_lead"]
+    else:
+        # Fully aggregated input (e.g. via METcalcpy agg_stat) has no per-case date
+        # column at all -- fall back to sorting by fcst_lead alone rather than
+        # assuming 'fcst_init' exists, which previously raised a KeyError here.
+        by_fields = ["fcst_lead"]
     if "stat_name" in fields:
         by_fields.append("stat_name")
     series_data = series_data.sort_values(by=by_fields)
