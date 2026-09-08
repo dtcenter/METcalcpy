@@ -87,8 +87,9 @@ class Scorecard:
         # import pandas
         try:
             self.input_data = pd.read_csv(
-                self.params['sum_stat_input'], sep='\\s+'
-               
+                self.params['sum_stat_input'],
+                header=[0],
+                sep='\t'
             )
 
             if self.input_data.empty:
