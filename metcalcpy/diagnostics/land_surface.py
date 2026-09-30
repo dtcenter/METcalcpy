@@ -32,7 +32,7 @@ def calc_ctp(pressure,temperature,station_index,start_pressure_hpa=-1,bot_pressu
       float32
  
   Reference:
-      Findell, K. L., and E. A. B. Eltahir, 2003: Atmospheric Controls on Soil Moisture–Boundary Layer Interactions. Part I: Framework Development. J. Hydrometeor., 4, 552–569, https://doi.org/10.1175/1525-7541(2003)004<0552:ACOSML>2.0.CO;2.
+      Findell, K. L., and E. A. B. Eltahir, 2003: Atmospheric Controls on Soil Moisture–Boundary Layer Interactions. Part I: Framework Development. J. Hydrometeor., 4, 552–569, `https://doi.org/10.1175/1525-7541(2003)004%3C0552:ACOSML%3E2.0.CO;2 <https://doi.org/10.1175/1525-7541(2003)004%3C0552:ACOSML%3E2.0.CO;2>`_.
       
       Also see: https://www.pauldirmeyer.com/coupling-metrics for a summary of this and other land-atmosphere coupling metrics.
 

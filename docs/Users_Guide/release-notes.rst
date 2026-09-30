@@ -4,7 +4,7 @@ METcalcpy Release Information
 *****************************
 
 When applicable, release notes are followed by the GitHub issue number which
-describes the bugfix, enhancement, or new feature: `METcalcpy GitHub issues. <https://github.com/dtcenter/METcalcpy/issues>`_
+describes the bugfix, enhancement, or new feature: `METcalcpy GitHub issues <https://github.com/dtcenter/METcalcpy/issues>`_
 
 METcalcpy Release Notes
 =======================
@@ -27,7 +27,7 @@ METcalcpy Version 13.0.0-beta2 Release Notes (20260507)
 .. dropdown:: Repository, build, and test
 
 
-   * Add testing for py314 (`#468 <https://github.com/dtcenter/METplotpy/issues/468>`_)
+   * Add testing for py314 (`#468 <https://github.com/dtcenter/METplotpy/pull/468>`_)
 
 
 
