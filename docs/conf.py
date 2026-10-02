@@ -110,9 +110,10 @@ linkcheck_retries = 2
 linkcheck_workers = 8
 
 linkcheck_ignore = [
-    # add regex patterns for URLs that should be skipped, e.g.:
-    # r'https://dtcenter\.org/.*',   # if this site blocks automated requests
-    r'https://doi\.org/.*', # DOI redirectors often 403 non-browser requests
+    # Journal publishers often return 403 to automated requests, so Sphinx skips
+    # the publisher's site. dtcenter/metplus-action-linkcheck still checks that
+    # each DOI is registered using the DOI API (https://doi.org/api/handles/<doi>).
+    r'https://doi\.org/.*',
 ]
 
 linkcheck_allowed_redirects = {
