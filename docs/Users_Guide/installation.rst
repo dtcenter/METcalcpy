@@ -161,9 +161,9 @@ Produces information that looks like the following::
    FUNCTIONS
        aggregate_field_values(series_var_val, input_data_frame, line_type)
          Finds and aggregates statistics for fields with values containing ';'.
-         Aggregation  happens by valid and lead times
-           These fields are coming from the scorecard and looks like this: vx_mask : ['EAST;NMT'].
-           This method finds these values and calculate aggregated stats for them
+         Aggregation happens by valid and lead times
+           These fields are coming from the scorecard and look like this: vx_mask : ['EAST;NMT'].
+           This method finds these values and calculates aggregated statistics for them
 
               Args:
                   series_var_val: dictionary describing the series
@@ -171,7 +171,7 @@ Produces information that looks like the following::
                   line_type: the line type
 
               Returns:
-                  Pandas DataFrame with aggregates statistics
+                  Pandas DataFrame with aggregated statistics
 
        calc_derived_curve_value(val1, val2, operation)
          Performs the operation with two numpy arrays.
