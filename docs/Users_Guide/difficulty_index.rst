@@ -60,7 +60,7 @@ exceedance, normalized ensemble spread, and the mean forecast value (which sets 
 *A*) shown in Tables 3.1-3.3. Each row is for a different probability of threshold exceedance, 
 :math:`P(x_{i,j} \geq thresh)`, each column is for a different value of normalized uncertainty, 
 quantized as small, :math:`(\sigma/\bar{x})/(\sigma/\bar{x})_{ref}=0.01`, medium, 
-:math:`(\sigma/\bar{x})/(\sigma/\bar{x})_{ref}=0.05`, and large, 
+:math:`(\sigma/\bar{x})/(\sigma/\bar{x})_{ref}=0.5`, and large, 
 :math:`(\sigma/\bar{x})/(\sigma/\bar{x})_{ref}=1.0`. Each box contains the calculation of 
 :math:`d_{i,j}` for that case.
 

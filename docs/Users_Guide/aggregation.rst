@@ -69,9 +69,8 @@ The agg_stat module supports the ECNT linetype that is output from the MET
 **ensemble-stat** tool.
 
 The input to the agg_stat module must have the appropriate format.  The ECNT linetype must first be
-`reformatted via the METdataio METreformat module <https://metplus.readthedocs.io/projects/metcalcpy/en/latest/Users_Guide/installation.html>`_
-by following the instructions under the **Reformatting for computing aggregation statistics with METcalcpy agg_stat**
-header.
+`reformatted via the METdataio METreformat module <https://metplus.readthedocs.io/projects/metdataio/en/latest/Users_Guide/reformat_stat_data.html>`_
+by following the ECNT instructions under **Reformatted Example (for input to METcalcpy agg_stat.py)**.
 
 Modify the YAML configuration file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -172,7 +171,7 @@ The following are instructions for performing aggregation from the command-line:
 .. code-block:: yaml
 
 
-  python $METCALCPY_BASE/metcalcpy/agg_stat.py $METCALCPY_BASE/metcalcpy/pre_processing/aggregation/config/config_stat_agg.yaml
+  python $METCALCPY_BASE/metcalcpy/agg_stat.py $METCALCPY_BASE/metcalcpy/pre_processing/aggregation/config/config_agg_stat.yaml
 
 
 This will generate the file **ecnt_aggregated.data** (from the agg_stat_output setting) which now contains the
