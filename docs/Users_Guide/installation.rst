@@ -19,7 +19,7 @@ You can retrieve the METcalcpy source code using the web browser. Begin by enter
 https://github.com/dtcenter/METcalcpy in
 the web browser's navigation bar.  On the right-hand side of the web page for the METcalcpy repository, click on 
 the `Releases` link.  This leads to a page where all available releases are available.  The latest release will be
-located at the top of the page.  Scroll to the release of interest and below it's title is an `Assets` link in small
+located at the top of the page.  Scroll to the release of interest and below its title is an `Assets` link in small
 text.  Click on the inverted triangle to the left of the `Assets` text to access the menu. To download the source code,
 click on either the zip or tar.gz version of the source code and save it to a directory where the METcalcpy source code
 will reside (e.g. /home/someuser/).
@@ -30,7 +30,7 @@ Install Package
 ===============
 
 It is recommended that one works within a conda environment when using the METcalcpy package.  Please refer to 
-https://docs.conda.io/projects/conda/en/latest for more information abount conda as a package and environnent
+https://docs.conda.io/projects/conda/en/latest for more information about conda as a package and environment
 manager. 
 
 To install METcalcpy, activate your conda environment that contains all the necessary Python packages
@@ -115,7 +115,7 @@ To access other packages, such as the util package from METcalcpy, import it::
     >>> from metcalcpy import util
     >>> help(util)
 
-which give output like this::
+which gives output like this::
 
     Help on package metcalcpy.util in metcalcpy:
 
@@ -143,7 +143,7 @@ which give output like this::
         utils
         val1l2_statistics
         vcnt_statistics
-        vl1l2_statiatics
+        vl1l2_statistics
 
 
 To obtain information on the utils module in metcalcpy.util, do the following::
@@ -183,7 +183,7 @@ Using Modules
 =============
 
 From within the active conda environment, use the METcalcpy packages and
-and modules of interest in your code.  For example, in the METplotpy performance_diagram.py file, the event_equalization
+modules of interest in your code.  For example, in the METplotpy performance_diagram.py file, the event_equalization
 method is imported in the following manner::
 
   import metcalcpy.util.utils as calc_util

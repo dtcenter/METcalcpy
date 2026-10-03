@@ -50,7 +50,7 @@ for heuristic forecast difficulty situations. Its values for winds are given bel
 
      Weighting applied to wind difficulty index.
 
-The weighting ramps up to a value 1.5 for a value of *x* that is slightly below the threshold. 
+The weighting ramps up to a value of 1.5 for a value of *x* that is slightly below the threshold. 
 This accounts for the notion that a forecast is more difficult when it is slightly below the threshold 
 than slightly above. The value of *A* then ramps down to zero for large values of 
 :math:`\bar{x}_{i,j}`.
