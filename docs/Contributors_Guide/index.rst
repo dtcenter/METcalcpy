@@ -18,7 +18,7 @@ METplus has adopted some coding standards for its Python code.  Detailed informa
 
 Comment the Python code using `Python docstring conventions <https://peps.python.org/pep-0257/>`_. 
 
-Organization of Code in the Github Repository
+Organization of Code in the GitHub Repository
 =============================================
 
 The source code for METcalcpy resides in a public GitHub repository:
@@ -50,9 +50,9 @@ Finally, the *METcalcpy/metcalcpy* directory contains statistics scripts that ar
 Tasks to Perform Before Contributing Code
 =========================================
 
-* You will need a Github account and be included into the METcalcpy Developer’s group
+* You will need a GitHub account and be included into the METcalcpy Developer’s group
 
-* Create a Github issue describing what the contribute code will do
+* Create a GitHub issue describing what the contributed code will do
 
 * Employ the naming convention ‘feature_<github feature number>_<brief description>’ such as:
 
@@ -81,7 +81,7 @@ Retrieve METcalcpy code
 
    mkdir /home/my_dir/feature_123_xyz
 
-  * In this example, the directory is named after the corresponding Github issue.  This makes it easier to identify which branch is being used.
+  * In this example, the directory is named after the corresponding GitHub issue.  This makes it easier to identify which branch is being used.
 
     *Use a naming convention and directory structure that conforms to your own work flow*
 
@@ -114,7 +114,7 @@ Retrieve METcalcpy code
 
    git checkout develop
 
-* Create a feature branch corresponding to your Github issue::
+* Create a feature branch corresponding to your GitHub issue::
 
    git checkout -b feature_123_xyz
 
@@ -132,7 +132,7 @@ Otherwise work in one of the appropriate METcalcpy directories.
 
 * Make any necessary changes to your code to conform to the coding conventions
 
-* Migrate it to the code to one of the other, more applicable directories (**if you are incorporating pre-existing code**).
+* Migrate the code to one of the other, more applicable directories (**if you are incorporating pre-existing code**).
 
 
 Testing Your Code
@@ -146,7 +146,7 @@ Testing Your Code
 
 * Include any sample test data
 
-* If your sample data is large ( >100 MB), contact one of the METcalcpy developers for an alternate (other than Github) storage location
+* If your sample data is large ( >100 MB), contact one of the METcalcpy developers for an alternate (other than GitHub) storage location
 
 * For sample data <100 MB, save your data in the *<path-to-METcalcpy-dir-base>/METcalcpy/test/data* directory::
 
@@ -156,14 +156,14 @@ Testing Your Code
 Create User Documentation
 =========================
 
-* Comment your Python code using python docstrings:
+* Comment your Python code using Python docstrings:
 
    https://peps.python.org/pep-0257/
 
 * Documentation is located in the *METcalcpy/docs/Users_Guide* and is saved as
-  restructured text (.rst)
+  reStructuredText (.rst)
 
-* You will need to have the following sphinx packages installed on your system or available in your conda/virtualenv:
+* You will need to have the following Sphinx packages installed on your system or available in your conda/virtualenv:
 
    * sphinx
 
@@ -184,7 +184,7 @@ Create User Documentation
 
 * Verify that there aren’t any warnings or error messages in the output
 
-* Newly build documentation resides in the *METcalcpy/docs/_build/html/docs* directory
+* Newly built documentation resides in the *METcalcpy/docs/_build/html/docs* directory
 
 * Visually inspect your documentation with your browser by entering the following in your browser's navigation bar:
 
@@ -201,8 +201,8 @@ Incorporate Your Code Into the Repository
 
 * Update the *METcalcpy/requirements.txt* with any additional Python packages that are needed beyond what is already defined in the requirements.txt file
 
-* Update the *METcalcpy/.github/workflows/unit_tests.yaml* to include any new tests written in pytest to be included in the GitHub actions workflow.
+* Update the *METcalcpy/.github/workflows/unit_tests.yaml* to include any new tests written in pytest to be included in the GitHub Actions workflow.
 
 * When your PR has been approved, you (or your reviewer) can merge the code into the *develop* branch
 
-* Close the Github issue you created.
+* Close the GitHub issue you created.
