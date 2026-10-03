@@ -26,13 +26,13 @@ https://github.com/dtcenter/METcalcpy
 
 Contributed code will reside in one of the following directories:
 
-* *METcalcpy/metcalpy*
+* *METcalcpy/metcalcpy*
 
 * *METcalcpy/metcalcpy/contributed*
 
 * *METcalcpy/metcalcpy/diagnostics*
 
-* *METcalcpy/metcalpy/pre-processing*
+* *METcalcpy/metcalcpy/pre_processing*
 
 * *METcalcpy/metcalcpy/util*
 
@@ -40,7 +40,7 @@ The *METcalcpy/metcalcpy/contributed* directory is where contributed code (from 
 
 The *METcalcpy/metcalcpy/diagnostics* directory is for code that is involved with performing diagnostics.
 
-The *METcalcpy/metcalpy/pre-processing* directory is for code that is involved with any data pre-processing.
+The *METcalcpy/metcalcpy/pre_processing* directory is for code that is involved with any data pre-processing.
 
 The *METcalcpy/metcalcpy/util* directory contains code that can be re-used by other Python modules.
 
@@ -60,7 +60,7 @@ Tasks to Perform Before Contributing Code
 
    for GitHub feature number *123* with description *xyz*.
 
-* Select  either an **Enhancement request**  or **New feature request**
+* Select either an **Enhancement request** or **New feature request**
 
 * Fill out the issue template with relevant information
 

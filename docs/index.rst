@@ -32,7 +32,7 @@ History
 -------
 
 The Model Evaluation Tools (MET) were developed by the Developmental Testbed
-Center (DTC)  and released in January 2008. The goal of the tools was to
+Center (DTC) and released in January 2008. The goal of the tools was to
 provide the community with a platform-independent and extensible framework
 for reproducible verification.
 The DTC partners, including NCAR, NOAA, and the USAF, decided to start by
@@ -94,7 +94,7 @@ The umbrella repository will be brought together by using a software package
 called `manage_externals <https://github.com/ESMCI/manage_externals>`_
 developed by the Community Earth System Modeling (CESM) team, hosted at NCAR
 and NOAA Earth System Research Laboratory.  The manage_externals package
-was developed because CESM is comprised of a number of different components
+was developed because CESM consists of a number of different components
 that are developed and managed independently. Each component also may have
 additional "external" dependencies that need to be maintained independently.
 
@@ -119,7 +119,7 @@ Acronyms
 Authors
 -------
 
-Many authors, listed below in alphabetical order, have contributed to the documentation of METplus.
+Many authors, listed below in alphabetical order, have contributed to the documentation of METcalcpy.
 To cite this documentation in publications, please refer to the METcalcpy User's Guide :ref:`Citation Instructions<citations>`.
  
 * Hank Fisher [#NCAR]_

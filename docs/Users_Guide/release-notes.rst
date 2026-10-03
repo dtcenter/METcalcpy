@@ -27,7 +27,7 @@ METcalcpy Version 13.0.0-beta2 Release Notes (20260507)
 .. dropdown:: Repository, build, and test
 
 
-   * Add testing for py314 (`#468 <https://github.com/dtcenter/METplotpy/pull/468>`_)
+   * Add testing for py314 (`#468 <https://github.com/dtcenter/METcalcpy/pull/468>`_)
 
 
 
