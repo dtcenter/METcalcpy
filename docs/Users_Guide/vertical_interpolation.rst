@@ -82,7 +82,7 @@ and the name of the output file (output directory and filename).  NOTE: If you d
 the debug messages, simply delete the line with the `--debug`.  Open the *height_from_pressure_tcrmw.sh*
 file using an editor of your choice.
 
-Replace the `/path/to/input-data` to the actual full path to
+Replace the `/path/to/input-data` with the actual full path to
 the directory where you saved the sample data:
 
 e.g.
@@ -91,7 +91,7 @@ e.g.
 
   export DATA_DIR=/users/mydir/data/tcrmw
 
-Replace the `/path/to/output` to the directory where you want to save your output:
+Replace the `/path/to/output` with the directory where you want to save your output:
 
 e.g.
 

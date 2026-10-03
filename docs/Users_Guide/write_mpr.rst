@@ -30,7 +30,7 @@ your input arrays are larger than the observation input array, the data will be 
 the length of the observation input.  If an array is shorter than the observation input, the 
 program will error.
 
-Currently, the the following variables cannot be set and will be output as NA: FCST_THRESH, 
+Currently, the following variables cannot be set and will be output as NA: FCST_THRESH, 
 OBS_THRESH, COV_THRESH, ALPHA, OBS_QC, CLIMO_MEAN, CLIMO_STDEV, CLIMO_CDF.  Additionally the 
 following variables also cannot be set and have default values: INTERP_MTHD = NEAREST, 
 INTERP_PNTS =  1, and OBTYPE = ADPUPA.
@@ -96,4 +96,4 @@ Run from a Python script
 
    write_mpr_file(data_fcst,data_obs,lats_in,lons_in,fcst_lead,fcst_valid,obs_lead,obs_valid,mod_name,desc,fcst_var,fcst_unit,fcst_lev,obs_var,obs_unit,obs_lev,maskname,obsslev,outdir,outfile_prefix)
 
-The output fill be a .stat file located in outdir with data in `MET's Matched Pair Format <https://metplus.readthedocs.io/projects/met/en/latest/Users_Guide/point-stat.html#id23>`_.  The file will be labeled with outfile_prefix and then have lead time, valid YYYYMMDD, and valid HHMMSS stamped onto the file name.
+The output will be a .stat file located in outdir with data in `MET's Matched Pair Format <https://metplus.readthedocs.io/projects/met/en/latest/Users_Guide/point-stat.html#id23>`_.  The file will be labeled with outfile_prefix and then have lead time, valid YYYYMMDD, and valid HHMMSS stamped onto the file name.
