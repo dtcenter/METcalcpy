@@ -70,7 +70,7 @@ INTERP_PNTS =  1, and OBTYPE = ADPUPA.
     maskname: string
             name of the verification masking region
     obsslev: 1D array string
-            Pressure level of the observation in hPA or accumulation
+            Pressure level of the observation in hPa or accumulation
             interval in hours
     outdir: string
             Full path including where the output data should go
@@ -84,7 +84,7 @@ Run from a Python script
 
 * Make sure you have these required Python packages:
 
-  * Python 3.7
+  * Python 3.10.4 or later
 
   * metcalcpy
 

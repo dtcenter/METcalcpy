@@ -112,9 +112,9 @@ To perform the conversion, do the following:
 
 * Make sure you have these required Python packages:
 
-  * Python 3.7
+  * Python 3.10.4 or later
 
-  * metpy 1.1.0
+  * metpy 1.7.1 or later
 
   * netcdf4 1.5.7
 
