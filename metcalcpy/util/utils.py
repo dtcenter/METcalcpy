@@ -494,9 +494,9 @@ def get_total_dir_values(input_data, columns_names, aggregation):
 
 def aggregate_field_values(series_var_val, input_data_frame, line_type, logger=None):
     """Finds and aggregates statistics for fields with values containing ';'.
-      Aggregation  happens by valid and lead times
-        These fields are coming from the scorecard and looks like this: vx_mask : ['EAST;NMT'].
-        This method finds these values and calculate aggregated stats for them
+      Aggregation happens by valid and lead times
+        These fields are coming from the scorecard and look like this: vx_mask : ['EAST;NMT'].
+        This method finds these values and calculates aggregated statistics for them
 
             Args:
                 series_var_val: dictionary describing the series
@@ -504,7 +504,7 @@ def aggregate_field_values(series_var_val, input_data_frame, line_type, logger=N
                 line_type: the line type
 
             Returns:
-                Pandas DataFrame with aggregates statistics
+                Pandas DataFrame with aggregated statistics
             """
 
     warnings.filterwarnings('error')
