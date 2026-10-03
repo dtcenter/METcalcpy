@@ -59,19 +59,18 @@ Please refer to the METdataio User's Guide for instructions for
 Aggregation
 ===========
 
-The agg_stat module, **agg_stat.py** to is used to calculate aggregated statistics and confidence intervals.
+The agg_stat module, **agg_stat.py** is used to calculate aggregated statistics and confidence intervals.
 This module can be run as a script at the command-line, or imported in another Python script.
 
 A required YAML configuration file,  **config_agg_stat.yaml** file is used to define the location of
 input data and the name and location of the output file.
 
-The agg_stat module support the ECNT linetype that are output from the MET
-**ensemble-stat** tool
+The agg_stat module supports the ECNT linetype that is output from the MET
+**ensemble-stat** tool.
 
 The input to the agg_stat module must have the appropriate format.  The ECNT linetype must first be
-`reformatted via the METdataio METreformat module <https://metplus.readthedocs.io/projects/metcalcpy/en/latest/Users_Guide/installation.html>`_
-by following the instructions under the **Reformatting for computing aggregation statistics with METcalcpy agg_stat**
-header.
+`reformatted via the METdataio METreformat module <https://metplus.readthedocs.io/projects/metdataio/en/latest/Users_Guide/reformat_stat_data.html>`_
+by following the ECNT instructions under **Reformatted Example (for input to METcalcpy agg_stat.py)**.
 
 Modify the YAML configuration file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -89,7 +88,7 @@ and modify the config_agg_stat.yaml file.
   agg_stat_input: /path-to/test/data/rrfs_ecnt_for_agg.data
   agg_stat_output: /path-to/ecnt_aggregated.data
 
-Replace the *path-to* in the above two settings to the location where the input data
+Replace the *path-to* in the above two settings with the location where the input data
 was stored (either in a working directory or the $METCALCPY_BASE/test directory). **NOTE**:
 Use the **full path** to the input and output directories (no environment variables).
 
@@ -154,17 +153,17 @@ bash shell:
 
  export PYTHONPATH=$METCALCPY_BASE/:$METCALCPY_BASE/metcalcpy
 
-csh shell
+csh shell:
 
 .. code-block:: ini
 
  setenv PYTHONPATH $METCALCPY_BASE/:$METCALCPY_BASE/metcalcpy
 
 
-Where $METCALCPY_BASE is the full path to where the METcalcpy code resides (e.g. /User/
-my_dir/METcalcpy).
+Where $METCALCPY_BASE is the full path to where the METcalcpy code resides (e.g.
+/User/my_dir/METcalcpy).
 
-Run the python script:
+Run the Python script:
 ^^^^^^^^^^^^^^^^^^^^^^
 
 The following are instructions for performing aggregation from the command-line:
@@ -172,7 +171,7 @@ The following are instructions for performing aggregation from the command-line:
 .. code-block:: yaml
 
 
-  python $METCALCPY_BASE/metcalcpy/agg_stat.py $METCALCPY_BASE/metcalcpy/pre_processing/aggregation/config/config_stat_agg.yaml
+  python $METCALCPY_BASE/metcalcpy/agg_stat.py $METCALCPY_BASE/metcalcpy/pre_processing/aggregation/config/config_agg_stat.yaml
 
 
 This will generate the file **ecnt_aggregated.data** (from the agg_stat_output setting) which now contains the
