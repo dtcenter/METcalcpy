@@ -132,7 +132,7 @@ To cite this documentation in publications, please refer to the METcalcpy User's
 
 .. [#NCAR] `National Center for Atmospheric Research, Research
        Applications Laboratory <https://ral.ucar.edu/>`_, `Developmental Testbed Center <https://dtcenter.org/>`_
-	    
+
 .. toctree::
    :hidden:
    :caption: Training
