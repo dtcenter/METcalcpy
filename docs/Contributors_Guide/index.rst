@@ -192,7 +192,7 @@ Create User Documentation
 
    where *<path/to/METcalcpy_source_code>* is the directory where you cloned the METcalcpy source code
 
-   (e.g. /home/my_dir) and *feature_123_xyz* is the feature branch you created
+   (e.g., /home/my_dir) and *feature_123_xyz* is the feature branch you created
 
 Incorporate Your Code Into the Repository
 =========================================

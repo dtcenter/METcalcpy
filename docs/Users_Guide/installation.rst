@@ -22,7 +22,7 @@ the `Releases` link.  This leads to a page where all available releases are avai
 located at the top of the page.  Scroll to the release of interest and below its title is an `Assets` link in small
 text.  Click on the inverted triangle to the left of the `Assets` text to access the menu. To download the source code,
 click on either the zip or tar.gz version of the source code and save it to a directory where the METcalcpy source code
-will reside (e.g. /home/someuser/).
+will reside (e.g., /home/someuser/).
 
 Uncompress the compressed code using unzip <code> for the zip version or tar -xvfz <code> for the tar.gz version.
 
@@ -35,7 +35,7 @@ manager.
 
 To install METcalcpy, activate your conda environment that contains all the necessary Python packages
 listed above in the **Python Requirements** section.  From the command line, cd to the directory where you stored the
-METcalcpy source code, e.g. `/User/someuser/METcalcpy`.  From this directory, run the following:
+METcalcpy source code, e.g., `/User/someuser/METcalcpy`.  From this directory, run the following:
 
 `pip install -e .`
 

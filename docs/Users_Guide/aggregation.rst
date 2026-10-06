@@ -38,7 +38,7 @@ Retrieve Sample Data
 
 The sample data used for this example is located in the $METCALCPY_BASE/test directory,
 where **$METCALCPY_BASE** is the full path to the location of the METcalcpy source code
-(e.g. /User/my_dir/METcalcpy).
+(e.g., /User/my_dir/METcalcpy).
 The example data file used for this example is **rrfs_ecnt_for_agg.data**.
 This data was reformatted from the MET .stat output using the METdataio METreformat module.
 The reformatting step labels the columns with the corresponding statistics, based on the MET tool (point-stat,
@@ -78,7 +78,7 @@ Modify the YAML configuration file
 The config_agg_stat.yaml is required to perform aggregation statistics calculations. This
 configuration file is located in the $METCALCPY_BASE/metcalcpy/pre_processing/aggregation/config
 directory. The $METCALCPY_BASE is the directory where the METcalcpy source code is
-saved (e.g. /Users/my_acct/METcalcpy). Change directory to $METCALCPY_BASE/metcalcpy/pre_processing/aggregation/config
+saved (e.g., /Users/my_acct/METcalcpy). Change directory to $METCALCPY_BASE/metcalcpy/pre_processing/aggregation/config
 and modify the config_agg_stat.yaml file.
 
 1.  Specify the input and output files
@@ -145,7 +145,7 @@ csh shell:
 
 
 where *path-to-METcalcpy* is the full path to where the METcalcpy source code is located
-(e.g. /User/my_dir/METcalcpy)
+(e.g., /User/my_dir/METcalcpy)
 
 bash shell:
 
@@ -160,7 +160,7 @@ csh shell:
  setenv PYTHONPATH $METCALCPY_BASE/:$METCALCPY_BASE/metcalcpy
 
 
-Where $METCALCPY_BASE is the full path to where the METcalcpy code resides (e.g.
+Where $METCALCPY_BASE is the full path to where the METcalcpy code resides (e.g.,
 /User/my_dir/METcalcpy).
 
 Run the Python script:

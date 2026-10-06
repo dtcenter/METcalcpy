@@ -54,7 +54,7 @@ In this example, the UGRD, VGRD, and TMP variables are selected for conversion
 (refer to the `fields` setting in the above configuration file).  You may list any other
 variables as long as they are present in the input data:
 
-e.g.
+e.g.,
 
 fields:
     - 'UGRD'
@@ -85,7 +85,7 @@ file using an editor of your choice.
 Replace the `/path/to/input-data` with the actual full path to
 the directory where you saved the sample data:
 
-e.g.
+e.g.,
 
 .. code-block:: ini
 
@@ -93,7 +93,7 @@ e.g.
 
 Replace the `/path/to/output` with the directory where you want to save your output:
 
-e.g.
+e.g.,
 
 .. code-block:: ini
 
