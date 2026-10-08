@@ -4,7 +4,7 @@ User's Guide
 
 **Foreword: A note to METcalcpy users**
 
-This User's guide is provided as an aid to users of METcalcpy.  METcalcpy is a
+This User's Guide is provided as an aid to users of METcalcpy.  METcalcpy is a
 Python version of the statistics calculation functionality of METviewer,
 METexpress, plotting packages in METplotpy and is a stand-alone package for any
 other application. It is also a component of the unified METplus verification
@@ -51,7 +51,7 @@ Available at: https://github.com/dtcenter/METcalcpy/releases.
 
 We thank all of the METplus sponsors including: DTC partners (NOAA, NCAR,
 USAF, and NSF), along with NOAA/Office of Atmospheric Research (OAR),
-NOAA/National Weather Service, NOAA/Joint Technology Transfer Program (JTTI),
+NOAA/National Weather Service, NOAA/Joint Technology Transfer Initiative (JTTI),
 NOAA/Subseasonal to Seasonal (S2S) Project, NOAA/Unified Forecast System
 Research to Operations Project (UFS R2O), Met Office and the Naval Research
 Laboratory (NRL). Thanks also go to the staff at the Developmental Testbed
