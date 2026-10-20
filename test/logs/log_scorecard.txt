@@ -1,0 +1,368 @@
+2026-08-17 02:29:21 UTC - minnawin - WARNING - Received signal Interrupt: 2. Shutting down.
+2026-08-17 02:29:30 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:29:30 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:29:30 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:29:30 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:29:30 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:29:30 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:29:30 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:29:30 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:29:30 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:29:30 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:29:30 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:29:30 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:29:30 UTC - minnawin - WARNING - No results to write.
+2026-08-17 02:31:11 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:11 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:11 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:11 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:11 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:11 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:11 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:11 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:11 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:11 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:11 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:11 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:11 UTC - minnawin - WARNING - No results to write.
+2026-08-17 02:31:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:21 UTC - minnawin - WARNING - No results to write.
+2026-08-17 02:31:50 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:50 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:50 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:50 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:50 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:50 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:50 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:50 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:50 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:50 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:50 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:50 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:31:50 UTC - minnawin - WARNING - No results to write.
+2026-08-17 02:34:26 UTC - minnawin - WARNING - Received signal Interrupt: 2. Shutting down.
+2026-08-17 02:35:00 UTC - minnawin - WARNING - Received signal Interrupt: 2. Shutting down.
+2026-08-17 02:35:32 UTC - minnawin - WARNING - Received signal Interrupt: 2. Shutting down.
+2026-08-17 02:37:01 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:37:05 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:37:07 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:37:08 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:37:17 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:37:19 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:37:28 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:37:30 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:37:32 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:37:34 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:37:35 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:37:37 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:37:38 UTC - minnawin - WARNING - No results to write.
+2026-08-17 02:38:09 UTC - minnawin - WARNING - Received signal Interrupt: 2. Shutting down.
+2026-08-17 02:40:20 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:40:20 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:40:20 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:40:20 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:40:20 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:40:20 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:40:20 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:40:20 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:40:20 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:40:20 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:40:20 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:40:20 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:40:20 UTC - minnawin - WARNING - No results to write.
+2026-08-17 02:43:34 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:43:34 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:43:34 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:43:34 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:43:34 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:43:34 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:43:34 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:43:34 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:43:34 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:43:34 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:43:34 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:43:34 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:43:34 UTC - minnawin - WARNING - No results to write.
+2026-08-17 02:45:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:45:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:45:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:45:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:45:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:45:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:45:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:45:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:45:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:45:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:45:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:45:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:45:21 UTC - minnawin - WARNING - No results to write.
+2026-08-17 02:45:30 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:45:30 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:45:30 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:45:30 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:45:30 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:45:30 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:45:30 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:45:30 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:45:30 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:45:30 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:45:30 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:45:30 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:45:30 UTC - minnawin - WARNING - No results to write.
+2026-08-17 02:48:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:48:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:48:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:48:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:48:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:48:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:48:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:48:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:48:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:48:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:48:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:48:21 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:48:21 UTC - minnawin - WARNING - No results to write.
+2026-08-17 02:49:14 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:49:14 UTC - minnawin - WARNING - Statistic BCMSE doesn't belong to any of the perfect score groups. Returning unprocessed p-value.
+2026-08-17 02:49:14 UTC - minnawin - WARNING - Statistic BCMSE doesn't belong to any of the perfect score groups. Returning unprocessed p-value.
+2026-08-17 02:49:14 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:49:14 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:50:54 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:50:54 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:50:54 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:50:54 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:50:54 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:50:54 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:50:54 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:50:54 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:50:54 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:50:54 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:50:54 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:50:54 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:50:54 UTC - minnawin - WARNING - No results to write.
+2026-08-17 02:51:10 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:51:10 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:51:10 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:51:10 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:51:10 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:51:10 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:51:10 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:51:10 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:51:10 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:51:10 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:51:10 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:51:10 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:51:10 UTC - minnawin - WARNING - No results to write.
+2026-08-17 02:51:45 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:51:48 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:51:53 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:51:55 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:51:57 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:52:03 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:52:04 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:52:05 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:52:07 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:52:09 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:52:10 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:52:12 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:52:12 UTC - minnawin - WARNING - No results to write.
+2026-08-17 02:53:34 UTC - minnawin - WARNING - Received signal Interrupt: 2. Shutting down.
+2026-08-17 02:53:53 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:53:53 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:53:53 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:53:53 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:53:53 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:53:53 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:53:53 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:53:53 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:53:53 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:53:53 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:53:53 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:53:53 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:53:53 UTC - minnawin - WARNING - No results to write.
+2026-08-17 02:54:27 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:54:27 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:54:27 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:54:27 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:54:27 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:54:27 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:54:27 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:54:27 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:54:27 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:54:27 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:54:27 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:54:27 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:54:27 UTC - minnawin - WARNING - No results to write.
+2026-08-17 02:56:04 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:56:04 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:56:04 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:56:04 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:56:04 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:56:04 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:56:04 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:56:04 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:56:04 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:56:04 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:56:04 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:56:04 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 02:56:04 UTC - minnawin - WARNING - No results to write.
+2026-08-17 03:09:03 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:09:03 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:09:03 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:09:03 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:09:03 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:09:03 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:09:03 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:09:03 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:09:03 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:09:03 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:09:03 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:09:03 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:09:03 UTC - minnawin - WARNING - No results to write.
+2026-08-17 03:12:01 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:12:01 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:12:01 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:12:01 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:12:01 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:12:01 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:12:01 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:12:01 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:12:01 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:12:01 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:12:01 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:12:01 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:12:01 UTC - minnawin - WARNING - No results to write.
+2026-08-17 03:29:42 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:29:42 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:29:42 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:29:42 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:29:42 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:29:42 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:29:42 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:29:42 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:29:42 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:29:42 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:29:42 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:29:42 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 03:29:42 UTC - minnawin - WARNING - No results to write.
+2026-08-17 14:48:39 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 14:48:39 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 14:48:39 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 14:48:39 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 14:48:39 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 14:48:39 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 14:48:39 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 14:48:39 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 14:48:39 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 14:48:39 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 14:48:39 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 14:48:39 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 14:48:39 UTC - minnawin - WARNING - No results to write.
+2026-08-17 14:49:18 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 14:49:18 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 14:49:18 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 14:49:18 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 14:49:18 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 14:49:18 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 14:49:18 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 14:49:18 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 14:49:18 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 14:49:18 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 14:49:18 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 14:49:18 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 14:49:18 UTC - minnawin - WARNING - No results to write.
+2026-08-17 15:58:28 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 15:58:28 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 15:58:28 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 15:58:28 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 15:58:28 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 15:58:28 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 15:58:28 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 15:58:28 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 15:58:28 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 15:58:28 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 15:58:28 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 15:58:28 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 15:58:28 UTC - minnawin - WARNING - No results to write.
+2026-08-17 16:04:43 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 16:04:43 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 16:04:43 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 16:04:43 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 16:04:43 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 16:04:43 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 16:04:43 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 16:04:43 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 16:04:43 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 16:04:43 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 16:04:43 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 16:04:43 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 16:04:43 UTC - minnawin - WARNING - No results to write.
+2026-08-17 16:09:51 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 16:09:51 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 16:09:51 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 16:09:51 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 16:09:51 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 16:09:51 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 16:09:51 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 16:09:51 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 16:09:51 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 16:09:51 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 16:09:51 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 16:09:51 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 16:09:51 UTC - minnawin - WARNING - No results to write.
+2026-08-17 18:57:58 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 18:57:58 UTC - minnawin - WARNING - Statistic BCMSE doesn't belong to any of the perfect score groups. Returning unprocessed p-value.
+2026-08-17 18:57:58 UTC - minnawin - WARNING - Statistic BCMSE doesn't belong to any of the perfect score groups. Returning unprocessed p-value.
+2026-08-17 18:57:58 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-17 18:57:58 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-18 20:10:49 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-18 20:10:49 UTC - minnawin - WARNING - Statistic BCMSE doesn't belong to any of the perfect score groups. Returning unprocessed p-value.
+2026-08-18 20:10:49 UTC - minnawin - WARNING - Statistic BCMSE doesn't belong to any of the perfect score groups. Returning unprocessed p-value.
+2026-08-18 20:10:49 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-18 20:10:49 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-18 20:33:02 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-18 20:33:02 UTC - minnawin - WARNING - Statistic BCMSE doesn't belong to any of the perfect score groups. Returning unprocessed p-value.
+2026-08-18 20:33:02 UTC - minnawin - WARNING - Statistic BCMSE doesn't belong to any of the perfect score groups. Returning unprocessed p-value.
+2026-08-18 20:33:02 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-08-18 20:33:02 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-10-06 19:33:24 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-10-06 19:33:24 UTC - minnawin - WARNING - Statistic BCMSE doesn't belong to any of the perfect score groups. Returning unprocessed p-value.
+2026-10-06 19:33:24 UTC - minnawin - WARNING - Statistic BCMSE doesn't belong to any of the perfect score groups. Returning unprocessed p-value.
+2026-10-06 19:33:24 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-10-06 19:33:24 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-10-20 20:50:24 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-10-20 20:50:24 UTC - minnawin - WARNING - Statistic BCMSE doesn't belong to any of the perfect score groups. Returning unprocessed p-value.
+2026-10-20 20:50:24 UTC - minnawin - WARNING - Statistic BCMSE doesn't belong to any of the perfect score groups. Returning unprocessed p-value.
+2026-10-20 20:50:24 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-10-20 20:50:24 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-10-20 20:51:31 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-10-20 20:51:31 UTC - minnawin - WARNING - Statistic BCMSE doesn't belong to any of the perfect score groups. Returning unprocessed p-value.
+2026-10-20 20:51:31 UTC - minnawin - WARNING - Statistic BCMSE doesn't belong to any of the perfect score groups. Returning unprocessed p-value.
+2026-10-20 20:51:31 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-10-20 20:51:31 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-10-20 20:52:55 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-10-20 20:52:55 UTC - minnawin - WARNING - Statistic BCMSE doesn't belong to any of the perfect score groups. Returning unprocessed p-value.
+2026-10-20 20:52:55 UTC - minnawin - WARNING - Statistic BCMSE doesn't belong to any of the perfect score groups. Returning unprocessed p-value.
+2026-10-20 20:52:55 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-10-20 20:52:55 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-10-20 21:00:06 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-10-20 21:00:06 UTC - minnawin - WARNING - Statistic BCMSE doesn't belong to any of the perfect score groups. Returning unprocessed p-value.
+2026-10-20 21:00:06 UTC - minnawin - WARNING - Statistic BCMSE doesn't belong to any of the perfect score groups. Returning unprocessed p-value.
+2026-10-20 21:00:06 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-10-20 21:00:06 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-10-20 21:02:41 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-10-20 21:02:41 UTC - minnawin - WARNING - Statistic BCMSE doesn't belong to any of the perfect score groups. Returning unprocessed p-value.
+2026-10-20 21:02:41 UTC - minnawin - WARNING - Statistic BCMSE doesn't belong to any of the perfect score groups. Returning unprocessed p-value.
+2026-10-20 21:02:41 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
+2026-10-20 21:02:41 UTC - minnawin - ERROR - One or both series are missing data. Unable to calculate derived statistic.
