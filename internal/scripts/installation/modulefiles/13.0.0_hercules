@@ -3,12 +3,12 @@
 ##      METcalcpy
 ##
 proc ModulesHelp { } {
-  puts stderr "Sets up the paths and environment variables to use the METcalcpy-3.2.0.
+  puts stderr "Sets up the paths and environment variables to use the METcalcpy-13.0.0.
      *** For help see the official MET webpage at http://www.dtcenter.org/met/users ***"
 }
 
 module load contrib
 module load intel-oneapi-compilers/2022.2.1
 
-prepend-path PATH /work/noaa/ovp/miniconda/miniconda3/envs/metplus_v6.1_py3.12/bin
-prepend-path PYTHONPATH /apps/contrib/MET/METcalcpy/METcalcpy-3.2.0
+prepend-path PATH /work/noaa/ovp/miniconda/miniconda3/envs/metplus_v13.0_py3.14/bin
+prepend-path PYTHONPATH /apps/contrib/MET/METcalcpy/METcalcpy-13.0.0
