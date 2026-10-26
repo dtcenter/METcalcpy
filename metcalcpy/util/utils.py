@@ -533,7 +533,7 @@ def aggregate_field_values(series_var_val, input_data_frame, line_type, logger=N
                                 ]
                             rows_indexes = rows_for_agg.index.values
                             # reset indexes
-                            rows_for_agg.reset_index(inplace=True, drop=True)
+                            rows_for_agg = rows_for_agg.reset_index(drop=True)
 
                             # remove these rows from the main data_frame
                             input_data_frame = input_data_frame.drop(index=rows_indexes)
@@ -571,7 +571,7 @@ def aggregate_field_values(series_var_val, input_data_frame, line_type, logger=N
                         rows_indexes = rows_for_agg.index.values
 
                         # reset indexes
-                        rows_for_agg.reset_index(inplace=True, drop=True)
+                        rows_for_agg = rows_for_agg.reset_index(drop=True)
 
                         # remove these rows from the main data_frame
                         input_data_frame = input_data_frame.drop(index=rows_indexes)

@@ -1436,10 +1436,10 @@ def sort_by_thresh(input_dataframe: pd.DataFrame, sort_column_name: str = 'fcst_
         sort_by_cols = [sort_column_name]
 
     # sort with ignore_index=True because we don't need to keep the original index values. We
-    # want the rows to be newly indexed to reflect the reordering. Use inplace=False because
-    # we don't want to modify the input dataframe's order, we want a new dataframe.
+    # want the rows to be newly indexed to reflect the reordering. sort_values() returns a new
+    # dataframe, so the input dataframe's order is not modified.
     safe_log(logger, "debug", f"Sorting by columns: {sort_by_cols} in {'ascending' if ascending else 'descending'} order.")
-    sorted_dataframe = input_dataframe.sort_values(by=sort_by_cols, inplace=False,
+    sorted_dataframe = input_dataframe.sort_values(by=sort_by_cols,
                                                    ascending=ascending, ignore_index=True)
     safe_log(logger, "info", "Dataframe sorted successfully.")
 

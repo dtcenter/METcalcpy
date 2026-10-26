@@ -294,7 +294,7 @@ def calculate_pstd_roc_auc(input_data, columns_names, logger=None):
                 {'thresh': 0, 'n11': 0, 'n10': 0, 'n01': 0, 'n00': 0, 'pody': 0, 'pofd': 0},
                 index=[0]) ])
 
-        final_roc.reset_index(inplace=True, drop=True)
+        final_roc = final_roc.reset_index(drop=True)
         safe_log(logger, "debug", "Prepared final ROC curve with added boundary points.")
 
         roc_auc = 0
@@ -404,7 +404,7 @@ def _calc_common_stats(columns_names, input_data, logger=None):
         
         # Create DataFrame
         df_pct_perm = pd.DataFrame(pct_perm)
-        df_pct_perm.reset_index(inplace=True, drop=True)
+        df_pct_perm = df_pct_perm.reset_index(drop=True)
 
         # Calculate n_i and o_bar_i
         df_pct_perm['n_i'] = [row.oy_i + row.on_i for index, row in df_pct_perm.iterrows()]
@@ -470,7 +470,7 @@ def _calc_pct_roc(data, logger=None):
             df_roc.loc[df_roc.index[df_roc["thresh"] == thresh], 'n00'] = sum(data[is_less]['on_i'])
             safe_log(logger, "debug", f"Calculated n01 and n00 for threshold {thresh}.")
 
-        df_roc.reset_index(inplace=True, drop=True)
+        df_roc = df_roc.reset_index(drop=True)
 
         # Generate the pody and pofd scores from the contingency tables
         df_roc['pody'] = [row.n11 / (row.n11 + row.n01) for index, row in df_roc.iterrows()]
