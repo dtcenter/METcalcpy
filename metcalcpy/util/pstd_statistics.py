@@ -11,18 +11,19 @@
 """
 Program Name: pstd_statistics.py
 """
-import warnings
 import numpy as np
 import pandas as pd
 
 from metcalcpy.util.met_stats import get_column_index_by_name
-from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION
+from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION, \
+    numeric_warnings_as_errors
 from metcalcpy.util.safe_log import safe_log
 
 __author__ = 'Tatiana Burek'
 __version__ = '2.0.1'
 
 
+@numeric_warnings_as_errors()
 def calculate_pstd_brier(input_data, columns_names, logger=None):
     """Performs calculation of PSTD_BRIER - Brier Score
 
@@ -36,7 +37,6 @@ def calculate_pstd_brier(input_data, columns_names, logger=None):
             calculated PSTD_BRIER as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         df_pct_perm = _calc_common_stats(columns_names, input_data, logger=logger)
         t_table = df_pct_perm['n_i'].sum()
@@ -53,13 +53,13 @@ def calculate_pstd_brier(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculated Brier Score: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError, AttributeError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError, AttributeError) as e:
         safe_log(logger, "warning", f"Exception occurred during Brier Score calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_pstd_bss_smpl(input_data, columns_names, logger=None):
     """Performs calculation of BSS_SMPL - Brier Skill Score relative to sample climatology
 
@@ -73,7 +73,6 @@ def calculate_pstd_bss_smpl(input_data, columns_names, logger=None):
             calculated BSS_SMPL as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         df_pct_perm = _calc_common_stats(columns_names, input_data, logger=logger)
         t_table = df_pct_perm['n_i'].sum()
@@ -91,13 +90,13 @@ def calculate_pstd_bss_smpl(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculated Brier Skill Score (BSS_SMPL): {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during BSS_SMPL calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_pstd_baser(input_data, columns_names, logger=None):
     """Performs calculation of BASER - The Base Rate
         Args:
@@ -110,20 +109,19 @@ def calculate_pstd_baser(input_data, columns_names, logger=None):
             calculated BASER as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         df_pct_perm = _calc_common_stats(columns_names, input_data, logger=logger)
         t_table = df_pct_perm['n_i'].sum()
         baser = df_pct_perm['oy_i'].sum() / t_table
         result = round_half_up(baser, PRECISION)
         safe_log(logger, "debug", f"Calculated BASER: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during BASER calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_pstd_reliability(input_data, columns_names, logger=None):
     """Performs calculation of RELIABILITY - Reliability
 
@@ -137,7 +135,6 @@ def calculate_pstd_reliability(input_data, columns_names, logger=None):
             calculated RELIABILITY as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         df_pct_perm = _calc_common_stats(columns_names, input_data, logger=logger)
         t_table = df_pct_perm['n_i'].sum()
@@ -145,13 +142,13 @@ def calculate_pstd_reliability(input_data, columns_names, logger=None):
         result = round_half_up(reliability, PRECISION)
         safe_log(logger, "debug", f"Calculated RELIABILITY: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during RELIABILITY calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_pstd_resolution(input_data, columns_names, logger=None):
     """Performs calculation of RESOLUTION - Resolution
 
@@ -165,7 +162,6 @@ def calculate_pstd_resolution(input_data, columns_names, logger=None):
             calculated RESOLUTION as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         df_pct_perm = _calc_common_stats(columns_names, input_data, logger=logger)
         o_bar = input_data[0, get_column_index_by_name(columns_names, 'o_bar', logger=logger)]
@@ -173,13 +169,13 @@ def calculate_pstd_resolution(input_data, columns_names, logger=None):
         resolution = calc_resolution(t_table, df_pct_perm, o_bar, logger=logger)
         result = round_half_up(resolution, PRECISION)
         safe_log(logger, "debug", f"Calculated RESOLUTION: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during RESOLUTION calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_pstd_uncertainty(input_data, columns_names, logger=None):
     """Performs calculation of UNCERTAINTY - Uncertainty
 
@@ -193,7 +189,6 @@ def calculate_pstd_uncertainty(input_data, columns_names, logger=None):
             calculated UNCERTAINTY as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         df_pct_perm = _calc_common_stats(columns_names, input_data, logger=logger)
         t_table = df_pct_perm['n_i'].sum()
@@ -202,13 +197,13 @@ def calculate_pstd_uncertainty(input_data, columns_names, logger=None):
         result = round_half_up(uncertainty, PRECISION)
         safe_log(logger, "debug", f"Calculated UNCERTAINTY: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during UNCERTAINTY calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_pstd_calibration(input_data, columns_names, logger=None):
     """Performs calculation of calibration
 
@@ -222,7 +217,6 @@ def calculate_pstd_calibration(input_data, columns_names, logger=None):
             calculated calibration as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         oy_i = sum(input_data[:, get_column_index_by_name(columns_names, 'oy_i', logger=logger)])
         n_i = calculate_pstd_ni(input_data, columns_names, logger=logger)
@@ -230,13 +224,13 @@ def calculate_pstd_calibration(input_data, columns_names, logger=None):
         result = round_half_up(calibration, PRECISION)
         safe_log(logger, "debug", f"Calculated calibration: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during calibration calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_pstd_ni(input_data, columns_names, logger=None):
     """Performs calculation of ni - Uncertainty
 
@@ -250,7 +244,6 @@ def calculate_pstd_ni(input_data, columns_names, logger=None):
             calculated ni as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         oy_i = sum(input_data[:, get_column_index_by_name(columns_names, 'oy_i', logger=logger)])
         on_i = sum(input_data[:, get_column_index_by_name(columns_names, 'on_i', logger=logger)])
@@ -258,13 +251,13 @@ def calculate_pstd_ni(input_data, columns_names, logger=None):
         result = round_half_up(n_i, PRECISION)
         safe_log(logger, "debug", f"Calculated ni: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during ni calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_pstd_roc_auc(input_data, columns_names, logger=None):
     """Performs calculation of ROC_AUC - Area under the receiver operating characteristic curve
 
@@ -278,8 +271,6 @@ def calculate_pstd_roc_auc(input_data, columns_names, logger=None):
             calculated ROC_AUC as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
-
     try:
         df_pct_perm = _calc_common_stats(columns_names, input_data, logger=logger)
         roc = _calc_pct_roc(df_pct_perm, logger=logger)
@@ -308,7 +299,7 @@ def calculate_pstd_roc_auc(input_data, columns_names, logger=None):
         result = round_half_up(roc_auc, PRECISION)
         safe_log(logger, "debug", f"Final calculated ROC_AUC: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError, AttributeError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError, AttributeError) as e:
         safe_log(logger, "warning", f"Exception occurred during ROC_AUC calculation: {str(e)}")
         result = None
 
@@ -419,7 +410,7 @@ def _calc_common_stats(columns_names, input_data, logger=None):
 
         return df_pct_perm
     
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during common stats calculation: {str(e)}")
         return None
 
@@ -479,7 +470,7 @@ def _calc_pct_roc(data, logger=None):
 
         return df_roc
     
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during ROC calculation: {str(e)}")
         return None
 
@@ -508,6 +499,6 @@ def calculate_pct_total(input_data, columns_names, logger=None):
 
         return result
     
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during total matched pairs calculation: {str(e)}")
         return None

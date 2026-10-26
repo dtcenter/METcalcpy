@@ -11,14 +11,13 @@
 """
 Program Name: ctc_statistics.py
 """
-import warnings
 from typing import Union
 import math
 import re
 import numpy as np
 import pandas as pd
 from scipy.special import lambertw
-from metcalcpy.util.utils import round_half_up, column_data_by_name, \
+from metcalcpy.util.utils import numeric_warnings_as_errors, round_half_up, column_data_by_name, \
     sum_column_data_by_name, PRECISION
 from metcalcpy.util.safe_log import safe_log
 
@@ -26,6 +25,7 @@ __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
 
 
+@numeric_warnings_as_errors()
 def calculate_baser(input_data, columns_names, logger=None):
     """Performs calculation of BASER - Base rate, aka Observed relative frequency
 
@@ -42,7 +42,6 @@ def calculate_baser(input_data, columns_names, logger=None):
     safe_log(logger, "debug", "Starting calculate_baser function.")
     safe_log(logger, "debug", f"Input columns: {columns_names}")
     
-    warnings.filterwarnings('error')
 
     try:
         fy_oy_index = np.where(columns_names == 'fy_oy')[0][0]
@@ -57,14 +56,14 @@ def calculate_baser(input_data, columns_names, logger=None):
 
         safe_log(logger, "info", f"BASER calculation successful: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error in BASER calculation: {e}")
         result = None
 
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_acc(input_data, columns_names):
     """Performs calculation of ACC - Accuracy
 
@@ -78,18 +77,17 @@ def calculate_acc(input_data, columns_names):
             calculated ACC as float
             or None if some data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         result = (sum_column_data_by_name(input_data, columns_names, 'fy_oy')
                   + sum_column_data_by_name(input_data, columns_names, 'fn_on')) \
                  / sum_column_data_by_name(input_data, columns_names, 'total')
         result = round_half_up(result, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError):
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_fbias(input_data, columns_names, logger=None):
     """Performs calculation of FBIAS - Bias, aka Frequency bias
 
@@ -103,7 +101,6 @@ def calculate_fbias(input_data, columns_names, logger=None):
             calculated FBIAS as float
             or None if some data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         oy = sum_column_data_by_name(input_data, columns_names, 'fy_oy') \
              + sum_column_data_by_name(input_data, columns_names, 'fn_oy')
@@ -114,13 +111,13 @@ def calculate_fbias(input_data, columns_names, logger=None):
         result = oyn / oy
         result = round_half_up(result, PRECISION)
         safe_log(logger, "info", f"ACC calculation successful: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error in ACC calculation: {e}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_fmean(input_data, columns_names, logger=None):
     """Performs calculation of FMEAN - Forecast mean
 
@@ -134,7 +131,6 @@ def calculate_fmean(input_data, columns_names, logger=None):
             calculated FMEAN as float
             or None if some data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     safe_log(logger, "debug", "Starting calculate_fmean function.")
     safe_log(logger, "debug", f"Input columns: {columns_names}")
 
@@ -150,13 +146,13 @@ def calculate_fmean(input_data, columns_names, logger=None):
         result = oyn / total
         result = round_half_up(result, PRECISION)
         safe_log(logger, "info", f"FMEAN calculation successful: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error in FMEAN calculation: {e}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_pody(input_data, columns_names, logger=None):
     """Performs calculation of PODY - Probability of Detecting Yes
 
@@ -172,7 +168,6 @@ def calculate_pody(input_data, columns_names, logger=None):
     """
     safe_log(logger, "debug", "Starting calculate_pody function.")
     safe_log(logger, "debug", f"Input columns: {columns_names}")
-    warnings.filterwarnings('error')
 
     try:
         fy_oy = sum_column_data_by_name(input_data, columns_names, 'fy_oy')
@@ -184,13 +179,13 @@ def calculate_pody(input_data, columns_names, logger=None):
         result = fy_oy / oy
         result = round_half_up(result, PRECISION)
         safe_log(logger, "info", f"PODY calculation successful: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error in PODY calculation: {e}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_pofd(input_data, columns_names, logger=None):
     """Performs calculation of POFD - Probability of false detection
 
@@ -206,7 +201,6 @@ def calculate_pofd(input_data, columns_names, logger=None):
     """
     safe_log(logger, "debug", "Starting calculate_pofd function.")
     safe_log(logger, "debug", f"Input columns: {columns_names}")
-    warnings.filterwarnings('error')
     try:
         fy_on = sum_column_data_by_name(input_data, columns_names, 'fy_on')
         safe_log(logger, "debug", f"fy_on value: {fy_on}")
@@ -218,10 +212,9 @@ def calculate_pofd(input_data, columns_names, logger=None):
         result = fy_on / oy
         result = round_half_up(result, PRECISION)
         safe_log(logger, "info", f"POFD calculation successful: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error in POFD calculation: {e}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
@@ -282,6 +275,7 @@ def calculate_ctc_roc(data, ascending, logger=None):
     return df_roc
 
 
+@numeric_warnings_as_errors()
 def calculate_podn(input_data, columns_names, logger=None):
     """Performs calculation of PODN - Probability of Detecting No
 
@@ -295,7 +289,6 @@ def calculate_podn(input_data, columns_names, logger=None):
             calculated PODN as float
             or None if some data values are missing or invalid
     """
-    warnings.filterwarnings('error')
 
     safe_log(logger, "debug", "Starting calculation of PODN.")
 
@@ -309,14 +302,14 @@ def calculate_podn(input_data, columns_names, logger=None):
         result = fn_on / oy
         result = round_half_up(result, PRECISION)
         safe_log(logger, "debug", f"Calculated PODN before rounding: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         result = None
         safe_log(logger, "error", f"Error in calculating PODN: {str(e)}")
 
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_far(input_data, columns_names, logger=None):
     """Performs calculation of FAR - false alarms
 
@@ -330,7 +323,6 @@ def calculate_far(input_data, columns_names, logger=None):
             calculated FAR as float
             or None if some data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     safe_log(logger, "debug", "Starting calculation of FAR.")
     try:
         fy_on = sum_column_data_by_name(input_data, columns_names, 'fy_on')
@@ -341,14 +333,14 @@ def calculate_far(input_data, columns_names, logger=None):
         safe_log(logger, "debug", f"Sum of observations (oy): {oy}")
         result = fy_on / oy
         result = round_half_up(result, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         result = None
         safe_log(logger, "error", f"Error in calculating FAR: {str(e)}")
 
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_csi(input_data, columns_names, logger=None):
     """Performs calculation of CSI - Critical success index, aka Threat score
 
@@ -362,7 +354,6 @@ def calculate_csi(input_data, columns_names, logger=None):
             calculated CSI as float
             or None if some data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     safe_log(logger, "debug", "Starting calculation of CSI.")
     try:
         fy_oy = sum_column_data_by_name(input_data, columns_names, 'fy_oy')
@@ -378,14 +369,14 @@ def calculate_csi(input_data, columns_names, logger=None):
         result = fy_oy / oy
         result = round_half_up(result, PRECISION)
         safe_log(logger, "info", f"Final CSI result: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         result = None
         safe_log(logger, "error", f"Error in calculating CSI: {str(e)}")
 
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_gss(input_data, columns_names, logger=None):
     """Performs calculation of GSS = Gilbert skill score, aka Equitable threat score
 
@@ -399,7 +390,6 @@ def calculate_gss(input_data, columns_names, logger=None):
             calculated GSS as float
             or None if some data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     safe_log(logger, "debug", "Starting calculation of GSS.")
 
     try:
@@ -419,15 +409,15 @@ def calculate_gss(input_data, columns_names, logger=None):
         gss = ((fy_oy - dbl_c) / (fy_oy + fy_on + fn_oy - dbl_c))
         gss = round_half_up(gss, PRECISION)
         safe_log(logger, "info", f"Final GSS result: {gss}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         gss = None
         safe_log(logger, "error", f"Error in calculating GSS: {str(e)}")
         gss = None
 
-    warnings.filterwarnings('ignore')
     return gss
 
 
+@numeric_warnings_as_errors()
 def calculate_hk(input_data, columns_names, logger=None):
     """Performs calculation of HK - Hanssen Kuipers Discriminant
 
@@ -441,7 +431,6 @@ def calculate_hk(input_data, columns_names, logger=None):
             calculated HK as float
             or None if some data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     safe_log(logger, "debug", "Starting calculation of HK.")
     try:
         pody = calculate_pody(input_data, columns_names, logger=logger)
@@ -456,14 +445,14 @@ def calculate_hk(input_data, columns_names, logger=None):
             safe_log(logger, "debug", f"HK before rounding: {result}")
             result = round_half_up(result, PRECISION)
             safe_log(logger, "info", f"Final HK result: {result}")
-    except (TypeError, Warning) as e:
+    except (TypeError, RuntimeWarning) as e:
         result = None
         safe_log(logger, "error", f"Error in calculating HK: {str(e)}")
         
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_hss(input_data, columns_names, logger=None):
     """Performs calculation of HSS - Heidke skill score
 
@@ -477,7 +466,6 @@ def calculate_hss(input_data, columns_names, logger=None):
             calculated HSS as float
             or None if some data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     safe_log(logger, "debug", "Starting calculation of HSS.")
     try:
         total = sum_column_data_by_name(input_data, columns_names, 'total')
@@ -498,14 +486,14 @@ def calculate_hss(input_data, columns_names, logger=None):
         hss = round_half_up(hss, PRECISION)
         safe_log(logger, "info", f"Final HSS result: {hss}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         hss = None
         safe_log(logger, "error", f"Error in calculating HSS: {str(e)}")
 
-    warnings.filterwarnings('ignore')
     return hss
 
 
+@numeric_warnings_as_errors()
 def calculate_odds(input_data, columns_names, logger=None):
     """Performs calculation of ODDS - Odds Ratio
 
@@ -519,7 +507,6 @@ def calculate_odds(input_data, columns_names, logger=None):
             calculated ODDS as float
             or None if some data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     safe_log(logger, "debug", "Starting calculation of ODDS.")
 
     try:
@@ -533,15 +520,15 @@ def calculate_odds(input_data, columns_names, logger=None):
             result = (pody * (1 - pofd)) / (pofd * (1 - pody))
             result = round_half_up(result, PRECISION)
             safe_log(logger, "info", f"Final ODDS result: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         result = None
         safe_log(logger, "error", f"Error in calculating ODDS: {str(e)}")
     
-    warnings.filterwarnings('ignore')
 
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_lodds(input_data, columns_names, logger=None):
     """Performs calculation of LODDS - Log Odds Ratio
 
@@ -555,7 +542,6 @@ def calculate_lodds(input_data, columns_names, logger=None):
             calculated LODDS as float
             or None if some data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     safe_log(logger, "debug", "Starting calculation of LODDS.")
 
     try:
@@ -573,14 +559,14 @@ def calculate_lodds(input_data, columns_names, logger=None):
         v = round_half_up(v, PRECISION)
         safe_log(logger, "info", f"Final LODDS result: {v}")
 
-    except (TypeError, Warning) as e:
+    except (TypeError, RuntimeWarning) as e:
         v = None
         safe_log(logger, "error", f"Error in calculating LODDS: {str(e)}")
         
-    warnings.filterwarnings('ignore')
     return v
 
 
+@numeric_warnings_as_errors()
 def calculate_bagss(input_data, columns_names, logger=None):
     """Performs calculation of BAGSS - Bias-Corrected Gilbert Skill Score
 
@@ -594,7 +580,6 @@ def calculate_bagss(input_data, columns_names, logger=None):
             calculated BAGSS as float
             or None if some data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     safe_log(logger, "debug", "Starting calculation of BAGSS.")
     try:
         fy_oy = sum_column_data_by_name(input_data, columns_names, 'fy_oy')
@@ -617,14 +602,14 @@ def calculate_bagss(input_data, columns_names, logger=None):
 
         result = round_half_up(result, PRECISION)
         safe_log(logger, "info", f"Final BAGSS result: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         result = None
         safe_log(logger, "error", f"Error in calculating BAGSS: {str(e)}")
         
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_eclv(input_data, columns_names, logger=None):
     """Performs calculation of ECLV - Economic Cost/Loss  Value
         Implements R version that returns an array instead of the single value
@@ -641,7 +626,6 @@ def calculate_eclv(input_data, columns_names, logger=None):
             calculated BAGSS as float
             or None if some data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     safe_log(logger, "debug", "Starting calculation of ECLV.")
 
     try:
@@ -662,14 +646,14 @@ def calculate_eclv(input_data, columns_names, logger=None):
         v = round_half_up(v, PRECISION)
         safe_log(logger, "info", f"Calculated ECLV: {v}")
 
-    except (TypeError, Warning) as e:
+    except (TypeError, RuntimeWarning) as e:
         v = None
         safe_log(logger, "error", f"Error in calculating ECLV: {str(e)}")
         
-    warnings.filterwarnings('ignore')
     return v
 
 
+@numeric_warnings_as_errors()
 def calculate_economic_value(values, cost_lost_ratio=np.arange(start=0.05, stop=0.95, step=0.05),
                              add_base_rate: bool = False, logger=None) -> Union[dict, None]:
     """Calculates the economic value of a forecast based on a cost/loss ratio.
@@ -694,7 +678,6 @@ def calculate_economic_value(values, cost_lost_ratio=np.arange(start=0.05, stop=
                 s    - Base rate
             or None if some data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     safe_log(logger, "debug", "Starting calculation of economic value.")
 
     try:
@@ -735,11 +718,10 @@ def calculate_economic_value(values, cost_lost_ratio=np.arange(start=0.05, stop=
         else:
             result = None
             safe_log(logger, "warning", "Invalid input values; calculation returned None.")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         result = None
         safe_log(logger, "error", f"Error in calculating economic value: {str(e)}")
         
-    warnings.filterwarnings('ignore')
     return result
 
 
@@ -762,7 +744,7 @@ def calculate_ctc_total(input_data, columns_names, logger=None):
         total = sum_column_data_by_name(input_data, columns_names, 'total')
         result = round_half_up(total, PRECISION)
         safe_log(logger, "info", f"Calculated CTC Total: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         result = None
         safe_log(logger, "error", f"Error in calculating CTC Total: {str(e)}")
 
@@ -788,7 +770,7 @@ def calculate_cts_total(input_data, columns_names, logger=None):
         total = sum_column_data_by_name(input_data, columns_names, 'total')
         result = round_half_up(total, PRECISION)
         safe_log(logger, "info", f"Calculated CTS Total: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         result = None
         safe_log(logger, "error", f"Error in calculating CTS Total: {str(e)}")
 
@@ -814,7 +796,7 @@ def calculate_ctc_fn_on(input_data, columns_names, logger=None):
         fn_on = sum_column_data_by_name(input_data, columns_names, 'fn_on')
         result = round_half_up(fn_on, PRECISION)
         safe_log(logger, "info", f"Calculated CTC FN_ON: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         result = None
         safe_log(logger, "error", f"Error in calculating CTC FN_ON: {str(e)}")
 
@@ -840,7 +822,7 @@ def calculate_ctc_fn_oy(input_data, columns_names, logger=None):
         fn_oy = sum_column_data_by_name(input_data, columns_names, 'fn_oy')
         result = round_half_up(fn_oy, PRECISION)
         safe_log(logger, "info", f"Calculated CTC FN_OY: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         result = None
         safe_log(logger, "error", f"Error in calculating CTC FN_OY: {str(e)}")
 
@@ -866,7 +848,7 @@ def calculate_ctc_fy_on(input_data, columns_names, logger=None):
         fy_on = sum_column_data_by_name(input_data, columns_names, 'fy_on')
         result = round_half_up(fy_on, PRECISION)
         safe_log(logger, "info", f"Calculated CTC FY_ON: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         result = None
         safe_log(logger, "error", f"Error in calculating CTC FY_ON: {str(e)}")
 
@@ -892,7 +874,7 @@ def calculate_ctc_fy_oy(input_data, columns_names, logger=None):
         fy_oy = sum_column_data_by_name(input_data, columns_names, 'fy_oy')
         result = round_half_up(fy_oy, PRECISION)
         safe_log(logger, "info", f"Calculated CTC FY_OY: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         result = None
         safe_log(logger, "error", f"Error in calculating CTC FY_OY: {str(e)}")
 
@@ -920,7 +902,7 @@ def calculate_ctc_oy(input_data, columns_names, logger=None):
         fn_oy = sum_column_data_by_name(input_data, columns_names, 'fn_oy')
         result = round_half_up(fy_oy + fn_oy, PRECISION)
         safe_log(logger, "info", f"Calculated CTC OY: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         result = None
         safe_log(logger, "error", f"Error in calculating CTC OY: {str(e)}")
 
@@ -946,7 +928,7 @@ def calculate_ctc_on(input_data, columns_names, logger=None):
         fy_on = sum_column_data_by_name(input_data, columns_names, 'fy_on')
         fn_on = sum_column_data_by_name(input_data, columns_names, 'fn_on')
         result = round_half_up(fy_on + fn_on, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         result = None
         safe_log(logger, "error", f"Error in calculating CTC ON: {str(e)}")
     return result
@@ -973,7 +955,7 @@ def calculate_ctc_fy(input_data, columns_names, logger=None):
         # Logging the successful calculation
         safe_log(logger, "info", f"Calculated CTC ON: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         # Logging the error if an exception occurs
         safe_log(logger, "error", f"Error in calculating CTC ON: {str(e)}")
         result = None
@@ -1005,7 +987,7 @@ def calculate_ctc_fn(input_data, columns_names, logger=None):
         # Logging the successful calculation
         safe_log(logger, "info", f"Calculated CTC FN: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         # Logging the error if an exception occurs
         safe_log(logger, "error", f"Error in calculating CTC FN: {str(e)}")
         result = None
@@ -1013,8 +995,8 @@ def calculate_ctc_fn(input_data, columns_names, logger=None):
     return result
 
 
+@numeric_warnings_as_errors()
 def pod_yes(input_data, columns_names, logger=None):
-    warnings.filterwarnings('error')
     safe_log(logger, "debug", "Starting calculation of POD (yes).")
 
     try:
@@ -1027,17 +1009,16 @@ def pod_yes(input_data, columns_names, logger=None):
         # Log the successful calculation
         safe_log(logger, "info", f"Calculated POD (yes): {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         # Log the error
         safe_log(logger, "error", f"Error in calculating POD (yes): {str(e)}")
         result = None
 
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def pod_no(input_data, columns_names, logger=None):
-    warnings.filterwarnings('error')
     safe_log(logger, "debug", "Starting calculation of POD (no).")
 
     try:
@@ -1050,15 +1031,15 @@ def pod_no(input_data, columns_names, logger=None):
         # Log the successful calculation
         safe_log(logger, "info", f"Calculated POD (no): {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         # Log the error
         safe_log(logger, "error", f"Error in calculating POD (no): {str(e)}")
         result = None
 
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_odds1(input_data, columns_names, logger=None):
     """Performs calculation of ODDS - Odds Ratio
 
@@ -1072,7 +1053,6 @@ def calculate_odds1(input_data, columns_names, logger=None):
             calculated ODDS as float
             or None if some data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     safe_log(logger, "debug", "Starting calculation of ODDS.")
 
     try:
@@ -1090,15 +1070,15 @@ def calculate_odds1(input_data, columns_names, logger=None):
         # Log the successful calculation
         safe_log(logger, "info", f"Calculated ODDS: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         # Log the error
         safe_log(logger, "error", f"Error in calculating ODDS: {str(e)}")
         result = None
 
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_orss(input_data, columns_names, logger=None):
     """Performs calculation of ORSS - Odds Ratio Skill Score
 
@@ -1112,7 +1092,6 @@ def calculate_orss(input_data, columns_names, logger=None):
             calculated ORSS as float
             or None if some data values are missing or invalid
     """
-    warnings.filterwarnings('error')
 
     safe_log(logger, "debug", "Starting calculation of ORSS.")
 
@@ -1130,15 +1109,15 @@ def calculate_orss(input_data, columns_names, logger=None):
         result = round_half_up(result, PRECISION)
         safe_log(logger, "info", f"Calculated ORSS: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         # Log the error
         safe_log(logger, "error", f"Error in calculating ORSS: {str(e)}")
         result = None
 
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_sedi(input_data, columns_names, logger=None):
     """Performs calculation of SEDI - Symmetric Extremal Depenency Index
 
@@ -1152,7 +1131,6 @@ def calculate_sedi(input_data, columns_names, logger=None):
             calculated SEDI as float
             or None if some data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     safe_log(logger, "debug", "Starting calculation of SEDI.")
 
     try:
@@ -1173,14 +1151,14 @@ def calculate_sedi(input_data, columns_names, logger=None):
         result = round_half_up(result, PRECISION)
         safe_log(logger, "info", f"Calculated SEDI: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error in calculating SEDI: {str(e)}")
         result = None
 
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_seds(input_data, columns_names, logger=None):
     """Performs calculation of SEDS - Symmetric Extreme Dependency Score
 
@@ -1194,7 +1172,6 @@ def calculate_seds(input_data, columns_names, logger=None):
             calculated SEDS as float
             or None if some data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     safe_log(logger, "debug", "Starting calculation of SEDS.")
 
     try:
@@ -1211,14 +1188,14 @@ def calculate_seds(input_data, columns_names, logger=None):
         result = num / den - 1.0
         result = round_half_up(result, PRECISION)
         safe_log(logger, "info", f"Calculated SEDS: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error in calculating SEDS: {str(e)}")
         result = None
 
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_edi(input_data, columns_names, logger=None):
     """Performs calculation of EDI - Extreme Dependency Index
 
@@ -1232,7 +1209,6 @@ def calculate_edi(input_data, columns_names, logger=None):
             calculated EDI as float
             or None if some data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     safe_log(logger, "debug", "Starting calculation of EDI.")
 
     try:
@@ -1249,15 +1225,15 @@ def calculate_edi(input_data, columns_names, logger=None):
         result = round_half_up(result, PRECISION)
         safe_log(logger, "info", f"Calculated EDI: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         # Log the error
         safe_log(logger, "error", f"Error in calculating EDI: {str(e)}")
         result = None
     
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_eds(input_data, columns_names, logger=None):
     """Performs calculation of EDS - Extreme Dependency Score
 
@@ -1271,7 +1247,6 @@ def calculate_eds(input_data, columns_names, logger=None):
             calculated EDs as float
             or None if some data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     safe_log(logger, "debug", "Starting calculation of EDS.")
 
     try:
@@ -1287,11 +1262,10 @@ def calculate_eds(input_data, columns_names, logger=None):
         result = round_half_up(result, PRECISION)
         safe_log(logger, "info", f"Calculated EDS: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error in calculating EDS: {str(e)}")
         result = None
     
-    warnings.filterwarnings('ignore')
     return result
 
 

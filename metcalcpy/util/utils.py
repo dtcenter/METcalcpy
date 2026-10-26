@@ -23,6 +23,7 @@ import numpy as np
 import pandas as pd
 from pandas import DataFrame
 import warnings
+from contextlib import contextmanager
 from dataclasses import make_dataclass
 import re
 
@@ -33,6 +34,24 @@ from metcalcpy import GROUP_SEPARATOR, DATE_TIME_REGEX
 from metcalcpy.event_equalize import event_equalize
 from metcalcpy.util.wald_wolfowitz_runs_test import runs_test
 from metcalcpy.util.safe_log import safe_log
+
+@contextmanager
+def numeric_warnings_as_errors():
+    """Raise RuntimeWarning (e.g. divide by zero, invalid value or overflow
+    from numpy/scipy) as an exception inside the block so that a statistic
+    calculation can catch it and return None. Other warnings, such as
+    deprecation warnings, are not affected. The warnings filters are
+    restored on exit, so the process-wide filter list is not changed.
+
+    Can be used as a context manager or as a function decorator:
+
+        @numeric_warnings_as_errors()
+        def calculate_stat(...):
+    """
+    with warnings.catch_warnings():
+        warnings.simplefilter('error', RuntimeWarning)
+        yield
+
 
 OPERATION_TO_SIGN = {
     'DIFF': '-',
@@ -507,8 +526,6 @@ def aggregate_field_values(series_var_val, input_data_frame, line_type, logger=N
                 Pandas DataFrame with aggregated statistics
             """
 
-    warnings.filterwarnings('error')
-
     # get unique values for valid date/time and lead time
     unique_valid = input_data_frame.fcst_valid_beg.unique()
     unique_lead = input_data_frame.fcst_lead.unique()
@@ -791,7 +808,6 @@ def equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axi
             if output_ee_data.empty:
                 output_ee_data = series_data_after_ee
             else:
-                warnings.simplefilter(action="error", category=FutureWarning)
                 output_ee_data = pd.concat([output_ee_data, series_data_after_ee])
             safe_log(logger, "debug", f"Appended equalized data for forecast variable: {fcst_var}")
 

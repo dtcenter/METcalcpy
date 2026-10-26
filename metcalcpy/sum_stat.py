@@ -38,7 +38,6 @@ import time
 import logging
 import yaml
 import pandas as pd
-import warnings
 from inspect import signature
 
 from metcalcpy import GROUP_SEPARATOR
@@ -189,7 +188,6 @@ class SumStat:
         Args:
             axis - y1 or y1 axis
         """
-        warnings.filterwarnings('error')
         logger = self.logger
         safe_log(logger, "debug", "Aggregating special fields.")
 

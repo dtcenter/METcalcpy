@@ -10,11 +10,10 @@
 """
 Program Name: vcnt_statistics.py
 """
-import warnings
 import numpy as np
 
 from metcalcpy.util.met_stats import calc_direction, calc_speed
-from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION, get_total_values, \
+from metcalcpy.util.utils import numeric_warnings_as_errors, round_half_up, sum_column_data_by_name, PRECISION, get_total_values, \
     get_total_dir_values
 from metcalcpy.util.safe_log import safe_log
 
@@ -24,6 +23,7 @@ __version__ = '0.1.0'
 from metcalcpy.util.vl1l2_statistics import calculate_vl1l2_fvar, calculate_vl1l2_ovar
 
 
+@numeric_warnings_as_errors()
 def calculate_vcnt_fbar(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of VCNT_FBAR - Mean value of forecast wind speed
 
@@ -38,7 +38,6 @@ def calculate_vcnt_fbar(input_data, columns_names, aggregation=False, logger=Non
             calculated VCNT_FBAR as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting calculation of VCNT_FBAR.")
 
@@ -50,13 +49,13 @@ def calculate_vcnt_fbar(input_data, columns_names, aggregation=False, logger=Non
         result = round_half_up(result, PRECISION)
         safe_log(logger, "debug", f"Rounded VCNT_FBAR value: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error during calculation of VCNT_FBAR: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_vcnt_obar(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of VCNT_OBAR - Mean value of observed wind speed
 
@@ -71,7 +70,6 @@ def calculate_vcnt_obar(input_data, columns_names, aggregation=False, logger=Non
             calculated VCNT_OBAR as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting calculation of VCNT_OBAR.")
 
@@ -83,13 +81,13 @@ def calculate_vcnt_obar(input_data, columns_names, aggregation=False, logger=Non
         result = round_half_up(result, PRECISION)
         safe_log(logger, "debug", f"Rounded VCNT_OBAR value: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error during calculation of VCNT_OBAR: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_vcnt_fs_rms(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of VCNT_FS_RMS - Root mean square forecast wind speed
 
@@ -104,7 +102,6 @@ def calculate_vcnt_fs_rms(input_data, columns_names, aggregation=False, logger=N
             calculated VCNT_FS_RMS as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting calculation of VCNT_FS_RMS.")
 
@@ -119,14 +116,14 @@ def calculate_vcnt_fs_rms(input_data, columns_names, aggregation=False, logger=N
         result = round_half_up(result, PRECISION)
         safe_log(logger, "debug", f"Rounded VCNT_FS_RMS value: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error during calculation of VCNT_FS_RMS: {str(e)}")
         result = None
 
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_vcnt_os_rms(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of VCNT_OS_RMS - Root mean square observed wind speed
 
@@ -141,7 +138,6 @@ def calculate_vcnt_os_rms(input_data, columns_names, aggregation=False, logger=N
             calculated VCNT_OS_RMS as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting calculation of VCNT_OS_RMS.")
 
@@ -156,13 +152,13 @@ def calculate_vcnt_os_rms(input_data, columns_names, aggregation=False, logger=N
         result = round_half_up(result, PRECISION)
         safe_log(logger, "debug", f"Rounded VCNT_OS_RMS value: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error during calculation of VCNT_OS_RMS: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_vcnt_msve(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of VCNT_MSVE - Mean squared length of the vector
     difference between the forecast and observed winds
@@ -178,7 +174,6 @@ def calculate_vcnt_msve(input_data, columns_names, aggregation=False, logger=Non
             calculated VCNT_MSVE as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting calculation of VCNT_MSVE.")
 
@@ -201,13 +196,13 @@ def calculate_vcnt_msve(input_data, columns_names, aggregation=False, logger=Non
             result = round_half_up(mse, PRECISION)
             safe_log(logger, "debug", f"Rounded VCNT_MSVE value: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error during calculation of VCNT_MSVE: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_vcnt_rmsve(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of VCNT_RMSVE - Square root of Mean squared length of the vector
         Args:
@@ -221,7 +216,6 @@ def calculate_vcnt_rmsve(input_data, columns_names, aggregation=False, logger=No
             calculated VCNT_RMSVE as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting calculation of VCNT_RMSVE.")
 
@@ -232,13 +226,13 @@ def calculate_vcnt_rmsve(input_data, columns_names, aggregation=False, logger=No
         result = round_half_up(result, PRECISION)
         safe_log(logger, "debug", f"Rounded VCNT_RMSVE value: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error during calculation of VCNT_RMSVE: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_vcnt_fstdev(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of VCNT_FSTDEV - Standard deviation of the forecast wind speed
         Args:
@@ -252,7 +246,6 @@ def calculate_vcnt_fstdev(input_data, columns_names, aggregation=False, logger=N
             calculated VCNT_FSTDEV as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting calculation of VCNT_FSTDEV.")
 
@@ -263,13 +256,13 @@ def calculate_vcnt_fstdev(input_data, columns_names, aggregation=False, logger=N
         result = round_half_up(result, PRECISION)
         safe_log(logger, "debug", f"Rounded VCNT_FSTDEV value: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error during calculation of VCNT_FSTDEV: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_vcnt_ostdev(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of VCNT_OSTDEV - Standard deviation of the observed wind speed
         Args:
@@ -283,7 +276,6 @@ def calculate_vcnt_ostdev(input_data, columns_names, aggregation=False, logger=N
             calculated VCNT_OSTDEV as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting calculation of VCNT_OSTDEV.")
 
@@ -293,14 +285,14 @@ def calculate_vcnt_ostdev(input_data, columns_names, aggregation=False, logger=N
         result = round_half_up(result, PRECISION)
         safe_log(logger, "debug", f"Rounded VCNT_OSTDEV value: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error during calculation of VCNT_OSTDEV: {str(e)}")
         result = None
 
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_vcnt_fdir(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of VCNT_FDIR - Direction of the average forecast wind vector
         Args:
@@ -314,7 +306,6 @@ def calculate_vcnt_fdir(input_data, columns_names, aggregation=False, logger=Non
             calculated VCNT_FDIR as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting calculation of VCNT_FDIR.")
 
@@ -328,13 +319,13 @@ def calculate_vcnt_fdir(input_data, columns_names, aggregation=False, logger=Non
         result = round_half_up(fdir, PRECISION)
         safe_log(logger, "debug", f"Calculated VCNT_FDIR: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error during calculation of VCNT_FDIR: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_vcnt_odir(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of VCNT_ODIR - Direction of the average observed wind vector
         Args:
@@ -348,7 +339,6 @@ def calculate_vcnt_odir(input_data, columns_names, aggregation=False, logger=Non
             calculated VCNT_ODIR as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting calculation of VCNT_ODIR.")
 
@@ -362,13 +352,13 @@ def calculate_vcnt_odir(input_data, columns_names, aggregation=False, logger=Non
         result = round_half_up(odir, PRECISION)
         safe_log(logger, "debug", f"Calculated VCNT_ODIR: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error during calculation of VCNT_ODIR: {str(e)}")
         result = Non
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_vcnt_fbar_speed(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of VCNT_FBAR_SPEED - Length (speed) of the average forecast wind vector
         Args:
@@ -382,7 +372,6 @@ def calculate_vcnt_fbar_speed(input_data, columns_names, aggregation=False, logg
             calculated VCNT_FBAR_SPEED as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting calculation of VCNT_FBAR_SPEED.")
         total = get_total_values(input_data, columns_names, aggregation)
@@ -392,13 +381,13 @@ def calculate_vcnt_fbar_speed(input_data, columns_names, aggregation=False, logg
         fspd = calc_speed(ufbar, vfbar, logger=logger)
         result = round_half_up(fspd, PRECISION)
         safe_log(logger, "debug", f"Calculated VCNT_FBAR_SPEED: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error during calculation of VCNT_FBAR_SPEED: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_vcnt_obar_speed(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of VCNT_OBAR_SPEED - Length (speed) of the average observed wind vector
         Args:
@@ -412,7 +401,6 @@ def calculate_vcnt_obar_speed(input_data, columns_names, aggregation=False, logg
             calculated VCNT_OBAR_SPEED as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting calculation of VCNT_OBAR_SPEED.")
         total = get_total_values(input_data, columns_names, aggregation)
@@ -424,13 +412,13 @@ def calculate_vcnt_obar_speed(input_data, columns_names, aggregation=False, logg
         result = round_half_up(fspd, PRECISION)
         safe_log(logger, "debug", f"Calculated VCNT_OBAR_SPEED: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error during calculation of VCNT_OBAR_SPEED: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_vcnt_vdiff_speed(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of VCNT_VDIFF_SPEED - Length (speed)  of the vector deference between
     the average forecast and average observed wind vectors
@@ -446,7 +434,6 @@ def calculate_vcnt_vdiff_speed(input_data, columns_names, aggregation=False, log
             calculated VCNT_VDIFF_SPEED as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     safe_log(logger, "debug", "Starting calculation of VCNT_VDIFF_SPEED.")
     try:
         total = get_total_values(input_data, columns_names, aggregation)
@@ -458,13 +445,13 @@ def calculate_vcnt_vdiff_speed(input_data, columns_names, aggregation=False, log
         vdiff_spd = calc_speed(ufbar - uobar, vfbar - vobar, logger=logger)
         result = round_half_up(vdiff_spd, PRECISION)
         safe_log(logger, "debug", f"Calculated VCNT_VDIFF_SPEED: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error during calculation of VCNT_VDIFF_SPEED: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_vcnt_vdiff_dir(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of VCNT_VDIFF_DIR - Direction of the vector deference between
     the average forecast and average wind vector
@@ -481,7 +468,6 @@ def calculate_vcnt_vdiff_dir(input_data, columns_names, aggregation=False, logge
             or None if some of the data values are missing or invalid
     """
     safe_log(logger, "info", "Starting calculation of VCNT_VDIFF_DIR.")
-    warnings.filterwarnings('error')
 
     try:
         total = get_total_values(input_data, columns_names, aggregation)
@@ -504,14 +490,14 @@ def calculate_vcnt_vdiff_dir(input_data, columns_names, aggregation=False, logge
         
         result = round_half_up(vdiff_dir, PRECISION)
         safe_log(logger, "info", f"Result rounded to precision {PRECISION}: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error occurred during calculation: {e}")
         result = None
     safe_log(logger, "info", "Finished calculation of VCNT_VDIFF_DIR.")
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_vcnt_speed_err(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of VCNT_SPEED_ERR - Deference between
         the length of the average forecast wind vector
@@ -529,7 +515,6 @@ def calculate_vcnt_speed_err(input_data, columns_names, aggregation=False, logge
             or None if some of the data values are missing or invalid
     """
     safe_log(logger, "info", "Starting calculation of VCNT_SPEED_ERR.")
-    warnings.filterwarnings('error')
     try:
         fbar_speed = calculate_vcnt_fbar_speed(input_data, columns_names, aggregation, logger=logger)
         safe_log(logger, "debug", f"Calculated fbar_speed: {fbar_speed}")
@@ -542,14 +527,14 @@ def calculate_vcnt_speed_err(input_data, columns_names, aggregation=False, logge
         
         result = round_half_up(speed_bias, PRECISION)
         safe_log(logger, "info", f"Result rounded to precision {PRECISION}: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error occurred during calculation: {e}")
         result = None
-    warnings.filterwarnings('ignore')
     safe_log(logger, "info", "Finished calculation of VCNT_SPEED_ERR.")
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_vcnt_speed_abserr(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of VCNT_SPEED_ABSERR - Absolute value of diference between the length
      of the average forecast wind vector
@@ -567,7 +552,6 @@ def calculate_vcnt_speed_abserr(input_data, columns_names, aggregation=False, lo
             or None if some of the data values are missing or invalid
     """
     safe_log(logger, "info", "Starting calculation of VCNT_SPEED_ABSERR.")
-    warnings.filterwarnings('error')
     try:
         speed_err = calculate_vcnt_speed_err(input_data, columns_names, aggregation, logger=logger)
         safe_log(logger, "debug", f"Calculated speed_err: {speed_err}")
@@ -577,13 +561,13 @@ def calculate_vcnt_speed_abserr(input_data, columns_names, aggregation=False, lo
         
         result = round_half_up(spd_abserr, PRECISION)
         safe_log(logger, "info", f"Result rounded to precision {PRECISION}: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error occurred during calculation: {e}")
         result = None
-    warnings.filterwarnings('ignore')
     safe_log(logger, "info", "Finished calculation of VCNT_SPEED_ABSERR.")
     return result
 
+@numeric_warnings_as_errors()
 def calculate_vcnt_dir_err(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of VCNT_DIR_ERR - Signed angle between the directions
         of the average forecast and observed wind vectors.
@@ -601,7 +585,6 @@ def calculate_vcnt_dir_err(input_data, columns_names, aggregation=False, logger=
             or None if some of the data values are missing or invalid
     """
     safe_log(logger, "info", "Starting calculation of VCNT_DIR_ERR.")
-    warnings.filterwarnings('error')
     try:
         f_len = calculate_vcnt_fbar_speed(input_data, columns_names, aggregation, logger=logger)
         safe_log(logger, "debug", f"Calculated f_len: {f_len}")
@@ -641,14 +624,14 @@ def calculate_vcnt_dir_err(input_data, columns_names, aggregation=False, logger=
 
         result = round_half_up(dir_err, PRECISION)
         safe_log(logger, "info", f"Result rounded to precision {PRECISION}: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error occurred during calculation: {e}")
         result = None
-    warnings.filterwarnings('ignore')
     safe_log(logger, "info", "Finished calculation of VCNT_DIR_ERR.")
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_vcnt_dir_abser(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of VCNT_DIR_ABSERR - Absolute value of
         signed angle between the directions of the average forecast
@@ -667,7 +650,6 @@ def calculate_vcnt_dir_abser(input_data, columns_names, aggregation=False, logge
             or None if some of the data values are missing or invalid
     """
     safe_log(logger, "info", "Starting calculation of VCNT_DIR_ABSERR.")
-    warnings.filterwarnings('error')
     try:
         dir_err = calculate_vcnt_dir_err(input_data, columns_names, aggregation, logger=logger)
         safe_log(logger, "debug", f"Calculated dir_err: {dir_err}")
@@ -677,17 +659,16 @@ def calculate_vcnt_dir_abser(input_data, columns_names, aggregation=False, logge
 
         result = round_half_up(ang_btw, PRECISION)
         safe_log(logger, "info", f"Result rounded to precision {PRECISION}: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error occurred during calculation: {e}")
         result = None
-    warnings.filterwarnings('ignore')
     safe_log(logger, "info", "Finished calculation of VCNT_DIR_ABSERR.")
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_vcnt_anom_corr(input_data, columns_names, aggregation=False, logger=None):
     safe_log(logger, "info", "Starting calculation of VCNT_ANOM_CORR.")
-    warnings.filterwarnings('error')
     try:
         total = get_total_values(input_data, columns_names, aggregation) # n
         safe_log(logger, "debug", f"Total value calculated: {total}")
@@ -720,17 +701,16 @@ def calculate_vcnt_anom_corr(input_data, columns_names, aggregation=False, logge
             result = -1.0
         safe_log(logger, "info", f"Final anomaly correlation result: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error occurred during calculation: {e}")
         result = None
-    warnings.filterwarnings('ignore')
     safe_log(logger, "info", "Finished calculation of VCNT_ANOM_CORR.")
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_vcnt_anom_corr_uncntr(input_data, columns_names, logger=None):
     safe_log(logger, "info", "Starting calculation of VCNT_ANOM_CORR_UNCNTR.")
-    warnings.filterwarnings('error')
     try:
         uvffabar = sum_column_data_by_name(input_data, columns_names, 'uvffabar')   # ff
         safe_log(logger, "debug", f"Calculated uvffabar: {uvffabar}")
@@ -754,17 +734,16 @@ def calculate_vcnt_anom_corr_uncntr(input_data, columns_names, logger=None):
             result = -1.0
         safe_log(logger, "info", f"Final uncentered anomaly correlation result: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error occurred during calculation: {e}")
         result = None
-    warnings.filterwarnings('ignore')
     safe_log(logger, "info", "Finished calculation of VCNT_ANOM_CORR_UNCNTR.")
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_vcnt_dir_me(input_data, columns_names, aggregation=False, logger=None):
     safe_log(logger, "info", "Starting calculation of VCNT_DIR_ME.")
-    warnings.filterwarnings('error')
     try:
         total = get_total_dir_values(input_data, np.array(columns_names), aggregation)
         safe_log(logger, "debug", f"Total direction values calculated: {total}")
@@ -775,16 +754,15 @@ def calculate_vcnt_dir_me(input_data, columns_names, aggregation=False, logger=N
         result = round_half_up(result, PRECISION)
         safe_log(logger, "info", f"Result rounded to precision {PRECISION}: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error occurred during calculation: {e}")
         result = None
-    warnings.filterwarnings('ignore')
     safe_log(logger, "info", "Finished calculation of VCNT_DIR_ME.")
     return result
 
+@numeric_warnings_as_errors()
 def calculate_vcnt_dir_mae(input_data, columns_names, aggregation=False, logger=None):
     safe_log(logger, "info", "Starting calculation of VCNT_DIR_MAE.")
-    warnings.filterwarnings('error')
     try:
         total = get_total_dir_values(input_data, np.array(columns_names), aggregation)
         safe_log(logger, "debug", f"Total direction values calculated: {total}")
@@ -795,16 +773,15 @@ def calculate_vcnt_dir_mae(input_data, columns_names, aggregation=False, logger=
         result = round_half_up(result, PRECISION)
         safe_log(logger, "info", f"Result rounded to precision {PRECISION}: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error occurred during calculation: {e}")
         result = None
-    warnings.filterwarnings('ignore')
     safe_log(logger, "info", "Finished calculation of VCNT_DIR_MAE.")
     return result
 
+@numeric_warnings_as_errors()
 def calculate_vcnt_dir_mse(input_data, columns_names, aggregation=False, logger=None):
     safe_log(logger, "info", "Starting calculation of VCNT_DIR_MSE.")
-    warnings.filterwarnings('error')
     try:
         total = get_total_dir_values(input_data, np.array(columns_names), aggregation)
         safe_log(logger, "debug", f"Total direction values calculated: {total}")
@@ -815,17 +792,16 @@ def calculate_vcnt_dir_mse(input_data, columns_names, aggregation=False, logger=
         result = round_half_up(result, PRECISION)
         safe_log(logger, "info", f"Result rounded to precision {PRECISION}: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error occurred during calculation: {e}")
         result = None
-    warnings.filterwarnings('ignore')
     safe_log(logger, "info", "Finished calculation of VCNT_DIR_MSE.")
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_vcnt_dir_rmse(input_data, columns_names, aggregation=False, logger=None):
     safe_log(logger, "info", "Starting calculation of VCNT_DIR_RMSE.")
-    warnings.filterwarnings('error')
     try:
         mse_result = calculate_vcnt_dir_mse(input_data, np.array(columns_names), aggregation, logger=logger)
         safe_log(logger, "debug", f"Calculated mean squared error: {mse_result}")
@@ -836,9 +812,8 @@ def calculate_vcnt_dir_rmse(input_data, columns_names, aggregation=False, logger
         result = round_half_up(result, PRECISION)
         safe_log(logger, "info", f"Result rounded to precision {PRECISION}: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error occurred during calculation: {e}")
         result = None
-    warnings.filterwarnings('ignore')
     safe_log(logger, "info", "Finished calculation of VCNT_DIR_RMSE.")
     return result

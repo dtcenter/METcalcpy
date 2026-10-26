@@ -11,15 +11,15 @@
 """
 Program Name: sl1l2_statistics.py
 """
-import warnings
 import numpy as np
-from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION, get_total_values
+from metcalcpy.util.utils import numeric_warnings_as_errors, round_half_up, sum_column_data_by_name, PRECISION, get_total_values
 from metcalcpy.util.safe_log import safe_log
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
 
 
+@numeric_warnings_as_errors()
 def calculate_fbar(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of FBAR - Forecast mean
 
@@ -34,7 +34,6 @@ def calculate_fbar(input_data, columns_names, aggregation=False, logger=None):
             calculated FBAR as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting calculation of FBAR")
 
@@ -47,13 +46,13 @@ def calculate_fbar(input_data, columns_names, aggregation=False, logger=None):
             result = round_half_up(result, PRECISION)
             safe_log(logger, "debug", f"FBAR calculated successfully: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during FBAR calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_obar(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of OBAR - Observation Mean
 
@@ -68,7 +67,6 @@ def calculate_obar(input_data, columns_names, aggregation=False, logger=None):
             calculated OBAR as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting calculation of OBAR")
 
@@ -81,13 +79,13 @@ def calculate_obar(input_data, columns_names, aggregation=False, logger=None):
             result = round_half_up(result, PRECISION)
             safe_log(logger, "debug", f"OBAR calculated successfully: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during OBAR calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_fstdev(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of FSTDEV - Forecast standard deviation
 
@@ -102,7 +100,6 @@ def calculate_fstdev(input_data, columns_names, aggregation=False, logger=None):
             calculated FSTDEV as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting calculation of FSTDEV")
 
@@ -123,13 +120,13 @@ def calculate_fstdev(input_data, columns_names, aggregation=False, logger=None):
 
         safe_log(logger, "debug", f"FSTDEV calculated successfully: {result}")
 
-    except (TypeError, Warning, ValueError) as e:
+    except (TypeError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during FSTDEV calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_ostdev(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of OSTDEV - Observation Standard Deviation
 
@@ -144,7 +141,6 @@ def calculate_ostdev(input_data, columns_names, aggregation=False, logger=None):
             calculated OSTDEV as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting calculation of OSTDEV")
 
@@ -168,13 +164,13 @@ def calculate_ostdev(input_data, columns_names, aggregation=False, logger=None):
         result = round_half_up(result, PRECISION)
         safe_log(logger, "debug", f"Final rounded OSTDEV result: {result}")
         
-    except (TypeError, Warning, ZeroDivisionError, ValueError) as e:
+    except (TypeError, RuntimeWarning, ZeroDivisionError, ValueError) as e:
         safe_log(logger, "error", f"Error occurred during OSTDEV calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_fobar(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of FOBAR - Average product of forecast and observation
 
@@ -189,7 +185,6 @@ def calculate_fobar(input_data, columns_names, aggregation=False, logger=None):
             calculated FOBAR as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting calculation of FOBAR")
 
@@ -202,13 +197,13 @@ def calculate_fobar(input_data, columns_names, aggregation=False, logger=None):
         result = round_half_up(result, PRECISION)
         safe_log(logger, "debug", f"Final rounded FOBAR result: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error occurred during FOBAR calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_ffbar(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of FFBAR - Average of forecast squared
 
@@ -223,7 +218,6 @@ def calculate_ffbar(input_data, columns_names, aggregation=False, logger=None):
             calculated FFBAR as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting calculation of FFBAR")
 
@@ -236,13 +230,13 @@ def calculate_ffbar(input_data, columns_names, aggregation=False, logger=None):
         result = round_half_up(result, PRECISION)
         safe_log(logger, "debug", f"Final rounded FFBAR result: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error occurred during FFBAR calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_oobar(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of OOBAR - Average of observation squared
 
@@ -257,7 +251,6 @@ def calculate_oobar(input_data, columns_names, aggregation=False, logger=None):
             calculated OOBAR as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting calculation of OOBAR")
 
@@ -270,13 +263,13 @@ def calculate_oobar(input_data, columns_names, aggregation=False, logger=None):
         result = round_half_up(result, PRECISION)
         safe_log(logger, "debug", f"Final rounded OOBAR result: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error occurred during OOBAR calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_mae(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of MAE - Mean absolute error
 
@@ -291,7 +284,6 @@ def calculate_mae(input_data, columns_names, aggregation=False, logger=None):
             calculated MAE as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting calculation of MAE")
 
@@ -304,13 +296,13 @@ def calculate_mae(input_data, columns_names, aggregation=False, logger=None):
         result = round_half_up(result, PRECISION)
         safe_log(logger, "debug", f"Final rounded MAE result: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error occurred during MAE calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_mbias(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of MBIAS - Multiplicative Bias
 
@@ -325,7 +317,6 @@ def calculate_mbias(input_data, columns_names, aggregation=False, logger=None):
             calculated MBIAS as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting calculation of MBIAS")
 
@@ -346,13 +337,13 @@ def calculate_mbias(input_data, columns_names, aggregation=False, logger=None):
             result = round_half_up(result, PRECISION)
             safe_log(logger, "debug", f"Final rounded MBIAS result: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error occurred during MBIAS calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_pr_corr(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of PR_CORR - Pearson correlation coefficient
         including normal confidence limits
@@ -368,7 +359,6 @@ def calculate_pr_corr(input_data, columns_names, aggregation=False, logger=None)
             calculated PR_CORR as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting calculation of PR_CORR")
 
@@ -405,13 +395,13 @@ def calculate_pr_corr(input_data, columns_names, aggregation=False, logger=None)
                 pr_corr = round_half_up(pr_corr, PRECISION)
                 safe_log(logger, "debug", f"Final rounded PR_CORR result: {pr_corr}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error occurred during PR_CORR calculation: {str(e)}")
         pr_corr = None
-    warnings.filterwarnings('ignore')
     return pr_corr
 
 
+@numeric_warnings_as_errors()
 def calculate_fe(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of FE - Fractional error
 
@@ -426,7 +416,6 @@ def calculate_fe(input_data, columns_names, aggregation=False, logger=None):
             calculated FE as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting FE calculation")
         total = get_total_values(input_data, columns_names, aggregation)
@@ -444,13 +433,13 @@ def calculate_fe(input_data, columns_names, aggregation=False, logger=None):
         result = round_half_up(result, PRECISION)
         safe_log(logger, "debug", f"Final result after rounding: {result}")
         
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during FE calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_me(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of ME - Mean error, aka Additive bias
 
@@ -465,7 +454,6 @@ def calculate_me(input_data, columns_names, aggregation=False, logger=None):
             calculated ME as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting ME calculation")
         total = get_total_values(input_data, columns_names, aggregation)
@@ -483,13 +471,13 @@ def calculate_me(input_data, columns_names, aggregation=False, logger=None):
         result = round_half_up(result, PRECISION)
         safe_log(logger, "debug", f"Final result after rounding: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during ME calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_me2(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of ME2 - The square of the mean error (bias)
 
@@ -504,7 +492,6 @@ def calculate_me2(input_data, columns_names, aggregation=False, logger=None):
             calculated ME2 as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting ME2 calculation")
         me = calculate_me(input_data, columns_names, aggregation, logger=logger)
@@ -519,13 +506,13 @@ def calculate_me2(input_data, columns_names, aggregation=False, logger=None):
         else:
             safe_log(logger, "warning", "ME calculation returned None, so ME2 cannot be calculated")
             result = None
-    except (TypeError, Warning) as e:
+    except (TypeError, RuntimeWarning) as e:
         safe_log(logger, "warning", f"Exception occurred during ME2 calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_mse(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of MSE - Mean squared error
 
@@ -540,7 +527,6 @@ def calculate_mse(input_data, columns_names, aggregation=False, logger=None):
             calculated MSE as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting MSE calculation")
 
@@ -559,13 +545,13 @@ def calculate_mse(input_data, columns_names, aggregation=False, logger=None):
         result = round_half_up(result, PRECISION)
         safe_log(logger, "debug", f"Final MSE result after rounding: {result}")
 
-    except (TypeError, Warning) as e:
+    except (TypeError, RuntimeWarning) as e:
         safe_log(logger, "warning", f"Exception occurred during MSE calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_msess(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of MSESS - The mean squared error skill score
 
@@ -580,7 +566,6 @@ def calculate_msess(input_data, columns_names, aggregation=False, logger=None):
                 calculated MSESS as float
                 or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting MSESS calculation")
 
@@ -592,13 +577,13 @@ def calculate_msess(input_data, columns_names, aggregation=False, logger=None):
         result = 1.0 - mse / ostdev ** 2
         result = round_half_up(result, PRECISION)
         safe_log(logger, "debug", f"Final MSESS result after rounding: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError):
         safe_log(logger, "warning", f"Exception occurred during MSESS calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_rmse(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of RMSE - Root-mean squared error
 
@@ -613,7 +598,6 @@ def calculate_rmse(input_data, columns_names, aggregation=False, logger=None):
                 calculated RMSE as float
                 or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting RMSE calculation")
 
@@ -622,13 +606,13 @@ def calculate_rmse(input_data, columns_names, aggregation=False, logger=None):
         result = np.sqrt(calculate_mse(input_data, columns_names, aggregation, logger=logger))
         result = round_half_up(result, PRECISION)
         safe_log(logger, "debug", f"Final RMSE result after rounding: {result}")
-    except (TypeError, Warning) as e:
+    except (TypeError, RuntimeWarning) as e:
         safe_log(logger, "warning", f"Exception occurred during RMSE calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_si(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of SI - Scatter Index
 
@@ -643,7 +627,6 @@ def calculate_si(input_data, columns_names, aggregation=False, logger=None):
                 calculated SI as float
                 or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting SI calculation")
 
@@ -655,13 +638,13 @@ def calculate_si(input_data, columns_names, aggregation=False, logger=None):
         result = rmse / obar
         result = round_half_up(result, PRECISION)
         safe_log(logger, "debug", f"Final SI result after rounding: {result}")
-    except (TypeError, Warning, ZeroDivisionError) as e:
+    except (TypeError, RuntimeWarning, ZeroDivisionError) as e:
         safe_log(logger, "warning", f"Exception occurred during SI calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_estdev(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of ESTDEV - Standard deviation of the error
 
@@ -676,7 +659,6 @@ def calculate_estdev(input_data, columns_names, aggregation=False, logger=None):
             calculated ESTDEV as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting ESTDEV calculation")
 
@@ -691,13 +673,13 @@ def calculate_estdev(input_data, columns_names, aggregation=False, logger=None):
         result = calculate_stddev(me * total, mse * total, total, logger=logger)
         result = round_half_up(result, PRECISION)
         safe_log(logger, "debug", f"Final ESTDEV result after rounding: {result}")
-    except (TypeError, Warning, ZeroDivisionError) as e:
+    except (TypeError, RuntimeWarning, ZeroDivisionError) as e:
         safe_log(logger, "warning", f"Exception occurred during ESTDEV calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_bcmse(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of BCMSE - Bias-corrected mean squared error
 
@@ -712,7 +694,6 @@ def calculate_bcmse(input_data, columns_names, aggregation=False, logger=None):
                 calculated BCMSE as float
                 or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting BCMSE calculation")
 
@@ -727,13 +708,13 @@ def calculate_bcmse(input_data, columns_names, aggregation=False, logger=None):
         if result < 0:
             safe_log(logger, "debug", "BCMSE result is negative, setting to 0.")
             return 0.
-    except (TypeError, Warning, ZeroDivisionError) as e:
+    except (TypeError, RuntimeWarning, ZeroDivisionError) as e:
         safe_log(logger, "warning", f"Exception occurred during BCMSE calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_bcrmse(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of BCRMSE - Bias-corrected root mean square error
 
@@ -748,15 +729,13 @@ def calculate_bcrmse(input_data, columns_names, aggregation=False, logger=None):
                 calculated BCRMSE as float
                 or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         result = np.sqrt(calculate_bcmse(input_data, columns_names, aggregation, logger=logger))
         result = round_half_up(result, PRECISION)
         safe_log(logger, "debug", f"Final BCRMSE result after rounding: {result}")
-    except (TypeError, Warning, ZeroDivisionError) as e:
+    except (TypeError, RuntimeWarning, ZeroDivisionError) as e:
         safe_log(logger, "warning", f"Exception occurred during BCRMSE calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
