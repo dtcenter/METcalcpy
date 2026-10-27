@@ -33,7 +33,7 @@ def calculate_3d_ratio_fsa_asa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3d ratio FSA/ASA: {str(e)}.")
         return None
 
@@ -60,7 +60,7 @@ def calculate_3d_ratio_osa_asa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3d ratio OSA/ASA: {str(e)}.")
         return None
 
@@ -87,7 +87,7 @@ def calculate_3d_ratio_asm_asa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3d ratio ASM/ASA: {str(e)}.")
         return None
 
@@ -114,7 +114,7 @@ def calculate_3d_ratio_asu_asa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3d ratio ASU/ASA: {str(e)}.")
         return None
 
@@ -141,7 +141,7 @@ def calculate_3d_ratio_fsm_fsa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3d ratio FSM/FSA: {str(e)}.")
         return None
 
@@ -168,7 +168,7 @@ def calculate_3d_ratio_fsu_fsa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3d ratio FSU/FSA: {str(e)}.")
         return None
 
@@ -195,7 +195,7 @@ def calculate_3d_ratio_osm_osa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3d ratio OSM/OSA: {str(e)}.")
         return None
 
@@ -221,7 +221,7 @@ def calculate_3d_ratio_osu_osa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3d ratio OSU/OSA: {str(e)}.")
         return None
 
@@ -248,7 +248,7 @@ def calculate_3d_ratio_fsm_asm(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3d ratio FSM/ASM: {str(e)}.")
         return None
 
@@ -275,7 +275,7 @@ def calculate_3d_ratio_osm_asm(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3d ratio OSM/ASM: {str(e)}.")
         return None
 
@@ -302,7 +302,7 @@ def calculate_3d_ratio_fsu_asu(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3d ratio FSU/ASU: {str(e)}.")
         return None
 
@@ -329,7 +329,7 @@ def calculate_3d_ratio_osu_asu(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3d ratio OSU/ASU: {str(e)}.")
         return None
 
@@ -356,7 +356,7 @@ def calculate_3d_ratio_fsa_aaa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3D ratio FSA/AAA: {str(e)}.")
         return None
 
@@ -383,7 +383,7 @@ def calculate_3d_ratio_osa_aaa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3D ratio OSA/AAA: {str(e)}.")
         return None
 
@@ -410,7 +410,7 @@ def calculate_3d_ratio_fsa_faa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3D ratio FSA/FAA: {str(e)}.")
         return None
 
@@ -437,7 +437,7 @@ def calculate_3d_ratio_fca_faa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3D ratio FCA/FAA: {str(e)}.")
         return None
 
@@ -464,7 +464,7 @@ def calculate_3d_ratio_osa_oaa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3D ratio OSA/OAA: {str(e)}.")
         return None
 
@@ -491,7 +491,7 @@ def calculate_3d_ratio_oca_oaa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3D ratio OCA/OAA: {str(e)}.")
         return None
 
@@ -518,7 +518,7 @@ def calculate_3d_ratio_fca_aca(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3D ratio FCA/ACA: {str(e)}.")
         return None
 
@@ -545,7 +545,7 @@ def calculate_3d_ratio_fsa_osa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3D ratio FSA/OSA: {str(e)}.")
         return None
 
@@ -573,7 +573,7 @@ def calculate_3d_ratio_osa_fsa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3D ratio OSA/FSA: {str(e)}.")
         return None
 
@@ -600,7 +600,7 @@ def calculate_3d_ratio_asa_aca(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3D ratio ASA/ACA: {str(e)}.")
         return None
 
@@ -627,7 +627,7 @@ def calculate_3d_ratio_fca_fsa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3D ratio FCA/FSA: {str(e)}.")
         return None
 
@@ -654,7 +654,7 @@ def calculate_3d_ratio_fsa_fca(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3D ratio FSA/FCA: {str(e)}.")
         return None
 
@@ -681,7 +681,7 @@ def calculate_3d_ratio_oca_osa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3D ratio OCA/OSA: {str(e)}.")
         return None
 
@@ -708,7 +708,7 @@ def calculate_3d_ratio_osa_oca(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3D ratio OSA/OCA: {str(e)}.")
         return None
 
@@ -735,7 +735,7 @@ def calculate_3d_objhits(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3D object hits: {str(e)}.")
         return None
 
@@ -762,7 +762,7 @@ def calculate_3d_objmisses(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3D object misses: {str(e)}.")
         return None
 
@@ -789,7 +789,7 @@ def calculate_3d_objfas(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3D object false alarms: {str(e)}.")
         return None
 
@@ -816,7 +816,7 @@ def calculate_3d_objcsi(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3D object critical success index (CSI): {str(e)}.")
         return None
 
@@ -843,7 +843,7 @@ def calculate_3d_objpody(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3D object Probability of Detecting Yes (PODY): {str(e)}.")
         return None
 
@@ -870,6 +870,6 @@ def calculate_3d_objfar(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 3D object False Alarm Ratio (FAR): {str(e)}.")
         return None

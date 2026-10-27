@@ -36,7 +36,6 @@ import sys
 import logging
 import pandas as pd
 import yaml
-import warnings
 
 from metcalcpy import GROUP_SEPARATOR
 from metcalcpy.event_equalize_against_values import event_equalize_against_values
@@ -126,7 +125,6 @@ class AggStatEventEqz:
             Returns:
                 A data frame that contains equalized records
         """
-        warnings.filterwarnings('error')
         logger = self.logger
         safe_log(logger, "debug", f"Performing event equalization for axis {axis}.")
 

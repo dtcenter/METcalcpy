@@ -11,10 +11,9 @@
 """
 Program Name: val1l2_statistics.py
 """
-import warnings
 import numpy as np
 
-from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION, get_total_values, get_met_version, \
+from metcalcpy.util.utils import numeric_warnings_as_errors, round_half_up, sum_column_data_by_name, PRECISION, get_total_values, get_met_version, \
     get_total_dir_values
 from metcalcpy.util.safe_log import safe_log
 
@@ -22,6 +21,7 @@ __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
 
 
+@numeric_warnings_as_errors()
 def calculate_val1l2_anom_corr(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of VAL1L2_ANOM_CORR -
 
@@ -36,7 +36,6 @@ def calculate_val1l2_anom_corr(input_data, columns_names, aggregation=False, log
             calculated VAL1L2_ANOM_CORR as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting VAL1L2_ANOM_CORR calculation.")
 
@@ -55,10 +54,9 @@ def calculate_val1l2_anom_corr(input_data, columns_names, aggregation=False, log
         result = calc_wind_corr(ufabar, vfabar, uoabar, voabar, uvfoabar, uvffabar, uvooabar, logger=logger)
         result = round_half_up(result, PRECISION)
         safe_log(logger, "debug", f"Final VAL1L2_ANOM_CORR result: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error during VAL1L2_ANOM_CORR calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
@@ -80,7 +78,7 @@ def calc_wind_corr(uf, vf, uo, vo, uvfo, uvff, uvoo, logger=None):
     try:
         corr = (uvfo - uf * uo - vf * vo) / (np.sqrt(uvff - uf * uf - vf * vf)
                                              * np.sqrt(uvoo - uo * uo - vo * vo))
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error during wind correlation calculation: {str(e)}")
         corr = None
     return corr
@@ -166,10 +164,9 @@ def calculate_val1l2_dira_me(input_data, columns_names, aggregation=False, logge
         result = round_half_up(result, PRECISION)
         safe_log(logger, "debug", f"Rounded DIRA_ME value: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error during calculation of DIRA_ME: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
@@ -194,11 +191,10 @@ def calculate_val1l2_dira_mae(input_data, columns_names, aggregation=False, logg
         result = round_half_up(result, PRECISION)
         safe_log(logger, "debug", f"Rounded DIRA_MAE value: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error during calculation of DIRA_MAE: {str(e)}")
         result = None
 
-    warnings.filterwarnings('ignore')
     return result
 
 def calculate_val1l2_dira_mse(input_data, columns_names, aggregation=False, logger=None):
@@ -217,8 +213,7 @@ def calculate_val1l2_dira_mse(input_data, columns_names, aggregation=False, logg
 
         result = round_half_up(result, PRECISION)
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError):
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError):
         result = None
-    warnings.filterwarnings('ignore')
     return result
 

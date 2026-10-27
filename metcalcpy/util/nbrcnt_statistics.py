@@ -11,15 +11,15 @@
 """
 Program Name: nbrcnt_statistics.py
 """
-import warnings
 
-from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION, get_total_values
+from metcalcpy.util.utils import numeric_warnings_as_errors, round_half_up, sum_column_data_by_name, PRECISION, get_total_values
 from metcalcpy.util.safe_log import safe_log
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
 
 
+@numeric_warnings_as_errors()
 def calculate_nbr_fbs(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of NBR_FBS - Fractions Brier Score
 
@@ -34,7 +34,6 @@ def calculate_nbr_fbs(input_data, columns_names, aggregation=False, logger=None)
             calculated NBR_FBS as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Calculating total values from input data.")
         total = get_total_values(input_data, columns_names, aggregation)
@@ -45,13 +44,13 @@ def calculate_nbr_fbs(input_data, columns_names, aggregation=False, logger=None)
         safe_log(logger, "debug", "Rounding the FBS to the defined precision.")
         result = round_half_up(fbs, PRECISION)
     
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during NBR_FBS calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_nbr_fss(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of NBR_FSS - Fractions Skill Score
 
@@ -66,7 +65,6 @@ def calculate_nbr_fss(input_data, columns_names, aggregation=False, logger=None)
             calculated NBR_FSS as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Calculating total values from input data.")
         total = get_total_values(input_data, columns_names, aggregation)
@@ -83,13 +81,13 @@ def calculate_nbr_fss(input_data, columns_names, aggregation=False, logger=None)
         safe_log(logger, "debug", "Rounding the FSS to the defined precision.")
         result = round_half_up(fss, PRECISION)
     
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during NBR_FSS calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_nbr_afss(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of NBR_AFSS - Asymptotic Fractions Skill Score
 
@@ -104,7 +102,6 @@ def calculate_nbr_afss(input_data, columns_names, aggregation=False, logger=None
             calculated NBR_AFSS as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Calculating total values from input data.")
         total = get_total_values(input_data, columns_names, aggregation)
@@ -127,13 +124,13 @@ def calculate_nbr_afss(input_data, columns_names, aggregation=False, logger=None
         safe_log(logger, "debug", "Rounding the AFSS to the defined precision.")
         result = round_half_up(afss, PRECISION)
     
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during NBR_AFSS calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_nbr_ufss(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of NBR_UFSS - Uniform Fractions Skill Score
 
@@ -148,7 +145,6 @@ def calculate_nbr_ufss(input_data, columns_names, aggregation=False, logger=None
             calculated NBR_UFSS as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Calculating total values from input data.")
         total = get_total_values(input_data, columns_names, aggregation)
@@ -162,13 +158,13 @@ def calculate_nbr_ufss(input_data, columns_names, aggregation=False, logger=None
         safe_log(logger, "debug", "Rounding the UFSS to the defined precision.")
         result = round_half_up(ufss, PRECISION)
     
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during NBR_UFSS calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_nbr_f_rate(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of NBR_F_RATE - Forecast event frequency
 
@@ -183,7 +179,6 @@ def calculate_nbr_f_rate(input_data, columns_names, aggregation=False, logger=No
             calculated NBR_F_RATE as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Calculating total values from input data.")
         total = get_total_values(input_data, columns_names, aggregation)
@@ -194,13 +189,13 @@ def calculate_nbr_f_rate(input_data, columns_names, aggregation=False, logger=No
         safe_log(logger, "debug", "Rounding the F_RATE to the defined precision.")
         result = round_half_up(f_rate, PRECISION)
     
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during NBR_F_RATE calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_nbr_o_rate(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of NBR_O_RATE - Observed event frequency
 
@@ -215,7 +210,6 @@ def calculate_nbr_o_rate(input_data, columns_names, aggregation=False, logger=No
             calculated NBR_O_RATE as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Calculating total values from input data.")
         total = get_total_values(input_data, columns_names, aggregation)
@@ -226,10 +220,9 @@ def calculate_nbr_o_rate(input_data, columns_names, aggregation=False, logger=No
         safe_log(logger, "debug", "Rounding the O_RATE to the defined precision.")
         result = round_half_up(o_rate, PRECISION)
     
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during NBR_O_RATE calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
@@ -253,6 +246,6 @@ def calculate_nbr_cnt_total(input_data, columns_names, logger=None):
         result = round_half_up(total, PRECISION)
         
         safe_log(logger, "debug", f"Total matched pairs after rounding: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during total matched pairs calculation: {str(e)}")
         result = None

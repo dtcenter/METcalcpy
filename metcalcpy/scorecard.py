@@ -39,7 +39,6 @@ import sys
 import itertools
 import re
 import statistics
-import warnings
 import math
 import numpy as np
 from pandas import DataFrame
@@ -338,7 +337,7 @@ class Scorecard:
         for column in COLUMNS_TO_REMOVE:
             if column in self.column_names:
                 df = df.drop(column, axis=1)
-        df.reset_index(drop=True, inplace=True)
+        df = df.reset_index(drop=True)
 
         # set statistic value
         df.at[0, 'stat_value'] = derived_stat
@@ -348,9 +347,7 @@ class Scorecard:
         for fcst_lead in self.params["series_val_1"]['fcst_lead']:
             for component in derived_curve_component.first_component:
                 if component == fcst_lead:
-                    with warnings.catch_warnings():
-                        warnings.simplefilter(action="ignore", category=Warning)
-                        df.at[0, 'fcst_lead'] = fcst_lead
+                    df.at[0, 'fcst_lead'] = fcst_lead
                     break
 
         # set model

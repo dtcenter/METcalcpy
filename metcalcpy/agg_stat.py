@@ -834,8 +834,10 @@ class AggStat:
             safe_log(logger, "error", "Input data for preparation is None.")
             raise ValueError("Input data cannot be None.")
 
-        # rename bin_n column to total
-        data_for_prepare.rename(columns={"total": "total_orig", "bin_n": "total"}, inplace=True)
+        # rename bin_n column to total. Assign the new column labels to the
+        # caller's dataframe because the caller relies on it being modified
+        data_for_prepare.columns = data_for_prepare.rename(
+            columns={"total": "total_orig", "bin_n": "total"}).columns
         self.column_names = data_for_prepare.columns.values
 
         if self.statistic not in self.STATISTIC_TO_FIELDS:
@@ -1121,7 +1123,7 @@ class AggStat:
         # Sort data by dates and reset index
         safe_log(logger, "debug", "Sorting series data.")
         series_data = sort_data(series_data)
-        series_data.reset_index(inplace=True, drop=True)
+        series_data = series_data.reset_index(drop=True)
         safe_log(logger, "debug", "Data sorting completed and index reset.")
 
         # Prepare data for specific line type if present
