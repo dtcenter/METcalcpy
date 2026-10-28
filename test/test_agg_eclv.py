@@ -23,6 +23,25 @@ def test_calculate_value_and_ci(settings):
     assert result_frame['stat_btcl'][24] <= result_frame['y_pnt_i'][24] <= result_frame['stat_btcu'][24]
 
 
+def test_calculate_value_and_ci_no_series(settings, tmp_path):
+    '''
+       With no series variables no filters are generated, so all rows
+       must be used as a single point
+    '''
+    params = settings['agg_stat'].params
+    params['series_val_1'] = {}
+    params['agg_stat_output'] = f'{tmp_path}/agg_eclv_no_series_output.data'
+    agg_eclv = AggEclv(params)
+    agg_eclv.calculate_stats_and_ci()
+    result_frame = pd.read_csv(
+        agg_eclv.params['agg_stat_output'],
+        header=[0],
+        sep='\t'
+    )
+    assert result_frame.shape[0] == len(agg_eclv.steps)
+    assert np.allclose(result_frame['nstats'][0], len(agg_eclv.input_data))
+
+
 @pytest.fixture
 def settings():
     """Initialise values for testing.
