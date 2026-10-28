@@ -66,6 +66,34 @@ def test_eclv():
     assert -0.2514395393474087 == eclv['V'][0]
 
 
+def test_eclv_pct():
+    '''
+       Test the PCT branch of the ECLV code
+    '''
+    # one PCT table from roc_sample.data, in long format (one row per probability bin)
+    x = np.array([[0.0, 351, 1027],
+                  [0.1, 336, 522],
+                  [0.2, 225, 124],
+                  [0.3, 97, 16],
+                  [0.4, 0, 0]])
+    columns_names = np.array(['thresh_i', 'oy_i', 'on_i'])
+    cl_pts = [0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5,
+              0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
+
+    # bins with thresh_i > 0.1 count as forecast yes:
+    # fy_oy = 322, fy_on = 140, fn_oy = 687, fn_on = 1549
+    eclv = calculate_eclv(x, columns_names, 0.1, 'pct', cl_pts, 0)
+    assert 0.2362386 == eclv['vmax']
+    assert 0.0828893 == eclv['F']
+    assert 0.3191278 == eclv['H']
+    assert 0.3739807 == eclv['s']
+    assert 19 == len(eclv['V'])
+    assert np.isclose(eclv['V'][0], -6.8111308)
+    assert np.isclose(eclv['V'][9], 0.1803766)
+
+    # pct requires a threshold
+    assert calculate_eclv(x, columns_names, None, 'pct', cl_pts, 0) is None
+
 
 def test_runs_test():
     x = [2.4, 2.4, 2.4, 2.2, 2.1, 1.5, 2.3, 2.3, 2.5, 2.0, 1.9, 1.7, 2.2, 1.8, 3.2, 3.2, 2.7, 2.2, 2.2, 1.9, 1.9, 1.8,
