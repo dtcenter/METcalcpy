@@ -338,7 +338,7 @@ class Scorecard:
         for column in COLUMNS_TO_REMOVE:
             if column in self.column_names:
                 df = df.drop(column, axis=1)
-        df.reset_index(drop=True, inplace=True)
+        df = df.reset_index(drop=True)
 
         # set statistic value
         df.at[0, 'stat_value'] = derived_stat

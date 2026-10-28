@@ -49,7 +49,6 @@ def event_equalize(series_data, indy_var, series_var_vals, fix_vars, fix_vals_pe
     Returns:
         A data frame that contains equalized records
     """
-    pd.options.mode.chained_assignment = None
     safe_log(logger, "info", "Starting event equalization.")
     column_names = list(series_data)
     exception_columns = ["", "fcst_valid_beg", 'fcst_lead', 'fcst_valid', 'fcst_init', 'fcst_init_beg', 'VALID', 'LEAD']

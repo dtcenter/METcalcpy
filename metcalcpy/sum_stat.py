@@ -256,7 +256,7 @@ class SumStat:
 
                     aggregated_values = pd.concat([aggregated_values, point_data])
             self.input_data = aggregated_values
-            self.input_data.reset_index(inplace=True, drop=True)
+            self.input_data = self.input_data.reset_index(drop=True)
             safe_log(logger, "info", f"Aggregation completed. Rows after aggregation: {len(self.input_data)}")
         else:
             safe_log(logger, "debug", "No special fields detected for aggregation.")

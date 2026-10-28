@@ -317,7 +317,7 @@ class AggEclv:
 
             safe_log(logger, "info", f"Completed processing for point {point}")
 
-        out_frame.reset_index(drop=True, inplace=True)
+        out_frame = out_frame.reset_index(drop=True)
         safe_log(logger, "info", "All data processed successfully. Returning compiled DataFrame.")
         return out_frame
 
