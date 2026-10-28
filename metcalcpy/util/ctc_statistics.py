@@ -625,51 +625,6 @@ def calculate_bagss(input_data, columns_names, logger=None):
     return result
 
 
-def calculate_eclv(input_data, columns_names, logger=None):
-    """Performs calculation of ECLV - Economic Cost/Loss  Value
-        Implements R version that returns an array instead of the single value
-        IT WILL NOT WORK - NEED TO CONSULT WITH STATISTICIAN
-        Build list of X-axis points between 0 and 1
-
-        Args:
-            input_data: 2-dimensional numpy array with data for the calculation
-                1st dimension - the row of data frame
-                2nd dimension - the column of data frame
-            columns_names: names of the columns for the 2nd dimension as Numpy array
-
-        Returns:
-            calculated BAGSS as float
-            or None if some data values are missing or invalid
-    """
-    warnings.filterwarnings('error')
-    safe_log(logger, "debug", "Starting calculation of ECLV.")
-
-    try:
-        cl_step = 0.05
-        cl_pts = np.arange(start=cl_step, stop=1, step=cl_step)
-        safe_log(logger, "debug", f"CL points: {cl_pts}")
-
-        fy_oy = sum_column_data_by_name(input_data, columns_names, 'fy_oy')
-        fy_on = sum_column_data_by_name(input_data, columns_names, 'fy_on')
-        fn_oy = sum_column_data_by_name(input_data, columns_names, 'fn_oy')
-        fn_on = sum_column_data_by_name(input_data, columns_names, 'fn_on')
-
-        safe_log(logger, "debug", f"FY_OY: {fy_oy}, FY_ON: {fy_on}, FN_OY: {fn_oy}, FN_ON: {fn_on}")
-
-        eclv = calculate_economic_value(np.array([fy_oy, fy_on, fn_oy, fn_on]), cl_pts, logger=logger)
-        common_cases_ind = pd.Series(eclv['cl']).isin(cl_pts)
-        v = eclv['V'][common_cases_ind]
-        v = round_half_up(v, PRECISION)
-        safe_log(logger, "info", f"Calculated ECLV: {v}")
-
-    except (TypeError, Warning) as e:
-        v = None
-        safe_log(logger, "error", f"Error in calculating ECLV: {str(e)}")
-        
-    warnings.filterwarnings('ignore')
-    return v
-
-
 def calculate_economic_value(values, cost_lost_ratio=np.arange(start=0.05, stop=0.95, step=0.05),
                              add_base_rate: bool = False, logger=None) -> Union[dict, None]:
     """Calculates the economic value of a forecast based on a cost/loss ratio.
