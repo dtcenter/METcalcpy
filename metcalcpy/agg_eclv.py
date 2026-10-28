@@ -288,7 +288,12 @@ class AggEclv:
                 if field in self.input_data.keys():
                     all_filters.append((self.input_data[field].isin(filter_list)))
 
-            mask = np.array(all_filters).all(axis=0)
+            # explicitly set mask array to ones when no filters are generated
+            if len(all_filters) == 0:
+                mask = np.ones(len(self.input_data), dtype=bool)
+            else:
+                mask = np.array(all_filters).all(axis=0)
+
             point_data = self.input_data.loc[mask]
 
             if 'thresh_i' in point_data.columns:
