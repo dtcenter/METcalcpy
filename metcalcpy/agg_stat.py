@@ -833,10 +833,10 @@ class AggStat:
             safe_log(logger, "error", "Input data for preparation is None.")
             raise ValueError("Input data cannot be None.")
 
-        # rename bin_n column to total
-        # assign to columns so the caller's frame is updated in place
-        new_names = {"total": "total_orig", "bin_n": "total"}
-        data_for_prepare.columns = [new_names.get(name, name) for name in data_for_prepare.columns]
+        # rename bin_n column to total. Assign the new column labels to the
+        # caller's dataframe because the caller relies on it being modified
+        data_for_prepare.columns = data_for_prepare.rename(
+            columns={"total": "total_orig", "bin_n": "total"}).columns
         self.column_names = data_for_prepare.columns.values
 
         if self.statistic not in self.STATISTIC_TO_FIELDS:

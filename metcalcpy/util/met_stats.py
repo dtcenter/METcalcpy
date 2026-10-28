@@ -76,7 +76,7 @@ def calc_speed(u_comp, v_comp, logger=None):
     try:
         result = np.sqrt(u_comp * u_comp + v_comp * v_comp)
         safe_log(logger, "debug", f"Calculated wind speed: {result}.")
-    except (TypeError, Warning) as e:
+    except (TypeError, RuntimeWarning) as e:
         result = None
         safe_log(logger, "warning", f"Failed to calculate wind speed: {str(e)}.")
     

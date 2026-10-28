@@ -11,14 +11,14 @@
 """
 Program Name: grad_statistics.py
 """
-import warnings
-from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION, get_total_values
+from metcalcpy.util.utils import numeric_warnings_as_errors, round_half_up, sum_column_data_by_name, PRECISION, get_total_values
 from metcalcpy.util.safe_log import safe_log
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
 
 
+@numeric_warnings_as_errors()
 def calculate_fgbar(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of FGBAR - Mean of absolute value of forecast gradients
 
@@ -33,7 +33,6 @@ def calculate_fgbar(input_data, columns_names, aggregation=False, logger=None):
                 calculated FGBAR as float
                 or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
 
     safe_log(logger, "debug", "Starting calculation of FGBAR.")
 
@@ -42,14 +41,14 @@ def calculate_fgbar(input_data, columns_names, aggregation=False, logger=None):
         result = sum_column_data_by_name(input_data, columns_names, 'fgbar') / total
         result = round_half_up(result, PRECISION)
         safe_log(logger, "debug", f"Calculated FGBAR: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error calculating FGBAR: {str(e)}")
         result = None
 
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_ogbar(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of OGBAR - Mean of absolute value of observed gradients
 
@@ -64,7 +63,6 @@ def calculate_ogbar(input_data, columns_names, aggregation=False, logger=None):
                 calculated OGBAR as float
                 or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
 
     safe_log(logger, "debug", "Starting calculation of OGBAR.")
 
@@ -73,14 +71,14 @@ def calculate_ogbar(input_data, columns_names, aggregation=False, logger=None):
         result = sum_column_data_by_name(input_data, columns_names, 'ogbar') / total
         result = round_half_up(result, PRECISION)
         safe_log(logger, "debug", f"Calculated OGBAR: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error calculating OGBAR: {str(e)}")
         result = None
 
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_mgbar(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of MGBAR - Mean of maximum of absolute values
         of forecast and observed gradients
@@ -96,7 +94,6 @@ def calculate_mgbar(input_data, columns_names, aggregation=False, logger=None):
                 calculated MGBAR as float
                 or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
 
     safe_log(logger, "debug", "Starting calculation of MGBAR.")
 
@@ -105,14 +102,14 @@ def calculate_mgbar(input_data, columns_names, aggregation=False, logger=None):
         result = sum_column_data_by_name(input_data, columns_names, 'mgbar') / total
         result = round_half_up(result, PRECISION)
         safe_log(logger, "debug", f"Calculated MGBAR: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error calculating MGBAR: {str(e)}")
         result = None
 
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_egbar(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of EGBAR - Mean of absolute value of forecast minus observed gradients
 
@@ -127,7 +124,6 @@ def calculate_egbar(input_data, columns_names, aggregation=False, logger=None):
                 calculated EGBAR as float
                 or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
 
     safe_log(logger, "debug", "Starting calculation of EGBAR.")
 
@@ -136,14 +132,14 @@ def calculate_egbar(input_data, columns_names, aggregation=False, logger=None):
         result = sum_column_data_by_name(input_data, columns_names, 'egbar') / total
         result = round_half_up(result, PRECISION)
         safe_log(logger, "debug", f"Calculated EGBAR: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error calculating EGBAR: {str(e)}")
         result = None
 
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_s1(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of S1 - S1 score
 
@@ -158,7 +154,6 @@ def calculate_s1(input_data, columns_names, aggregation=False, logger=None):
                 calculated S1 as float
                 or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
 
     safe_log(logger, "debug", "Starting calculation of S1 score.")
 
@@ -169,14 +164,14 @@ def calculate_s1(input_data, columns_names, aggregation=False, logger=None):
         result = 100 * egbar / mgbar
         result = round_half_up(result, PRECISION)
         safe_log(logger, "debug", f"Calculated S1 score: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error calculating S1 score: {str(e)}")
         result = None
 
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_s1_og(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of S1_OG - S1 score with respect to observed gradient
 
@@ -192,7 +187,6 @@ def calculate_s1_og(input_data, columns_names, aggregation=False, logger=None):
                 or None if some of the data values are missing or invalid
     """
 
-    warnings.filterwarnings('error')
     try:
         total = get_total_values(input_data, columns_names, aggregation)
         safe_log(logger, "debug", f"Total calculated: {total}")
@@ -206,13 +200,13 @@ def calculate_s1_og(input_data, columns_names, aggregation=False, logger=None):
         result = 100 * egbar / ogbar
         result = round_half_up(result, PRECISION)
         safe_log(logger, "debug", f"Result calculated: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error encountered: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_fgog_ratio(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of FGOG_RATIO - Ratio of forecast and observed gradients
 
@@ -227,7 +221,6 @@ def calculate_fgog_ratio(input_data, columns_names, aggregation=False, logger=No
                 calculated FGOG_RATIO as float
                 or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         total = get_total_values(input_data, columns_names, aggregation)
         safe_log(logger, "debug", f"Total calculated: {total}")
@@ -241,10 +234,9 @@ def calculate_fgog_ratio(input_data, columns_names, aggregation=False, logger=No
         result = 100 * fgbar / ogbar
         result = round_half_up(result, PRECISION)
         safe_log(logger, "debug", f"FGOG Ratio calculated: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error encountered: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
@@ -264,7 +256,7 @@ def calculate_grad_total(input_data, columns_names, logger=None):
         total = sum_column_data_by_name(input_data, columns_names, 'total')
         safe_log(logger, "debug", f"Total number of matched pairs calculated: {total}")
         result = round_half_up(total, PRECISION)
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error encountered during calculation: {str(e)}")
         result = None
     return result

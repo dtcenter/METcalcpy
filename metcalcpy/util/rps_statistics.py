@@ -11,15 +11,15 @@
 """
 Program Name: rps_statistics.py
 """
-import warnings
 
-from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION, get_total_values
+from metcalcpy.util.utils import numeric_warnings_as_errors, round_half_up, sum_column_data_by_name, PRECISION, get_total_values
 from metcalcpy.util.safe_log import safe_log
 
 __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
 
 
+@numeric_warnings_as_errors()
 def calculate_rps(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of RPS - Ranked Probability Score
 
@@ -34,7 +34,6 @@ def calculate_rps(input_data, columns_names, aggregation=False, logger=None):
             calculated RPS as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting RPS calculation")
         
@@ -48,13 +47,13 @@ def calculate_rps(input_data, columns_names, aggregation=False, logger=None):
         
         safe_log(logger, "debug", f"RPS calculation completed successfully. Result: {result}")
     
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during RPS calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_rps_comp(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of RPS_COMP - Complement of the Ranked Probability Score
        It is computed simply as RPS_COMP = 1 - RPS
@@ -70,7 +69,6 @@ def calculate_rps_comp(input_data, columns_names, aggregation=False, logger=None
             calculated RPS as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting RPS_COMP calculation")
         
@@ -84,13 +82,13 @@ def calculate_rps_comp(input_data, columns_names, aggregation=False, logger=None
         
         safe_log(logger, "debug", f"RPS_COMP calculation completed successfully. Result: {result}")
     
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during RPS_COMP calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_rpss(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of RPSS -
 
@@ -105,7 +103,6 @@ def calculate_rpss(input_data, columns_names, aggregation=False, logger=None):
             calculated RPS as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting RPSS calculation")
         
@@ -127,7 +124,7 @@ def calculate_rpss(input_data, columns_names, aggregation=False, logger=None):
         
         safe_log(logger, "debug", f"RPSS calculation completed successfully. Result: {result}")
     
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during RPSS calculation: {str(e)}")
         result = None
     return result
@@ -154,7 +151,7 @@ def calculate_rps_total(input_data, columns_names, logger=None):
         result = round_half_up(total, PRECISION)
 
         safe_log(logger, "debug", f"Total matched pairs calculated successfully. Result: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during RPS total calculation: {str(e)}")
         result = None
 

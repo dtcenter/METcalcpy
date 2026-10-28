@@ -38,7 +38,6 @@ import time
 import logging
 import yaml
 import pandas as pd
-import warnings
 from inspect import signature
 
 from metcalcpy import GROUP_SEPARATOR
@@ -189,7 +188,6 @@ class SumStat:
         Args:
             axis - y1 or y1 axis
         """
-        warnings.filterwarnings('error')
         logger = self.logger
         safe_log(logger, "debug", "Aggregating special fields.")
 
@@ -255,8 +253,7 @@ class SumStat:
                                                             self.params['line_type'])
 
                     aggregated_values = pd.concat([aggregated_values, point_data])
-            self.input_data = aggregated_values
-            self.input_data = self.input_data.reset_index(drop=True)
+            self.input_data = aggregated_values.reset_index(drop=True)
             safe_log(logger, "info", f"Aggregation completed. Rows after aggregation: {len(self.input_data)}")
         else:
             safe_log(logger, "debug", "No special fields detected for aggregation.")
