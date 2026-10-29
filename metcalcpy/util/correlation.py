@@ -282,7 +282,7 @@ def corr(x, y, tail='two-sided', method='pearson', logger=None, **kwargs):
         safe_log(logger, "debug", f"Computed Bayes Factor (BF10): {stats_dict['BF10']}.")
 
     # Convert to DataFrame
-    stats_df = pd.DataFrame.from_records(stats_dict, index=[method])
+    stats_df = pd.DataFrame(stats_dict, index=[method])
 
     # Define order
     col_keep = ['n', 'outliers', 'r', 'CI95%', 'r2', 'adj_r2', 'p-val',
