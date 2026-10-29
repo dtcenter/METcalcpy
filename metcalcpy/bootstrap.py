@@ -391,7 +391,7 @@ def _get_confidence_interval_and_value_eclv(bootstrap_dist, stat_val, alpha, ci_
                 percentile method.
     """
 
-    # TODO Only percentile method for the confident intervals is implemented
+    # Follows boot.ci() from the R 'boot' package, as used by METviewer's agg_eclv.R
     if stat_val is None:
         safe_log(logger, "warning", "Statistic value is None. Skipping confidence interval calculation.")
         val = None
@@ -407,32 +407,40 @@ def _get_confidence_interval_and_value_eclv(bootstrap_dist, stat_val, alpha, ci_
 
         all_values_np = _np.array(all_values)
         steps_len = len(stat_val['cl'])
-        none_in_values = len(stat_val['V']) != sum(x is not None for x in stat_val['V'])
+        # skip the CI only if every value is missing (None or NaN), as in METviewer's agg_eclv.R
+        all_values_missing = bool(_np.all(_np.isnan(_np.asarray(stat_val['V'], dtype=float))))
         stat_btcl = [None] * steps_len
         stat_btcu = [None] * steps_len
         safe_log(logger, "debug",f"Calculated steps length: {steps_len}.")
-        safe_log(logger, "debug",f"Checking if values contain None: {none_in_values}.")
+        safe_log(logger, "debug",f"Checking if all values are missing: {all_values_missing}.")
 
         for ind in range(steps_len):
             low = None
             high = None
-            column = all_values_np[:, ind]
-            if ci_method == 'pivotal':
-                low = 2 * stat_val - _np.percentile(column, 100 * (1 - alpha / 2.))
-                high = 2 * stat_val - _np.percentile(column, 100 * (alpha / 2.))
-                safe_log(logger, "debug",f"Pivotal method result for step {ind}: low={low}, high={high}.")
+            if all_values_missing or ci_method not in ('perc', 'pivotal', 'basic'):
+                stat_btcl[ind] = low
+                stat_btcu[ind] = high
+                continue
 
-            elif ci_method == 'perc':
-                safe_log(logger, "info", "Using percentile method for confidence interval calculation.")
-                if _all_the_same(column):
-                    safe_log(logger, "warning", f"All values of column at step {ind} are equal to {column[0]}. Skipping confidence interval calculation.")
-                    print(f'All values of t are equal to {column[0]}. Cannot calculate confidence intervals')
-                    low = None
-                    high = None
+            column = all_values_np[:, ind].astype(float)
+            # like boot.ci in R: no CI when all values of t are (numerically) equal
+            if _boot_const(column):
+                mean_t = _np.nanmean(column) if column.size > 0 else None
+                safe_log(logger, "warning", f"All values of column at step {ind} are equal to {mean_t}. Skipping confidence interval calculation.")
+                print(f'All values of t are equal to {mean_t}. Cannot calculate confidence intervals')
+            else:
+                # boot.ci drops non-finite replicates
+                column = column[_np.isfinite(column)]
+                if ci_method == 'perc':
+                    low, high = _norm_inter(column, [alpha / 2., 1 - alpha / 2.])
+                    safe_log(logger, "debug", f"Percentile method result for step {ind}: low={low}, high={high}.")
                 else:
-                    if none_in_values:
-                        low = _np.percentile(column, 100 * (alpha / 2.), method='linear')
-                        high = _np.percentile(column, 100 * (1 - alpha / 2.), method='linear')
+                    # 'pivotal' is the 'basic' interval of boot.ci in R
+                    t0 = stat_val['V'][ind]
+                    q_high, q_low = _norm_inter(column, [1 - alpha / 2., alpha / 2.])
+                    low = 2 * t0 - q_high
+                    high = 2 * t0 - q_low
+                    safe_log(logger, "debug", f"Pivotal method result for step {ind}: low={low}, high={high}.")
             stat_btcl[ind] = low
             stat_btcu[ind] = high
 
@@ -444,6 +452,60 @@ def _get_confidence_interval_and_value_eclv(bootstrap_dist, stat_val, alpha, ci_
     return BootstrapResults(lower_bound=low,
                             value=val,
                             upper_bound=high)
+
+
+def _boot_const(t):
+    """Checks if all values of t are equal, the same way as boot:::const() in R
+       is called by boot.ci() (eps = min(1e-08, mean(t) / 1e+06))
+
+         Args:
+            t: numpy array of bootstrap replicates of one statistic
+
+        Returns:
+            True if all values are equal, False otherwise
+    """
+    if t.size == 0 or _np.all(_np.isnan(t)):
+        return True
+    mean_t = _np.nanmean(t)
+    eps = min(1e-08, mean_t / 1e+06)
+    return bool(_np.all(_np.abs(t[~_np.isnan(t)] - mean_t) < eps))
+
+
+def _norm_inter(t, alphas):
+    """Quantiles of the bootstrap replicates t using normal quantile interpolation
+       between order statistics, a port of boot:::norm.inter() in R
+
+         Args:
+            t: numpy array of finite bootstrap replicates
+            alphas: list of probabilities
+
+        Returns:
+            list of quantiles, one for each alpha
+    """
+    from scipy.stats import norm as _norm
+
+    t_sorted = _np.sort(t)
+    r = len(t_sorted)
+    if r == 0:
+        return [None] * len(alphas)
+    result = []
+    for alpha in alphas:
+        rk = (r + 1) * alpha
+        k = int(rk)
+        if k == rk and 0 < k <= r:
+            result.append(t_sorted[k - 1])
+        elif k == 0:
+            result.append(t_sorted[0])
+        elif k >= r:
+            result.append(t_sorted[r - 1])
+        else:
+            temp1 = _norm.ppf(alpha)
+            temp2 = _norm.ppf(k / (r + 1))
+            temp3 = _norm.ppf((k + 1) / (r + 1))
+            tk = t_sorted[k - 1]
+            tk1 = t_sorted[k]
+            result.append(tk + (temp1 - temp2) / (temp3 - temp2) * (tk1 - tk))
+    return result
 
 
 def flatten(lis):
@@ -621,33 +683,33 @@ def mean(values, axis=1):
     """Returns the mean of each row of a matrix"""
     if isinstance(values, _sparse.csr_matrix):
         ret = values.mean(axis=axis)
-        return ret.A1
+        return _np.ravel(_np.asarray(ret))
     else:
-        return _np.mean(_np.asmatrix(values), axis=axis).A1
+        return _np.ravel(_np.mean(_np.atleast_2d(values), axis=axis))
 
 
 def sum(values, axis=1):
     """Returns the sum of each row of a matrix"""
     if isinstance(values, _sparse.csr_matrix):
         ret = values.sum(axis=axis)
-        return ret.A1
+        return _np.ravel(_np.asarray(ret))
     else:
-        return _np.sum(_np.asmatrix(values), axis=axis).A1
+        return _np.ravel(_np.sum(_np.atleast_2d(values), axis=axis))
 
 
 def median(values, axis=1):
     """Returns the sum of each row of a matrix"""
     if isinstance(values, _sparse.csr_matrix):
         ret = values.median(axis=axis)
-        return ret.A1
+        return _np.ravel(_np.asarray(ret))
     else:
-        return _np.median(_np.asmatrix(values), axis=axis).A1
+        return _np.ravel(_np.median(_np.atleast_2d(values), axis=axis))
 
 
 def std(values, axis=1):
     """ Returns the std of each row of a matrix"""
     if isinstance(values, _sparse.csr_matrix):
         ret = values.std(axis=axis)
-        return ret.A1
+        return _np.ravel(_np.asarray(ret))
     else:
-        return _np.std(_np.asmatrix(values), axis=axis).A1
+        return _np.ravel(_np.std(_np.atleast_2d(values), axis=axis))

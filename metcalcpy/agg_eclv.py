@@ -36,10 +36,12 @@ import sys
 import itertools
 import argparse
 import yaml
+import re
 import pandas as pd
 import logging
 import signal
 import numpy as np
+from metcalcpy import GROUP_SEPARATOR, DATE_TIME_REGEX
 from metcalcpy.bootstrap import bootstrap_and_value, BootstrapResults
 from metcalcpy.event_equalize import event_equalize
 from metcalcpy.util.utils import PRECISION, is_string_strictly_float
@@ -88,13 +90,14 @@ class AggEclv:
         self.statistic = None
         self.current_thresh = None
         self.params = in_params
-        self.steps = np.arange(self.params['cl_step'], 1, self.params['cl_step'])
+        self.steps = self._cl_steps(self.params['cl_step'])
         self.column_names = np.array(self.LINE_TYPE_COLUMNS[self.params['line_type']])
-        self.add_base_rate = self.params.get('add_base_rate', 0)
+        # agg_eclv.R always adds the base rate to the cost/loss ratios
+        self.add_base_rate = self.params.get('add_base_rate', 1)
 
         if self.add_base_rate not in [0, 1]:
-            self.add_base_rate = 0
-            safe_log(logger, "warning", f"add_base_rate parameter was invalid. Reset to 0. Received value: {self.params.get('add_base_rate')}")
+            self.add_base_rate = 1
+            safe_log(logger, "warning", f"add_base_rate parameter was invalid. Reset to 1. Received value: {self.params.get('add_base_rate')}")
 
         safe_log(logger, "debug", f"Parameters set: Steps: {self.steps}, Column Names: {self.column_names}, Add Base Rate: {self.add_base_rate}")
     
@@ -113,6 +116,22 @@ class AggEclv:
 
         self.group_to_value = {}
         safe_log(logger, "debug", "AggEclv initialized successfully.")
+
+    @staticmethod
+    def _cl_steps(cl_step):
+        """Cost/loss ratios from cl_step to 1 - cl_step by cl_step,
+            the same as seq(clStep, 1-clStep, clStep) in agg_eclv.R
+            Args:
+                cl_step: step between cost/loss ratios
+            Returns:
+                numpy array of cost/loss ratios
+        """
+        start = cl_step
+        stop = 1 - cl_step
+        if abs(stop - start) / max(abs(stop), abs(start)) < 100 * np.finfo(float).eps:
+            return np.array([start])
+        n = int((stop - start) / cl_step + 1e-10)
+        return np.minimum(start + np.arange(n + 1) * cl_step, stop)
 
     def _calc_stats(self, values):
         """Calculate the statistic of values for each bootstrap sample
@@ -152,7 +171,8 @@ class AggEclv:
             try:
                 for row in values:
                     stat_value = [
-                        calculate_eclv(row, self.column_names, self.current_thresh, self.params['line_type'], self.steps, logger=logger)
+                        calculate_eclv(row, self.column_names, self.current_thresh, self.params['line_type'], self.steps,
+                                       self.add_base_rate, logger=logger)
                     ]
                     stat_values.append(stat_value)
                 safe_log(logger, "info", "Statistics calculated successfully for all bootstrap samples.")
@@ -278,8 +298,13 @@ class AggEclv:
             all_filters = []
             for field_ind, field in enumerate(series_val.keys()):
                 filter_value = point[field_ind]
+                # a group of values is separated by ':' as in agg_eclv.R
                 filter_list = [filter_value]
-                out_frame_local[field] = [filter_value] * (len(self.steps))
+                if isinstance(filter_value, str) and GROUP_SEPARATOR in filter_value:
+                    filter_list = re.findall(DATE_TIME_REGEX, filter_value)
+                    if len(filter_list) == 0:
+                        filter_list = filter_value.split(GROUP_SEPARATOR)
+                out_frame_local[field] = [filter_value] * (len(self.steps) + self.add_base_rate)
                 for i, filter_val in enumerate(filter_list):
                     if is_string_integer(filter_val):
                         filter_list[i] = int(filter_val)
