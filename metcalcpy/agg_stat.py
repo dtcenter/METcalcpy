@@ -137,7 +137,6 @@ class AggStat:
         'odds': ['fy_oy', 'fn_oy', 'fy_on', 'fn_on'],
         'lodds': ['fy_oy', 'fn_oy', 'fy_on', 'fn_on'],
         'baggs': ['fy_oy', 'fn_oy', 'fy_on'],
-        'eclv': ['fy_oy', 'fn_oy', 'fy_on', 'fn_on'],
 
         'fbar': ['fbar'],
         'obar': ['obar'],

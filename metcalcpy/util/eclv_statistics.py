@@ -70,10 +70,10 @@ def calculate_eclv(input_data: np.array, columns_names: np.array,
             thresh_i_more = input_data[:, index_thresh_i] > thresh
             thresh_i_less = input_data[:, index_thresh_i] <= thresh
 
-            n11 = np.nansum(input_data[:, index_oy_i][thresh_i_more].astype(np.float))
-            n10 = np.nansum(input_data[:, index_on_i][thresh_i_more].astype(np.float))
-            n01 = np.nansum(input_data[:, index_oy_i][thresh_i_less].astype(np.float))
-            n00 = np.nansum(input_data[:, index_on_i][thresh_i_less].astype(np.float))
+            n11 = np.nansum(input_data[:, index_oy_i][thresh_i_more].astype(float))
+            n10 = np.nansum(input_data[:, index_on_i][thresh_i_more].astype(float))
+            n01 = np.nansum(input_data[:, index_oy_i][thresh_i_less].astype(float))
+            n00 = np.nansum(input_data[:, index_on_i][thresh_i_less].astype(float))
         else:
             n11 = sum_column_data_by_name(input_data, columns_names, 'fy_oy')
             n10 = sum_column_data_by_name(input_data, columns_names, 'fy_on')
