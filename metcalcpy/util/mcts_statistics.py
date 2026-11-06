@@ -11,14 +11,14 @@
 """
 Program Name: mcts_statistics.py
 """
-import warnings
 import numpy as np
-from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION
+from metcalcpy.util.utils import numeric_warnings_as_errors, round_half_up, sum_column_data_by_name, PRECISION
 from metcalcpy.util.safe_log import safe_log
 
 __author__ = 'Tatiana Burek'
 
 
+@numeric_warnings_as_errors()
 def calculate_mcts_hss_ec(input_data, columns_names, logger=None):
     """Performs calculation of HSS_EC - a skill score based on Accuracy,
 
@@ -32,7 +32,6 @@ def calculate_mcts_hss_ec(input_data, columns_names, logger=None):
             calculated HSS_EC as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
 
     try:
         row = input_data[0].copy()
@@ -68,9 +67,8 @@ def calculate_mcts_hss_ec(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculated HSS_EC: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error encountered during calculation: {str(e)}")
         result = None
 
-    warnings.filterwarnings('ignore')
     return result

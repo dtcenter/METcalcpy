@@ -50,7 +50,7 @@ for heuristic forecast difficulty situations. Its values for winds are given bel
 
      Weighting applied to wind difficulty index.
 
-The weighting ramps up to a value 1.5 for a value of *x* that is slightly below the threshold. 
+The weighting ramps up to a value of 1.5 for a value of *x* that is slightly below the threshold. 
 This accounts for the notion that a forecast is more difficult when it is slightly below the threshold 
 than slightly above. The value of *A* then ramps down to zero for large values of 
 :math:`\bar{x}_{i,j}`.
@@ -60,7 +60,7 @@ exceedance, normalized ensemble spread, and the mean forecast value (which sets 
 *A*) shown in Tables 3.1-3.3. Each row is for a different probability of threshold exceedance, 
 :math:`P(x_{i,j} \geq thresh)`, each column is for a different value of normalized uncertainty, 
 quantized as small, :math:`(\sigma/\bar{x})/(\sigma/\bar{x})_{ref}=0.01`, medium, 
-:math:`(\sigma/\bar{x})/(\sigma/\bar{x})_{ref}=0.05`, and large, 
+:math:`(\sigma/\bar{x})/(\sigma/\bar{x})_{ref}=0.5`, and large, 
 :math:`(\sigma/\bar{x})/(\sigma/\bar{x})_{ref}=1.0`. Each box contains the calculation of 
 :math:`d_{i,j}` for that case.
 
@@ -68,18 +68,18 @@ When :math:`\bar{x}` is very large or very small the difficulty index is dominat
 Regardless of the spread or the probability of exceedance the difficulty index takes on a value near 
 zero and the forecast is considered to be easy (:numref:`table_1`).
 
-When :math:`\bar{x}` is near the threshold (e.g. 25kt or 37kt), the situation is a bit more complex 
+When :math:`\bar{x}` is near the threshold (e.g., 25kt or 37kt), the situation is a bit more complex 
 (:numref:`table_2`). For small values of spread the only interesting case is when the probability is 
 equally distributed about the threshold. For large spread, all probability values deserve a look, and 
 the case where the probability is equally distributed about the threshold is deemed difficult.
 
-When :math:`\bar{x}` is close to but slightly below the threshold (e.g. between 28kt and 34kt), 
+When :math:`\bar{x}` is close to but slightly below the threshold (e.g., between 28kt and 34kt), 
 almost all combinations of probability of exceedance and spread deserve a look, and all values of the 
 difficulty index for medium and large spread are difficult or nearly difficult (:numref:`table_3`).
 
 .. _table_1:
 
-.. list-table:: Example of an easy forecast where :math:`\bar{x}` is very large (e.g. 48 kt) or very small (e.g. 7kt), making :math:`A/2=0.1/2=0.05`.
+.. list-table:: Example of an easy forecast where :math:`\bar{x}` is very large (e.g., 48 kt) or very small (e.g., 7kt), making :math:`A/2=0.1/2=0.05`.
   :widths: auto
   :header-rows: 1
 
@@ -110,7 +110,7 @@ difficulty index for medium and large spread are difficult or nearly difficult (
 
 .. _table_2:
 
-.. list-table:: Example of a forecast that could be difficult if the conditions are right, where :math:`\bar{x}` is moderately close to the threshold (e.g. 25kt or 37kt), making :math:`A/2=1/2=0.5`.
+.. list-table:: Example of a forecast that could be difficult if the conditions are right, where :math:`\bar{x}` is moderately close to the threshold (e.g., 25kt or 37kt), making :math:`A/2=1/2=0.5`.
   :widths: auto
   :header-rows: 1
 
@@ -141,7 +141,7 @@ difficulty index for medium and large spread are difficult or nearly difficult (
 
 .. _table_3:
 
-.. list-table:: Example of a situation that is almost always difficult, where :math:`\bar{x}` is at or slightly below the threshold (e.g. 28kt to 34kt), making :math:`A/2=1.5/2=0.75`.
+.. list-table:: Example of a situation that is almost always difficult, where :math:`\bar{x}` is at or slightly below the threshold (e.g., 28kt to 34kt), making :math:`A/2=1.5/2=0.75`.
   :widths: auto
   :header-rows: 1
 

@@ -54,7 +54,7 @@ In this example, the UGRD, VGRD, and TMP variables are selected for conversion
 (refer to the `fields` setting in the above configuration file).  You may list any other
 variables as long as they are present in the input data:
 
-e.g.
+e.g.,
 
 fields:
     - 'UGRD'
@@ -82,18 +82,18 @@ and the name of the output file (output directory and filename).  NOTE: If you d
 the debug messages, simply delete the line with the `--debug`.  Open the *height_from_pressure_tcrmw.sh*
 file using an editor of your choice.
 
-Replace the `/path/to/input-data` to the actual full path to
+Replace the `/path/to/input-data` with the actual full path to
 the directory where you saved the sample data:
 
-e.g.
+e.g.,
 
 .. code-block:: ini
 
   export DATA_DIR=/users/mydir/data/tcrmw
 
-Replace the `/path/to/output` to the directory where you want to save your output:
+Replace the `/path/to/output` with the directory where you want to save your output:
 
-e.g.
+e.g.,
 
 .. code-block:: ini
 
@@ -105,16 +105,16 @@ the desired location for output files.
 Uncomment the `--debug` if additional debug information is desired.  This will result in the generation of intermediate netCDF files in the directory specified by the $DATA_DIR 
 environment variable in the `height_from_pressure_tcrmw.sh` shell script.  Create a 'Debug' subdirectory in the $DATA_DIR directory.  After running the
 `height_from_pressure_tcrmw.sh` shell script, numerous netCDF files will be created: a height_from_pressure_debug.nc and numerous files beginning with `vertical_interp_debug`
- 	   
+
 Save and close the file.
 
 To perform the conversion, do the following:
 
 * Make sure you have these required Python packages:
 
-  * Python 3.7
+  * Python 3.10.4 or later
 
-  * metpy 1.1.0
+  * metpy 1.7.1 or later
 
   * netcdf4 1.5.7
 

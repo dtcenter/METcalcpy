@@ -11,9 +11,8 @@
 """
 Program Name: sal1l2_statistics.py
 """
-import warnings
 import numpy as np
-from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION, get_total_values
+from metcalcpy.util.utils import numeric_warnings_as_errors, round_half_up, sum_column_data_by_name, PRECISION, get_total_values
 from metcalcpy.util.safe_log import safe_log
 from metcalcpy.util.sl1l2_statistics import calculate_mae
 
@@ -50,6 +49,7 @@ def calculate_sal1l2_rmsoa(input_data, columns_names, aggregation=False, logger=
     return calculate_rmsoa(input_data, columns_names, aggregation, logger=logger)
 
 
+@numeric_warnings_as_errors()
 def calculate_anom_corr(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of ANOM_CORR - The Anomaly Correlation
      including normal confidence limits
@@ -65,7 +65,6 @@ def calculate_anom_corr(input_data, columns_names, aggregation=False, logger=Non
             calculated ANOM_CORR as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting calculation of ANOM_CORR")
 
@@ -95,13 +94,13 @@ def calculate_anom_corr(input_data, columns_names, aggregation=False, logger=Non
 
         safe_log(logger, "debug", f"ANOM_CORR calculated successfully: {anom_corr}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during ANOM_CORR calculation: {str(e)}")
         anom_corr = None
-    warnings.filterwarnings('ignore')
     return anom_corr
 
 
+@numeric_warnings_as_errors()
 def calculate_anom_corr_raw(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of ANOM_CORR_RAW - The Uncentered Anomaly Correlation
      including normal confidence limits
@@ -117,7 +116,6 @@ def calculate_anom_corr_raw(input_data, columns_names, aggregation=False, logger
             calculated ANOM_CORR_RAW as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting calculation of ANOM_CORR_RAW")
 
@@ -147,13 +145,13 @@ def calculate_anom_corr_raw(input_data, columns_names, aggregation=False, logger
 
         safe_log(logger, "debug", f"ANOM_CORR_RAW calculated successfully: {anom_corr_raw}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during ANOM_CORR_RAW calculation: {str(e)}")
         anom_corr_raw = None
-    warnings.filterwarnings('ignore')
     return anom_corr_raw
 
 
+@numeric_warnings_as_errors()
 def calculate_rmsfa(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of RMSFA - Root mean squared forecast anomaly (f-c)
      including normal confidence limits
@@ -169,7 +167,6 @@ def calculate_rmsfa(input_data, columns_names, aggregation=False, logger=None):
             calculated RMSFA as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting calculation of RMSFA")
 
@@ -187,13 +184,13 @@ def calculate_rmsfa(input_data, columns_names, aggregation=False, logger=None):
             result = round_half_up(result, PRECISION)
             safe_log(logger, "debug", f"RMSFA calculated successfully: {result}")
 
-    except (TypeError, Warning) as e:
+    except (TypeError, RuntimeWarning) as e:
         safe_log(logger, "warning", f"Exception occurred during RMSFA calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_rmsoa(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of RMSOA - Root mean squared observation anomaly (o-c)
      including normal confidence limits
@@ -209,7 +206,6 @@ def calculate_rmsoa(input_data, columns_names, aggregation=False, logger=None):
             calculated RMSOA as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting calculation of RMSOA")
 
@@ -227,8 +223,7 @@ def calculate_rmsoa(input_data, columns_names, aggregation=False, logger=None):
             result = round_half_up(result, PRECISION)
             safe_log(logger, "debug", f"RMSOA calculated successfully: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during RMSOA calculation: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result

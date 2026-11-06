@@ -41,7 +41,7 @@ def calculate_2d_arearat_fsa_asa(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 2D area-weighted statistic: {str(e)}.")
         return None
 
@@ -68,7 +68,7 @@ def calculate_2d_arearat_osa_asa(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 2D area-weighted statistic: {str(e)}.")
         return None
 
@@ -95,7 +95,7 @@ def calculate_2d_arearat_asm_asa(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 2D area-weighted % of matched objects: {str(e)}.")
         return None
 
@@ -122,7 +122,7 @@ def calculate_2d_arearat_asu_asa(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 2D area-weighted % of unmatched objects: {str(e)}.")
         return None
 
@@ -149,7 +149,7 @@ def calculate_2d_arearat_fsm_fsa(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 2D area-weighted % of matched forecast objects: {str(e)}.")
         return None
 
@@ -176,7 +176,7 @@ def calculate_2d_arearat_fsu_fsa(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 2D area-weighted % of unmatched forecast objects: {str(e)}.")
         return None
 
@@ -203,7 +203,7 @@ def calculate_2d_arearat_osm_osa(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 2D area-weighted % of matched observation objects: {str(e)}.")
         return None
 
@@ -230,7 +230,7 @@ def calculate_2d_arearat_osu_osa(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 2D area-weighted % of unmatched observation objects: {str(e)}.")
         return None
 
@@ -257,7 +257,7 @@ def calculate_2d_arearat_fsm_asm(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 2D area-weighted % of matched forecast objects: {str(e)}.")
         return None
 
@@ -284,7 +284,7 @@ def calculate_2d_arearat_osm_asm(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 2D area-weighted % of matched observation objects: {str(e)}.")
         return None
 
@@ -310,7 +310,7 @@ def calculate_2d_arearat_osu_asu(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 2D area-weighted % of unmatched observation objects: {str(e)}.")
         return None
 
@@ -337,7 +337,7 @@ def calculate_2d_arearat_fsa_aaa(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 2D area-weighted % of forecast objects against all area: {str(e)}.")
         return None
 
@@ -364,7 +364,7 @@ def calculate_2d_arearat_osa_aaa(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 2D area-weighted % of observation objects against all area: {str(e)}.")
         return None
 
@@ -391,7 +391,7 @@ def calculate_2d_arearat_fsa_faa(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 2D area-weighted % of all 2d forecast objects that are simple: {str(e)}.")
         return None
 
@@ -418,7 +418,7 @@ def calculate_2d_arearat_fca_faa(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 2D area-weighted % of all 2d forecast objects that are cluster: {str(e)}.")
         return None
 
@@ -445,7 +445,7 @@ def calculate_2d_arearat_osa_oaa(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 2D area-weighted % of all 2d observation objects that are simple: {str(e)}.")
         return None
 
@@ -472,7 +472,7 @@ def calculate_2d_arearat_oca_oaa(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 2D area-weighted % of all 2d observation objects that are cluster: {str(e)}.")
         return None
 
@@ -499,7 +499,7 @@ def calculate_2d_arearat_fca_aca(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 2D area-weighted % of 2d cluster objects that are forecast: {str(e)}.")
         return None
 
@@ -526,7 +526,7 @@ def calculate_2d_arearat_oca_aca(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate 2D area-weighted % of 2d cluster objects that are observation: {str(e)}.")
         return None
 
@@ -555,7 +555,7 @@ def calculate_2d_arearat_fsa_osa(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Area Ratio of 2d simple forecasts to 2d simple observations: {str(e)}.")
         return None
 
@@ -583,7 +583,7 @@ def calculate_2d_arearat_osa_fsa(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Area Ratio of 2d simple observations to 2d simple forecasts: {str(e)}.")
         return None
 
@@ -610,7 +610,7 @@ def calculate_2d_arearat_aca_asa(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Area Ratio of 2d cluster objects to 2d simple objects: {str(e)}.")
         return None
 
@@ -637,7 +637,7 @@ def calculate_2d_arearat_asa_aca(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Area Ratio of 2d simple objects to 2d cluster objects: {str(e)}.")
         return None
 
@@ -664,7 +664,7 @@ def calculate_2d_arearat_fca_fsa(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Area Ratio of 2d cluster forecast objects to 2d simple forecast objects: {str(e)}.")
         return None
 
@@ -692,7 +692,7 @@ def calculate_2d_arearat_fsa_fca(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Area Ratio of 2d simple forecast objects to 2d cluster forecast objects: {str(e)}.")
         return None
 
@@ -721,7 +721,7 @@ def calculate_2d_arearat_oca_osa(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Area Ratio of 2d cluster observation objects to 2d simple observation objects: {str(e)}.")
         return None
 
@@ -748,7 +748,7 @@ def calculate_2d_arearat_osa_oca(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Area Ratio of 2d simple observation objects to 2d cluster observation objects: {str(e)}.")
         return None
 
@@ -775,7 +775,7 @@ def calculate_2d_objahits(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Area 2d Hits: {str(e)}.")
         return None
 
@@ -802,7 +802,7 @@ def calculate_2d_objamisses(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Area 2d Misses (OSU): {str(e)}.")
         return None
 
@@ -829,7 +829,7 @@ def calculate_2d_objafas(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Area 2d False Alarms (FSU): {str(e)}.")
         return None
 
@@ -856,7 +856,7 @@ def calculate_2d_objacsi(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Area 2d Critical Success Index (CSI): {str(e)}.")
         return None
 
@@ -883,7 +883,7 @@ def calculate_2d_objapody(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Area 2d Probability of Detecting Yes (PODY): {str(e)}.")
         return None
 
@@ -909,6 +909,6 @@ def calculate_2d_objafar(input_data, columns_names, logger=None):
         
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Area 2d False Alarm Ratio (FAR): {str(e)}.")
         return None

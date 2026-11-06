@@ -40,7 +40,7 @@ def calculate_nbr_baser(input_data, columns_names, logger=None):
         safe_log(logger, "debug", "Starting calculation of NBR_BASER.")
         result = calculate_baser(input_data, columns_names, logger=logger)
         safe_log(logger, "debug", f"Calculated NBR_BASER: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during NBR_BASER calculation: {str(e)}")
         result = None
 
@@ -65,7 +65,7 @@ def calculate_nbr_acc(input_data, columns_names, logger=None):
         safe_log(logger, "debug", "Starting calculation of NBR_ACC.")
         result = calculate_acc(input_data, columns_names)
         safe_log(logger, "debug", f"Calculated NBR_ACC: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during NBR_ACC calculation: {str(e)}")
         result = None
 
@@ -90,7 +90,7 @@ def calculate_nbr_fbias(input_data, columns_names, logger=None):
         safe_log(logger, "debug", "Starting calculation of NBR_FBIAS.")
         result = calculate_fbias(input_data, columns_names, logger=logger)
         safe_log(logger, "debug", f"Calculated NBR_FBIAS: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during NBR_FBIAS calculation: {str(e)}")
         result = None
 
@@ -115,7 +115,7 @@ def calculate_nbr_fmean(input_data, columns_names, logger=None):
         safe_log(logger, "debug", "Starting calculation of NBR_FMEAN.")
         result = calculate_fmean(input_data, columns_names, logger=logger)
         safe_log(logger, "debug", f"Calculated NBR_FMEAN: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during NBR_FMEAN calculation: {str(e)}")
         result = None
 
@@ -139,7 +139,7 @@ def calculate_nbr_pody(input_data, columns_names, logger=None):
         safe_log(logger, "debug", "Starting calculation of NBR_PODY.")
         result = calculate_pody(input_data, columns_names, logger=logger)
         safe_log(logger, "debug", f"Calculated NBR_PODY: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during NBR_PODY calculation: {str(e)}")
         result = None
 
@@ -163,7 +163,7 @@ def calculate_nbr_pofd(input_data, columns_names, logger=None):
         safe_log(logger, "debug", "Starting calculation of NBR_POFD.")
         result = calculate_pofd(input_data, columns_names, logger=logger)
         safe_log(logger, "debug", f"Calculated NBR_POFD: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during NBR_POFD calculation: {str(e)}")
         result = None
 
@@ -188,7 +188,7 @@ def calculate_nbr_podn(input_data, columns_names, logger=None):
         safe_log(logger, "debug", "Starting calculation of NBR_PODN.")
         result = calculate_podn(input_data, columns_names, logger=logger)
         safe_log(logger, "debug", f"Calculated NBR_PODN: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during NBR_PODN calculation: {str(e)}")
         result = None
 
@@ -213,7 +213,7 @@ def calculate_nbr_far(input_data, columns_names, logger=None):
         safe_log(logger, "debug", "Starting calculation of NBR_FAR.")
         result = calculate_far(input_data, columns_names, logger=logger)
         safe_log(logger, "debug", f"Calculated NBR_FAR: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during NBR_FAR calculation: {str(e)}")
         result = None
 
@@ -236,7 +236,7 @@ def calculate_nbr_csi(input_data, columns_names, logger=None):
         safe_log(logger, "debug", "Starting calculation of NBR_CSI.")
         result = calculate_csi(input_data, columns_names, logger=logger)
         safe_log(logger, "debug", f"Calculated NBR_CSI: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during NBR_CSI calculation: {str(e)}")
         result = None
 
@@ -261,7 +261,7 @@ def calculate_nbr_gss(input_data, columns_names, logger=None):
         safe_log(logger, "debug", "Starting calculation of NBR_GSS.")
         result = calculate_gss(input_data, columns_names, logger=logger)
         safe_log(logger, "debug", f"Calculated NBR_GSS: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during NBR_GSS calculation: {str(e)}")
         result = None
 
@@ -286,7 +286,7 @@ def calculate_nbr_hk(input_data, columns_names, logger=None):
         safe_log(logger, "debug", "Starting calculation of NBR_HK.")
         result = calculate_hk(input_data, columns_names, logger=logger)
         safe_log(logger, "debug", f"Calculated NBR_HK: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during NBR_HK calculation: {str(e)}")
         result = None
 
@@ -311,7 +311,7 @@ def calculate_nbr_hss(input_data, columns_names, logger=None):
         safe_log(logger, "debug", "Starting calculation of NBR_HSS.")
         result = calculate_hss(input_data, columns_names, logger=logger)
         safe_log(logger, "debug", f"Calculated NBR_HSS: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during NBR_HSS calculation: {str(e)}")
         result = None
 
@@ -336,7 +336,7 @@ def calculate_nbr_odds(input_data, columns_names, logger=None):
         safe_log(logger, "debug", "Starting calculation of NBR_ODDS.")
         result = calculate_odds(input_data, columns_names, logger=logger)
         safe_log(logger, "debug", f"Calculated NBR_ODDS: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during NBR_ODDS calculation: {str(e)}")
         result = None
 
@@ -361,6 +361,6 @@ def calculate_nbr_ctc_total(input_data, columns_names, logger=None):
         total = sum_column_data_by_name(input_data, columns_names, 'total')
         result = round_half_up(total, PRECISION)
         safe_log(logger, "debug", f"Calculated total: {result}")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred during calculation of total: {str(e)}")
         result = None

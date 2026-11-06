@@ -46,7 +46,7 @@ def calculate_3d_volrat_fsa_asa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Volume-weighted % of 3D simple objects that are forecast: {str(e)}.")
         return None
 
@@ -76,7 +76,7 @@ def calculate_3d_volrat_osa_asa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Volume-weighted % of 3D simple objects that are observation: {str(e)}.")
         return None
 
@@ -106,7 +106,7 @@ def calculate_3d_volrat_asm_asa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Volume-weighted % of 3D simple objects that are matched: {str(e)}.")
         return None
 
@@ -136,7 +136,7 @@ def calculate_3d_volrat_asu_asa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Volume-weighted % of 3D simple objects that are unmatched: {str(e)}.")
         return None
 
@@ -166,7 +166,7 @@ def calculate_3d_volrat_fsm_fsa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Volume-weighted % of 3D simple forecast objects that are matched: {str(e)}.")
         return None
 
@@ -196,7 +196,7 @@ def calculate_3d_volrat_fsu_fsa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Volume-weighted % of 3D simple forecast objects that are unmatched: {str(e)}.")
         return None
 
@@ -226,7 +226,7 @@ def calculate_3d_volrat_osm_osa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Volume-weighted % of 3D simple observation objects that are matched: {str(e)}.")
         return None
 
@@ -256,7 +256,7 @@ def calculate_3d_volrat_osu_osa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Volume-weighted % of 3D simple observation objects that are unmatched: {str(e)}.")
         return None
 
@@ -285,7 +285,7 @@ def calculate_3d_volrat_fsm_asm(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Volume-weighted % of 3D simple matched objects that are forecasts: {str(e)}.")
         return None
 
@@ -315,7 +315,7 @@ def calculate_3d_volrat_osm_asm(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Volume-weighted % of 3D simple matched objects that are observations: {str(e)}.")
         return None
 
@@ -345,7 +345,7 @@ def calculate_3d_volrat_osu_asu(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Volume-weighted % of 3D simple unmatched objects that are observations: {str(e)}.")
         return None
 
@@ -375,7 +375,7 @@ def calculate_3d_volrat_fsa_aaa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Volume-weighted statistic: {str(e)}.")
         return None
 
@@ -405,7 +405,7 @@ def calculate_3d_volrat_osa_aaa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Volume-weighted statistic: {str(e)}.")
         return None
 
@@ -436,7 +436,7 @@ def calculate_3d_volrat_fsa_faa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Volume-weighted statistic: {str(e)}.")
         return None
 
@@ -466,7 +466,7 @@ def calculate_3d_volrat_fca_faa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Volume-weighted statistic: {str(e)}.")
         return None
 
@@ -496,7 +496,7 @@ def calculate_3d_volrat_osa_oaa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Volume-weighted statistic: {str(e)}.")
         return None
 
@@ -526,7 +526,7 @@ def calculate_3d_volrat_oca_oaa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Volume-weighted statistic: {str(e)}.")
         return None
 
@@ -556,7 +556,7 @@ def calculate_3d_volrat_fca_aca(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Volume-weighted statistic: {str(e)}.")
         return None
 
@@ -586,7 +586,7 @@ def calculate_3d_volrat_oca_aca(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Volume-weighted statistic: {str(e)}.")
         return None
 
@@ -617,7 +617,7 @@ def calculate_3d_volrat_fsa_osa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Volume Ratio: {str(e)}.")
         return None
 
@@ -648,7 +648,7 @@ def calculate_3d_volrat_osa_fsa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Volume Ratio: {str(e)}.")
         return None
 
@@ -678,7 +678,7 @@ def calculate_3d_volrat_aca_asa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Volume Ratio ACA/ASA: {str(e)}.")
         return None
 
@@ -708,7 +708,7 @@ def calculate_3d_volrat_asa_aca(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Volume Ratio ASA/ACA: {str(e)}.")
         return None
 
@@ -739,7 +739,7 @@ def calculate_3d_volrat_fca_fsa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Volume Ratio FCA/FSA: {str(e)}.")
         return None
 
@@ -770,7 +770,7 @@ def calculate_3d_volrat_fsa_fca(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Volume Ratio FSA/FCA: {str(e)}.")
         return None
 
@@ -801,7 +801,7 @@ def calculate_3d_volrat_oca_osa(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Volume Ratio OCA/OSA: {str(e)}.")
         return None
 
@@ -832,7 +832,7 @@ def calculate_3d_volrat_osa_oca(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Volume Ratio OSA/OCA: {str(e)}.")
         return None
 
@@ -862,7 +862,7 @@ def calculate_3d_objvhits(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Volume 3D Hits: {str(e)}.")
         return None
 
@@ -892,7 +892,7 @@ def calculate_3d_objvmisses(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"Calculation complete. Result: {result}.")
         return result
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Failed to calculate Volume 3D Misses: {str(e)}.")
         return None
 

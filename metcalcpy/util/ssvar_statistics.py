@@ -11,7 +11,6 @@
 """
 Program Name: ssvar_statistics.py
 """
-import warnings
 import numpy as np
 
 from metcalcpy.util.sal1l2_statistics import calculate_anom_corr
@@ -20,7 +19,7 @@ from metcalcpy.util.sl1l2_statistics import calculate_fbar, calculate_fstdev, \
     calculate_pr_corr, calculate_me, calculate_estdev, calculate_mse, \
     calculate_bcmse, calculate_bcrmse, calculate_rmse, \
     calculate_me2, calculate_msess
-from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION, get_total_values
+from metcalcpy.util.utils import numeric_warnings_as_errors, round_half_up, sum_column_data_by_name, PRECISION, get_total_values
 from metcalcpy.util.safe_log import safe_log
 
 __author__ = 'Tatiana Burek'
@@ -378,6 +377,7 @@ def calculate_ssvar_msess(input_data, columns_names, aggregation=False, logger=N
         return None
 
 
+@numeric_warnings_as_errors()
 def calculate_ssvar_spread(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of SSVAR_SPREAD -
 
@@ -392,7 +392,6 @@ def calculate_ssvar_spread(input_data, columns_names, aggregation=False, logger=
             calculated SSVAR_SPREAD as float
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
     try:
         safe_log(logger, "debug", "Starting calculation of SSVAR_SPREAD")
 
@@ -403,10 +402,9 @@ def calculate_ssvar_spread(input_data, columns_names, aggregation=False, logger=
 
         safe_log(logger, "debug", f"SSVAR_SPREAD calculated: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred while calculating SSVAR_SPREAD: {str(e)}")
         result = None
-    warnings.filterwarnings('ignore')
     return result
 
 
@@ -431,7 +429,7 @@ def calculate_ssvar_total(input_data, columns_names, logger=None):
 
         safe_log(logger, "debug", f"SSVAR_TOTAL calculated: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "warning", f"Exception occurred while calculating SSVAR_TOTAL: {str(e)}")
         result = None
 

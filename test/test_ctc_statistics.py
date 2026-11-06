@@ -169,7 +169,6 @@ def ctc_data():
         ("odds", 33.2937647),
         ("lodds", 3.5053691),
         ("bagss", None),
-        ("eclv", None),
         ("ctc_total", None),
         ("cts_total", None),
         ("ctc_fn_on", 44984491.0),

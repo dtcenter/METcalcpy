@@ -23,6 +23,7 @@ import numpy as np
 import pandas as pd
 from pandas import DataFrame
 import warnings
+from contextlib import contextmanager
 from dataclasses import make_dataclass
 import re
 
@@ -33,6 +34,24 @@ from metcalcpy import GROUP_SEPARATOR, DATE_TIME_REGEX
 from metcalcpy.event_equalize import event_equalize
 from metcalcpy.util.wald_wolfowitz_runs_test import runs_test
 from metcalcpy.util.safe_log import safe_log
+
+@contextmanager
+def numeric_warnings_as_errors():
+    """Raise RuntimeWarning (e.g. divide by zero, invalid value or overflow
+    from numpy/scipy) as an exception inside the block so that a statistic
+    calculation can catch it and return None. Other warnings, such as
+    deprecation warnings, are not affected. The warnings filters are
+    restored on exit, so the process-wide filter list is not changed.
+
+    Can be used as a context manager or as a function decorator:
+
+        @numeric_warnings_as_errors()
+        def calculate_stat(...):
+    """
+    with warnings.catch_warnings():
+        warnings.simplefilter('error', RuntimeWarning)
+        yield
+
 
 OPERATION_TO_SIGN = {
     'DIFF': '-',
@@ -494,9 +513,9 @@ def get_total_dir_values(input_data, columns_names, aggregation):
 
 def aggregate_field_values(series_var_val, input_data_frame, line_type, logger=None):
     """Finds and aggregates statistics for fields with values containing ';'.
-      Aggregation  happens by valid and lead times
-        These fields are coming from the scorecard and looks like this: vx_mask : ['EAST;NMT'].
-        This method finds these values and calculate aggregated stats for them
+      Aggregation happens by valid and lead times
+        These fields are coming from the scorecard and look like this: vx_mask : ['EAST;NMT'].
+        This method finds these values and calculates aggregated statistics for them
 
             Args:
                 series_var_val: dictionary describing the series
@@ -504,10 +523,8 @@ def aggregate_field_values(series_var_val, input_data_frame, line_type, logger=N
                 line_type: the line type
 
             Returns:
-                Pandas DataFrame with aggregates statistics
+                Pandas DataFrame with aggregated statistics
             """
-
-    warnings.filterwarnings('error')
 
     # get unique values for valid date/time and lead time
     unique_valid = input_data_frame.fcst_valid_beg.unique()
@@ -533,7 +550,7 @@ def aggregate_field_values(series_var_val, input_data_frame, line_type, logger=N
                                 ]
                             rows_indexes = rows_for_agg.index.values
                             # reset indexes
-                            rows_for_agg.reset_index(inplace=True, drop=True)
+                            rows_for_agg = rows_for_agg.reset_index(drop=True)
 
                             # remove these rows from the main data_frame
                             input_data_frame = input_data_frame.drop(index=rows_indexes)
@@ -541,12 +558,13 @@ def aggregate_field_values(series_var_val, input_data_frame, line_type, logger=N
                             aggregated_result = calc_series_sums(rows_for_agg, line_type)
                             safe_log(logger, "debug", f"Aggregated result for {series_var}: {aggregated_result}")
                             # record the result as a first row in the old selection
+                            # (use .loc, which adds row 0 if the selection is empty)
                             for field in input_data_frame.columns:
                                 if field in aggregated_result.columns.values:
-                                    rows_for_agg.at[0, field] = aggregated_result[field][0]
+                                    rows_for_agg.loc[0, field] = aggregated_result[field][0]
 
                             # replace the aggregated field name
-                            rows_for_agg.at[0, series_var] = series_val
+                            rows_for_agg.loc[0, series_var] = series_val
 
                             # add it to the result
                             input_data_frame = pd.concat([input_data_frame, rows_for_agg.iloc[:1]])
@@ -571,7 +589,7 @@ def aggregate_field_values(series_var_val, input_data_frame, line_type, logger=N
                         rows_indexes = rows_for_agg.index.values
 
                         # reset indexes
-                        rows_for_agg.reset_index(inplace=True, drop=True)
+                        rows_for_agg = rows_for_agg.reset_index(drop=True)
 
                         # remove these rows from the main data_frame
                         input_data_frame = input_data_frame.drop(index=rows_indexes)
@@ -582,7 +600,7 @@ def aggregate_field_values(series_var_val, input_data_frame, line_type, logger=N
                         # record the result as a first row in the old selection
                         for field in input_data_frame.columns:
                             if field in aggregated_result.columns.values:
-                                rows_for_agg.at[0, field] = aggregated_result[field][0]
+                                rows_for_agg.loc[0, field] = aggregated_result[field][0]
 
                         # replace the aggregated field name
 
@@ -591,12 +609,7 @@ def aggregate_field_values(series_var_val, input_data_frame, line_type, logger=N
                         if ';' in series_val:
                             sep_val = series_val.split(';')
 
-                        # different versions of pandas may generate a SettingWithCopy Warning
-                        # For pandas 1.2, 1.3, and 1.5, use the df.at, but for pandas 1.4, use the df.loc.
-                        try:
-                            rows_for_agg.at[0, series_var] = sep_val[0]
-                        except:
-                            rows_for_agg.loc[0, series_var] = sep_val[0]
+                        rows_for_agg.loc[0, series_var] = sep_val[0]
 
                         # add it to the result
                         input_data_frame = pd.concat([input_data_frame,(rows_for_agg.iloc[:1])])
@@ -791,7 +804,6 @@ def equalize_axis_data(fix_vals_keys, fix_vals_permuted, params, input_data, axi
             if output_ee_data.empty:
                 output_ee_data = series_data_after_ee
             else:
-                warnings.simplefilter(action="error", category=FutureWarning)
                 output_ee_data = pd.concat([output_ee_data, series_data_after_ee])
             safe_log(logger, "debug", f"Appended equalized data for forecast variable: {fcst_var}")
 

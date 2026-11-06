@@ -12,15 +12,15 @@
 Program Name: eclv_statistics.py
 """
 from typing import Union
-import warnings
 import numpy as np
 
 from metcalcpy.util.ctc_statistics import calculate_economic_value
-from metcalcpy.util.utils import sum_column_data_by_name
+from metcalcpy.util.utils import numeric_warnings_as_errors, sum_column_data_by_name
 from metcalcpy.util.safe_log import safe_log
 __author__ = 'Tatiana Burek'
 
 
+@numeric_warnings_as_errors()
 def calculate_eclv(input_data: np.array, columns_names: np.array,
                    thresh: Union[float, None], line_type: str, cl_pts: list, add_base_rate: int = 0, logger=None) \
         -> Union[dict, None]:
@@ -50,7 +50,6 @@ def calculate_eclv(input_data: np.array, columns_names: np.array,
                 s    - Base rate
             or None if some of the data values are missing or invalid
     """
-    warnings.filterwarnings('error')
 
 
     # some validation
@@ -71,10 +70,10 @@ def calculate_eclv(input_data: np.array, columns_names: np.array,
             thresh_i_more = input_data[:, index_thresh_i] > thresh
             thresh_i_less = input_data[:, index_thresh_i] <= thresh
 
-            n11 = np.nansum(input_data[:, index_oy_i][thresh_i_more].astype(np.float))
-            n10 = np.nansum(input_data[:, index_on_i][thresh_i_more].astype(np.float))
-            n01 = np.nansum(input_data[:, index_oy_i][thresh_i_less].astype(np.float))
-            n00 = np.nansum(input_data[:, index_on_i][thresh_i_less].astype(np.float))
+            n11 = np.nansum(input_data[:, index_oy_i][thresh_i_more].astype(float))
+            n10 = np.nansum(input_data[:, index_on_i][thresh_i_more].astype(float))
+            n01 = np.nansum(input_data[:, index_oy_i][thresh_i_less].astype(float))
+            n00 = np.nansum(input_data[:, index_on_i][thresh_i_less].astype(float))
         else:
             n11 = sum_column_data_by_name(input_data, columns_names, 'fy_oy')
             n10 = sum_column_data_by_name(input_data, columns_names, 'fy_on')
@@ -83,8 +82,7 @@ def calculate_eclv(input_data: np.array, columns_names: np.array,
         safe_log(logger, "debug", f"n11: {n11}, n10: {n10}, n01: {n01}, n00: {n00}")
         result = calculate_economic_value(np.array([n11, n10, n01, n00]), cl_pts, add_base_rate == 1)
         safe_log(logger, "info", "ECLV calculation completed successfully.")
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"ECLV calculation failed due to an error: {e}")
         result = None
-    warnings.filterwarnings('ignore')
     return result

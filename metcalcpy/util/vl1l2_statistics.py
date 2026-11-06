@@ -10,11 +10,10 @@
 """
 Program Name: vl1l2_statistics.py
 """
-import warnings
 import numpy as np
 
 from metcalcpy.util.met_stats import calc_speed
-from metcalcpy.util.utils import round_half_up, sum_column_data_by_name, PRECISION, get_total_values, \
+from metcalcpy.util.utils import numeric_warnings_as_errors, round_half_up, sum_column_data_by_name, PRECISION, get_total_values, \
     get_total_dir_values
 from metcalcpy.util.safe_log import safe_log
 
@@ -22,6 +21,7 @@ __author__ = 'Tatiana Burek'
 __version__ = '0.1.0'
 
 
+@numeric_warnings_as_errors()
 def calculate_vl1l2_bias(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of VL1L2_BIAS -
 
@@ -37,7 +37,6 @@ def calculate_vl1l2_bias(input_data, columns_names, aggregation=False, logger=No
             or None if some of the data values are missing or invalid
     """
     safe_log(logger, "info", "Starting calculation of VL1L2_BIAS.")
-    warnings.filterwarnings('error')
     try:
         total = get_total_values(input_data, columns_names, aggregation)
         safe_log(logger, "debug", f"Total value calculated: {total}")
@@ -54,13 +53,13 @@ def calculate_vl1l2_bias(input_data, columns_names, aggregation=False, logger=No
         result = round_half_up(bias, PRECISION)
         safe_log(logger, "info", f"Result rounded to precision {PRECISION}: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error occurred during calculation: {e}")
         result = None
-    warnings.filterwarnings('ignore')
     safe_log(logger, "info", "Finished calculation of VL1L2_BIAS.")
     return result
 
+@numeric_warnings_as_errors()
 def calculate_vl1l2_fvar(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of VL1L2_FVAR -
 
@@ -76,7 +75,6 @@ def calculate_vl1l2_fvar(input_data, columns_names, aggregation=False, logger=No
             or None if some of the data values are missing or invalid
     """
     safe_log(logger, "info", "Starting calculation of VL1L2_FVAR.")
-    warnings.filterwarnings('error')
     try:
         total = get_total_values(input_data, columns_names, aggregation)
         safe_log(logger, "debug", f"Total value calculated: {total}")
@@ -93,14 +91,14 @@ def calculate_vl1l2_fvar(input_data, columns_names, aggregation=False, logger=No
         result = round_half_up(result, PRECISION)
         safe_log(logger, "info", f"Result rounded to precision {PRECISION}: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error occurred during calculation: {e}")
         result = None
-    warnings.filterwarnings('ignore')
     safe_log(logger, "info", "Finished calculation of VL1L2_FVAR.")
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_vl1l2_ovar(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of VL1L2_OVAR -
 
@@ -116,7 +114,6 @@ def calculate_vl1l2_ovar(input_data, columns_names, aggregation=False, logger=No
             or None if some of the data values are missing or invalid
     """
     safe_log(logger, "info", "Starting calculation of VL1L2_OVAR.")
-    warnings.filterwarnings('error')
     try:
         total = get_total_values(input_data, columns_names, aggregation)
         safe_log(logger, "debug", f"Total value calculated: {total}")
@@ -133,14 +130,14 @@ def calculate_vl1l2_ovar(input_data, columns_names, aggregation=False, logger=No
         result = round_half_up(result, PRECISION)
         safe_log(logger, "info", f"Result rounded to precision {PRECISION}: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error occurred during calculation: {e}")
         result = None
-    warnings.filterwarnings('ignore')
     safe_log(logger, "info", "Finished calculation of VL1L2_OVAR.")
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_vl1l2_fspd(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of VL1L2_FSPD -
 
@@ -156,7 +153,6 @@ def calculate_vl1l2_fspd(input_data, columns_names, aggregation=False, logger=No
             or None if some of the data values are missing or invalid
     """
     safe_log(logger, "info", "Starting calculation of VL1L2_FSPD.")
-    warnings.filterwarnings('error')
     try:
         total = get_total_values(input_data, columns_names, aggregation)
         safe_log(logger, "debug", f"Total value calculated: {total}")
@@ -173,14 +169,14 @@ def calculate_vl1l2_fspd(input_data, columns_names, aggregation=False, logger=No
         result = round_half_up(fspd, PRECISION)
         safe_log(logger, "info", f"Result rounded to precision {PRECISION}: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error occurred during calculation: {e}")
         result = None
-    warnings.filterwarnings('ignore')
     safe_log(logger, "info", "Finished calculation of VL1L2_FSPD.")
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_vl1l2_ospd(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of VL1L2_OSPD -
 
@@ -196,7 +192,6 @@ def calculate_vl1l2_ospd(input_data, columns_names, aggregation=False, logger=No
             or None if some of the data values are missing or invalid
     """
     safe_log(logger, "info", "Starting calculation of VL1L2_OSPD.")
-    warnings.filterwarnings('error')
     try:
         total = get_total_values(input_data, columns_names, aggregation)
         safe_log(logger, "debug", f"Total value calculated: {total}")
@@ -213,14 +208,14 @@ def calculate_vl1l2_ospd(input_data, columns_names, aggregation=False, logger=No
         result = round_half_up(ospd, PRECISION)
         safe_log(logger, "info", f"Result rounded to precision {PRECISION}: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error occurred during calculation: {e}")
         result = None
-    warnings.filterwarnings('ignore')
     safe_log(logger, "info", "Finished calculation of VL1L2_OSPD.")
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_vl1l2_speed_err(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of VL1L2_SPEED_ERR -
 
@@ -236,7 +231,6 @@ def calculate_vl1l2_speed_err(input_data, columns_names, aggregation=False, logg
             or None if some of the data values are missing or invalid
     """
     safe_log(logger, "info", "Starting calculation of VL1L2_SPEED_ERR.")
-    warnings.filterwarnings('error')
     try:
         fspd = calculate_vl1l2_fspd(input_data, columns_names, aggregation, logger=logger)
         safe_log(logger, "debug", f"Calculated forecast speed (VL1L2_FSPD): {fspd}")
@@ -250,14 +244,14 @@ def calculate_vl1l2_speed_err(input_data, columns_names, aggregation=False, logg
         result = round_half_up(speed_bias, PRECISION)
         safe_log(logger, "info", f"Result rounded to precision {PRECISION}: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error occurred during calculation: {e}")
         result = None
-    warnings.filterwarnings('ignore')
     safe_log(logger, "info", "Finished calculation of VL1L2_SPEED_ERR.")
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_vl1l2_msve(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of VL1L2_MSVE -
 
@@ -273,7 +267,6 @@ def calculate_vl1l2_msve(input_data, columns_names, aggregation=False, logger=No
             or None if some of the data values are missing or invalid
     """
     safe_log(logger, "info", "Starting calculation of VL1L2_MSVE.")
-    warnings.filterwarnings('error')
     try:
         total = get_total_values(input_data, columns_names, aggregation)
         safe_log(logger, "debug", f"Total value calculated: {total}")
@@ -297,14 +290,14 @@ def calculate_vl1l2_msve(input_data, columns_names, aggregation=False, logger=No
             result = round_half_up(msve, PRECISION)
             safe_log(logger, "info", f"Result rounded to precision {PRECISION}: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error occurred during calculation: {e}")
         result = None
-    warnings.filterwarnings('ignore')
     safe_log(logger, "info", "Finished calculation of VL1L2_MSVE.")
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_vl1l2_rmsve(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of VL1L2_RMSVE -
         Args:
@@ -318,7 +311,6 @@ def calculate_vl1l2_rmsve(input_data, columns_names, aggregation=False, logger=N
             or None if some of the data values are missing or invalid
     """
     safe_log(logger, "info", "Starting calculation of VL1L2_RMSVE.")
-    warnings.filterwarnings('error')
     try:
         msve = calculate_vl1l2_msve(input_data, columns_names, aggregation, logger=logger)
         safe_log(logger, "debug", f"Calculated mean squared vector error (MSVE): {msve}")
@@ -333,10 +325,9 @@ def calculate_vl1l2_rmsve(input_data, columns_names, aggregation=False, logger=N
             result = round_half_up(rmsve, PRECISION)
             safe_log(logger, "info", f"Result rounded to precision {PRECISION}: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error occurred during calculation: {e}")
         result = None
-    warnings.filterwarnings('ignore')
     safe_log(logger, "info", "Finished calculation of VL1L2_RMSVE.")
     return result
 
@@ -362,7 +353,7 @@ def calculate_vl1l2_total(input_data, columns_names, logger=None):
         result = round_half_up(total, PRECISION)
         safe_log(logger, "info", f"Result rounded to precision {PRECISION}: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error occurred during calculation: {e}")
         result = None
 
@@ -370,6 +361,7 @@ def calculate_vl1l2_total(input_data, columns_names, logger=None):
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_vl1l2_dir_me(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of DIR_ME, which was added in MET v12.0
         Args:
@@ -381,7 +373,6 @@ def calculate_vl1l2_dir_me(input_data, columns_names, aggregation=False, logger=
             dir_me
     """
     safe_log(logger, "info", "Starting calculation of DIR_ME.")
-    warnings.filterwarnings('error')
     try:
         total = get_total_dir_values(input_data, np.array(columns_names), aggregation)
         safe_log(logger, "debug", f"Total direction values calculated: {total}")
@@ -392,14 +383,14 @@ def calculate_vl1l2_dir_me(input_data, columns_names, aggregation=False, logger=
         result = round_half_up(result, PRECISION)
         safe_log(logger, "info", f"Result rounded to precision {PRECISION}: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error occurred during calculation: {e}")
         result = None
-    warnings.filterwarnings('ignore')
     safe_log(logger, "info", "Finished calculation of DIR_ME.")
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_vl1l2_dir_mae(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of DIR_MAE
         Args:
@@ -411,7 +402,6 @@ def calculate_vl1l2_dir_mae(input_data, columns_names, aggregation=False, logger
             dir_mae statistic
     """
     safe_log(logger, "info", "Starting calculation of DIR_MAE.")
-    warnings.filterwarnings('error')
     try:
         total = get_total_dir_values(input_data, np.array(columns_names), aggregation)
         safe_log(logger, "debug", f"Total direction values calculated: {total}")
@@ -422,14 +412,14 @@ def calculate_vl1l2_dir_mae(input_data, columns_names, aggregation=False, logger
         result = round_half_up(result, PRECISION)
         safe_log(logger, "info", f"Result rounded to precision {PRECISION}: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error occurred during calculation: {e}")
         result = None
-    warnings.filterwarnings('ignore')
     safe_log(logger, "info", "Finished calculation of DIR_MAE.")
     return result
 
 
+@numeric_warnings_as_errors()
 def calculate_vl1l2_dir_mse(input_data, columns_names, aggregation=False, logger=None):
     """Performs calculation of DIR_MSE
      Args:
@@ -441,7 +431,6 @@ def calculate_vl1l2_dir_mse(input_data, columns_names, aggregation=False, logger
             dir_mse statistic
     """
     safe_log(logger, "info", "Starting calculation of DIR_MSE.")
-    warnings.filterwarnings('error')
     try:
         total = get_total_dir_values(input_data, np.array(columns_names), aggregation)
         safe_log(logger, "debug", f"Total direction values calculated: {total}")
@@ -452,9 +441,8 @@ def calculate_vl1l2_dir_mse(input_data, columns_names, aggregation=False, logger
         result = round_half_up(result, PRECISION)
         safe_log(logger, "info", f"Result rounded to precision {PRECISION}: {result}")
 
-    except (TypeError, ZeroDivisionError, Warning, ValueError) as e:
+    except (TypeError, ZeroDivisionError, RuntimeWarning, ValueError) as e:
         safe_log(logger, "error", f"Error occurred during calculation: {e}")
         result = None
-    warnings.filterwarnings('ignore')
     safe_log(logger, "info", "Finished calculation of DIR_MSE.")
     return result
