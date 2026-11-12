@@ -9,7 +9,7 @@ describes the bugfix, enhancement, or new feature: `METcalcpy GitHub issues <htt
 METcalcpy Release Notes
 =======================
 
-METcalcpy Version 13.0.0-rc1 Release Notes (20261111)
+METcalcpy Version 13.0.0-rc1 Release Notes (20261112)
 -------------------------------------------------------
 
 .. dropdown:: Bugfixes
