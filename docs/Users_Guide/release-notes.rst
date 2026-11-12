@@ -22,7 +22,7 @@ METcalcpy Version 13.0.0-rc1 Release Notes (20261111)
 
 .. dropdown:: Enhancements
 
-   *  **Feature sal1l2 linetype related to #481** (`#492 <https://github.com/dtcenter/METcalcpy/pull/492>`_)
+   *  **Feature sal1l2 linetype related to #480** (`#492 <https://github.com/dtcenter/METcalcpy/pull/492>`_)
 
 .. dropdown:: Repository, build, and test
 
