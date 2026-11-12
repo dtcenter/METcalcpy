@@ -14,7 +14,7 @@ METcalcpy Version 13.0.0-rc1 Release Notes (20261111)
 
 .. dropdown:: Bugfixes
 
-   * None
+   * Fix inconsistency with Python agg_stat.py in filtering derived series (`#461 <https://github.com/dtcenter/METcalcpy/issues/461>`_)
 
 .. dropdown:: Documentation
 
