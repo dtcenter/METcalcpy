@@ -28,7 +28,7 @@ METcalcpy Version 13.0.0-rc1 Release Notes (20261111)
 
    * Resolve 1 SonarQube Security issue in METcalcpy's Develop branch  (`#457 <https://github.com/dtcenter/METcalcpy/issues/457>`_)
 
-   * Remove image comparison code and related packages from requirements.tx and nco_requirements.txt  (`#464 <https://github.com/dtcenter/METcalcpy/issues/464>`_)
+   * Remove image comparison code and related packages from requirements.txt and nco_requirements.txt  (`#464 <https://github.com/dtcenter/METcalcpy/issues/464>`_)
 
    * Update the modulefiles (`#472 <https://github.com/dtcenter/METcalcpy/issues/472>`_)
 
