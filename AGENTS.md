@@ -23,8 +23,8 @@ pull request rather than silently following one.
 
 ## Checks that are easy to miss
 
-- New code needs pytest tests under `test/`, with any sample data under 100 MB
-  in `test/data`, and new tests added to `.github/workflows/unit_tests.yaml`.
+- New code needs pytest tests under `test/`, and new tests added to
+  `.github/workflows/unit_tests.yaml`.
 - Document Python code with docstrings that follow
   [PEP 257](https://peps.python.org/pep-0257/).
 - A new Python package goes in `requirements.txt`.
