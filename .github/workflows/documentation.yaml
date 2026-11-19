@@ -12,10 +12,14 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
   workflow_dispatch:
+  # Check the links nightly so that the link check history stays current
+  schedule:
+    - cron: '17 7 * * *'
 
 jobs:
   documentation:
     name: Build Documentation
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -43,6 +47,8 @@ jobs:
   linkcheck:
     name: Check Links
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v6
       - name: Check links
