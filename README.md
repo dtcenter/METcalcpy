@@ -16,10 +16,10 @@ Instructions for installing the metcalcpy package locally
 ---------------------------------------------------------
 - activate your conda environment (i.e. 'conda activate your-conda-env-name')
 - from within your active conda environment, cd to the METcalcpy/ directory, where you will see the file pyproject.toml
-- from this directory, run the following on the command line: pip install -e ".[test]" .
+- from this directory, run the following on the command line: pip install -e ".[test]" 
 - the -e option stands for editable, which is useful in that you can update your METcalcpy/metcalcpy source without reinstalling it 
 - the . indicates that you should search the current directory for the pyproject.toml file
-- the ".[test]" contains the package version information specified in pyproject.toml
+-  ".[test]" installs optional test extras (pytest, pip) defined in pyproject.toml
 
 - use metcalcpy package via import statement:
   - Examples:
