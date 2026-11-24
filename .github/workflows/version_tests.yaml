@@ -40,7 +40,8 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        python -m pip install --upgrade pip 
+        pip install -e ".[test]"
 
         # try installing scikit-image explicitly. Using test_requirements.txt versions doesn't seem to build correctly
         python -m pip install -U scikit-image

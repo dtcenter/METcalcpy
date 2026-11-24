@@ -54,7 +54,8 @@ jobs:
         python-version: "3.12"
     - name: Install dependencies
       run: |
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        python -m pip install --upgrade pip
+        pip install -e ".[test]"
         # try installing scikit-image explicitly. Using requirements.txt versions doesn't seem to build correctly
         python -m pip install -U scikit-image
         # install the coverage.py code coverage tool
