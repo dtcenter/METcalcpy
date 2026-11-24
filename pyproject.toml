@@ -13,7 +13,7 @@ description = "statistics and util package for METplus"
 authors = [
     {name = "METplus"},
 ]
-requires-python = ">=3.10.4"
+requires-python = ">=3.12"
 readme = "README.md"
 license = {text = "MIT"}
 classifiers = [
@@ -21,6 +21,10 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
 ]
+
+[project.optional-dependencies]
+# explicitly pin pip version for dependabot
+test = ['pip>=26.0', 'pytest>=9.0.3']
 
 [project.urls]
 Homepage = "https://github.com/dtcenter/METcalcpy"
