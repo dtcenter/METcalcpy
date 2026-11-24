@@ -23,6 +23,7 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
+# explicitly pin pip version for dependabot
 test = ['pip>=26.0', 'pytest>=9.0.3']
 
 [project.urls]
