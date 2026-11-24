@@ -8,7 +8,7 @@ are used by METviewer, METplotpy, and other applications.
 Python Requirements
 ===================
 
-**Python 3.12+** - Python 3.12 or higher must be installed. 
+**Python 3.12+** - Python 3.12 or higher must be installed.
 
 The requirements below come directly from the **requirements.txt** file at the top level of the repository.
 
