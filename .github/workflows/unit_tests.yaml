@@ -42,7 +42,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -e ".[test]"
-        # try installing scikit-image explicitly. Using requirements.txt versions doesn't seem to build correctly
+        # try installing scikit-image explicitly explicitly if pinned versions don't build correctly
         python -m pip install -U scikit-image
         # install the coverage.py code coverage tool
         python3 -m pip install pytest-cov
