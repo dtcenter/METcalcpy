@@ -112,7 +112,7 @@ To perform the conversion, do the following:
 
 * Make sure you have these required Python packages:
 
-  * Python 3.10.4 or later
+  * Python 3.12 or later
 
   * metpy 1.7.1 or later
 
