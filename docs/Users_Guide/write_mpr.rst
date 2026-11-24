@@ -84,7 +84,7 @@ Run from a Python script
 
 * Make sure you have these required Python packages:
 
-  * Python 3.10.4 or later
+  * Python 3.12 or later
 
   * metcalcpy
 
