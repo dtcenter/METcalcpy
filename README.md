@@ -19,7 +19,7 @@ Instructions for installing the metcalcpy package locally
 - from this directory, run the following on the command line: pip install -e ".[test]" 
 - the -e option stands for editable, which is useful in that you can update your METcalcpy/metcalcpy source without reinstalling it 
 - the . indicates that you should search the current directory for the pyproject.toml file
--  ".[test]" installs optional test extras (pytest, pip) defined in pyproject.toml
+-  "[test]" installs optional test extras (pytest, pip) defined in pyproject.toml
 
 - use metcalcpy package via import statement:
   - Examples:
